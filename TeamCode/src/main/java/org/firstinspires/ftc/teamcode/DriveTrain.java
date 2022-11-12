@@ -169,7 +169,7 @@ public class DriveTrain {
         stopRunToPosition();
     }
 
-    public void moveBack(int howMuch, double speed) {
+    public void moveForward(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
