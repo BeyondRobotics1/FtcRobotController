@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+/**
+ * Arm class is to control the arm, claw, and slide.
+ */
 public class Arm {
 
     int arm_position_id = 0;
