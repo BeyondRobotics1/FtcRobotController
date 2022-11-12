@@ -19,9 +19,9 @@ public class AutoBlueRight extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        driveTrain.moveLeft(10, 0.9);
+        driveTrain.moveLeft(28, 0.9);
 
-        driveTrain.moveForward(10, 0.9);
+        driveTrain.moveForward(28, 0.9);
 
     }
 }
