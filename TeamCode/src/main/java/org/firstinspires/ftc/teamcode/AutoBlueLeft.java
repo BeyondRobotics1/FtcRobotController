@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
+/**
+ * This code is for the Autonomous period for the position Blue Left.
+ */
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 @Autonomous(name="Blue Left Side", group="Linear Opmode")
 public class AutoBlueLeft extends LinearOpMode{
     @Override
