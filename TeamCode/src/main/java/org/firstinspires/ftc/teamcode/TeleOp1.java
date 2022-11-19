@@ -12,7 +12,7 @@ public class TeleOp1 extends LinearOpMode {
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
 
-        Arm arm = new Arm(hardwareMap);
+        //Arm arm = new Arm(hardwareMap);
 
         waitForStart();
 
@@ -20,6 +20,7 @@ public class TeleOp1 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            /*
             //claw
             if (gamepad2.left_bumper) {
                 arm.openClaw();
@@ -37,6 +38,7 @@ public class TeleOp1 extends LinearOpMode {
             }
 
             arm.moveSlide(-gamepad2.left_stick_y);
+*/
 
             //drive train
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
