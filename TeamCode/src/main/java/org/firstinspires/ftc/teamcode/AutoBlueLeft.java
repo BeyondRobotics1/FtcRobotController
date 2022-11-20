@@ -40,9 +40,9 @@ public class AutoBlueLeft extends LinearOpMode{
         }else if(location == 2){
             driveTrain.moveForward(-36, 0.9);
         }else{
-            driveTrain.moveLeft(-20, 0.9);
+            driveTrain.moveLeft(-25, 0.9);
             sleep(200);
-            driveTrain.moveForward(-38, 0.9);
+            driveTrain.moveForward(-36, 0.9);
         }
 
      /*   driveTrain.moveForward(-14, 0.9);
