@@ -29,27 +29,29 @@ public class TeleOp1 extends LinearOpMode {
             }
 */
             //arm
-            if (gamepad2.y) {
+            if (gamepad2.y) { //press Y, go to the front position
                 arm.setClawPosition(1);
-            } else if (gamepad2.b) {
+            } else if (gamepad2.b) { //press b, go to the right position
                 arm.setClawPosition(2);
-            } else if (gamepad2.x) {
+            } else if (gamepad2.x) { //press x, go to the left position
                 arm.setClawPosition(0);
             }
 
+            //use left stick y to set the power slide motors
             arm.moveSlide(-gamepad2.left_stick_y);
+
 
             /*
             if (gamepad2.y) {
-                arm.setTurretPosition(0.165);
+                arm.setTurretPosition(0.165); //front position
             } else if (gamepad2.x) {
-                arm.setTurretPosition(0.265);
+                arm.setTurretPosition(0.265); //right position
             } else if (gamepad2.b) {
-                arm.setTurretPosition(0.065);
+                arm.setTurretPosition(0.065); //left position
             }
-             */
 
             telemetry.addLine(String.format("\nDetected turret position=%f", arm.getTurretPosition()));
+            */
 
 
             //drive train
