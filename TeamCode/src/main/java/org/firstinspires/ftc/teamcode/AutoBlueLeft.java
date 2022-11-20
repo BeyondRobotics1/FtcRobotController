@@ -14,13 +14,38 @@ public class AutoBlueLeft extends LinearOpMode{
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
         driveTrain.runWithEncoder();
 
-        Arm arm = new Arm(hardwareMap);
+        SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
+        int location = 2;
+
+        while (!isStarted() && !isStopRequested()) {
+
+            // Arm arm = new Arm(hardwareMap);
+            location = sleeveDetector.detectPosition();
+
+            telemetry.addLine(String.format("\nlocation=%d", location));
+            telemetry.update();
+
+            sleep(20);
+        }
 
         waitForStart();
 
         if (isStopRequested()) return;
 
-        driveTrain.moveForward(-14, 0.9);
+
+        if(location == 1){
+            driveTrain.moveLeft(26, 0.9);
+            sleep(200);
+            driveTrain.moveForward(-36, 0.9);
+        }else if(location == 2){
+            driveTrain.moveForward(-36, 0.9);
+        }else{
+            driveTrain.moveLeft(-20, 0.9);
+            sleep(200);
+            driveTrain.moveForward(-36, 0.9);
+        }
+
+     /*   driveTrain.moveForward(-14, 0.9);
         sleep(200);
         arm.closeClaw();
         arm.moveSlide(-0.9);
@@ -30,7 +55,7 @@ public class AutoBlueLeft extends LinearOpMode{
         arm.setClawPosition(1);
         sleep(2000);
         arm.openClaw();
-        arm.moveSlide(-0.9);
+        arm.moveSlide(-0.9);*/
 
 
     }
