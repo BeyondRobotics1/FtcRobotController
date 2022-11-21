@@ -40,6 +40,8 @@ public class TeleOp1 extends LinearOpMode {
             //use left stick y to set the power slide motors
             arm.moveSlide(-gamepad2.left_stick_y);
 
+            double slide_height = arm.getDistanceINCH();
+            telemetry.addData("Slide Height",slide_height );
 
             /*
             if (gamepad2.y) {
