@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * Arm class is to control the arm, claw, and slide.
@@ -14,7 +17,7 @@ public class Arm {
 
     //The left, middle, and right position for arm servo
     double arm_positions[] = {0.265, 0.165, 0.065};
-
+    DistanceSensor distanceSensor;
     Servo servoArm;
     Servo servoClaw;
 
@@ -33,6 +36,8 @@ public class Arm {
         //servoClaw = hardwareMap.get(Servo.class,"claw");
 
         //slideMotor = hardwareMap.get(DcMotorSimple.class, "slide");
+
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "arm_distance_sensor");
 
         //we used two motors to power the slide
         slideMotor1 = hardwareMap.get(DcMotor.class, "slide1");
@@ -73,6 +78,10 @@ public class Arm {
 
         return servoArm.getPosition();
 
+    }
+    //Distance sensor
+    public double getDistanceINCH(){
+        return distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
     //set the turret servo's position
