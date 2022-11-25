@@ -21,7 +21,10 @@ public class TeleOp1 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            claw.setPosition(0.4, 0.6);
+            claw.setPosition(0.42, 0.58);
+            sleep(10000);
+            claw.setPosition(0.58, 0.42);
+            sleep(10000);
 
             /*
             //claw
