@@ -36,7 +36,7 @@ public class Arm {
 
         //slideMotor = hardwareMap.get(DcMotorSimple.class, "slide");
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "arm_distance_sensor");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
 
         //we used two motors to power the slide
         slideMotor1 = hardwareMap.get(DcMotor.class, "slide1");
