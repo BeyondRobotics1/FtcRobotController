@@ -13,12 +13,15 @@ public class TeleOp1 extends LinearOpMode {
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
 
         Arm arm = new Arm(hardwareMap);
+        Claw claw = new Claw(hardwareMap, this);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
+
+            claw.setPosition(0.4, 0.6);
 
             /*
             //claw
