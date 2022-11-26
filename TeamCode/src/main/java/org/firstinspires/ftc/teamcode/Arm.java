@@ -15,15 +15,12 @@ public class Arm {
     int arm_position_id = 0;
 
     //The left, middle, and right position for arm servo
-    double arm_positions[] = {0.265, 0.165, 0.065};
-    DistanceSensor distanceSensor;
+    //0.265, 0.165, 0.065
+    double arm_positions[] = {0.267, 0.166, 0.067};
+    //DistanceSensor distanceSensor;
+
     Servo servoArm;
     Servo servoClaw;
-
-    //we used SparkMini control for our prototype robot
-    //because we can not get a REV expansion hub
-    //
-    //DcMotorSimple slideMotor;
 
     DcMotor slideMotor1;
     DcMotor slideMotor2;
@@ -34,9 +31,8 @@ public class Arm {
         servoArm = hardwareMap.get(Servo.class,"arm");
         //servoClaw = hardwareMap.get(Servo.class,"claw");
 
-        //slideMotor = hardwareMap.get(DcMotorSimple.class, "slide");
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "distance");
 
         //we used two motors to power the slide
         slideMotor1 = hardwareMap.get(DcMotor.class, "slide1");
@@ -80,7 +76,8 @@ public class Arm {
     }
     //Distance sensor
     public double getDistanceINCH(){
-        return distanceSensor.getDistance(DistanceUnit.INCH);
+        //return distanceSensor.getDistance(DistanceUnit.INCH);
+        return 0;
     }
 
     //set the turret servo's position
@@ -92,7 +89,6 @@ public class Arm {
 
     public void moveSlide(double power)
     {
-        //slideMotor.setPower(Helper.cubicWithSign(power));
         slideMotor1.setPower(Helper.cubicWithSign(power));
         slideMotor2.setPower(Helper.cubicWithSign(power));
     }

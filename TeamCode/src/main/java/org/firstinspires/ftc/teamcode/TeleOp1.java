@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import java.nio.channels.ConnectionPendingException;
+
 @TeleOp
 public class TeleOp1 extends LinearOpMode {
 
@@ -21,19 +23,18 @@ public class TeleOp1 extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            claw.setPosition(0.42, 0.58);
+            /*claw.setPosition(0.42, 0.58);
             sleep(10000);
             claw.setPosition(0.58, 0.42);
-            sleep(10000);
+            sleep(10000);*/
 
-            /*
-            //claw
-            if (gamepad2.left_bumper) {
-                arm.openClaw();
-            } else if (gamepad2.right_bumper) {
-                arm.closeClaw();
-            }
-*/
+
+            //hold right bumper to close the claw
+            if (gamepad2.right_bumper)
+                claw.close();
+            else //release right bumper to open the claw
+                claw.open();
+
             //arm
             if (gamepad2.y) { //press Y, go to the front position
                 arm.setClawPosition(1);
