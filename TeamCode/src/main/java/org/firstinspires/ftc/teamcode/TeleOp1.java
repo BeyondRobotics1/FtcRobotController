@@ -3,11 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.nio.channels.ConnectionPendingException;
+import java.util.concurrent.TimeUnit;
 
 @TeleOp
 public class TeleOp1 extends LinearOpMode {
+//    long startTime = 0;
+//    public class ElapsedTime {
+//        if (startTime == 0){
+//            startTime = getRuntime()
+//
+//        }
+//    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -15,7 +24,13 @@ public class TeleOp1 extends LinearOpMode {
         //A digital touch sensor used to stop the slide moving too much
         DigitalChannel touchSensor =  hardwareMap.get(DigitalChannel.class, "slide_stopper");
         touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        DigitalChannel redLED = hardwareMap.get(DigitalChannel.class, "endgame_red");
+        DigitalChannel greenLED = hardwareMap.get(DigitalChannel.class, "endgame_green");
 
+        redLED.setMode(DigitalChannel.Mode.OUTPUT);
+        greenLED.setMode(DigitalChannel.Mode.OUTPUT);
+        greenLED.setState(true);
+        redLED.setState(false);
 
         //drivetrain
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
@@ -23,11 +38,19 @@ public class TeleOp1 extends LinearOpMode {
         Arm arm = new Arm(hardwareMap);
         Claw claw = new Claw(hardwareMap, this);
 
+        //We use this timer to check the game time that has elapsed
+        ElapsedTime timer = new ElapsedTime();
+
         waitForStart();
 
         if (isStopRequested()) return;
 
+        //restart the timer
+        timer.reset();
+
         while (opModeIsActive()) {
+
+
 
             //hold right bumper to close the claw
             if (gamepad2.right_bumper)
@@ -78,6 +101,13 @@ public class TeleOp1 extends LinearOpMode {
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             telemetry.update();
+
+            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
+            if(timer.time(TimeUnit.SECONDS) >= 85){
+                redLED.setState(true);
+                greenLED.setState(false);
+            }
+
 
             sleep(100);
         }
