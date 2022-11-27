@@ -12,11 +12,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 public class Arm {
 
-    int arm_position_id = 0;
+    int arm_position_id = 1;
 
     //The left, middle, and right position for arm servo
     //0.265, 0.165, 0.065
-    double arm_positions[] = {0.267, 0.166, 0.067};
+    double arm_positions[] = {0.267, 0.167, 0.063};
     //DistanceSensor distanceSensor;
 
     Servo servoArm;
@@ -41,30 +41,21 @@ public class Arm {
         //When there is no power, we want the motor to hold the position
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        //servoClaw.scaleRange(0.1, 0.25);
-        //servoClaw.setPosition(0);
-
-        //servoArm.scaleRange(0.15, 0.85);
-        //servoArm.setPosition(1);
     }
 
-    public void openClaw()
-    {
-        servoClaw.setPosition(0);
-    }
-
-    public void closeClaw()
-    {
-        servoClaw.setPosition(1.0);
-    }
 
     //
-    public void setClawPosition(int arm_position_id)
+    public void setTurretPosition(int arm_position_id)
     {
-        this.arm_position_id = arm_position_id;
+        if(this.arm_position_id != arm_position_id) {
 
-        servoArm.setPosition(arm_positions[this.arm_position_id]);
+            if(arm_position_id == 1 && this.arm_position_id == 0)
+                servoArm.setPosition(0.164);
+            else
+                servoArm.setPosition(arm_positions[arm_position_id]);
+
+            this.arm_position_id = arm_position_id;
+        }
     }
 
 

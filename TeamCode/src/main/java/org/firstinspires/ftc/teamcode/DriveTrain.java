@@ -100,18 +100,18 @@ public class DriveTrain {
                          double left_stick_x,
                          double right_stick_x) {
 
-            double y = Helper.cubicWithSign(left_stick_y); // Remember, this is reversed!
-            double x = Helper.cubicWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
-            double rx = Helper.cubicWithSign(right_stick_x);
+            double y = Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+            double x = Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+            double rx = Helper.squareWithSign(right_stick_x);
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio, but only when
             // at least one is out of the range [-1, 1]
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = Helper.cubicWithSign(-(y + x + rx) / denominator);
-            double backLeftPower = Helper.cubicWithSign((y - x + rx) / denominator);
-            double frontRightPower = Helper.cubicWithSign((y - x - rx) / denominator);
-            double backRightPower = Helper.cubicWithSign(-(y + x - rx) / denominator);
+            double frontLeftPower = -(y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = -(y + x - rx) / denominator;
 
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
