@@ -1,17 +1,27 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 public class DriveTrain {
 
+    //REV 2m distance sensor
     DistanceSensor mrOds = null;
+
+    // The IMU sensor object
+    IMU imu;
 
     DcMotor motorFrontLeft;
     DcMotor motorBackLeft;
@@ -56,15 +66,27 @@ public class DriveTrain {
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
-       /* motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        /* motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);*/
-
-
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // Retrieve and initialize the IMU.
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        // The next two lines define Hub orientation.
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
     }
 
     public void runWithEncoder()
@@ -96,28 +118,63 @@ public class DriveTrain {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    //robot centric
+    //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
     public void setPower(double left_stick_y,
                          double left_stick_x,
                          double right_stick_x) {
 
-            double y = Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
-            double x = Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
-            double rx = Helper.squareWithSign(right_stick_x);
+        double y = Helper.squareWithSign(left_stick_y) * 0.8; // Remember, this is reversed!
+        double x = Helper.squareWithSign(left_stick_x * 1.1) * 0.8; // Counteract imperfect strafing
+        double rx = Helper.squareWithSign(right_stick_x * 0.8) * 0.7;
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when
-            // at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = -(y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = -(y + x - rx) / denominator;
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = -(y + x + rx) / denominator;
+        double backLeftPower = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower = -(y + x - rx) / denominator;
 
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
-        }
+        motorFrontLeft.setPower(frontLeftPower);
+        motorBackLeft.setPower(backLeftPower);
+        motorFrontRight.setPower(frontRightPower);
+        motorBackRight.setPower(backRightPower);
+    }
+
+    //field centric
+    //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+    public void setPower2(double left_stick_y,
+                         double left_stick_x,
+                         double right_stick_x) {
+
+        double y = Helper.squareWithSign(left_stick_y) * 0.8; // Remember, this is reversed!
+        double x = Helper.squareWithSign(left_stick_x * 1.1) * 0.8; // Counteract imperfect strafing
+        double rx = Helper.squareWithSign(right_stick_x) * 0.7;
+
+        // Read inverse IMU heading, as the IMU heading is CW positive
+        double botHeading = Helper.norm(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = -(rotY  + rotX  + rx) / denominator;
+        double backLeftPower = (rotY  - rotX  + rx) / denominator;
+        double frontRightPower = (rotY  - rotX  - rx) / denominator;
+        double backRightPower = -(rotY  + rotX  - rx) / denominator;
+
+        motorFrontLeft.setPower(frontLeftPower);
+        motorBackLeft.setPower(backLeftPower);
+        motorFrontRight.setPower(frontRightPower);
+        motorBackRight.setPower(backRightPower);
+
+        mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
+    }
 
     // Distances in inches, angles in deg, speed 0.0 to 0.6
     // move forward

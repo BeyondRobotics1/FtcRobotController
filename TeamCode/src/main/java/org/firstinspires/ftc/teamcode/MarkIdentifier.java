@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  */
 
 @TeleOp(name="Concept: VuMark Id Webcam", group ="Concept")
-//@Disabled
+@Disabled
 public class MarkIdentifier extends LinearOpMode {
 
     public static final String TAG = "Vuforia VuMark Sample";

@@ -72,6 +72,7 @@ public class TeleOp1 extends LinearOpMode {
 
             //use left stick y to set the power slide motors
             double slidePower = -gamepad2.left_stick_y;
+
             if(touchSensor.getState() == false){ //touch sensor is pushed
                 if(slidePower < 0){ //slide is moving down, so then stop
                     arm.moveSlide(0);
@@ -81,20 +82,8 @@ public class TeleOp1 extends LinearOpMode {
                 arm.moveSlide(slidePower);
             }
 
-            double slide_height = arm.getDistanceINCH();
-            telemetry.addData("Slide Height",slide_height );
-
-            /*
-            if (gamepad2.y) {
-                arm.setTurretPosition(0.165); //front position
-            } else if (gamepad2.x) {
-                arm.setTurretPosition(0.265); //right position
-            } else if (gamepad2.b) {
-                arm.setTurretPosition(0.065); //left position
-            }
-
-            telemetry.addLine(String.format("\nDetected turret position=%f", arm.getTurretPosition()));
-            */
+            //double slide_height = arm.getDistanceINCH();
+            //telemetry.addData("Slide Height",slide_height );
 
 
             //drive train
