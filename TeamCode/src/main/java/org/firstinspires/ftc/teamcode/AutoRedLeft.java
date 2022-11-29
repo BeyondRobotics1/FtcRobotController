@@ -12,6 +12,7 @@ public class AutoRedLeft extends LinearOpMode {
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
         driveTrain.runWithEncoder();
+        driveTrain.resetYaw();
 
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
         int location = 2;

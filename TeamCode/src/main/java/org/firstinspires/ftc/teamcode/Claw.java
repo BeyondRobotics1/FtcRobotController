@@ -38,8 +38,8 @@ public class Claw {
         claw1.setPosition(position1);
         claw2.setPosition(position2);
 
-        mode.telemetry.addData("left claw position", claw1.getPosition());
-        mode.telemetry.addData("right claw position", claw2.getPosition());
+        //mode.telemetry.addData("left claw position", claw1.getPosition());
+        //mode.telemetry.addData("right claw position", claw2.getPosition());
     }
 
     /**
