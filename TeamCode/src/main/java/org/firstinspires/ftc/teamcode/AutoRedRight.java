@@ -12,6 +12,7 @@ public class AutoRedRight extends LinearOpMode {
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
         driveTrain.runWithEncoder();
+        driveTrain.resetYaw();
 
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
         int location = 2;
@@ -21,7 +22,7 @@ public class AutoRedRight extends LinearOpMode {
             // Arm arm = new Arm(hardwareMap);
             location = sleeveDetector.detectPosition();
 
-            telemetry.addLine(String.format("\nlocation=%d", location));
+            telemetry.addLine(String.format("\nLocation=%d", location));
             telemetry.update();
 
             sleep(20);

@@ -13,6 +13,7 @@ public class AutoBlueLeft extends LinearOpMode{
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
         driveTrain.runWithEncoder();
+        driveTrain.resetYaw();
 
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
         int location = 2;
@@ -44,19 +45,6 @@ public class AutoBlueLeft extends LinearOpMode{
             sleep(200);
             driveTrain.moveForward(-36, 0.9);
         }
-
-     /*   driveTrain.moveForward(-14, 0.9);
-        sleep(200);
-        arm.closeClaw();
-        arm.moveSlide(-0.9);
-        sleep(2000);
-        arm.moveSlide(1);
-        sleep(1500);
-        arm.setClawPosition(1);
-        sleep(2000);
-        arm.openClaw();
-        arm.moveSlide(-0.9);*/
-
 
     }
 }

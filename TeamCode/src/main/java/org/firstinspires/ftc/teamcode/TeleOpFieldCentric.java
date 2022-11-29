@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -8,8 +9,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import java.nio.channels.ConnectionPendingException;
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name = "TeleOp1", group = "TeleOp")
-public class TeleOp1 extends LinearOpMode {
+@TeleOp(name = "Field Centric", group = "TeleOp")
+@Disabled
+public class TeleOpFieldCentric extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,11 +52,11 @@ public class TeleOp1 extends LinearOpMode {
                 claw.open();
 
             //arm
-            if (gamepad2.right_stick_y < -0.7) { //front position
+            if (gamepad2.y) { //press Y, go to the front position
                 arm.setTurretPosition(1);
-            } else if (gamepad2.right_stick_x > 0.7) { //right position
+            } else if (gamepad2.b) { //press b, go to the right position
                 arm.setTurretPosition(2);
-            } else if (gamepad2.right_stick_x < -0.7) { //left position
+            } else if (gamepad2.x) { //press x, go to the left position
                 arm.setTurretPosition(0);
             }
 
@@ -76,17 +78,17 @@ public class TeleOp1 extends LinearOpMode {
             //double slide_height = arm.getDistanceINCH();
             //telemetry.addData("Slide Height",slide_height );
 
-//            if(gamepad1.dpad_up)
-//                driveTrain.changeXYPowerScale(0.01);
-//            if(gamepad1.dpad_down)
-//                driveTrain.changeXYPowerScale(-0.01);
-//            if(gamepad1.dpad_right)
-//                driveTrain.changeRXPowerScale(0.01);
-//            if(gamepad1.dpad_left)
-//                driveTrain.changeRXPowerScale(-0.01);
+            if(gamepad1.dpad_up)
+                driveTrain.changeXYPowerScale(0.01);
+            if(gamepad1.dpad_down)
+                driveTrain.changeXYPowerScale(-0.01);
+            if(gamepad1.dpad_right)
+                driveTrain.changeRXPowerScale(0.01);
+            if(gamepad1.dpad_left)
+                driveTrain.changeRXPowerScale(-0.01);
 
             //drive train
-            driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             telemetry.update();
 

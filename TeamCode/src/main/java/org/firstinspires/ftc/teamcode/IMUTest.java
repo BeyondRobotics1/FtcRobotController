@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Helper;
 
 /**
  * {@link SensorIMUOrthogonal} shows how to use the new universal {@link IMU} interface. This
@@ -78,7 +79,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
  * to use those parameters.
  */
 @TeleOp(name = "Sensor: IMU Orthogonal", group = "TeleOp")
-@Disabled   // Comment this out to add to the OpMode list
+//@Disabled   // Comment this out to add to the OpMode list
 public class IMUTest extends LinearOpMode
 {
     // The IMU sensor object
@@ -133,7 +134,12 @@ public class IMUTest extends LinearOpMode
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
 
-            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
+            double yaw = orientation.getYaw(AngleUnit.RADIANS);//orientation.getYaw(AngleUnit.DEGREES)
+
+            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", yaw * 180 / Math.PI);
+            telemetry.addData("Yaw (Z) Norm", "%.2f Deg. (Heading)", Helper.norm(yaw) * 180 / Math.PI);
+
+
             telemetry.addData("Pitch (X)", "%.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
             telemetry.addData("Roll (Y)", "%.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
             telemetry.addData("Yaw (Z) velocity", "%.2f Deg/Sec", angularVelocity.zRotationRate);
