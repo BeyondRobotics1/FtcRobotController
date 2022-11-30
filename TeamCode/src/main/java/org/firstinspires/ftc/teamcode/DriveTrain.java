@@ -38,7 +38,7 @@ public class DriveTrain {
 
 
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 1.0; //forward/backward power adjustment
+    private double y_power_scale = 0.9; //forward/backward power adjustment
     private double x_power_scale = 0.8; //left/right power adjustment, make it slower
     private double rx_power_scale = 0.7;//rotation power adjustment, make it slower
 

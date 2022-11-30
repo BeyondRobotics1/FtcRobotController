@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.nio.channels.ConnectionPendingException;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp(name = "Field Centric", group = "TeleOp")
@@ -68,11 +67,11 @@ public class TeleOpFieldCentric extends LinearOpMode {
 
             if(touchSensor.getState() == false){ //touch sensor is pushed
                 if(slidePower < 0){ //slide is moving down, so then stop
-                    arm.moveSlide(0);
+                    arm.setSlidePower(0);
                 }else //slide is not moving down, don't stop
-                    arm.moveSlide(slidePower);
+                    arm.setSlidePower(slidePower);
             }else { //touch sensor is not pushed
-                arm.moveSlide(slidePower);
+                arm.setSlidePower(slidePower);
             }
 
             //double slide_height = arm.getDistanceINCH();
