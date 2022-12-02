@@ -40,7 +40,7 @@ public class DriveTrain {
     //adjust forward/backward, left/right, and rotation power
     private double y_power_scale = 0.9; //forward/backward power adjustment
     private double x_power_scale = 0.8; //left/right power adjustment, make it slower
-    private double rx_power_scale = 0.7;//rotation power adjustment, make it slower
+    private double rx_power_scale = 0.65;//rotation power adjustment, make it slower
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -155,6 +155,9 @@ public class DriveTrain {
 
         y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
         x *= x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+
+        x = Helper.squareWithSign(x);
+        y = Helper.squareWithSign(y);
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
