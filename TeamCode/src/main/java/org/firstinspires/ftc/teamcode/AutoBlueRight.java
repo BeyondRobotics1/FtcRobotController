@@ -42,7 +42,9 @@ public class AutoBlueRight extends LinearOpMode {
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
         } else {
-            driveTrain.moveLeft(-25, 0.9);
+            driveTrain.moveLeft(-28, 0.9);
+            sleep(100);
+            driveTrain.moveLeft(3, 0.9);
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
         }
