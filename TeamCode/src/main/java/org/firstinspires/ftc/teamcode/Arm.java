@@ -123,14 +123,14 @@ public class Arm {
         double localPower = power;
 
         //slide move down
-        if(power < 0) {
+        if(power < -0.01) {
             if (touchSensorLowLimit.getState() == false) //touch sensor is pushed
             {
                 localPower = 0;
                 slidePosition = SlidePosition.GROUND;
             }
         }
-        else if(power > 0) { //slide move up
+        else if(power > 0.01) { //slide move up
             if (touchSensorHighLimit.getState() == false) //touch sensor is pushed
             {
                 localPower = 0;
