@@ -34,8 +34,10 @@ public class AutoRedLeft extends LinearOpMode {
 
 
         if (location == 1) {
-            driveTrain.moveLeft(30, 0.9);
+            driveTrain.moveLeft(33, 0.9);
             sleep(200);
+            driveTrain.moveLeft(-3,0.9);
+            sleep(100);
             driveTrain.moveForward(-36, 0.9);
         } else if (location == 2) {
             driveTrain.moveLeft(4, 0.9);
@@ -44,6 +46,7 @@ public class AutoRedLeft extends LinearOpMode {
         } else {
             driveTrain.moveLeft(-25, 0.9);
             sleep(200);
+
             driveTrain.moveForward(-36, 0.9);
         }
     }
