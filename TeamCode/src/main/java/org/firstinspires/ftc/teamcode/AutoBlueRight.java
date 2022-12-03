@@ -34,21 +34,17 @@ public class AutoBlueRight extends LinearOpMode {
 
 
         if (location == 1) {
-            driveTrain.moveLeft(-28,0.9);
-            sleep(100);
-            driveTrain.moveLeft(58, 0.9);
+            driveTrain.moveLeft(30, 0.9);
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
         } else if (location == 2) {
-            driveTrain.moveLeft(-28,0.9);
-            sleep(100);
-            driveTrain.moveLeft(33, 0.9);
+            driveTrain.moveLeft(5, 0.9);
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
         } else {
             driveTrain.moveLeft(-28, 0.9);
             sleep(100);
-            driveTrain.moveLeft(3, 0.9);
+            driveTrain.moveLeft(2, 0.9);
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
         }
