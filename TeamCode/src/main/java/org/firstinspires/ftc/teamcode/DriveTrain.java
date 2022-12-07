@@ -11,12 +11,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class DriveTrain {
 
     //REV 2m distance sensor
-    DistanceSensor mrOds = null;
+    DistanceSensor distanceSensorFrontLeft;
+    DistanceSensor distanceSensorBackLeft;
+    DistanceSensor distanceSensorFrontRight;
+    DistanceSensor distanceSensorBackRight;
+    DistanceSensor distanceSensorFront;
+    DistanceSensor distanceSensorBack;
 
     // The IMU sensor object
     IMU imu;
@@ -78,18 +84,21 @@ public class DriveTrain {
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Retrieve and initialize the IMU.
-        imu = hardwareMap.get(IMU.class, "imu");
+        //distance sensor
+        distanceSensorBackLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
 
-        // The next two lines define Hub orientation.
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        // Now initialize the IMU with this mounting orientation
-        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+//        // Retrieve and initialize the IMU.
+//        imu = hardwareMap.get(IMU.class, "imu");
+//
+//        // The next two lines define Hub orientation.
+//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+//        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+//
+//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+//
+//        // Now initialize the IMU with this mounting orientation
+//        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+//        imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     /**
@@ -97,7 +106,7 @@ public class DriveTrain {
      */
     public void resetYaw()
     {
-        imu.resetYaw();
+        //imu.resetYaw();
     }
 
     /**
@@ -187,7 +196,7 @@ public class DriveTrain {
         double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
 
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        double botHeading = 0;//-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         //double botHeading = Helper.norm(yaw);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
@@ -420,5 +429,11 @@ public class DriveTrain {
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+
+    //Distance sensor
+    public double getDistanceINCH(){
+        return distanceSensorBackLeft.getDistance(DistanceUnit.INCH);
     }
 }
