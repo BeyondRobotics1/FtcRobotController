@@ -57,11 +57,13 @@ public class TeleOp1 extends LinearOpMode {
             //use left stick y to set the power slide motors
             arm.setSlidePower(-gamepad2.left_stick_y);
             //telemetry.addData("Slide motor position", arm.getSlideMotorCurrentPosition());
-            telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
-            telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));
+            //telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
+            //telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));
 
-            //double slide_height = arm.getDistanceINCH();
-            //telemetry.addData("Slide Height",slide_height );
+            double slideHeight = arm.getDistanceINCH();
+            telemetry.addData("Slide height inches", slideHeight );
+            double leftBackDistance = driveTrain.getDistanceINCH();
+            telemetry.addData("Left back distance inches",leftBackDistance );
 
             //drive train
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
