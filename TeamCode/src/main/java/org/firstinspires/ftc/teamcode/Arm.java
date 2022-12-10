@@ -31,6 +31,8 @@ public class Arm {
     //slide position
     SlidePosition slidePosition = SlidePosition.GROUND;
 
+    int zeroPosition;
+
 
     //turret position, 0-left, 1 - middle, 2 - right
     int turretPosition = 1;
@@ -75,6 +77,42 @@ public class Arm {
 
         touchSensorHighLimit =  hardwareMap.get(DigitalChannel.class, "limit_high");
         touchSensorHighLimit.setMode(DigitalChannel.Mode.INPUT);
+
+
+    }
+
+    public void slideRunWithEncorder()
+    {
+        slideMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        zeroPosition = slideMotor1.getCurrentPosition();
+    }
+
+    public void moveTo(double inches, double speed)
+    {
+        double newPosition = zeroPosition + inches * COUNTS_PER_INCH;
+
+        slideMotor1.setTargetPosition((int)newPosition);
+
+        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        slideMotor1.setPower(speed);
+        slideMotor2.setPower(speed);
+
+        while (slideMotor1.isBusy()){
+            if(touchSensorLowLimit.getState() == false ||
+                touchSensorHighLimit.getState() == false) {
+                break;
+            }
+        }
+
+        slideMotor1.setPower(0);
+        slideMotor2.setPower(0);
+
+        slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -129,6 +167,7 @@ public class Arm {
             {
                 localPower = 0;
                 slidePosition = SlidePosition.GROUND;
+                zeroPosition = slideMotor1.getCurrentPosition();;
             }
         }
         else if(power > 0.01) { //slide move up

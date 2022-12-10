@@ -14,6 +14,9 @@ public class AutoBlueRight extends LinearOpMode {
         driveTrain.runWithEncoder();
         driveTrain.resetYaw();
 
+        Arm arm = new Arm(hardwareMap);
+        arm.slideRunWithEncorder();
+
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
         int location = 2;
 
@@ -32,8 +35,13 @@ public class AutoBlueRight extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+        arm.moveTo(5, 0.4);
+        sleep(100);
+        arm.moveTo(3, 0.4);
+        sleep(100);
+        arm.moveTo(10, 0.4);
 
-        if (location == 1) {
+       /* if (location == 1) {
             driveTrain.moveLeft(30, 0.9);
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
@@ -47,6 +55,6 @@ public class AutoBlueRight extends LinearOpMode {
             driveTrain.moveLeft(2, 0.9);
             sleep(100);
             driveTrain.moveForward(-36, 0.9);
-        }
+        }*/
     }
 }

@@ -391,7 +391,7 @@ public class DriveTrain {
             // Display it for the driver.
             mode.telemetry.addLine("Move To Line");
             mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode. telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
                     motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
                     motorBackRight.getCurrentPosition());
             mode.telemetry.update();
