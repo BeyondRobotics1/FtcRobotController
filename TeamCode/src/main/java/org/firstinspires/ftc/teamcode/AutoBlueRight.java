@@ -35,11 +35,13 @@ public class AutoBlueRight extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        arm.moveTo(5, 0.4);
-        sleep(100);
-        arm.moveTo(3, 0.4);
-        sleep(100);
-        arm.moveTo(10, 0.4);
+        arm.moveTo(14.5, 1);
+        sleep(5000);
+        arm.moveTo(24.5, 1);
+        sleep(5000);
+        arm.moveTo(34.5, 1);
+        sleep(5000);
+        arm.moveTo(0, 1);
 
        /* if (location == 1) {
             driveTrain.moveLeft(30, 0.9);
