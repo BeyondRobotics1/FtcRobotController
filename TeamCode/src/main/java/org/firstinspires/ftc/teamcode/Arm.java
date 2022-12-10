@@ -42,7 +42,7 @@ public class Arm {
     double turretServoPositions[] = {0.267, 0.167, 0.063};
     DistanceSensor distanceSensor;
 
-    Servo servoArm;
+    Servo servoTurret;
     Servo servoClaw;
 
     DcMotor slideMotor1;
@@ -55,7 +55,7 @@ public class Arm {
     public Arm(HardwareMap hardwareMap)
     {
         //servos
-        servoArm = hardwareMap.get(Servo.class,"arm");
+        servoTurret = hardwareMap.get(Servo.class,"arm");
         //servoClaw = hardwareMap.get(Servo.class,"claw");
 
 
@@ -83,18 +83,24 @@ public class Arm {
 
     public void slideRunWithEncorder()
     {
+        //When the motor is in this mode it would turn the encoder position back to 0. The motor will stop.
         slideMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //In the mode, the Control Hub uses the encoder to manage the motor's speed.
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         zeroPosition = slideMotor1.getCurrentPosition();
+
     }
 
     public void moveTo(double inches, double speed)
     {
-        double newPosition = zeroPosition + inches * COUNTS_PER_INCH;
+        int newPosition = (int)(zeroPosition + inches * COUNTS_PER_INCH);
 
-        slideMotor1.setTargetPosition((int)newPosition);
+        slideMotor1.setTargetPosition(newPosition);
+        slideMotor2.setTargetPosition(newPosition);
 
         slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -103,16 +109,17 @@ public class Arm {
         slideMotor2.setPower(speed);
 
         while (slideMotor1.isBusy()){
-            if(touchSensorLowLimit.getState() == false ||
-                touchSensorHighLimit.getState() == false) {
-                break;
-            }
+            //if(touchSensorLowLimit.getState() == false ||
+            //    touchSensorHighLimit.getState() == false) {
+             //   break;
+            //}
         }
 
         slideMotor1.setPower(0);
         slideMotor2.setPower(0);
 
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -126,9 +133,9 @@ public class Arm {
         if (this.turretPosition != turretPosition) {
 
             if (turretPosition == 1 && this.turretPosition == 0)
-                servoArm.setPosition(0.164);
+                servoTurret.setPosition(0.164);
             else
-                servoArm.setPosition(turretServoPositions[turretPosition]);
+                servoTurret.setPosition(turretServoPositions[turretPosition]);
 
             this.turretPosition = turretPosition;
         }
@@ -139,7 +146,7 @@ public class Arm {
     //get the turret servo's position
     public double getTurretPosition(){
 
-        return servoArm.getPosition();
+        return servoTurret.getPosition();
 
     }
 
@@ -150,7 +157,7 @@ public class Arm {
 
     //set the turret servo's position
     public void setTurretPosition(double position){
-        servoArm.setPosition(position);
+        servoTurret.setPosition(position);
     }
 
     /**

@@ -41,7 +41,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Helper;
 
 /**
- * {@link SensorIMUOrthogonal} shows how to use the new universal {@link IMU} interface. This
+ * ws how to use the new universal {@link IMU} interface. This
  * interface may be used with the BNO055 IMU or the BHI260 IMU. It assumes that an IMU is configured
  * on the robot with the name "imu".
  * <p>
@@ -78,7 +78,7 @@ import org.firstinspires.ftc.teamcode.Helper;
  * Finally, choose the two correct parameters to define how your Hub is mounted and edit this OpMode
  * to use those parameters.
  */
-@TeleOp(name = "Sensor: IMU Orthogonal", group = "TeleOp")
+@TeleOp(name = "Sensor: IMU", group = "TeleOp")
 //@Disabled   // Comment this out to add to the OpMode list
 public class IMUTest extends LinearOpMode
 {
