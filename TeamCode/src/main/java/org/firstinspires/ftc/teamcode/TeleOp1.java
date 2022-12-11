@@ -60,8 +60,8 @@ public class TeleOp1 extends LinearOpMode {
             //telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
             //telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));
 
-            //double slideHeight = arm.getDistanceINCH();
-            //telemetry.addData("Slide height inches", slideHeight );
+            double slideHeight = arm.getDistanceINCH();
+            telemetry.addData("Slide height inches", slideHeight );
             //double leftBackDistance = driveTrain.getDistanceINCH();
             //telemetry.addData("Left back distance inches",leftBackDistance );
 
