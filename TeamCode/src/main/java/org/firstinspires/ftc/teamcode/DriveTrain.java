@@ -88,7 +88,7 @@ public class DriveTrain {
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //distance sensor
-        distanceSensorBackLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
+        //distanceSensorBackLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
 
 //        // Retrieve and initialize the IMU.
 //        imu = hardwareMap.get(IMU.class, "imu");
