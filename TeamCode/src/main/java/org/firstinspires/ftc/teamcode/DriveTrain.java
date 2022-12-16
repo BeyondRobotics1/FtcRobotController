@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -77,10 +78,9 @@ public class DriveTrain {
         motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
         motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
 
-        // Reverse the right side motors
-        // Reverse left motors if you are using NeveRests
-        /* motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);*/
+        //Reverse motors
+        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -90,18 +90,18 @@ public class DriveTrain {
         //distance sensor
         //distanceSensorBackLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
 
-//        // Retrieve and initialize the IMU.
-//        imu = hardwareMap.get(IMU.class, "imu");
-//
-//        // The next two lines define Hub orientation.
-//        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-//        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-//
-//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-//
-//        // Now initialize the IMU with this mounting orientation
-//        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-//        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        // Retrieve and initialize the IMU.
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        // The next two lines define Hub orientation.
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     /**
@@ -109,7 +109,7 @@ public class DriveTrain {
      */
     public void resetYaw()
     {
-        //imu.resetYaw();
+        imu.resetYaw();
     }
 
     /**
@@ -175,17 +175,12 @@ public class DriveTrain {
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = -(y + x + rx) / denominator;
+        double frontLeftPower = (y + x + rx) / denominator;
         double backLeftPower = (y - x + rx) / denominator;
         double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = -(y + x - rx) / denominator;
+        double backRightPower = (y + x - rx) / denominator;
 
         setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-
-        //motorFrontLeft.setPower(frontLeftPower);
-        //motorBackLeft.setPower(backLeftPower);
-        //motorFrontRight.setPower(frontRightPower);
-        //motorBackRight.setPower(backRightPower);
     }
 
     //field centric
@@ -194,32 +189,41 @@ public class DriveTrain {
                          double left_stick_x,
                          double right_stick_x) {
 
-        double y = left_stick_y * y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
-        double x = left_stick_x * x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+        //
+        double y = left_stick_y;
+        double x = left_stick_x;
         double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
 
+        if(x != 0.0 && Math.abs(y/x) >= 1.2)
+            x = 0.0;
+
+        if(y != 0.0 && Math.abs(x/y) >= 1.2)
+            y = 0.0;
+
+        y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+        x *= x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+
         // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = 0;//-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-        //double botHeading = Helper.norm(yaw);
+        double botHeading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
 
+        rotX = Helper.squareWithSign(rotX);
+        rotY = Helper.squareWithSign(rotY);
+
+
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = -(rotY  + rotX  + rx) / denominator;
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+
+        double frontLeftPower = (rotY  + rotX  + rx) / denominator;
         double backLeftPower = (rotY  - rotX  + rx) / denominator;
         double frontRightPower = (rotY  - rotX  - rx) / denominator;
-        double backRightPower = -(rotY  + rotX  - rx) / denominator;
+        double backRightPower = (rotY  + rotX  - rx) / denominator;
 
         setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
-
-        //motorFrontLeft.setPower(frontLeftPower);
-        //motorBackLeft.setPower(backLeftPower);
-        //motorFrontRight.setPower(frontRightPower);
-        //motorBackRight.setPower(backRightPower);
 
         mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
     }
@@ -227,6 +231,50 @@ public class DriveTrain {
     // Distances in inches, angles in deg, speed 0.0 to 0.6
     // move forward
     public void moveLeft(int howMuch, double speed) {
+        // howMuch is in inches. A negative howMuch moves backward.
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets
+        lfPos -= howMuch * COUNTS_PER_INCH;
+        rfPos += howMuch * COUNTS_PER_INCH;
+        lrPos += howMuch * COUNTS_PER_INCH;
+        rrPos -= howMuch * COUNTS_PER_INCH;
+
+        // move robot to new position
+        motorFrontLeft.setTargetPosition(lfPos);
+        motorFrontRight.setTargetPosition(rfPos);
+        motorBackLeft.setTargetPosition(lrPos);
+        motorBackRight.setTargetPosition(rrPos);
+
+        startRunToPosition();
+
+        setMotorPower(speed, speed, speed, speed);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            // Display it for the driver.
+            mode.telemetry.addLine("Move left");
+            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+                    motorBackRight.getCurrentPosition());
+            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+        setMotorPower(0, 0, 0, 0);
+
+        stopRunToPosition();
+    }
+
+    public void moveForward(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -256,7 +304,7 @@ public class DriveTrain {
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
             // Display it for the driver.
-            mode.telemetry.addLine("Move Foward");
+            mode.telemetry.addLine("Move forward");
             mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
             mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
                     motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
@@ -265,12 +313,13 @@ public class DriveTrain {
         }
 
         // Stop all motion;
+
         setMotorPower(0, 0, 0, 0);
 
         stopRunToPosition();
     }
 
-    public void moveForward(int howMuch, double speed) {
+    public void moveForwardWithGyro(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -281,8 +330,8 @@ public class DriveTrain {
 
         // calculate new targets
         lfPos += howMuch * COUNTS_PER_INCH;
-        rfPos -= howMuch * COUNTS_PER_INCH;
-        lrPos -= howMuch * COUNTS_PER_INCH;
+        rfPos += howMuch * COUNTS_PER_INCH;
+        lrPos += howMuch * COUNTS_PER_INCH;
         rrPos += howMuch * COUNTS_PER_INCH;
 
         // move robot to new position
@@ -295,16 +344,31 @@ public class DriveTrain {
 
         setMotorPower(speed, speed, speed, speed);
 
+        PID pid=new PID(0.05, 0, 0, 0);
+
+        pid.setIntegrationBounds(-10, 10);
+
         // wait for move to complete
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            double powerAdjustment = pid.calculate(botHeading);
+
+            if(howMuch > 0) //forward
+                setMotorPower(speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment);
+            else //backward
+                setMotorPower(speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment);
+
             // Display it for the driver.
-            mode.telemetry.addLine("Strafe Right");
+            mode.telemetry.addLine("Move forward");
             mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
             mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
                     motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
                     motorBackRight.getCurrentPosition());
+
+            mode.telemetry.addData("Adjustment and Heading", "%7f :%7f", powerAdjustment, botHeading);
+
             mode.telemetry.update();
         }
 

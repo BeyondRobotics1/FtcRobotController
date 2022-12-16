@@ -26,11 +26,11 @@ public class SleeveDetector {
     double cy = 221.506;
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
+    double tagsize = 0.4;//0.166;
     final int LEFT = 1;
     final int MIDDLE = 2;
     final int RIGHT = 3;
-    int location = LEFT; // Tag ID 18 from the 36h11 family
+    int location = LEFT;
 
     AprilTagDetection tagOfInterest = null;
 
@@ -87,7 +87,7 @@ public class SleeveDetector {
             }
 
             if (tagFound) {
-                mode.telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+                mode.telemetry.addLine("Tag of interest is in sight!");
                 tagToTelemetry(tagOfInterest);
             } else {
                 mode.telemetry.addLine("Don't see tag of interest :(");
@@ -106,30 +106,24 @@ public class SleeveDetector {
             if (tagOfInterest == null) {
                 mode.telemetry.addLine("(The tag has never been seen)");
             } else {
-                mode.telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                mode.telemetry.addLine("But we HAVE seen the tag before; last seen at:");
                 tagToTelemetry(tagOfInterest);
             }
 
         }
-
-        //mode.telemetry.update();
-        //mode.sleep(20);
-
 
         /*
          * The START command just came in: now work off the latest snapshot acquired
          * during the init loop.
          */
 
-        /* Update the telemetry */
-        if (tagOfInterest != null) {
-            mode.telemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            mode.telemetry.update();
-        } else {
-            mode.telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            mode.telemetry.update();
-        }
+//        /* Update the telemetry */
+//        if (tagOfInterest != null) {
+//            mode.telemetry.addLine("Tag snapshot:\n");
+//            tagToTelemetry(tagOfInterest);
+//        } else {
+//            mode.telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+//        }
 
         return location;
     }
@@ -137,13 +131,17 @@ public class SleeveDetector {
 
     void tagToTelemetry(AprilTagDetection detection)
     {
-  /*      mode.telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        mode.telemetry.addLine(String.format("\nDetected April Tag ID=%d", detection.id));
+
+
+        /*
         mode.telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
         mode.telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
         mode.telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
         mode.telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
         mode.telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-        mode.telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));*/
+        mode.telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+        */
     }
 }
 
