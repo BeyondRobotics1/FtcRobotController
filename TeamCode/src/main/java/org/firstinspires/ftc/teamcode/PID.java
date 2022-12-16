@@ -1,311 +1,270 @@
 package org.firstinspires.ftc.teamcode;
+/**
+ *
+ * Copied from FTCLib
+ *
+ * This is a PID controller (https://en.wikipedia.org/wiki/PID_controller)
+ * for your robot. Internally, it performs all the calculations for you.
+ * You need to tune your values to the appropriate amounts in order
+ * to properly utilize these calculations.
+ * <p>
+ * The equation we will use is:
+ * u(t) = kP * e(t) + kI * int(0,t)[e(t')dt'] + kD * e'(t) + kF
+ * where e(t) = r(t) - y(t) and r(t) is the setpoint and y(t) is the
+ * measured value. If we consider e(t) the positional error, then
+ * int(0,t)[e(t')dt'] is the total error and e'(t) is the velocity error.
+ */
+public class PID {
 
-// PID controller courtesy of Peter Tischler, with modifications.
+    private double kP, kI, kD, kF;
+    private double setPoint;
+    private double measuredValue;
+    private double minIntegral, maxIntegral;
 
-public class PID
-{
-    private double m_P;                     // factor for "proportional" control
-    private double m_I;                     // factor for "integral" control
-    private double m_D;                     // factor for "derivative" control
-    private double m_input;                 // sensor input for pid controller
-    private double m_maximumOutput = 1.0;	// |maximum output|
-    private double m_minimumOutput = -1.0;	// |minimum output|
-    private double m_maximumInput = 0.0;	// maximum input - limit setpoint to this
-    private double m_minimumInput = 0.0;	// minimum input - limit setpoint to this
-    private boolean m_continuous = false;	// do the endpoints wrap around? eg. Absolute encoder
-    private boolean m_enabled = false;      // is the pid controller enabled
-    private double m_prevError = 0.0;       // the prior sensor input (used to compute velocity)
-    private double m_totalError = 0.0;      // the sum of the errors for use in the integral calc
-    private double m_tolerance = 0.05;      // the percentage error that is considered on target
-    private double m_setpoint = 0.0;
-    private double m_error = 0.0;
-    private double m_result = 0.0;
+    private double errorVal_p;
+    private double errorVal_v;
+
+    private double totalError;
+    private double prevErrorVal;
+
+    private double errorTolerance_p = 0.05;
+    private double errorTolerance_v = Double.POSITIVE_INFINITY;
+
+    private double lastTimeStamp;
+    private double period;
 
     /**
-     * Allocate a PID object with the given constants for P, I, D
-     * @param Kp the proportional coefficient
-     * @param Ki the integral coefficient
-     * @param Kd the derivative coefficient
+     * The base constructor for the PIDF controller
      */
-    public PID(double Kp, double Ki, double Kd)
-    {
-        m_P = Kp;
-        m_I = Ki;
-        m_D = Kd;
+    public PID(double kp, double ki, double kd, double kf) {
+        this(kp, ki, kd, kf, 0, 0);
     }
 
     /**
-     * Read the input, calculate the output accordingly, and write to the output.
-     * This should only be called by the PIDTask
-     * and is created during initialization.
-     */
-    private void calculate()
-    {
-        int     sign = 1;
-
-        // If enabled then proceed into controller calculations
-        if (m_enabled)
-        {
-            // Calculate the error signal
-            m_error = m_setpoint - m_input;
-
-            // If continuous is set to true allow wrap around
-            if (m_continuous)
-            {
-                if (Math.abs(m_error) > (m_maximumInput - m_minimumInput) / 2)
-                {
-                    if (m_error > 0)
-                        m_error = m_error - m_maximumInput + m_minimumInput;
-                    else
-                        m_error = m_error + m_maximumInput - m_minimumInput;
-                }
-            }
-
-            // Integrate the errors as long as the upcoming integrator does
-            // not exceed the minimum and maximum output thresholds.
-
-            if ((Math.abs(m_totalError + m_error) * m_I < m_maximumOutput) &&
-                    (Math.abs(m_totalError + m_error) * m_I > m_minimumOutput))
-                m_totalError += m_error;
-
-            // Perform the primary PID calculation
-            m_result = m_P * m_error + m_I * m_totalError + m_D * (m_error - m_prevError);
-
-            // Set the current error to the previous error for the next cycle.
-            m_prevError = m_error;
-
-            if (m_result < 0) sign = -1;    // Record sign of result.
-
-            // Make sure the final result is within bounds. If we constrain the result, we make
-            // sure the sign of the constrained result matches the original result sign.
-            if (Math.abs(m_result) > m_maximumOutput)
-                m_result = m_maximumOutput * sign;
-            else if (Math.abs(m_result) < m_minimumOutput)
-                m_result = m_minimumOutput * sign;
-        }
-    }
-
-    /**
-     * Set the PID Controller gain parameters.
-     * Set the proportional, integral, and differential coefficients.
-     * @param p Proportional coefficient
-     * @param i Integral coefficient
-     * @param d Differential coefficient
-     */
-    public void setPID(double p, double i, double d)
-    {
-        m_P = p;
-        m_I = i;
-        m_D = d;
-    }
-
-    /**
-     * Get the Proportional coefficient
-     * @return proportional coefficient
-     */
-    public double getP()
-    {
-        return m_P;
-    }
-
-    /**
-     * Get the Integral coefficient
-     * @return integral coefficient
-     */
-    public double getI()
-    {
-        return m_I;
-    }
-
-    /**
-     * Get the Differential coefficient
-     * @return differential coefficient
-     */
-    public double getD()
-    {
-        return m_D;
-    }
-
-    /**
-     * Return the current PID result for the last input set with setInput().
-     * This is always centered on zero and constrained the the max and min outs
-     * @return the latest calculated output
-     */
-    public double performPID()
-    {
-        calculate();
-        return m_result;
-    }
-
-    /**
-     * Return the current PID result for the specified input.
-     * @param input The input value to be used to calculate the PID result.
-     * This is always centered on zero and constrained the the max and min outs
-     * @return the latest calculated output
-     */
-    public double performPID(double input)
-    {
-        setInput(input);
-        return performPID();
-    }
-
-    /**
-     *  Set the PID controller to consider the input to be continuous,
-     *  Rather then using the max and min in as constraints, it considers them to
-     *  be the same point and automatically calculates the shortest route to
-     *  the setpoint.
-     * @param continuous Set to true turns on continuous, false turns off continuous
-     */
-    public void setContinuous(boolean continuous)
-    {
-        m_continuous = continuous;
-    }
-
-    /**
-     *  Set the PID controller to consider the input to be continuous,
-     *  Rather then using the max and min in as constraints, it considers them to
-     *  be the same point and automatically calculates the shortest route to
-     *  the setpoint.
-     */
-    public void setContinuous()
-    {
-        this.setContinuous(true);
-    }
-
-    /**
-     * Sets the maximum and minimum values expected from the input.
+     * This is the full constructor for the PIDF controller. Our PIDF controller
+     * includes a feed-forward value which is useful for fighting friction and gravity.
+     * Our errorVal represents the return of e(t) and prevErrorVal is the previous error.
      *
-     * @param minimumInput the minimum value expected from the input, always positive
-     * @param maximumInput the maximum value expected from the output, always positive
+     * @param sp The setpoint of the pid control loop.
+     * @param pv The measured value of he pid control loop. We want sp = pv, or to the degree
+     *           such that sp - pv, or e(t) < tolerance.
      */
-    public void setInputRange(double minimumInput, double maximumInput)
-    {
-        m_minimumInput = Math.abs(minimumInput);
-        m_maximumInput = Math.abs(maximumInput);
-        setSetpoint(m_setpoint);
+    public PID(double kp, double ki, double kd, double kf, double sp, double pv) {
+        kP = kp;
+        kI = ki;
+        kD = kd;
+        kF = kf;
+
+        setPoint = sp;
+        measuredValue = pv;
+
+        minIntegral = -1.0;
+        maxIntegral = 1.0;
+
+        lastTimeStamp = 0;
+        period = 0;
+
+        errorVal_p = setPoint - measuredValue;
+        reset();
+    }
+
+    public void reset() {
+        totalError = 0;
+        prevErrorVal = 0;
+        lastTimeStamp = 0;
     }
 
     /**
-     * Sets the minimum and maximum values to write.
+     * Sets the error which is considered tolerable for use with {@link #atSetPoint()}.
      *
-     * @param minimumOutput the minimum value to write to the output, always positive
-     * @param maximumOutput the maximum value to write to the output, always positive
+     * @param positionTolerance Position error which is tolerable.
      */
-    public void setOutputRange(double minimumOutput, double maximumOutput)
-    {
-        m_minimumOutput = Math.abs(minimumOutput);
-        m_maximumOutput = Math.abs(maximumOutput);
+    public void setTolerance(double positionTolerance) {
+        setTolerance(positionTolerance, Double.POSITIVE_INFINITY);
     }
 
     /**
-     * Set the setpoint for the PIDController
-     * @param setpoint the desired setpoint
+     * Sets the error which is considered tolerable for use with {@link #atSetPoint()}.
+     *
+     * @param positionTolerance Position error which is tolerable.
+     * @param velocityTolerance Velocity error which is tolerable.
      */
-    public void setSetpoint(double setpoint)
-    {
-        int     sign = 1;
+    public void setTolerance(double positionTolerance, double velocityTolerance) {
+        errorTolerance_p = positionTolerance;
+        errorTolerance_v = velocityTolerance;
+    }
 
-        if (m_maximumInput > m_minimumInput)
-        {
-            if (setpoint < 0) sign = -1;
+    /**
+     * Returns the current setpoint of the PIDFController.
+     *
+     * @return The current setpoint.
+     */
+    public double getSetPoint() {
+        return setPoint;
+    }
 
-            if (Math.abs(setpoint) > m_maximumInput)
-                m_setpoint = m_maximumInput * sign;
-            else if (Math.abs(setpoint) < m_minimumInput)
-                m_setpoint = m_minimumInput * sign;
-            else
-                m_setpoint = setpoint;
+    /**
+     * Sets the setpoint for the PIDFController
+     *
+     * @param sp The desired setpoint.
+     */
+    public void setSetPoint(double sp) {
+        setPoint = sp;
+        errorVal_p = setPoint - measuredValue;
+        errorVal_v = (errorVal_p - prevErrorVal) / period;
+    }
+
+    /**
+     * Returns true if the error is within the percentage of the total input range, determined by
+     * {@link #setTolerance}.
+     *
+     * @return Whether the error is within the acceptable bounds.
+     */
+    public boolean atSetPoint() {
+        return Math.abs(errorVal_p) < errorTolerance_p
+                && Math.abs(errorVal_v) < errorTolerance_v;
+    }
+
+    /**
+     * @return the PIDF coefficients
+     */
+    public double[] getCoefficients() {
+        return new double[]{kP, kI, kD, kF};
+    }
+
+    /**
+     * @return the positional error e(t)
+     */
+    public double getPositionError() {
+        return errorVal_p;
+    }
+
+    /**
+     * @return the tolerances of the controller
+     */
+    public double[] getTolerance() {
+        return new double[]{errorTolerance_p, errorTolerance_v};
+    }
+
+    /**
+     * @return the velocity error e'(t)
+     */
+    public double getVelocityError() {
+        return errorVal_v;
+    }
+
+    /**
+     * Calculates the next output of the PIDF controller.
+     *
+     * @return the next output using the current measured value via
+     * {@link #calculate(double)}.
+     */
+    public double calculate() {
+        return calculate(measuredValue);
+    }
+
+    /**
+     * Calculates the next output of the PIDF controller.
+     *
+     * @param pv The given measured value.
+     * @param sp The given setpoint.
+     * @return the next output using the given measurd value via
+     * {@link #calculate(double)}.
+     */
+    public double calculate(double pv, double sp) {
+        // set the setpoint to the provided value
+        setSetPoint(sp);
+        return calculate(pv);
+    }
+
+    /**
+     * Calculates the control value, u(t).
+     *
+     * @param pv The current measurement of the process variable.
+     * @return the value produced by u(t).
+     */
+    public double calculate(double pv) {
+        prevErrorVal = errorVal_p;
+
+        double currentTimeStamp = (double) System.nanoTime() / 1E9;
+        if (lastTimeStamp == 0) lastTimeStamp = currentTimeStamp;
+        period = currentTimeStamp - lastTimeStamp;
+        lastTimeStamp = currentTimeStamp;
+
+        if (measuredValue == pv) {
+            errorVal_p = setPoint - measuredValue;
+        } else {
+            errorVal_p = setPoint - pv;
+            measuredValue = pv;
         }
-        else
-            m_setpoint = setpoint;
-    }
 
-    /**
-     * Returns the current setpoint of the PIDController
-     * @return the current setpoint
-     */
-    public double getSetpoint()
-    {
-        return m_setpoint;
-    }
-
-    /**
-     * Retruns the current difference of the input from the setpoint
-     * @return the current error
-     */
-    public synchronized double getError()
-    {
-        return m_error;
-    }
-
-    /**
-     * Set the percentage error which is considered tolerable for use with
-     * OnTarget. (Input of 15.0 = 15 percent)
-     * @param percent error which is tolerable
-     */
-    public void setTolerance(double percent)
-    {
-        m_tolerance = percent;
-    }
-
-    /**
-     * Return true if the error is within the percentage of the total input range,
-     * determined by setTolerance. This assumes that the maximum and minimum input
-     * were set using setInputRange.
-     * @return true if the error is less than the tolerance
-     */
-    public boolean onTarget()
-    {
-        return (Math.abs(m_error) < Math.abs(m_tolerance / 100.0 * (m_maximumInput - m_minimumInput)));
-    }
-
-    /**
-     * Begin running the PIDController
-     */
-    public void enable()
-    {
-        m_enabled = true;
-    }
-
-    /**
-     * Stop running the PIDController.
-     */
-    public void disable()
-    {
-        m_enabled = false;
-    }
-
-    /**
-     * Reset the previous error,, the integral term, and disable the controller.
-     */
-    public void reset()
-    {
-        disable();
-        m_prevError = 0;
-        m_totalError = 0;
-        m_result = 0;
-    }
-
-    /**
-     * Set the input value to be used by the next call to performPID().
-     * @param input Input value to the PID calculation.
-     */
-    public void setInput(double input)
-    {
-        int     sign = 1;
-
-        if (m_maximumInput > m_minimumInput)
-        {
-            if (input < 0) sign = -1;
-
-            if (Math.abs(input) > m_maximumInput)
-                m_input = m_maximumInput * sign;
-            else if (Math.abs(input) < m_minimumInput)
-                m_input = m_minimumInput * sign;
-            else
-                m_input = input;
+        if (Math.abs(period) > 1E-6) {
+            errorVal_v = (errorVal_p - prevErrorVal) / period;
+        } else {
+            errorVal_v = 0;
         }
-        else
-            m_input = input;
+
+        /*
+        if total error is the integral from 0 to t of e(t')dt', and
+        e(t) = sp - pv, then the total error, E(t), equals sp*t - pv*t.
+         */
+        totalError += period * (setPoint - measuredValue);
+        totalError = totalError < minIntegral ? minIntegral : Math.min(maxIntegral, totalError);
+
+        // returns u(t)
+        return kP * errorVal_p + kI * totalError + kD * errorVal_v + kF * setPoint;
     }
+
+    public void setPIDF(double kp, double ki, double kd, double kf) {
+        kP = kp;
+        kI = ki;
+        kD = kd;
+        kF = kf;
+    }
+
+    public void setIntegrationBounds(double integralMin, double integralMax) {
+        minIntegral = integralMin;
+        maxIntegral = integralMax;
+    }
+
+    public void clearTotalError() {
+        totalError = 0;
+    }
+
+    public void setP(double kp) {
+        kP = kp;
+    }
+
+    public void setI(double ki) {
+        kI = ki;
+    }
+
+    public void setD(double kd) {
+        kD = kd;
+    }
+
+    public void setF(double kf) {
+        kF = kf;
+    }
+
+    public double getP() {
+        return kP;
+    }
+
+    public double getI() {
+        return kI;
+    }
+
+    public double getD() {
+        return kD;
+    }
+
+    public double getF() {
+        return kF;
+    }
+
+    public double getPeriod() {
+        return period;
+    }
+
 }

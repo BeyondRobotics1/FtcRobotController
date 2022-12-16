@@ -15,9 +15,6 @@ public class TeleOpFieldCentric extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        //A digital touch sensor used to stop the slide moving too much
-        DigitalChannel touchSensor =  hardwareMap.get(DigitalChannel.class, "slide_stopper");
-        touchSensor.setMode(DigitalChannel.Mode.INPUT);
         DigitalChannel redLED = hardwareMap.get(DigitalChannel.class, "endgame_red");
         DigitalChannel greenLED = hardwareMap.get(DigitalChannel.class, "endgame_green");
 
@@ -50,41 +47,25 @@ public class TeleOpFieldCentric extends LinearOpMode {
             else //release right bumper to open the claw
                 claw.open();
 
-            //arm
-            if (gamepad2.y) { //press Y, go to the front position
+            //Using right stick x and y for turret position
+            if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position
                 arm.setTurretPosition(1);
-            } else if (gamepad2.b) { //press b, go to the right position
+            } else if (gamepad2.right_stick_x > 0.8) { //right position
                 arm.setTurretPosition(2);
-            } else if (gamepad2.x) { //press x, go to the left position
+            } else if (gamepad2.right_stick_x < -0.8) { //left position
                 arm.setTurretPosition(0);
             }
 
-            //telemetry.addData("touch sensor", touchSensor.getState());
-
-
             //use left stick y to set the power slide motors
-            double slidePower = -gamepad2.left_stick_y;
+            arm.setSlidePower(-gamepad2.left_stick_y);
+            //telemetry.addData("Slide motor position", arm.getSlideMotorCurrentPosition());
+            //telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
+            //telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));
 
-            if(touchSensor.getState() == false){ //touch sensor is pushed
-                if(slidePower < 0){ //slide is moving down, so then stop
-                    arm.setSlidePower(0);
-                }else //slide is not moving down, don't stop
-                    arm.setSlidePower(slidePower);
-            }else { //touch sensor is not pushed
-                arm.setSlidePower(slidePower);
-            }
-
-            //double slide_height = arm.getDistanceINCH();
-            //telemetry.addData("Slide Height",slide_height );
-
-            if(gamepad1.dpad_up)
-                driveTrain.changeXYPowerScale(0.01);
-            if(gamepad1.dpad_down)
-                driveTrain.changeXYPowerScale(-0.01);
-            if(gamepad1.dpad_right)
-                driveTrain.changeRXPowerScale(0.01);
-            if(gamepad1.dpad_left)
-                driveTrain.changeRXPowerScale(-0.01);
+            double slideHeight = arm.getDistanceINCH();
+            telemetry.addData("Slide height inches", slideHeight );
+            //double leftBackDistance = driveTrain.getDistanceINCH();
+            //telemetry.addData("Left back distance inches",leftBackDistance );
 
             //drive train
             driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
@@ -97,7 +78,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
                 greenLED.setState(false);
             }
 
-            sleep(50);
+            //sleep(50);
         }
     }
 }
