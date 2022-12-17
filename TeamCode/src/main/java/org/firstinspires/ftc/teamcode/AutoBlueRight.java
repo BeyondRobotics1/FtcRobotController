@@ -69,33 +69,33 @@ public class AutoBlueRight extends LinearOpMode {
         //grab the cone
         claw.close();
         sleep(100);
-        arm.moveTo(5.5, 1);
+        arm.moveTo(5.5, 1);//Move slide up by 5.5 inches
         //driveTrain.moveForwardWithGyro(61, 0.6);
-        driveTrain.moveForward(61, 0.6);
+        driveTrain.moveForward(61, 0.6);//Move to (4,3) high junction
         sleep(100);
-        driveTrain.moveLeft(6, 0.6);
-        arm.moveTo(34.5, 1);
+        driveTrain.moveLeft(4, 0.6);//Move closer to the junction
+        arm.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
         sleep(50);
-        arm.setTurretPosition(0);
+        arm.setTurretPosition(0);//turn turret left so cone is on top of junction
         sleep(900);
-        claw.open();
+        claw.open();//release cone to go into junction
         sleep(100);
-        arm.setTurretPosition(1);
+        arm.setTurretPosition(1);//Turret goes back to the middle
         sleep(450);
-        arm.moveTo(6, 1);
-        driveTrain.moveLeft(-4, 0.6);
+        arm.moveTo(6, 1);//move the slide up 6 inches
+        driveTrain.moveLeft(-4, 0.6);//Move right to not hit the junction when going to area
         sleep(50);
-        driveTrain.moveForward(-11, 0.6);
+        driveTrain.moveForward(-11, 0.6);//go back to be prepared to go to area
         sleep(100);
         //arm.setTurretPosition(1);
         //sleep(500);
 
         //Move to area
         if(location == 1) {
-            driveTrain.moveLeft(23, 0.6);
+            driveTrain.moveLeft(23, 0.6);//Go to area 1
         }
         else if(location == 3){
-            driveTrain.moveLeft(-25,0.6);
+            driveTrain.moveLeft(-27,0.6);//Go to area 3
         }
         else{
 

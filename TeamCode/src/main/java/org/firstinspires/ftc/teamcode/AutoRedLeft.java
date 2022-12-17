@@ -18,6 +18,7 @@ public class AutoRedLeft extends LinearOpMode {
         //arm hardware
         Arm arm = new Arm(hardwareMap);
         arm.slideRunWithEncorder();
+        Claw claw = new Claw(hardwareMap, this);
 
         //April tag detector
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
@@ -39,7 +40,7 @@ public class AutoRedLeft extends LinearOpMode {
         if (isStopRequested()) return;
 
 
-        if (location == 1) {
+        /*if (location == 1) {
             driveTrain.moveLeft(33, 0.4);
             sleep(200);
             driveTrain.moveLeft(-3,0.4);
@@ -53,6 +54,37 @@ public class AutoRedLeft extends LinearOpMode {
             driveTrain.moveLeft(-25, 0.4);
             sleep(200);
             driveTrain.moveForward(36, 0.4);
+        }*/
+        //grab the cone
+        claw.close();
+        sleep(100);
+        arm.moveTo(5.5, 1);//Move slide up by 5.5 inches
+        //driveTrain.moveForwardWithGyro(61, 0.6);
+        driveTrain.moveForward(62, 0.6);//Move to (4,3) high junction
+        sleep(100);
+        driveTrain.moveLeft(-4, 0.6);//Move closer to the junction
+        arm.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
+        sleep(50);
+        arm.setTurretPosition(2);//turn turret right so cone is on top of junction
+        sleep(900);
+        claw.open();//release cone to go into junction
+        sleep(100);
+        arm.setTurretPosition(1);//Turret goes back to the middle
+        sleep(450);
+        arm.moveTo(6, 1);//turret goes up for 6 inches
+        driveTrain.moveLeft(4, 0.6);//Move left to not hit the junction when going to area
+        sleep(50);
+        driveTrain.moveForward(-11, 0.6);//go back to be prepared to go to area
+        sleep(100);
+        //arm.setTurretPosition(1);
+        //sleep(500);
+
+        //Move to area
+        if (location == 1) {
+            driveTrain.moveLeft(26, 0.6);//Go to area 1
+        } else if (location == 3) {
+            driveTrain.moveLeft(-25, 0.6);//Go to area 3
+        } else {
         }
     }
 }
