@@ -69,10 +69,11 @@ public class AutoBlueRight extends LinearOpMode {
         //grab the cone
         claw.close();
         sleep(100);
-        arm.moveTo(4.5, 1);
-        driveTrain.moveForwardWithGyro(61, 0.7);
+        arm.moveTo(5.5, 1);
+        //driveTrain.moveForwardWithGyro(61, 0.6);
+        driveTrain.moveForward(61, 0.6);
         sleep(100);
-        driveTrain.moveLeft(6, 0.7);
+        driveTrain.moveLeft(6, 0.6);
         arm.moveTo(34.5, 1);
         sleep(50);
         arm.setTurretPosition(0);
@@ -81,19 +82,20 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(100);
         arm.setTurretPosition(1);
         sleep(450);
-        arm.moveTo(3, 1);
+        arm.moveTo(6, 1);
+        driveTrain.moveLeft(-4, 0.6);
         sleep(50);
-        driveTrain.moveForward(-11, 0.7);
+        driveTrain.moveForward(-11, 0.6);
         sleep(100);
         //arm.setTurretPosition(1);
         //sleep(500);
 
         //Move to area
         if(location == 1) {
-            driveTrain.moveLeft(27, 0.6);
+            driveTrain.moveLeft(23, 0.6);
         }
         else if(location == 3){
-            driveTrain.moveLeft(-27,0.6);
+            driveTrain.moveLeft(-25,0.6);
         }
         else{
 

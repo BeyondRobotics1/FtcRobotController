@@ -127,9 +127,9 @@ public class Arm {
             //make sure the slide not in the low positions
             if(getDistanceINCH() > 10) {
                 //moving to middle
-                if (turretPosition == 1 && this.turretPosition == 0)
-                    servoTurret.setPosition(0.164);
-                else
+                //if (turretPosition == 1 && this.turretPosition == 0)
+                //    servoTurret.setPosition(0.166);
+                //else
                     servoTurret.setPosition(turretServoPositions[turretPosition]);
 
                 this.turretPosition = turretPosition;
