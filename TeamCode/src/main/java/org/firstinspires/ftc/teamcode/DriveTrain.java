@@ -1,17 +1,35 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 public class DriveTrain {
 
-    DistanceSensor mrOds = null;
+
+    //REV 2m distance sensor
+    DistanceSensor distanceSensorFrontLeft;
+    DistanceSensor distanceSensorBackLeft;
+    DistanceSensor distanceSensorFrontRight;
+    DistanceSensor distanceSensorBackRight;
+    DistanceSensor distanceSensorFront;
+    DistanceSensor distanceSensorBack;
+
+    // The IMU sensor object
+    IMU imu;
 
     DcMotor motorFrontLeft;
     DcMotor motorBackLeft;
@@ -27,6 +45,12 @@ public class DriveTrain {
     private int rrPos;
     private double lineThreshold = 0.7; // floor should be below this value, line above
     private double redThreshold = 1.9; // red should be below this value, blue above
+
+
+    //adjust forward/backward, left/right, and rotation power
+    private double y_power_scale = 0.9; //forward/backward power adjustment
+    private double x_power_scale = 0.8; //left/right power adjustment, make it slower
+    private double rx_power_scale = 0.65;//rotation power adjustment, make it slower
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -54,19 +78,43 @@ public class DriveTrain {
         motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
         motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
 
-        // Reverse the right side motors
-        // Reverse left motors if you are using NeveRests
-       /* motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);*/
-
-
+        //Reverse motors
+        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //distance sensor
+        //distanceSensorBackLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
+
+        // Retrieve and initialize the IMU.
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        // The next two lines define Hub orientation.
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
+    /**
+     * reset the IMU, should be called by auto and NOT be called by teleop
+     */
+    public void resetYaw()
+    {
+        imu.resetYaw();
+    }
+
+    /**
+     * Set all four motors to RUN_USING_ENCODER. Called by auto
+     */
     public void runWithEncoder()
     {
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -80,48 +128,153 @@ public class DriveTrain {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    private void startRunToPosition()
+    public void changeXYPowerScale(double delta)
     {
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        y_power_scale += delta;
+        x_power_scale += delta;
+
+        y_power_scale = Range.clip(y_power_scale, 0, 1);
+        x_power_scale = Range.clip(x_power_scale, 0, 1);
+
+        mode.telemetry.addData("Y Power Scale", "%.2f", y_power_scale);
+        mode.telemetry.addData("X Power Scale", "%.2f", x_power_scale);
     }
 
-    private void stopRunToPosition()
+    public void changeRXPowerScale(double delta)
     {
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rx_power_scale += delta;
+        rx_power_scale = Range.clip(rx_power_scale, 0, 1);
+
+        mode.telemetry.addData("RX Power Scale", "%.2f", rx_power_scale);
     }
 
+    //robot centric
+    //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
     public void setPower(double left_stick_y,
                          double left_stick_x,
                          double right_stick_x) {
 
-            double y = Helper.cubicWithSign(left_stick_y); // Remember, this is reversed!
-            double x = Helper.cubicWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
-            double rx = Helper.cubicWithSign(right_stick_x);
+        //
+        double y = left_stick_y;
+        double x = left_stick_x;
+        double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when
-            // at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = Helper.cubicWithSign(-(y + x + rx) / denominator);
-            double backLeftPower = Helper.cubicWithSign((y - x + rx) / denominator);
-            double frontRightPower = Helper.cubicWithSign((y - x - rx) / denominator);
-            double backRightPower = Helper.cubicWithSign(-(y + x - rx) / denominator);
+        if(x != 0.0 && Math.abs(y/x) >= 1.2)
+            x = 0.0;
 
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
-        }
+        if(y != 0.0 && Math.abs(x/y) >= 1.2)
+            y = 0.0;
+
+        y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+        x *= x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+
+        x = Helper.squareWithSign(x);
+        y = Helper.squareWithSign(y);
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = (y + x + rx) / denominator;
+        double backLeftPower = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower = (y + x - rx) / denominator;
+
+        setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+    }
+
+    //field centric
+    //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+    public void setPower2(double left_stick_y,
+                         double left_stick_x,
+                         double right_stick_x) {
+
+        //
+        double y = left_stick_y;
+        double x = left_stick_x;
+        double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
+
+        if(x != 0.0 && Math.abs(y/x) >= 1.2)
+            x = 0.0;
+
+        if(y != 0.0 && Math.abs(x/y) >= 1.2)
+            y = 0.0;
+
+        y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+        x *= x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+
+        // Read inverse IMU heading, as the IMU heading is CW positive
+        double botHeading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
+        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
+
+        rotX = Helper.squareWithSign(rotX);
+        rotY = Helper.squareWithSign(rotY);
+
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+
+        double frontLeftPower = (rotY  + rotX  + rx) / denominator;
+        double backLeftPower = (rotY  - rotX  + rx) / denominator;
+        double frontRightPower = (rotY  - rotX  - rx) / denominator;
+        double backRightPower = (rotY  + rotX  - rx) / denominator;
+
+        setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
+
+        mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
+    }
 
     // Distances in inches, angles in deg, speed 0.0 to 0.6
     // move forward
     public void moveLeft(int howMuch, double speed) {
+        // howMuch is in inches. A negative howMuch moves backward.
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets
+        lfPos -= howMuch * COUNTS_PER_INCH;
+        rfPos += howMuch * COUNTS_PER_INCH;
+        lrPos += howMuch * COUNTS_PER_INCH;
+        rrPos -= howMuch * COUNTS_PER_INCH;
+
+        // move robot to new position
+        motorFrontLeft.setTargetPosition(lfPos);
+        motorFrontRight.setTargetPosition(rfPos);
+        motorBackLeft.setTargetPosition(lrPos);
+        motorBackRight.setTargetPosition(rrPos);
+
+        startRunToPosition();
+
+        setMotorPower(speed, speed, speed, speed);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            // Display it for the driver.
+            mode.telemetry.addLine("Move left");
+            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+                    motorBackRight.getCurrentPosition());
+            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+        setMotorPower(0, 0, 0, 0);
+
+        stopRunToPosition();
+    }
+
+    public void moveForward(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -144,17 +297,14 @@ public class DriveTrain {
 
         startRunToPosition();
 
-        motorFrontLeft.setPower(speed);
-        motorFrontRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-        motorBackRight.setPower(speed);
+        setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
             // Display it for the driver.
-            mode.telemetry.addLine("Move Foward");
+            mode.telemetry.addLine("Move forward");
             mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
             mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
                     motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
@@ -163,15 +313,13 @@ public class DriveTrain {
         }
 
         // Stop all motion;
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorBackLeft.setPower(0);
-        motorBackRight.setPower(0);
+
+        setMotorPower(0, 0, 0, 0);
 
         stopRunToPosition();
     }
 
-    public void moveForward(int howMuch, double speed) {
+    public void moveForwardWithGyro(int howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -182,8 +330,8 @@ public class DriveTrain {
 
         // calculate new targets
         lfPos += howMuch * COUNTS_PER_INCH;
-        rfPos -= howMuch * COUNTS_PER_INCH;
-        lrPos -= howMuch * COUNTS_PER_INCH;
+        rfPos += howMuch * COUNTS_PER_INCH;
+        lrPos += howMuch * COUNTS_PER_INCH;
         rrPos += howMuch * COUNTS_PER_INCH;
 
         // move robot to new position
@@ -194,29 +342,39 @@ public class DriveTrain {
 
         startRunToPosition();
 
-        motorFrontLeft.setPower(speed);
-        motorFrontRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-        motorBackRight.setPower(speed);
+        setMotorPower(speed, speed, speed, speed);
+
+        PID pid=new PID(0.05, 0, 0, 0);
+
+        pid.setIntegrationBounds(-10, 10);
 
         // wait for move to complete
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            double powerAdjustment = pid.calculate(botHeading);
+
+            if(howMuch > 0) //forward
+                setMotorPower(speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment);
+            else //backward
+                setMotorPower(speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment);
+
             // Display it for the driver.
-            mode.telemetry.addLine("Strafe Right");
+            mode.telemetry.addLine("Move forward");
             mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
             mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
                     motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
                     motorBackRight.getCurrentPosition());
+
+            mode.telemetry.addData("Adjustment and Heading", "%7f :%7f", powerAdjustment, botHeading);
+
             mode.telemetry.update();
         }
 
         // Stop all motion;
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorBackLeft.setPower(0);
-        motorBackRight.setPower(0);
+
+        setMotorPower(0, 0, 0, 0);
 
         stopRunToPosition();
     }
@@ -244,10 +402,7 @@ public class DriveTrain {
 
         startRunToPosition();
 
-        motorFrontLeft.setPower(speed);
-        motorFrontRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-        motorBackRight.setPower(speed);
+        setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
@@ -263,10 +418,7 @@ public class DriveTrain {
         }
 
         // Stop all motion;
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorBackLeft.setPower(0);
-        motorBackRight.setPower(0);
+        setMotorPower(0, 0, 0, 0);
 
         stopRunToPosition();
     }
@@ -288,6 +440,7 @@ public class DriveTrain {
         rrPos += howMuch * COUNTS_PER_INCH;
 
         // move robot to new position
+
         motorFrontLeft.setTargetPosition(lfPos);
         motorFrontRight.setTargetPosition(rfPos);
         motorBackLeft.setTargetPosition(lrPos);
@@ -295,10 +448,7 @@ public class DriveTrain {
 
         startRunToPosition();
 
-        motorFrontLeft.setPower(speed);
-        motorFrontRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-        motorBackRight.setPower(speed);
+        setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
@@ -308,18 +458,49 @@ public class DriveTrain {
             // Display it for the driver.
             mode.telemetry.addLine("Move To Line");
             mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode. telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
                     motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
                     motorBackRight.getCurrentPosition());
             mode.telemetry.update();
         }
 
         // Stop all motion;
-        motorFrontLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorBackLeft.setPower(0);
-        motorBackRight.setPower(0);
+        setMotorPower(0, 0, 0, 0);
 
         stopRunToPosition();
+    }
+
+    //set power for each motors
+    public void setMotorPower(double frontLeft, double frontRight,
+                              double backLeft, double backRight)
+    {
+        motorFrontLeft.setPower(frontLeft);
+        motorFrontRight.setPower(frontRight);
+        motorBackLeft.setPower(backLeft);
+        motorBackRight.setPower(backRight);
+    }
+
+    //set all four motors to RUN_TO_POSITION
+    private void startRunToPosition()
+    {
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    //set all four motors to RUN_USING_ENCODER
+    private void stopRunToPosition()
+    {
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+
+    //Distance sensor
+    public double getDistanceINCH(){
+        return distanceSensorBackLeft.getDistance(DistanceUnit.INCH);
     }
 }

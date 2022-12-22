@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -7,8 +8,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name = "TeleOp1", group = "TeleOp")
-public class TeleOp1 extends LinearOpMode {
+@TeleOp(name = "Field Centric", group = "TeleOp")
+@Disabled
+public class TeleOpFieldCentric extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -60,13 +62,13 @@ public class TeleOp1 extends LinearOpMode {
             //telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
             //telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));
 
-            //double slideHeight = arm.getDistanceINCH();
-            //telemetry.addData("Slide height inches", slideHeight );
+            double slideHeight = arm.getDistanceINCH();
+            telemetry.addData("Slide height inches", slideHeight );
             //double leftBackDistance = driveTrain.getDistanceINCH();
             //telemetry.addData("Left back distance inches",leftBackDistance );
 
             //drive train
-            driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             telemetry.update();
 
