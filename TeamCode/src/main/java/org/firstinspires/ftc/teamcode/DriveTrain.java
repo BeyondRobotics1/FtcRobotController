@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,20 +20,21 @@ public class DriveTrain {
 
 
     //REV 2m distance sensor
+    //
     DistanceSensor distanceSensorFrontLeft;
-    DistanceSensor distanceSensorBackLeft;
     DistanceSensor distanceSensorFrontRight;
-    DistanceSensor distanceSensorBackRight;
-    DistanceSensor distanceSensorFront;
-    DistanceSensor distanceSensorBack;
+
+    DistanceSensor distanceSensorSideLeft;
+    DistanceSensor distanceSensorSideRight;
+
 
     // The IMU sensor object
     IMU imu;
 
-    DcMotor motorFrontLeft;
-    DcMotor motorBackLeft;
-    DcMotor motorFrontRight;
-    DcMotor motorBackRight;
+    DcMotorEx motorFrontLeft;
+    DcMotorEx motorBackLeft;
+    DcMotorEx motorFrontRight;
+    DcMotorEx motorBackRight;
 
     LinearOpMode mode;
 
@@ -73,10 +73,10 @@ public class DriveTrain {
 
         this.mode = mode;
 
-        motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "motorFrontLeft"); //hardwareMap.dcMotor.get("motorFrontLeft");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "motorBackLeft"); //hardwareMap.dcMotor.get("motorBackLeft");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "motorFrontRight"); //hardwareMap.dcMotor.get("motorFrontRight");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "motorBackRight"); //hardwareMap.dcMotor.get("motorBackRight");
 
         //Reverse motors
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -88,7 +88,7 @@ public class DriveTrain {
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //distance sensor
-        //distanceSensorBackLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
+        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
 
         // Retrieve and initialize the IMU.
         imu = hardwareMap.get(IMU.class, "imu");
@@ -423,6 +423,35 @@ public class DriveTrain {
         stopRunToPosition();
     }
 
+
+    public void moveToPole(int poleToCount, double speed){
+
+        PoleDetector detector = new PoleDetector(distanceSensorSideLeft);
+
+        setMotorPower(speed,speed,speed,speed);
+
+        //Log log = new Log("pole_detection_power_0.6", true);
+
+        while(true) {
+            int polesDetected = detector.detectPoles();
+            mode.telemetry.addData("current distance", detector.getPoleDistance());
+            mode.telemetry.addData("Pole counted", polesDetected);
+            mode.telemetry.update();
+
+            //log.addData(detector.getPoleDistance());
+            //log.update();
+
+            if (polesDetected >= poleToCount)
+                break;
+        }
+
+        setMotorPower(0, 0, 0, 0);
+
+        //mode.telemetry.update();
+        //log.close();
+    }
+
+
     public void moveToLine(int howMuch, double speed) {
         // howMuch is in inches. The robot will stop if the line is found before
         // this distance is reached. A negative howMuch moves left, positive moves right.
@@ -501,6 +530,7 @@ public class DriveTrain {
 
     //Distance sensor
     public double getDistanceINCH(){
-        return distanceSensorBackLeft.getDistance(DistanceUnit.INCH);
+        return distanceSensorSideLeft.getDistance(DistanceUnit.INCH);
     }
+
 }
