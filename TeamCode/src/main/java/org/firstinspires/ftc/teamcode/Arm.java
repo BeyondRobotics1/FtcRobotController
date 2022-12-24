@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -43,8 +45,8 @@ public class Arm {
 
     DistanceSensor distanceSensor;
     Servo servoTurret;
-    DcMotor slideMotor1;
-    DcMotor slideMotor2;
+    DcMotorEx slideMotor1;
+    DcMotorEx slideMotor2;
 
     //A digital touch sensor used to stop the slide moving up/down too much
     DigitalChannel touchSensorLowLimit;
@@ -64,8 +66,11 @@ public class Arm {
         touchSensorHighLimit.setMode(DigitalChannel.Mode.INPUT);
 
         //we used two motors to power the slide
-        slideMotor1 = hardwareMap.get(DcMotor.class, "slide1");
-        slideMotor2 = hardwareMap.get(DcMotor.class, "slide2");
+        slideMotor1 =  hardwareMap.get(DcMotorEx.class, "slide1"); //hardwareMap.get(DcMotor.class, "slide1");
+        slideMotor2 =  hardwareMap.get(DcMotorEx.class, "slide2"); //hardwareMap.get(DcMotor.class, "slide2");
+
+        slideMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //When there is no power, we want the motor to hold the position
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

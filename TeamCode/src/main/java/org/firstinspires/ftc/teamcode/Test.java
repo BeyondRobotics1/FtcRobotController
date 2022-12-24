@@ -1,67 +1,68 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-//@TeleOp
-public class Test extends OpMode {
-    /**
+import java.util.List;
 
-    private TestRobot robot;
-
-    @Override
-    public void init(){
-
-        telemetry.addData("Init", "start");
-        int teamNumber = 21380;
-
-        telemetry.addData("Hello Team", teamNumber);
-
-        telemetry.addData("Init", "end");
-
-        robot = new TestRobot(hardwareMap);
-        robot.init();
-
-    }
+@TeleOp(name="Test", group="Linear Opmode")
+public class Test extends LinearOpMode {
 
     @Override
-    public void loop(){
-
-        telemetry.addData("Left stick x:", gamepad1.left_stick_x);
-        telemetry.addData("Left stick y:", gamepad1.left_stick_y);
-        telemetry.addData("A button:", gamepad1.a);
-
-        telemetry.addData("left stick x - right stick x", gamepad1.left_stick_x - gamepad1.right_stick_x);
-
-        telemetry.addData("touch sensor", robot.getTouchSensorState());
-
-        telemetry.addData("color red", robot.getAmountRed());
-        telemetry.addData("color blue", robot.getAmountBlue());
-
-        telemetry.addData("distance sensor", robot.getDistanceCM());
-
-        telemetry.addData("motor turns", robot.getMotorTurns());
+    public void runOpMode() throws InterruptedException {
 
 
-        double speed = gamepad1.left_stick_y*-1.0;
-        robot.setMotorSpeed(speed);
-        telemetry.addData("speed", speed);
 
-        if(gamepad1.a){
-            robot.setServoPosition(1.0);
+        //drive train
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        driveTrain.runWithEncoder();
+        //reset drive train's yaw angle
+        driveTrain.resetYaw();
+
+        //arm hardware
+        Arm arm = new Arm(hardwareMap);
+        arm.slideRunWithEncorder();
+        Claw claw = new Claw(hardwareMap, this);
+
+        //April tag detector
+        SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
+        int location = 2;
+
+        // Important Step 2: Get access to a list of Expansion Hub Modules to enable changing caching methods.
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+
+        // --------------------------------------------------------------------------------------
+        // Run test cycles using AUTO cache mode
+        // In this mode, only one bulk read is done per cycle, UNLESS you read a specific encoder/velocity item AGAIN in that cycle.
+        // --------------------------------------------------------------------------------------
+
+        // Important Step 3: Option A. Set all Expansion hubs to use the AUTO Bulk Caching mode
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-//        else if (gamepad1.b){
-//            robot.setServoPosition(0.0);
-//        }
-        else{
-            robot.setServoPosition(0.0);
+
+        while (!isStarted() && !isStopRequested()) {
+
+            // Arm arm = new Arm(hardwareMap);
+            location = sleeveDetector.detectPosition();
+
+            telemetry.addLine(String.format("\n\nLocation = %d", location));
+            telemetry.update();
+
+            sleep(20);
         }
 
-        double speedSlideMotor = gamepad1.right_stick_y*-1.0;
-        robot.setSlideMotorSpeed(speedSlideMotor);
-        telemetry.addData("Slide speed", speedSlideMotor);
+        waitForStart();
 
+        if (isStopRequested()) return;
+
+        driveTrain.moveToPole(3, 0.6);
+
+        //telemetry.update();
+
+        //sleep(50);
     }
-
-
 }
