@@ -4,47 +4,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-/**
- * Arm class is to control the arm, claw, and slide.
- */
-public class Arm {
-
-    static final double     COUNTS_PER_MOTOR_REV    = 537.7 ; //goBilda Motor Encoder
+public class Slide {
+    static final double     COUNTS_PER_MOTOR_REV    = 291.76;//Rev Motor: 10.43 gear ratio; 537.7 ; //Rev Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;   // No External Gearing.
     static final double     PULLEY_DIAMETER_INCHES  = 1.404 ; // spool wheel inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                            (PULLEY_DIAMETER_INCHES * 3.1415);
-
-    //
-    enum SlidePosition
-    {
-        GROUND,
-        LOW,
-        MEDIUM,
-        HIGH,
-        MOVING
-    }
-
-    //slide position
-    SlidePosition slidePosition = SlidePosition.GROUND;
-
+            (PULLEY_DIAMETER_INCHES * 3.1415);
     int zeroPosition = 0;
-
-    //turret position, 0-left, 1 - middle, 2 - right
-    int turretPosition = 1;
-
-    //The left, middle, and right position for arm servo
-    //0.265, 0.165, 0.065
-    double turretServoPositions[] = {0.267, 0.167, 0.063};
-
-    DistanceSensor distanceSensor;
-    Servo servoTurret;
     DcMotorEx slideMotor1;
     DcMotorEx slideMotor2;
 
@@ -52,13 +20,7 @@ public class Arm {
     DigitalChannel touchSensorLowLimit;
     DigitalChannel touchSensorHighLimit;
 
-    public Arm(HardwareMap hardwareMap)
-    {
-        //servos
-        servoTurret = hardwareMap.get(Servo.class,"arm");
-
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "dsSlide");
-
+    public Slide(HardwareMap hardwareMap){
         touchSensorLowLimit =  hardwareMap.get(DigitalChannel.class, "limit_low");
         touchSensorLowLimit.setMode(DigitalChannel.Mode.INPUT);
 
@@ -76,7 +38,6 @@ public class Arm {
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
-
     public void slideRunWithEncorder()
     {
         //When the motor is in this mode it would turn the encoder position back to 0. The motor will stop.
@@ -90,7 +51,6 @@ public class Arm {
         zeroPosition = slideMotor1.getCurrentPosition();
 
     }
-
     public void moveTo(double inches, double speed)
     {
         int newPosition = (int)(zeroPosition + inches * COUNTS_PER_INCH);
@@ -107,59 +67,15 @@ public class Arm {
         while (slideMotor1.isBusy()){
             //if(touchSensorLowLimit.getState() == false ||
             //    touchSensorHighLimit.getState() == false) {
-             //   break;
+            //   break;
             //}
         }
-
         slideMotor1.setPower(0);
         slideMotor2.setPower(0);
 
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-
-    /**
-     * Set turret to left, middle, or right
-     * @param turretPosition: 0 - left, 1 - middle, 2 -right
-     */
-    public void setTurretPosition(int turretPosition)
-    {
-
-        //move to a different position
-        if (this.turretPosition != turretPosition) {
-
-            //make sure the slide not in the low positions
-            if(getDistanceINCH() > 10) {
-                //moving to middle
-                //if (turretPosition == 1 && this.turretPosition == 0)
-                //    servoTurret.setPosition(0.166);
-                //else
-                    servoTurret.setPosition(turretServoPositions[turretPosition]);
-
-                this.turretPosition = turretPosition;
-            }
-        }
-
-    }
-
-
-    public double getTurretPosition(){
-
-        return servoTurret.getPosition();
-
-    }
-
-    //Distance sensor
-    public double getDistanceINCH(){
-        return distanceSensor.getDistance(DistanceUnit.INCH);
-    }
-
-    //set the turret servo's position
-    public void setTurretPosition(double position){
-        servoTurret.setPosition(position);
-    }
-
     /**
      * Move slide up and down
      * @param power negative move down, positive move up
@@ -173,37 +89,22 @@ public class Arm {
             if (touchSensorLowLimit.getState() == false) //touch sensor is pushed
             {
                 localPower = 0;
-                slidePosition = SlidePosition.GROUND;
+                //slidePosition = Arm.SlidePosition.GROUND;
             }
             else
-                slidePosition = SlidePosition.MOVING;
+                ;//slidePosition = Arm.SlidePosition.MOVING;
         }
         else if(power > 0.01) { //slide move up
             if (touchSensorHighLimit.getState() == false) //touch sensor is pushed
             {
                 localPower = 0;
-                slidePosition = SlidePosition.HIGH;
+                //slidePosition = Arm.SlidePosition.HIGH;
             }
             else
-                slidePosition = SlidePosition.MOVING;
+                ;//slidePosition = Arm.SlidePosition.MOVING;
         }
 
         slideMotor1.setPower(localPower);
         slideMotor2.setPower(localPower);
-    }
-
-    //
-    public double getSlideMotorCurrentPosition()
-    {
-        return slideMotor1.getCurrentPosition();
-    }
-
-    //
-    public boolean getTouchSensorState(boolean low)
-    {
-        if(low)
-            return touchSensorLowLimit.getState();
-        else
-            return  touchSensorHighLimit.getState();
     }
 }

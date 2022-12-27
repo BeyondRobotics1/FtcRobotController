@@ -24,7 +24,8 @@ public class TeleOp1 extends LinearOpMode {
         //drivetrain
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
 
-        Arm arm = new Arm(hardwareMap);
+        Turret turret = new Turret(hardwareMap);
+        Slide slide = new Slide(hardwareMap);
         Claw claw = new Claw(hardwareMap, this);
 
         //We use this timer to check the game time that has elapsed
@@ -47,15 +48,15 @@ public class TeleOp1 extends LinearOpMode {
 
             //Using right stick x and y for turret position
             if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position
-                arm.setTurretPosition(1);
+                turret.setPosition(1);
             } else if (gamepad2.right_stick_x > 0.8) { //right position
-                arm.setTurretPosition(2);
+                turret.setPosition(2);
             } else if (gamepad2.right_stick_x < -0.8) { //left position
-                arm.setTurretPosition(0);
+                turret.setPosition(0);
             }
 
             //use left stick y to set the power slide motors
-            arm.setSlidePower(-gamepad2.left_stick_y);
+            slide.setSlidePower(-gamepad2.left_stick_y);
             //telemetry.addData("Slide motor position", arm.getSlideMotorCurrentPosition());
             //telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
             //telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));

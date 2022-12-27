@@ -1,0 +1,49 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+public class Turret {
+    //turret position, 0-left, 1 - middle, 2 - right
+    int turretPosition = 1;
+
+    //The left, middle, and right position for arm servo
+    //0.265, 0.165, 0.065
+    double turretServoPositions[] = {0.267, 0.167, 0.063};
+
+    Servo servoTurret;
+
+    public Turret(HardwareMap hardwareMap){
+        servoTurret = hardwareMap.get(Servo.class,"arm");
+    }
+    /**
+     * Set turret to left, middle, or right
+     * @param turretPosition: 0 - left, 1 - middle, 2 -right
+     */
+    public void setPosition(int turretPosition)
+    {
+
+        //move to a different position
+        if (this.turretPosition != turretPosition) {
+
+            //make sure the slide not in the low positions
+            //if(getDistanceINCH() > 10)
+            {
+                //moving to middle
+                //if (turretPosition == 1 && this.turretPosition == 0)
+                //    servoTurret.setPosition(0.166);
+                //else
+                servoTurret.setPosition(turretServoPositions[turretPosition]);
+
+                this.turretPosition = turretPosition;
+            }
+        }
+
+
+    }
+    public double getTurretPosition(){
+
+        return servoTurret.getPosition();
+
+    }
+}

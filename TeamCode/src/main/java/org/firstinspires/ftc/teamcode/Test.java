@@ -23,9 +23,10 @@ public class Test extends LinearOpMode {
         driveTrain.resetYaw();
 
         //arm hardware
-        Arm arm = new Arm(hardwareMap);
-        arm.slideRunWithEncorder();
+        //Arm arm = new Arm(hardwareMap);
         Claw claw = new Claw(hardwareMap, this);
+        Slide slide = new Slide(hardwareMap);
+        slide.slideRunWithEncorder();
 
         //April tag detector
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
@@ -59,7 +60,14 @@ public class Test extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        driveTrain.moveToPole(3, 0.6);
+        slide.moveTo(5, 0.8);
+        sleep(5000);
+        slide.moveTo(20, 0.8);
+        sleep(5000);
+        //slide.moveTo(0, 0.8);
+
+
+        //driveTrain.moveToPole(3, 0.6);
 
         //telemetry.update();
 
