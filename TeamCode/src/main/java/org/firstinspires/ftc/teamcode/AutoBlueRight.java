@@ -17,8 +17,10 @@ public class AutoBlueRight extends LinearOpMode {
         driveTrain.resetYaw();
 
         //arm hardware
-        Arm arm = new Arm(hardwareMap);
-        arm.slideRunWithEncorder();
+        //Arm arm = new Arm(hardwareMap);
+        Slide slide = new Slide(hardwareMap);
+        Turret turret = new Turret(hardwareMap);
+        slide.slideRunWithEncorder();
         Claw claw = new Claw(hardwareMap, this);
 
         //April tag detector
@@ -40,49 +42,26 @@ public class AutoBlueRight extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        /*
-        arm.moveTo(14.5, 1);
-        sleep(5000);
-        arm.moveTo(24.5, 1);
-        sleep(5000);
-        arm.moveTo(34.5, 1);
-        sleep(5000);
-        arm.moveTo(0, 1);
-        */
-/*
-        if (location == 1) {
-            driveTrain.moveLeft(30, 0.4);
-            sleep(100);
-            driveTrain.moveForward(36, 0.4);
-        } else if (location == 2) {
-            driveTrain.moveLeft(5, 0.4);
-            sleep(100);
-            driveTrain.moveForward(36, 0.4);
-        } else {
-            driveTrain.moveLeft(-28, 0.4);
-            sleep(100);
-            driveTrain.moveLeft(2, 0.4);
-            sleep(100);
-            driveTrain.moveForward(36, 0.4);
-        }
- */
+
         //grab the cone
         claw.close();
         sleep(100);
-        arm.moveTo(5.5, 1);//Move slide up by 5.5 inches
+        slide.moveTo(5.5, 1);//Move slide up by 5.5 inches
         //driveTrain.moveForwardWithGyro(61, 0.6);
-        driveTrain.moveForward(61, 0.6);//Move to (4,3) high junction
+        driveTrain.moveForward(55, 0.6);//Move to (4,3) high junction
+        sleep(100);
+        driveTrain.moveToPole(1, 0.3);
         sleep(100);
         driveTrain.moveLeft(4, 0.6);//Move closer to the junction
-        arm.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
+        slide.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
         sleep(50);
-        arm.setTurretPosition(0);//turn turret left so cone is on top of junction
+        turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(900);
         claw.open();//release cone to go into junction
         sleep(100);
-        arm.setTurretPosition(1);//Turret goes back to the middle
+        turret.setPosition(1);//Turret goes back to the middle
         sleep(450);
-        arm.moveTo(6, 1);//move the slide up 6 inches
+        slide.moveTo(6, 1);//move the slide up 6 inches
         driveTrain.moveLeft(-4, 0.6);//Move right to not hit the junction when going to area
         sleep(50);
         driveTrain.moveForward(-11, 0.6);//go back to be prepared to go to area

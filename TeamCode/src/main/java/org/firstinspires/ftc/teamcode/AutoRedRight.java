@@ -16,8 +16,9 @@ public class AutoRedRight extends LinearOpMode {
         driveTrain.resetYaw();
 
         //arm hardware
-        Arm arm = new Arm(hardwareMap);
-        arm.slideRunWithEncorder();
+        Slide slide = new Slide(hardwareMap);
+        Turret turret = new Turret(hardwareMap);
+        slide.slideRunWithEncorder();
 
         //April tag detector
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);

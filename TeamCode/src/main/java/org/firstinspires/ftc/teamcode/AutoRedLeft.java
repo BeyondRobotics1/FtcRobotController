@@ -16,8 +16,10 @@ public class AutoRedLeft extends LinearOpMode {
         driveTrain.resetYaw();
 
         //arm hardware
-        Arm arm = new Arm(hardwareMap);
-        arm.slideRunWithEncorder();
+        //Arm arm = new Arm(hardwareMap);
+        Slide slide = new Slide(hardwareMap);
+        Turret turret = new Turret(hardwareMap);
+        slide.slideRunWithEncorder();
         Claw claw = new Claw(hardwareMap, this);
 
         //April tag detector
@@ -58,20 +60,20 @@ public class AutoRedLeft extends LinearOpMode {
         //grab the cone
         claw.close();
         sleep(100);
-        arm.moveTo(5.5, 1);//Move slide up by 5.5 inches
+        slide.moveTo(5.5, 1);//Move slide up by 5.5 inches
         //driveTrain.moveForwardWithGyro(61, 0.6);
         driveTrain.moveForward(62, 0.6);//Move to (4,3) high junction
         sleep(100);
         driveTrain.moveLeft(-4, 0.6);//Move closer to the junction
-        arm.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
+        slide.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
         sleep(50);
-        arm.setTurretPosition(2);//turn turret right so cone is on top of junction
+        turret.setPosition(2);//turn turret right so cone is on top of junction
         sleep(900);
         claw.open();//release cone to go into junction
         sleep(100);
-        arm.setTurretPosition(1);//Turret goes back to the middle
+        turret.setPosition(1);//Turret goes back to the middle
         sleep(450);
-        arm.moveTo(6, 1);//turret goes up for 6 inches
+        slide.moveTo(6, 1);//turret goes up for 6 inches
         driveTrain.moveLeft(4, 0.6);//Move left to not hit the junction when going to area
         sleep(50);
         driveTrain.moveForward(-11, 0.6);//go back to be prepared to go to area
