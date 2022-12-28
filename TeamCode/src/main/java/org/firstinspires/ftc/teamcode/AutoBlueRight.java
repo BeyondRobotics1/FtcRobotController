@@ -19,7 +19,7 @@ public class AutoBlueRight extends LinearOpMode {
         //arm hardware
         //Arm arm = new Arm(hardwareMap);
         Slide slide = new Slide(hardwareMap);
-        Turret turret = new Turret(hardwareMap);
+        Turret turret = new Turret(hardwareMap, slide);
         slide.slideRunWithEncorder();
         Claw claw = new Claw(hardwareMap, this);
 
@@ -50,9 +50,13 @@ public class AutoBlueRight extends LinearOpMode {
         //driveTrain.moveForwardWithGyro(61, 0.6);
         driveTrain.moveForward(55, 0.6);//Move to (4,3) high junction
         sleep(100);
-        driveTrain.moveToPole(1, 0.3);
+        double distanceToPole = driveTrain.moveToPole(1, 0.3);
+        telemetry.addData("current distance", distanceToPole);
+        telemetry.update();
+        double distanceToMove = distanceToPole - 1.3;
+        driveTrain.moveLeft(distanceToMove, 0.6);//Move closer to the junction
         sleep(100);
-        driveTrain.moveLeft(4, 0.6);//Move closer to the junction
+        //driveTrain.moveLeft(4, 0.6);//Move closer to the junction
         slide.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
         sleep(50);
         turret.setPosition(0);//turn turret left so cone is on top of junction
@@ -64,21 +68,42 @@ public class AutoBlueRight extends LinearOpMode {
         slide.moveTo(6, 1);//move the slide up 6 inches
         driveTrain.moveLeft(-4, 0.6);//Move right to not hit the junction when going to area
         sleep(50);
+
+
         driveTrain.moveForward(-11, 0.6);//go back to be prepared to go to area
         sleep(100);
+        driveTrain.turnToGyroHeading(-90, 0.5);
+        sleep(100);
+        driveTrain.moveToPole(1,0.3);
+        sleep(100);
+        driveTrain.moveForward(10.5, 0.3);
+        sleep(100);
+        slide.moveTo(7.5,1);
+        sleep(100);
+        claw.close();
+        sleep(100);
+        slide.moveTo(12, 1);
+        sleep(100);
+        driveTrain.moveForward(-10.5,0.3);
+        sleep(100);
+        turret.setPosition(2);
+        sleep(100);
+        claw.open();
+        sleep(100);
+
         //arm.setTurretPosition(1);
         //sleep(500);
-
-        //Move to area
-        if(location == 1) {
-            driveTrain.moveLeft(23, 0.6);//Go to area 1
-        }
-        else if(location == 3){
-            driveTrain.moveLeft(-27,0.6);//Go to area 3
-        }
-        else{
-
-        }
+//
+//        //Move to area
+//        if(location == 1) {
+//            driveTrain.moveLeft(23, 0.6);//Go to area 1
+//        }
+//        else if(location == 3){
+//            driveTrain.moveLeft(-27,0.6);//Go to area 3
+//        }
+//        else{
+//
+//        }
 
 
     }

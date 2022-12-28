@@ -64,7 +64,7 @@ public class DriveTrain {
     static final double     WHEEL_DIAMETER_INCHES   = 3.7795 ;     // goBilda Mecanum wheel inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                                                         (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     COUNTS_PER_DEGREE         = COUNTS_PER_INCH / 4;
+    static final double     COUNTS_PER_DEGREE         = COUNTS_PER_INCH / 4.7;
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
@@ -230,7 +230,7 @@ public class DriveTrain {
 
     // Distances in inches, angles in deg, speed 0.0 to 0.6
     // move forward
-    public void moveLeft(int howMuch, double speed) {
+    public void moveLeft(double howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -274,7 +274,7 @@ public class DriveTrain {
         stopRunToPosition();
     }
 
-    public void moveForward(int howMuch, double speed) {
+    public void moveForward(double howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -303,13 +303,14 @@ public class DriveTrain {
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
-            // Display it for the driver.
-            mode.telemetry.addLine("Move forward");
-            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-                    motorBackRight.getCurrentPosition());
-            mode.telemetry.update();
+
+            //// Display it for the driver.
+//            mode.telemetry.addLine("Move forward");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
         }
 
         // Stop all motion;
@@ -319,7 +320,7 @@ public class DriveTrain {
         stopRunToPosition();
     }
 
-    public void moveForwardWithGyro(int howMuch, double speed) {
+    public void moveForwardWithGyro(double howMuch, double speed) {
         // howMuch is in inches. A negative howMuch moves backward.
 
         // fetch motor positions
@@ -379,6 +380,38 @@ public class DriveTrain {
         stopRunToPosition();
     }
 
+    /**
+     *
+     * @param targetHeading: turn to gyro target heading, positive counter clock wise, negative clock
+     * @param speed: turn speed
+     */
+    public void turnToGyroHeading(int targetHeading, double speed)
+    {
+        //current heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+        if(botHeading == targetHeading)
+            return;
+
+        if(targetHeading < botHeading) //turn  clock
+        {
+            setMotorPower(speed, -speed, speed, -speed);
+        }
+        else if ( targetHeading > botHeading) //turn counter clock wise
+        {
+            setMotorPower(-speed, speed, -speed, speed);
+        }
+
+        while (Math.abs(targetHeading * 0.91 - botHeading) > 1) {
+            botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        }
+
+        mode.telemetry.addData("Heading", botHeading);
+        mode.telemetry.update();
+
+        setMotorPower(0, 0, 0, 0);
+    }
+
     public void turnClockwise(int whatAngle, double speed) {
         // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
 
@@ -424,7 +457,9 @@ public class DriveTrain {
     }
 
 
-    public void moveToPole(int poleToCount, double speed){
+    public double moveToPole(int poleToCount, double speed){
+
+        double distanceToPole = 0;
 
         PoleDetector detector = new PoleDetector(distanceSensorSideLeft);
 
@@ -434,9 +469,11 @@ public class DriveTrain {
 
         while(true) {
             int polesDetected = detector.detectPoles();
-            mode.telemetry.addData("current distance", detector.getPoleDistance());
-            mode.telemetry.addData("Pole counted", polesDetected);
-            mode.telemetry.update();
+            distanceToPole = detector.getPoleDistance();
+
+            //mode.telemetry.addData("current distance", detector.getPoleDistance());
+            //mode.telemetry.addData("Pole counted", polesDetected);
+            //mode.telemetry.update();
 
             //log.addData(detector.getPoleDistance());
             //log.update();
@@ -449,10 +486,12 @@ public class DriveTrain {
 
         //mode.telemetry.update();
         //log.close();
+
+        return distanceToPole;
     }
 
 
-    public void moveToLine(int howMuch, double speed) {
+    public void moveToLine(double howMuch, double speed) {
         // howMuch is in inches. The robot will stop if the line is found before
         // this distance is reached. A negative howMuch moves left, positive moves right.
 

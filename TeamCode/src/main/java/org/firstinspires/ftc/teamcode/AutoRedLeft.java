@@ -18,7 +18,7 @@ public class AutoRedLeft extends LinearOpMode {
         //arm hardware
         //Arm arm = new Arm(hardwareMap);
         Slide slide = new Slide(hardwareMap);
-        Turret turret = new Turret(hardwareMap);
+        Turret turret = new Turret(hardwareMap, slide);
         slide.slideRunWithEncorder();
         Claw claw = new Claw(hardwareMap, this);
 

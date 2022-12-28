@@ -12,6 +12,11 @@ public class Slide {
     static final double     PULLEY_DIAMETER_INCHES  = 1.404 ; // spool wheel inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
+
+    //ground, low, medium, high junction heights
+    //slide can move to
+    double junctionPoleHeights[] = {0, 13, 24, 33.3};
+
     int zeroPosition = 0;
     DcMotorEx slideMotor1;
     DcMotorEx slideMotor2;
@@ -38,6 +43,7 @@ public class Slide {
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
     public void slideRunWithEncorder()
     {
         //When the motor is in this mode it would turn the encoder position back to 0. The motor will stop.
@@ -51,6 +57,7 @@ public class Slide {
         zeroPosition = slideMotor1.getCurrentPosition();
 
     }
+
     public void moveTo(double inches, double speed)
     {
         int newPosition = (int)(zeroPosition + inches * COUNTS_PER_INCH);
@@ -76,35 +83,47 @@ public class Slide {
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+    //get the slide height in inches
+    public double getSlideHeightInches()
+    {
+        return slideMotor1.getCurrentPosition() / COUNTS_PER_INCH;
+    }
+
     /**
      * Move slide up and down
      * @param power negative move down, positive move up
      */
-    public void setSlidePower(double power)
+    public void setPower(double power)
     {
-        double localPower = power;
+        double localPower = power;//Helper.squareWithSign(power);
 
         //slide move down
         if(power < -0.01) {
             if (touchSensorLowLimit.getState() == false) //touch sensor is pushed
             {
                 localPower = 0;
-                //slidePosition = Arm.SlidePosition.GROUND;
             }
-            else
-                ;//slidePosition = Arm.SlidePosition.MOVING;
         }
         else if(power > 0.01) { //slide move up
             if (touchSensorHighLimit.getState() == false) //touch sensor is pushed
-            {
                 localPower = 0;
-                //slidePosition = Arm.SlidePosition.HIGH;
-            }
-            else
-                ;//slidePosition = Arm.SlidePosition.MOVING;
         }
 
         slideMotor1.setPower(localPower);
         slideMotor2.setPower(localPower);
+    }
+
+    /**
+     *
+     * @param low, true get the low limit touch sensor, otherwise, high limit
+     * @return: touch sensor state
+     */
+    public boolean getTouchSensorState(boolean low)
+    {
+        if(low)
+            return touchSensorLowLimit.getState();
+        else
+            return  touchSensorHighLimit.getState();
     }
 }

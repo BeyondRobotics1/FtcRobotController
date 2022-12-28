@@ -13,19 +13,22 @@ public class TeleOp1 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        // per Q & A 191,
+        //REV Digital LED Indicator (https://www.revrobotics.com/rev-31-2010/) is NOT legal :(
+        /*
         DigitalChannel redLED = hardwareMap.get(DigitalChannel.class, "endgame_red");
         DigitalChannel greenLED = hardwareMap.get(DigitalChannel.class, "endgame_green");
 
         redLED.setMode(DigitalChannel.Mode.OUTPUT);
         greenLED.setMode(DigitalChannel.Mode.OUTPUT);
         greenLED.setState(true);
-        redLED.setState(false);
+        redLED.setState(false);*/
 
         //drivetrain
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
 
-        Turret turret = new Turret(hardwareMap);
         Slide slide = new Slide(hardwareMap);
+        Turret turret = new Turret(hardwareMap, slide);
         Claw claw = new Claw(hardwareMap, this);
 
         //We use this timer to check the game time that has elapsed
@@ -56,10 +59,11 @@ public class TeleOp1 extends LinearOpMode {
             }
 
             //use left stick y to set the power slide motors
-            slide.setSlidePower(-gamepad2.left_stick_y);
-            //telemetry.addData("Slide motor position", arm.getSlideMotorCurrentPosition());
-            //telemetry.addData("Low Limit Touch Sensor", arm.getTouchSensorState(true));
-            //telemetry.addData("High Limit Touch Sensor", arm.getTouchSensorState(false));
+            double slidePower = -gamepad2.left_stick_y;
+            slide.setPower(slidePower);
+            telemetry.addData("Slide power", slidePower);
+            telemetry.addData("Low Limit Touch Sensor", slide.getTouchSensorState(true));
+            telemetry.addData("High Limit Touch Sensor", slide.getTouchSensorState(false));
 
             //double slideHeight = arm.getDistanceINCH();
             //telemetry.addData("Slide height inches", slideHeight );
@@ -71,11 +75,11 @@ public class TeleOp1 extends LinearOpMode {
 
             telemetry.update();
 
-            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
-            if(timer.time(TimeUnit.SECONDS) >= 85){
-                redLED.setState(true);
-                greenLED.setState(false);
-            }
+//            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
+//            if(timer.time(TimeUnit.SECONDS) >= 85){
+//                redLED.setState(true);
+//                greenLED.setState(false);
+//            }
 
             //sleep(50);
         }
