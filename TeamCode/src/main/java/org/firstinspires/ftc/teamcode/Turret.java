@@ -12,9 +12,11 @@ public class Turret {
     double turretServoPositions[] = {0.267, 0.167, 0.063};
 
     Servo servoTurret;
+    Slide slide;
 
-    public Turret(HardwareMap hardwareMap){
+    public Turret(HardwareMap hardwareMap, Slide slide){
         servoTurret = hardwareMap.get(Servo.class,"arm");
+        this.slide = slide;
     }
     /**
      * Set turret to left, middle, or right
@@ -22,25 +24,23 @@ public class Turret {
      */
     public void setPosition(int turretPosition)
     {
-
         //move to a different position
         if (this.turretPosition != turretPosition) {
 
             //make sure the slide not in the low positions
-            //if(getDistanceINCH() > 10)
+            if(slide.getSlideHeightInches() > 13)
             {
                 //moving to middle
-                //if (turretPosition == 1 && this.turretPosition == 0)
-                //    servoTurret.setPosition(0.166);
-                //else
-                servoTurret.setPosition(turretServoPositions[turretPosition]);
+                if (turretPosition == 1 && this.turretPosition == 0)
+                    servoTurret.setPosition(0.165);
+                else
+                    servoTurret.setPosition(turretServoPositions[turretPosition]);
 
                 this.turretPosition = turretPosition;
             }
         }
-
-
     }
+
     public double getTurretPosition(){
 
         return servoTurret.getPosition();

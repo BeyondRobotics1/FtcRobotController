@@ -43,7 +43,7 @@ public class Arm {
     //0.265, 0.165, 0.065
     double turretServoPositions[] = {0.267, 0.167, 0.063};
 
-    DistanceSensor distanceSensor;
+    //DistanceSensor distanceSensor;
     Servo servoTurret;
     DcMotorEx slideMotor1;
     DcMotorEx slideMotor2;
@@ -57,7 +57,7 @@ public class Arm {
         //servos
         servoTurret = hardwareMap.get(Servo.class,"arm");
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "dsSlide");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "dsSlide");
 
         touchSensorLowLimit =  hardwareMap.get(DigitalChannel.class, "limit_low");
         touchSensorLowLimit.setMode(DigitalChannel.Mode.INPUT);
@@ -152,7 +152,8 @@ public class Arm {
 
     //Distance sensor
     public double getDistanceINCH(){
-        return distanceSensor.getDistance(DistanceUnit.INCH);
+        return slideMotor1.getCurrentPosition() / COUNTS_PER_INCH;
+        //return distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
     //set the turret servo's position

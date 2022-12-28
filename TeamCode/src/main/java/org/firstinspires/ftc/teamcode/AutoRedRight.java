@@ -17,7 +17,7 @@ public class AutoRedRight extends LinearOpMode {
 
         //arm hardware
         Slide slide = new Slide(hardwareMap);
-        Turret turret = new Turret(hardwareMap);
+        Turret turret = new Turret(hardwareMap, slide);
         slide.slideRunWithEncorder();
 
         //April tag detector
