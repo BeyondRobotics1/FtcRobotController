@@ -88,7 +88,10 @@ public class DriveTrain {
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //distance sensor
-        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsBackLeft");
+        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
+        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
+        distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
+        distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
 
         // Retrieve and initialize the IMU.
         imu = hardwareMap.get(IMU.class, "imu");
@@ -457,11 +460,16 @@ public class DriveTrain {
     }
 
 
-    public double moveToPole(int poleToCount, double speed){
+    public double moveToPole(boolean left, int poleToCount, double speed){
 
         double distanceToPole = 0;
 
-        PoleDetector detector = new PoleDetector(distanceSensorSideLeft);
+        PoleDetector detector;
+
+        if(left)
+            detector = new PoleDetector(distanceSensorSideLeft);
+        else
+            detector = new PoleDetector(distanceSensorSideRight);
 
         setMotorPower(speed,speed,speed,speed);
 
