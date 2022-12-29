@@ -41,13 +41,35 @@ public class TeleOp1 extends LinearOpMode {
         //restart the timer
         timer.reset();
 
+        boolean previousBumperStatus = gamepad2.right_bumper;
         while (opModeIsActive()) {
 
+            boolean currentBumperStatus = gamepad2.right_bumper;
+
             //hold right bumper to close the claw
-            if (gamepad2.right_bumper)
+            if (currentBumperStatus)
+            {
                 claw.close();
+
+                if(claw.hasCone() && previousBumperStatus != currentBumperStatus) {
+                    sleep(100);
+                    slide.moveTo(5, 1.0);
+                }
+            }
             else //release right bumper to open the claw
                 claw.open();
+
+            previousBumperStatus = currentBumperStatus;
+
+            //Move slide to specific junction height
+            if(gamepad2.dpad_down)
+                slide.moveToJunction(0, 1);
+            else if(gamepad2.dpad_left)
+                slide.moveToJunction(1, 1);
+            else if(gamepad2.dpad_up)
+                slide.moveToJunction(2, 1);
+            else if(gamepad2.dpad_right)
+                slide.moveToJunction(3, 1);
 
             //Using right stick x and y for turret position
             if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position

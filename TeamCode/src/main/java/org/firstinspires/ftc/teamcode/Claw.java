@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -9,8 +11,13 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Our claw has two servos so that the slide can move smoothly.
  */
 public class Claw {
+
     Servo claw1;//left claw servo
     Servo claw2;//right claw servo
+
+    /** The colorSensor field will contain a reference to our color sensor hardware object */
+    NormalizedColorSensor colorSensor;
+
     LinearOpMode mode;//set the telemetry
 
     /**
@@ -23,6 +30,11 @@ public class Claw {
         this.mode = mode;
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
+
+        // Get a reference to our sensor object. It's recommended to use NormalizedColorSensor over
+        // ColorSensor, because NormalizedColorSensor consistently gives values between 0 and 1, while
+        // the values you get from ColorSensor are dependent on the specific sensor you're using.
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
 
         //claw1.setPosition(0.5);
         //claw2.setPosition(0.5);
@@ -56,4 +68,19 @@ public class Claw {
         setPosition(0.57, 0.43);
     }
 
+    /**
+     *
+     * @return: true is claw has cone, false, no cone
+     */
+    public boolean hasCone()
+    {
+        // Get the normalized colors from the sensor
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
+        //use color sensor's alpha to detect if there is a cone or not
+        if(colors.alpha > 0.7)
+            return true;
+        else
+            return false;
+    }
 }
