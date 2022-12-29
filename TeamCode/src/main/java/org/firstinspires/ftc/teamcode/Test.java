@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import java.util.List;
 
@@ -32,7 +29,7 @@ public class Test extends LinearOpMode {
         //Arm arm = new Arm(hardwareMap);
         Claw claw = new Claw(hardwareMap, this);
         Slide slide = new Slide(hardwareMap);
-        slide.slideRunWithEncorder();
+        slide.runWithEncoder();
         Turret turret = new Turret(hardwareMap, slide);
 
         //April tag detector
@@ -90,17 +87,38 @@ public class Test extends LinearOpMode {
 
             //telemetry.update();
 
+            if(gamepad2.dpad_down)
+                slide.moveToJunction(0, 0.8);
+            if(gamepad2.dpad_left)
+                slide.moveToJunction(1, 0.8);
+            if(gamepad2.dpad_up)
+                slide.moveToJunction(2, 0.8);
+            if(gamepad2.dpad_right)
+                slide.moveToJunction(3, 0.8);
+
+            slide.setPower(-gamepad2.left_stick_y);
+
+
+            //turn test
             if(gamepad2.y)
                 driveTrain.turnToGyroHeading(90, 0.6);
-
             if(gamepad2.x)
                 driveTrain.turnToGyroHeading(-90, 0.6);
-
             if(gamepad2.b)
                 driveTrain.turnToGyroHeading(0, 0.6);
-
             if(gamepad2.a)
                 driveTrain.turnClockwise(90, 0.6);
+
+            //ramp test
+            if(gamepad1.y)
+                driveTrain.moveForward(60, 0.8);
+            if(gamepad1.b)
+                driveTrain.moveForwardRamp(60, 0.1, 1.0, 1.25);
+
+            if(gamepad1.x)
+                driveTrain.moveForwardRamp(-40, 0.2, 0.8, 1.25);
+            if(gamepad1.a)
+                driveTrain.moveForwardRamp(-40, 0.1, 0.8, 1.25);
 
             //sleep(50);
         }

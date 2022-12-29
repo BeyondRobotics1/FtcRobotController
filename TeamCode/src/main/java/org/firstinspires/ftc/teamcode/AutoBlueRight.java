@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Autonomous(name="Blue Right Side", group="Linear Opmode")
 public class AutoBlueRight extends LinearOpMode {
@@ -20,7 +19,7 @@ public class AutoBlueRight extends LinearOpMode {
         //Arm arm = new Arm(hardwareMap);
         Slide slide = new Slide(hardwareMap);
         Turret turret = new Turret(hardwareMap, slide);
-        slide.slideRunWithEncorder();
+        slide.runWithEncoder();
         Claw claw = new Claw(hardwareMap, this);
 
         //April tag detector
@@ -50,14 +49,15 @@ public class AutoBlueRight extends LinearOpMode {
         //driveTrain.moveForwardWithGyro(61, 0.6);
         driveTrain.moveForward(55, 0.6);//Move to (4,3) high junction
         sleep(100);
+
         double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
         telemetry.addData("current distance", distanceToPole);
         telemetry.update();
         double distanceToMove = distanceToPole - 1.6;
         driveTrain.moveLeft(distanceToMove, 0.6);//Move closer to the junction
         sleep(100);
-        //driveTrain.moveLeft(4, 0.6);//Move closer to the junction
-        slide.moveTo(34, 1);//Move 34 inches up to be taller than the high junction
+
+        slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
         sleep(50);
         turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(900);
