@@ -86,17 +86,17 @@ public class Test extends LinearOpMode {
             //driveTrain.moveToPole(3, 0.6);
 
             //telemetry.update();
-
-            if(gamepad2.dpad_down)
-                slide.moveToJunction(0, 0.8);
-            if(gamepad2.dpad_left)
-                slide.moveToJunction(1, 0.8);
-            if(gamepad2.dpad_up)
-                slide.moveToJunction(2, 0.8);
-            if(gamepad2.dpad_right)
-                slide.moveToJunction(3, 0.8);
-
-            slide.setPower(-gamepad2.left_stick_y);
+//
+//            if(gamepad2.dpad_down)
+//                slide.moveToJunction(0, 0.8);
+//            if(gamepad2.dpad_left)
+//                slide.moveToJunction(1, 0.8);
+//            if(gamepad2.dpad_up)
+//                slide.moveToJunction(2, 0.8);
+//            if(gamepad2.dpad_right)
+//                slide.moveToJunction(3, 0.8);
+//
+//            slide.setPower(-gamepad2.left_stick_y);
 
 
             //turn test

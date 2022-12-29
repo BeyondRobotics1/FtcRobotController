@@ -108,7 +108,7 @@ public class Slide {
      * @param inches: inches to move up
      * @param speed: power for motors
      */
-    public void moveToWithNoWait(double inches, double speed)
+    public void moveToWithoutWaiting(double inches, double speed)
     {
         // Determine new target position, and pass to motor controller
         int newPosition = (int)(inches * COUNTS_PER_INCH);
