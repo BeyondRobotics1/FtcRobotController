@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -12,28 +16,36 @@ public class Claw {
     Servo claw1;//left claw servo
     Servo claw2;//right claw servo
     LinearOpMode mode;//set the telemetry
+    // The colorSensor field will contain a reference to our color sensor hardware object
+    NormalizedColorSensor colorSensor;
 
     /**
      * Constructor
-      * @param hardwareMap: hardware map for finding claw servos
-     * @param mode: for telemetry functions
+     *
+     * @param hardwareMap: hardware map for finding claw servos
+     * @param mode:        for telemetry functions
      */
-    public Claw (HardwareMap hardwareMap, LinearOpMode mode){
+    public Claw(HardwareMap hardwareMap, LinearOpMode mode) {
 
         this.mode = mode;
         claw1 = hardwareMap.get(Servo.class, "claw1");
         claw2 = hardwareMap.get(Servo.class, "claw2");
 
+        // Get a reference to our sensor object. It's recommended to use NormalizedColorSensor over
+        // ColorSensor, because NormalizedColorSensor consistently gives values between 0 and 1, while
+        // the values you get from ColorSensor are dependent on the specific sensor you're using.
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
         //claw1.setPosition(0.5);
         //claw2.setPosition(0.5);
     }
 
     /**
      * Set claw servo left and right positions
+     *
      * @param position1: left servo target position
      * @param position2: right servo target position
      */
-    public void setPosition (double position1, double position2){
+    public void setPosition(double position1, double position2) {
 
         claw1.setPosition(position1);
         claw2.setPosition(position2);
@@ -45,15 +57,26 @@ public class Claw {
     /**
      * This function will close the claw
      */
-    public void close(){
+    public void close() {
         setPosition(0.42, 0.58);
     }
 
     /**
      * This function will open the claw
      */
-    public void open(){
+    public void open() {
         setPosition(0.57, 0.43);
     }
 
+    //auto slide(helps with driver control period)
+
+    public boolean holdingCone() {
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        if (colors.alpha > 0.8) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

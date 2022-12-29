@@ -43,6 +43,8 @@ public class AutoBlueRight extends LinearOpMode {
 
 
         //grab the cone
+        slide.moveTo(0,1);
+        sleep(100);
         claw.close();
         sleep(100);
         slide.moveTo(5.5, 1);//Move slide up by 5.5 inches
@@ -69,7 +71,7 @@ public class AutoBlueRight extends LinearOpMode {
         driveTrain.moveLeft(-4, 0.6);//Move right to not hit the junction when going to area
         sleep(50);
 
-        slide.moveTo(11.5,1);
+        slide.moveTo(5.5,1);
         sleep(100);
         driveTrain.moveForward(-11, 0.6);//go back to be prepared to go to area
         sleep(100);
@@ -77,15 +79,15 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(100);
         driveTrain.moveToPole(false,1,0.3);
         sleep(100);
-        driveTrain.moveForward(12.5, 0.3);
+        driveTrain.moveForward(12.5, 0.6);
         sleep(100);
         claw.close();
         sleep(100);
-        slide.moveTo(12, 1);
+        slide.moveToJunction(1,1);
         sleep(100);
-        driveTrain.moveForward(-14.5,0.3);
+        driveTrain.moveToPole(false,1,-0.3);
         sleep(100);
-        driveTrain.turnToGyroHeading(-90,1);
+        turret.setPosition(2);
         sleep(100);
         claw.open();
         sleep(100);
