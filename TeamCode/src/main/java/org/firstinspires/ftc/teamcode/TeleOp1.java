@@ -34,6 +34,8 @@ public class TeleOp1 extends LinearOpMode {
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
 
+        boolean previousBumperState = gamepad2.right_bumper;
+
         waitForStart();
 
         if (isStopRequested()) return;
@@ -44,10 +46,30 @@ public class TeleOp1 extends LinearOpMode {
         while (opModeIsActive()) {
 
             //hold right bumper to close the claw
-            if (gamepad2.right_bumper)
+            boolean currentBumperState = gamepad2.right_bumper;
+            if (currentBumperState){
                 claw.close();
+                sleep(100);
+                if (claw.holdingCone()&&previousBumperState != currentBumperState)
+                    slide.moveTo(5.5, 1);
+            }
             else //release right bumper to open the claw
                 claw.open();
+
+            previousBumperState = currentBumperState;
+
+
+
+            //one click slide moves
+            if (gamepad2.dpad_down)
+                slide.moveToJunction(0,1);
+            else if(gamepad2.dpad_left)
+                slide.moveToJunction(1,1);
+            else if(gamepad2.dpad_up)
+                slide.moveToJunction(2,1);
+            else if(gamepad2.dpad_right)
+                slide.moveToJunction(3,1);
+
 
             //Using right stick x and y for turret position
             if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position
