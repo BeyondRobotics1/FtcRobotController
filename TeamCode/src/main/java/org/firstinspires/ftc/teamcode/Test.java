@@ -101,13 +101,13 @@ public class Test extends LinearOpMode {
 
             //turn test
             if(gamepad2.y)
-                driveTrain.turnToGyroHeading(90, 0.6);
+                driveTrain.turnToGyroHeading(90, 0.5);
             if(gamepad2.x)
-                driveTrain.turnToGyroHeading(-90, 0.6);
+                driveTrain.turnToGyroHeading(-90, 0.5);
             if(gamepad2.b)
-                driveTrain.turnToGyroHeading(0, 0.6);
+                driveTrain.turnToGyroHeading(0, 0.5);
             if(gamepad2.a)
-                driveTrain.turnClockwise(90, 0.6);
+                driveTrain.turnClockwise(90, 0.5);
 
             //ramp test
             if(gamepad1.y)
