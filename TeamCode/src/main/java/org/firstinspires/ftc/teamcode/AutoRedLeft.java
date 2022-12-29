@@ -19,7 +19,7 @@ public class AutoRedLeft extends LinearOpMode {
         //Arm arm = new Arm(hardwareMap);
         Slide slide = new Slide(hardwareMap);
         Turret turret = new Turret(hardwareMap, slide);
-        slide.slideRunWithEncorder();
+        slide.runWithEncoder();
         Claw claw = new Claw(hardwareMap, this);
 
         //April tag detector

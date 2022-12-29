@@ -20,7 +20,7 @@ public class AutoBlueLeft extends LinearOpMode{
         //Arm arm = new Arm(hardwareMap);
         Slide slide = new Slide(hardwareMap);
         Turret turret = new Turret(hardwareMap, slide);
-        slide.slideRunWithEncorder();
+        slide.runWithEncoder();
 
         //April tag detector
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);

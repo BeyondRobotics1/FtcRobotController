@@ -116,7 +116,8 @@ public class DriveTrain {
     }
 
     /**
-     * Set all four motors to RUN_USING_ENCODER. Called by auto
+     * Set motors encoder position to 0, then set motor to RUN_USING_ENCODER.
+     * Called by auto
      */
     public void runWithEncoder()
     {
@@ -156,6 +157,15 @@ public class DriveTrain {
     public void setPower(double left_stick_y,
                          double left_stick_x,
                          double right_stick_x) {
+
+//        //set the motors to RUN_USING_ENCODER if not yet, just in case
+//        if(motorFrontLeft.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
+//        {
+//            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        }
 
         //
         double y = left_stick_y;
@@ -277,9 +287,12 @@ public class DriveTrain {
         stopRunToPosition();
     }
 
+    /**
+     *  // howMuch is in inches. A negative howMuch moves backward.
+     * @param howMuch
+     * @param speed
+     */
     public void moveForward(double howMuch, double speed) {
-        // howMuch is in inches. A negative howMuch moves backward.
-
         // fetch motor positions
         lfPos = motorFrontLeft.getCurrentPosition();
         rfPos = motorFrontRight.getCurrentPosition();
@@ -320,6 +333,76 @@ public class DriveTrain {
 
         setMotorPower(0, 0, 0, 0);
 
+        stopRunToPosition();
+    }
+
+    /**
+     * Rumping up/down
+     * @param howMuch: howMuch is in inches. A negative howMuch moves backward.
+     * @param speedMin: minimum speed
+     * @param speedMax: maximum speed
+     * @param overRange: overrange for verocity profile, default to 1.25
+     */
+    public void moveForwardRamp(double howMuch, double speedMin, double speedMax, double overRange) {
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        int startPosition = lfPos;
+
+        // calculate new targets
+        lfPos += howMuch * COUNTS_PER_INCH;
+        rfPos += howMuch * COUNTS_PER_INCH;
+        lrPos += howMuch * COUNTS_PER_INCH;
+        rrPos += howMuch * COUNTS_PER_INCH;
+
+        int targetPosition = lfPos;
+        double totalPositionChange = Math.abs(targetPosition - startPosition);
+
+        // move robot to new position
+        motorFrontLeft.setTargetPosition(lfPos);
+        motorFrontRight.setTargetPosition(rfPos);
+        motorBackLeft.setTargetPosition(lrPos);
+        motorBackRight.setTargetPosition(rrPos);
+
+        startRunToPosition();
+
+        double newSpeed = speedMin;
+        double speedRange = (speedMax - speedMin) * overRange;//1.25;
+
+        setMotorPower(newSpeed, newSpeed, newSpeed, newSpeed);
+
+        //Log log = new Log("moveForwardRamp", true);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            int currentPosition = motorFrontLeft.getCurrentPosition();
+
+            double percentComplete = (Math.abs(currentPosition - startPosition) * 1.0) / totalPositionChange;
+
+            newSpeed = Math.min(speedMin + speedRange * Math.sin(percentComplete * Math.PI), speedMax);
+
+            setMotorPower(newSpeed, newSpeed, newSpeed, newSpeed);
+
+            //log.addData(startPosition);
+            //log.addData(currentPosition);
+            //log.addData(totalPositionChange);
+            //log.addData(percentComplete);
+            //log.addData(newSpeed);
+
+            //log.update();
+        }
+
+        //log.close();
+
+        //Stop all motion
+        setMotorPower(0, 0, 0, 0);
+
+        //Turn off RUN_TO_POSITION
         stopRunToPosition();
     }
 
