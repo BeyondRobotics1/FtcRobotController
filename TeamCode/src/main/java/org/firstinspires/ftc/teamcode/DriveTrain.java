@@ -273,13 +273,13 @@ public class DriveTrain {
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
-            // Display it for the driver.
-            mode.telemetry.addLine("Move left");
-            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-                    motorBackRight.getCurrentPosition());
-            mode.telemetry.update();
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Move left");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
         }
 
         // Stop all motion;
@@ -384,6 +384,9 @@ public class DriveTrain {
             //find out the percentage of distance traveled
             int currentPosition = motorFrontLeft.getCurrentPosition();
             double percentComplete = (Math.abs(currentPosition - startPosition) * 1.0) / totalPositionChange;
+
+            //if(percentComplete > 0.6)
+            //    percentComplete *= 0.9;
 
             //based on the percentage, find the new power value
             newSpeed = Math.min(speedMin + speedRange * Math.sin(percentComplete * Math.PI), speedMax);

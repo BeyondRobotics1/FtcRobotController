@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -28,11 +29,14 @@ public class Slide {
     DigitalChannel touchSensorLowLimit;
     DigitalChannel touchSensorHighLimit;
 
+    LinearOpMode mode;
+
     /**
      * Constructor
      * @param hardwareMap: used for sensor, motor, and telemetry
      */
-    public Slide(HardwareMap hardwareMap){
+    public Slide(HardwareMap hardwareMap, LinearOpMode mode){
+        this.mode = mode;
 
         //low and high limit touch sensor
         touchSensorLowLimit =  hardwareMap.get(DigitalChannel.class, "limit_low");
@@ -102,26 +106,6 @@ public class Slide {
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Move slide up/down using RUN_TO_POSITION mode
-     * This method will not wait for motors to reach the target position
-     * @param inches: inches to move up
-     * @param speed: power for motors
-     */
-    public void moveToWithoutWaiting(double inches, double speed)
-    {
-        // Determine new target position, and pass to motor controller
-        int newPosition = (int)(inches * COUNTS_PER_INCH);
-        slideMotor1.setTargetPosition(newPosition);
-        slideMotor2.setTargetPosition(newPosition);
-
-        // Turn On RUN_TO_POSITION
-        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        slideMotor1.setPower(speed);
-        slideMotor2.setPower(speed);
-    }
 
     /**
      * Move to specific junction position
@@ -134,6 +118,49 @@ public class Slide {
             return;
 
         moveTo(junctionPoleHeights[junction], speed);
+    }
+
+    /**
+     * Move to specific position without waiting for motor to finish
+     * @param inches: inches to move
+     * @param speed: motor power
+     */
+    public void moveToWithoutWaiting(double inches, double speed)
+    {
+        int newTargetPosition = (int)(inches * COUNTS_PER_INCH);
+
+        int currentPosition = slideMotor1.getCurrentPosition();
+
+        if(newTargetPosition == currentPosition) {
+            return;
+        }
+
+        slideMotor1.setTargetPosition(newTargetPosition);
+        slideMotor2.setTargetPosition(newTargetPosition);
+
+        if(slideMotor1.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
+        {
+            slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+
+        //Power on
+        slideMotor1.setPower(speed);
+        slideMotor2.setPower(speed);
+    }
+
+    /**
+     * Move to specific junction position without waiting for motor to finish
+     * @param junction: 0 - ground, 1 - low, 2 - medium, 3 - high junction
+     * @param speed: motor power
+     */
+    public void moveToJunctionWithoutWaiting(int junction, double speed)
+    {
+        //junction id should be 0, 1, 2, or 3
+        if(junction < 0 || junction > 3)
+            return;
+
+        moveToWithoutWaiting(junctionPoleHeights[junction], speed);
     }
 
     /**
@@ -152,14 +179,14 @@ public class Slide {
         double localPower = Helper.squareWithSign(power);
 
         //slide move down
-        if(power < -0.01) {
+        if(localPower < -0.01) {
             //low limit touch sensor is pushed
-            if (touchSensorLowLimit.getState() == false)
+            if (!touchSensorLowLimit.getState())
                 localPower = 0;
         }
-        else if(power > 0.01) { //slide move up
+        else if(localPower > 0.01) { //slide move up
             //high limit touch sensor is pushed
-            if (touchSensorHighLimit.getState() == false)
+            if (!touchSensorHighLimit.getState())
                 localPower = 0;
         }
 
