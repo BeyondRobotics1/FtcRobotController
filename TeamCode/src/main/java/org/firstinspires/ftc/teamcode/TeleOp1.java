@@ -24,10 +24,9 @@ public class TeleOp1 extends LinearOpMode {
         greenLED.setState(true);
         redLED.setState(false);*/
 
-        //drivetrain
+        ////our robot hardware
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
-
-        Slide slide = new Slide(hardwareMap);
+        Slide slide = new Slide(hardwareMap, this);
         Turret turret = new Turret(hardwareMap, slide);
         Claw claw = new Claw(hardwareMap, this);
 
@@ -41,56 +40,56 @@ public class TeleOp1 extends LinearOpMode {
         //restart the timer
         timer.reset();
 
-        boolean previousBumperStatus = gamepad2.right_bumper;
+        boolean previousBumperState   = gamepad2.right_bumper;
         while (opModeIsActive()) {
 
-            boolean currentBumperStatus = gamepad2.right_bumper;
+            boolean currentBumperState  = gamepad2.right_bumper;
 
             //hold right bumper to close the claw
-            if (currentBumperStatus)
+            if (currentBumperState)
             {
                 claw.close();
-
-                if(claw.hasCone() && previousBumperStatus != currentBumperStatus) {
-                    sleep(100);
-                    slide.moveTo(5, 1.0);
-                }
+                sleep(100);
+                if (claw.holdingCone() && previousBumperState != currentBumperState)
+                    slide.moveTo(slide.getSlideHeightInches() + 5.5, 1);
             }
             else //release right bumper to open the claw
                 claw.open();
 
-            previousBumperStatus = currentBumperStatus;
+            previousBumperState  = currentBumperState ;
 
             //Move slide to specific junction height
-            if(gamepad2.dpad_down)
-                slide.moveToJunction(0, 1);
-            else if(gamepad2.dpad_left)
-                slide.moveToJunction(1, 1);
-            else if(gamepad2.dpad_up)
-                slide.moveToJunction(2, 1);
-            else if(gamepad2.dpad_right)
-                slide.moveToJunction(3, 1);
+            //left bumper + a dpad key
+            if(gamepad2.left_bumper) {
+                if (gamepad2.dpad_down)
+                    slide.moveToJunctionWithoutWaiting(0, 1);
+                else if (gamepad2.dpad_left)
+                    slide.moveToJunctionWithoutWaiting(1, 1);
+                else if (gamepad2.dpad_up)
+                    slide.moveToJunctionWithoutWaiting(2, 1);
+                else if (gamepad2.dpad_right)
+                    slide.moveToJunctionWithoutWaiting(3, 1);
+            }
+            else //otherwise uses left stick y
+            {
+                slide.setPower(-gamepad2.left_stick_y);
+
+//                //use left stick y to set the power slide motors
+//                double slidePower = -gamepad2.left_stick_y;
+//                slide.setPower(slidePower);
+//                telemetry.addData("Slide power", slidePower);
+//                telemetry.addData("Low Limit Touch Sensor", slide.getTouchSensorState(true));
+//                telemetry.addData("High Limit Touch Sensor", slide.getTouchSensorState(false));
+            }
 
             //Using right stick x and y for turret position
             if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position
-                turret.setPosition(1);
+                turret.setPositionCheckSlideHeight(1);
             } else if (gamepad2.right_stick_x > 0.8) { //right position
-                turret.setPosition(2);
+                turret.setPositionCheckSlideHeight(2);
             } else if (gamepad2.right_stick_x < -0.8) { //left position
-                turret.setPosition(0);
+                turret.setPositionCheckSlideHeight(0);
             }
-
-            //use left stick y to set the power slide motors
-            double slidePower = -gamepad2.left_stick_y;
-            slide.setPower(slidePower);
-            telemetry.addData("Slide power", slidePower);
-            telemetry.addData("Low Limit Touch Sensor", slide.getTouchSensorState(true));
-            telemetry.addData("High Limit Touch Sensor", slide.getTouchSensorState(false));
-
-            //double slideHeight = arm.getDistanceINCH();
-            //telemetry.addData("Slide height inches", slideHeight );
-            //double leftBackDistance = driveTrain.getDistanceINCH();
-            //telemetry.addData("Left back distance inches",leftBackDistance );
 
             //drive train
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);

@@ -16,7 +16,7 @@ public class AutoRedRight extends LinearOpMode {
         driveTrain.resetYaw();
 
         //arm hardware
-        Slide slide = new Slide(hardwareMap);
+        Slide slide = new Slide(hardwareMap, this);
         Turret turret = new Turret(hardwareMap, slide);
         slide.runWithEncoder();
 

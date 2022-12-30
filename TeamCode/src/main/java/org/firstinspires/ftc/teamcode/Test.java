@@ -28,7 +28,7 @@ public class Test extends LinearOpMode {
         //arm hardware
         //Arm arm = new Arm(hardwareMap);
         Claw claw = new Claw(hardwareMap, this);
-        Slide slide = new Slide(hardwareMap);
+        Slide slide = new Slide(hardwareMap, this);
         slide.runWithEncoder();
         Turret turret = new Turret(hardwareMap, slide);
 
@@ -36,18 +36,18 @@ public class Test extends LinearOpMode {
         SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
         int location = 2;
 
-        // Important Step 2: Get access to a list of Expansion Hub Modules to enable changing caching methods.
-        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
-
-        // --------------------------------------------------------------------------------------
-        // Run test cycles using AUTO cache mode
-        // In this mode, only one bulk read is done per cycle, UNLESS you read a specific encoder/velocity item AGAIN in that cycle.
-        // --------------------------------------------------------------------------------------
-
-        // Important Step 3: Option A. Set all Expansion hubs to use the AUTO Bulk Caching mode
-        for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+//        // Important Step 2: Get access to a list of Expansion Hub Modules to enable changing caching methods.
+//        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+//
+//        // --------------------------------------------------------------------------------------
+//        // Run test cycles using AUTO cache mode
+//        // In this mode, only one bulk read is done per cycle, UNLESS you read a specific encoder/velocity item AGAIN in that cycle.
+//        // --------------------------------------------------------------------------------------
+//
+//        // Important Step 3: Option A. Set all Expansion hubs to use the AUTO Bulk Caching mode
+//        for (LynxModule module : allHubs) {
+//            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+//        }
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -86,17 +86,19 @@ public class Test extends LinearOpMode {
             //driveTrain.moveToPole(3, 0.6);
 
             //telemetry.update();
-//
-//            if(gamepad2.dpad_down)
-//                slide.moveToJunction(0, 0.8);
-//            if(gamepad2.dpad_left)
-//                slide.moveToJunction(1, 0.8);
-//            if(gamepad2.dpad_up)
-//                slide.moveToJunction(2, 0.8);
-//            if(gamepad2.dpad_right)
-//                slide.moveToJunction(3, 0.8);
-//
-//            slide.setPower(-gamepad2.left_stick_y);
+
+            if(gamepad2.left_bumper) {
+                if (gamepad2.dpad_down)
+                    slide.moveToJunctionWithoutWaiting(0, 0.4);
+                else if (gamepad2.dpad_left)
+                    slide.moveToJunctionWithoutWaiting(1, 0.4);
+                else if (gamepad2.dpad_up)
+                    slide.moveToJunctionWithoutWaiting(2, 0.4);
+                else if (gamepad2.dpad_right)
+                    slide.moveToJunctionWithoutWaiting(3, 0.4);
+            }
+            else
+                slide.setPower(-gamepad2.left_stick_y);
 
 
             //turn test

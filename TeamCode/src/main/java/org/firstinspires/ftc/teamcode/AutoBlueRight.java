@@ -11,6 +11,9 @@ public class AutoBlueRight extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //
+        telemetry.addLine("Initializing drive train");
+        telemetry.update();
 
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
@@ -18,11 +21,17 @@ public class AutoBlueRight extends LinearOpMode {
         //reset drive train's yaw angle
         driveTrain.resetYaw();
 
-        //arm hardware
-        //Arm arm = new Arm(hardwareMap);
-        Slide slide = new Slide(hardwareMap);
-        Turret turret = new Turret(hardwareMap, slide);
+        //
+        telemetry.addLine("Initializing slide, turret, and claw");
+        telemetry.update();
+
+        //Our robot
+        Slide slide = new Slide(hardwareMap, this);
         slide.runWithEncoder();
+
+        Turret turret = new Turret(hardwareMap, slide);
+        turret.setToCenterPosition();
+
         Claw claw = new Claw(hardwareMap, this);
 
         //April tag detector
@@ -52,24 +61,24 @@ public class AutoBlueRight extends LinearOpMode {
         claw.close();
         sleep(100);
         slide.moveTo(5.5, 1);//Move slide up by 5.5 inches
-        //driveTrain.moveForwardWithGyro(61, 0.6);
-        //driveTrain.moveForward(55, 0.6);//Move to (4,3) high junction
         driveTrain.moveForwardRamp(56, 0.1, 1.0, 1.25);//Move to (4,3) high junction
         sleep(100);
 
         double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
-        double distanceToMove = distanceToPole - 1.6; //move to 1.6 inches from pole
-        driveTrain.moveLeft(distanceToMove, 0.5);//Move closer to the junction
-        sleep(50);//100
+        //telemetry.addData("current distance", distanceToPole);
+        //telemetry.update();
+        driveTrain.moveLeft(distanceToPole - 1.1, 0.5);//Move closer 1.6 to the junction
+        sleep(100);//100
 
-        //slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
+
+        //slide.moveToWithoutWaiting(33.6, 1);//Move 34 inches up to be taller than the high junction
         slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
-        sleep(750);//800
+        sleep(800);//800
         claw.open();//release cone to go into junction
         sleep(100);
+
+
         turret.setPosition(1);//Turret goes back to the middle
         sleep(250);//300
         slide.moveTo(5, 1);//move the slide down to 5.5 inches
@@ -91,20 +100,19 @@ public class AutoBlueRight extends LinearOpMode {
         claw.close();
         sleep( 150);
         slide.moveTo(14, 1);
-        driveTrain.moveForward(-34, 0.5);
+        driveTrain.moveForwardRamp(-33, 0.1, 1, 1.25);
         sleep(100);
 
-        distanceToPole = driveTrain.moveToPole(true,1, 0.3);
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
-        distanceToMove = distanceToPole - 1.6; //move to 1.6 inches from pole
-        driveTrain.moveLeft(distanceToMove, 0.5);//Move closer to the junction
+        distanceToPole = driveTrain.moveToPole(true,1, -0.4);
+        //telemetry.addData("current distance", distanceToPole);
+        //telemetry.update();
+        driveTrain.moveLeft(distanceToPole - 2.5, 0.5);//Move closer to the junction
         sleep(50);//100
 
         //slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
         slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
-        sleep(750);//800
+        sleep(800);//800
         claw.open();//release cone to go into junction
         sleep(1000);
 
@@ -116,45 +124,6 @@ public class AutoBlueRight extends LinearOpMode {
 //        claw.open();
 //        sleep(150);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        sleep(100);
-        driveTrain.moveToPole(false,1,0.3);
-        sleep(100);
-        driveTrain.moveForward(12.5, 0.3);
-        sleep(100);
-        claw.close();
-        sleep(100);
-        slide.moveTo(12, 1);
-        sleep(100);
-        driveTrain.moveForward(-14.5,0.3);
-        sleep(100);
-        driveTrain.turnToGyroHeading(-90,1);
-        sleep(100);
-        claw.open();
-        sleep(100);
-*/
-
-
-        //arm.setTurretPosition(1);
-        //sleep(500);
 //
 //        //Move to area
 //        if(location == 1) {

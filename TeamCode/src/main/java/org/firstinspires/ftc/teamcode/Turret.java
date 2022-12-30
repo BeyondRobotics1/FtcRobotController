@@ -18,11 +18,32 @@ public class Turret {
         servoTurret = hardwareMap.get(Servo.class,"arm");
         this.slide = slide;
     }
+
     /**
      * Set turret to left, middle, or right
      * @param turretPosition: 0 - left, 1 - middle, 2 -right
      */
     public void setPosition(int turretPosition)
+    {
+        //move to a different position
+        if (this.turretPosition != turretPosition) {
+
+            //moving to middle
+            if (turretPosition == 1 && this.turretPosition == 0)
+                servoTurret.setPosition(0.165);
+            else
+                servoTurret.setPosition(turretServoPositions[turretPosition]);
+
+            this.turretPosition = turretPosition;
+
+        }
+    }
+
+    /**
+     * Set turret to left, middle, or right
+     * @param turretPosition: 0 - left, 1 - middle, 2 -right
+     */
+    public void setPositionCheckSlideHeight(int turretPosition)
     {
         //move to a different position
         if (this.turretPosition != turretPosition) {
@@ -41,9 +62,16 @@ public class Turret {
         }
     }
 
+    /**
+     * set to center poistion, useful when auto/tele op inits
+     */
+    public void setToCenterPosition()
+    {
+        int turretPosition = 1;
+        servoTurret.setPosition(0.165);
+    }
+
     public double getTurretPosition(){
-
         return servoTurret.getPosition();
-
     }
 }
