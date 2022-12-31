@@ -65,8 +65,8 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(100);
 
         double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
+        //telemetry.addData("current distance", distanceToPole);
+        //telemetry.update();
         driveTrain.moveLeft(distanceToPole - 1.5, 0.5);//Move closer 1.5 to the junction
         sleep(100);//100
 
@@ -81,7 +81,7 @@ public class AutoBlueRight extends LinearOpMode {
 
         turret.setPosition(1);//Turret goes back to the middle
         sleep(250);//300
-        slide.moveTo(5, 1);//move the slide down to 5.5 inches
+        slide.moveTo(5.2, 1);//move the slide down to 5.5 inches
         driveTrain.moveLeft(-6, 0.5);//Move right 6 inches to not hit the junction when going to area
         sleep(100);
         driveTrain.moveForward(-12, 0.5);//go back 11.5 to be prepared to turn right
@@ -91,8 +91,8 @@ public class AutoBlueRight extends LinearOpMode {
         driveTrain.turnToGyroHeading(-90, 0.5); //turn right 90 degrees
         sleep(100);
         distanceToPole = driveTrain.moveToPole(false,1,0.3);
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
+        //telemetry.addData("current distance", distanceToPole);
+        //telemetry.update();
         driveTrain.moveLeft(5.5 - distanceToPole , 0.5);//Move away from the junction to the middle of the tile
         sleep(50);//100
         driveTrain.moveForward(13.5, 0.5);
@@ -100,30 +100,27 @@ public class AutoBlueRight extends LinearOpMode {
         claw.close();
         sleep( 150);
         slide.moveTo(14, 1);
-        //driveTrain.moveForwardRamp(-32.5, 0.1, 0.8, 1.25);
         driveTrain.moveForward(-31, 0.5);
         sleep(100);
 
         distanceToPole = driveTrain.moveToPole(false,1, -0.3);
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
+        //telemetry.addData("current distance", distanceToPole);
+        //telemetry.update();
         driveTrain.moveLeft(13 - distanceToPole, 0.5);//Move closer to the junction
         sleep(50);//100
 
-        //slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
         slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(800);//800
         claw.open();//release cone to go into junction
-        sleep(1000);
+        sleep(100);
         turret.setPosition(1);
-        sleep(800);
+        sleep(300);
         slide.moveTo(0,1);
-//        distanceToPole = driveTrain.moveToPole(true,1, -0.3);
-//        telemetry.addData("current distance", distanceToPole);
-//        telemetry.update();
         driveTrain.moveLeft(-5,0.5);
         sleep(100);
+
+        //Move to area
         if(location == 1) {
             driveTrain.moveForward(-11, 0.6);//Go to area 1
         }
@@ -133,19 +130,6 @@ public class AutoBlueRight extends LinearOpMode {
         else{
             driveTrain.moveForward(11,0.6);
         }
-
-//        distanceToPole = driveTrain.moveToPole(false,1,-0.3);
-//        driveTrain.moveLeft(2.5 - distanceToPole, 0.5);//Move closer to the junction
-//        turret.setPosition(2);
-//        sleep(750);
-//        claw.open();
-//        sleep(150);
-
-//
-//        //Move to area
-//
-//
-//        }
 
 
     }

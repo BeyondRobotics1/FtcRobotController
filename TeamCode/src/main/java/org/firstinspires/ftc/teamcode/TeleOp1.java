@@ -28,19 +28,30 @@ public class TeleOp1 extends LinearOpMode {
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        driveTrain.setRunUsingEncoder();
 
         telemetry.addLine("Initializing slide, turret, and claw");
         telemetry.update();
         Slide slide = new Slide(hardwareMap, this);
+
         Turret turret = new Turret(hardwareMap, slide);
+        turret.setToCenterPosition();
+
         Claw claw = new Claw(hardwareMap, this);
 
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
 
+        //
+        telemetry.addLine("Initialization done, wait for start");
+        telemetry.update();
+
         waitForStart();
 
         if (isStopRequested()) return;
+
+        telemetry.addLine("Let's go");
+        telemetry.update();
 
         //restart the timer
         timer.reset();
@@ -53,6 +64,7 @@ public class TeleOp1 extends LinearOpMode {
             //hold right bumper to close the claw
             if (currentBumperState)
             {
+                //when right_trigger is pressed, no auto slide up
                 if(gamepad2.right_trigger >= 0.5)
                 {
                     claw.close();
@@ -70,21 +82,14 @@ public class TeleOp1 extends LinearOpMode {
             previousBumperState  = currentBumperState ;
 
             //Move slide to specific junction height
-            //left bumper + a dpad key
+            //left bumper + left stick y (manual move slide)
             if(gamepad2.left_bumper) {
                 slide.setPower(-gamepad2.left_stick_y);
-
-//                //use left stick y to set the power slide motors
-//                double slidePower = -gamepad2.left_stick_y;
-//                slide.setPower(slidePower);
-//                telemetry.addData("Slide power", slidePower);
-//                telemetry.addData("Low Limit Touch Sensor", slide.getTouchSensorState(true));
-//                telemetry.addData("High Limit Touch Sensor", slide.getTouchSensorState(false));
             }
-            else //otherwise uses left stick y
+            else //otherwise uses a dpad key (auto move slide)
             {
                 if (gamepad2.dpad_down)
-                    slide.moveToJunctionWithoutWaiting(0, 1);
+                    slide.moveToJunctionWithoutWaiting(0, 0.8);
                 else if (gamepad2.dpad_left)
                     slide.moveToJunctionWithoutWaiting(1, 1);
                 else if (gamepad2.dpad_up)
@@ -105,7 +110,7 @@ public class TeleOp1 extends LinearOpMode {
             //drive train
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            telemetry.update();
+            //telemetry.update();
 
 //            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
 //            if(timer.time(TimeUnit.SECONDS) >= 85){

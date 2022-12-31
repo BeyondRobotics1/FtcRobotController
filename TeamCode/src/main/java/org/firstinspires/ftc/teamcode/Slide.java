@@ -176,7 +176,7 @@ public class Slide {
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-        double localPower = Helper.squareWithSign(power);
+        double localPower = Helper.cubicWithSign(power);//Helper.squareWithSign(power);
 
         //slide move down
         if(localPower < -0.01) {
