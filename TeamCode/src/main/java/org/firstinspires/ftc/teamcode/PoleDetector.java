@@ -35,7 +35,7 @@ public class PoleDetector {
     {
         currentDistance = distanceSensor.getDistance(DistanceUnit.INCH);
 
-        if(currentDistance < 10 && currentDistance < (previousDistance-20)){
+        if(currentDistance < 12 && currentDistance < (previousDistance-20)){
             polesToDetect++;
         }
 

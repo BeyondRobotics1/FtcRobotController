@@ -60,6 +60,7 @@ public class DriveTrain {
     // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
+    static final double     MOVE_FORWARD_ADJUSTMENT = 0.95;
     static final double     COUNTS_PER_MOTOR_REV    = 537.7 ;    // eg: goBilda Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 3.7795 ;     // goBilda Mecanum wheel inches
@@ -159,13 +160,13 @@ public class DriveTrain {
                          double left_stick_x,
                          double right_stick_x) {
 
-//        //set the motors to RUN_USING_ENCODER if not yet, just in case
-//        if(motorFrontLeft.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
+//        //set the motors to RUN_WITHOUT_ENCODER  if not yet, just in case
+//        if(motorFrontLeft.getMode() != DcMotor.RunMode.RUN_WITHOUT_ENCODER )
 //        {
-//            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+//            motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+//            motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
+//            motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
 //        }
 
         //
@@ -260,12 +261,13 @@ public class DriveTrain {
         rrPos -= howMuch * COUNTS_PER_INCH;
 
         // move robot to new position
-        motorFrontLeft.setTargetPosition(lfPos);
-        motorFrontRight.setTargetPosition(rfPos);
-        motorBackLeft.setTargetPosition(lrPos);
-        motorBackRight.setTargetPosition(rrPos);
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+//        motorFrontLeft.setTargetPosition(lfPos);
+//        motorFrontRight.setTargetPosition(rfPos);
+//        motorBackLeft.setTargetPosition(lrPos);
+//        motorBackRight.setTargetPosition(rrPos);
 
-        startRunToPosition();
+        setRunToPosition();
 
         setMotorPower(speed, speed, speed, speed);
 
@@ -285,7 +287,7 @@ public class DriveTrain {
         // Stop all motion;
         setMotorPower(0, 0, 0, 0);
 
-        stopRunToPosition();
+        setRunUsingEncoder();
     }
 
     /**
@@ -301,18 +303,19 @@ public class DriveTrain {
         rrPos = motorBackRight.getCurrentPosition();
 
         // calculate new targets
-        lfPos += howMuch * COUNTS_PER_INCH;
-        rfPos += howMuch * COUNTS_PER_INCH;
-        lrPos += howMuch * COUNTS_PER_INCH;
-        rrPos += howMuch * COUNTS_PER_INCH;
+        lfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        rfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        lrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        rrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
 
         // move robot to new position
-        motorFrontLeft.setTargetPosition(lfPos);
-        motorFrontRight.setTargetPosition(rfPos);
-        motorBackLeft.setTargetPosition(lrPos);
-        motorBackRight.setTargetPosition(rrPos);
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+//        motorFrontLeft.setTargetPosition(lfPos);
+//        motorFrontRight.setTargetPosition(rfPos);
+//        motorBackLeft.setTargetPosition(lrPos);
+//        motorBackRight.setTargetPosition(rrPos);
 
-        startRunToPosition();
+        setRunToPosition();
 
         setMotorPower(speed, speed, speed, speed);
 
@@ -334,7 +337,7 @@ public class DriveTrain {
 
         setMotorPower(0, 0, 0, 0);
 
-        stopRunToPosition();
+        setRunUsingEncoder();
     }
 
     /**
@@ -354,21 +357,22 @@ public class DriveTrain {
         int startPosition = lfPos;
 
         // calculate new targets
-        lfPos += howMuch * COUNTS_PER_INCH;
-        rfPos += howMuch * COUNTS_PER_INCH;
-        lrPos += howMuch * COUNTS_PER_INCH;
-        rrPos += howMuch * COUNTS_PER_INCH;
+        lfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        rfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        lrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        rrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
 
         int targetPosition = lfPos;
         double totalPositionChange = Math.abs(targetPosition - startPosition);
 
         // move robot to new position
-        motorFrontLeft.setTargetPosition(lfPos);
-        motorFrontRight.setTargetPosition(rfPos);
-        motorBackLeft.setTargetPosition(lrPos);
-        motorBackRight.setTargetPosition(rrPos);
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+//        motorFrontLeft.setTargetPosition(lfPos);
+//        motorFrontRight.setTargetPosition(rfPos);
+//        motorBackLeft.setTargetPosition(lrPos);
+//        motorBackRight.setTargetPosition(rrPos);
 
-        startRunToPosition();
+        setRunToPosition();
 
         double newSpeed = speedMin;
         double speedRange = (speedMax - speedMin) * overRange;//1.25;
@@ -407,7 +411,7 @@ public class DriveTrain {
         setMotorPower(0, 0, 0, 0);
 
         //Turn off RUN_TO_POSITION
-        stopRunToPosition();
+        setRunUsingEncoder();
     }
 
     public void moveForwardWithGyro(double howMuch, double speed) {
@@ -426,12 +430,13 @@ public class DriveTrain {
         rrPos += howMuch * COUNTS_PER_INCH;
 
         // move robot to new position
-        motorFrontLeft.setTargetPosition(lfPos);
-        motorFrontRight.setTargetPosition(rfPos);
-        motorBackLeft.setTargetPosition(lrPos);
-        motorBackRight.setTargetPosition(rrPos);
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+//        motorFrontLeft.setTargetPosition(lfPos);
+//        motorFrontRight.setTargetPosition(rfPos);
+//        motorBackLeft.setTargetPosition(lrPos);
+//        motorBackRight.setTargetPosition(rrPos);
 
-        startRunToPosition();
+        setRunToPosition();
 
         setMotorPower(speed, speed, speed, speed);
 
@@ -467,7 +472,7 @@ public class DriveTrain {
 
         setMotorPower(0, 0, 0, 0);
 
-        stopRunToPosition();
+        setRunUsingEncoder();
     }
 
     /**
@@ -483,6 +488,8 @@ public class DriveTrain {
         if(botHeading == targetHeading)
             return;
 
+        setRunUsingEncoder();
+
         if(targetHeading < botHeading) //turn  clock
         {
             setMotorPower(speed, -speed, speed, -speed);
@@ -492,7 +499,7 @@ public class DriveTrain {
             setMotorPower(-speed, speed, -speed, speed);
         }
 
-        while (Math.abs(targetHeading * 0.91 - botHeading) > 1) {
+        while (Math.abs(targetHeading * 0.92 - botHeading) > 1) {//0.91
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         }
 
@@ -502,6 +509,11 @@ public class DriveTrain {
         setMotorPower(0, 0, 0, 0);
     }
 
+    /**
+     * Turn robot clockwise
+     * @param whatAngle: angle in degrees
+     * @param speed: motor power
+     */
     public void turnClockwise(int whatAngle, double speed) {
         // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
 
@@ -518,12 +530,13 @@ public class DriveTrain {
         rrPos -= whatAngle * COUNTS_PER_DEGREE;
 
         // move robot to new position
-        motorFrontLeft.setTargetPosition(lfPos);
-        motorFrontRight.setTargetPosition(rfPos);
-        motorBackLeft.setTargetPosition(lrPos);
-        motorBackRight.setTargetPosition(rrPos);
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+//        motorFrontLeft.setTargetPosition(lfPos);
+//        motorFrontRight.setTargetPosition(rfPos);
+//        motorBackLeft.setTargetPosition(lrPos);
+//        motorBackRight.setTargetPosition(rrPos);
 
-        startRunToPosition();
+        setRunToPosition();
 
         setMotorPower(speed, speed, speed, speed);
 
@@ -543,14 +556,21 @@ public class DriveTrain {
         // Stop all motion;
         setMotorPower(0, 0, 0, 0);
 
-        stopRunToPosition();
+        setRunUsingEncoder();
     }
 
-
+    /**
+     * move forward or backward to the #th junction pole
+     * @param left: true use the left distance sensor, false, use the right one
+     * @param poleToCount: the number of poles to reach
+     * @param speed: motor power, negative will move backward
+     * @return
+     */
     public double moveToPole(boolean left, int poleToCount, double speed){
 
         double distanceToPole = 0;
 
+        //create a pole detector instance
         PoleDetector detector;
 
         if(left)
@@ -558,11 +578,14 @@ public class DriveTrain {
         else
             detector = new PoleDetector(distanceSensorSideRight);
 
-        setMotorPower(speed,speed,speed,speed);
+        setRunUsingEncoder();
+
+        setMotorPower(speed, speed, speed, speed);
 
         //Log log = new Log("pole_detection_power_0.6", true);
 
         while(true) {
+            //find out how many poles have been passed & detected
             int polesDetected = detector.detectPoles();
             distanceToPole = detector.getPoleDistance();
 
@@ -577,10 +600,11 @@ public class DriveTrain {
                 break;
         }
 
-        setMotorPower(0, 0, 0, 0);
-
         //mode.telemetry.update();
         //log.close();
+
+        //stop all motors
+        setMotorPower(0, 0, 0, 0);
 
         return distanceToPole;
     }
@@ -603,13 +627,13 @@ public class DriveTrain {
         rrPos += howMuch * COUNTS_PER_INCH;
 
         // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+//        motorFrontLeft.setTargetPosition(lfPos);
+//        motorFrontRight.setTargetPosition(rfPos);
+//        motorBackLeft.setTargetPosition(lrPos);
+//        motorBackRight.setTargetPosition(rrPos);
 
-        motorFrontLeft.setTargetPosition(lfPos);
-        motorFrontRight.setTargetPosition(rfPos);
-        motorBackLeft.setTargetPosition(lrPos);
-        motorBackRight.setTargetPosition(rrPos);
-
-        startRunToPosition();
+        setRunToPosition();
 
         setMotorPower(speed, speed, speed, speed);
 
@@ -630,7 +654,7 @@ public class DriveTrain {
         // Stop all motion;
         setMotorPower(0, 0, 0, 0);
 
-        stopRunToPosition();
+        setRunUsingEncoder();
     }
 
     //set power for each motors
@@ -643,28 +667,56 @@ public class DriveTrain {
         motorBackRight.setPower(backRight);
     }
 
-    //set all four motors to RUN_TO_POSITION
-    private void startRunToPosition()
+    //set power for each motors
+    public void setMotorTargetPosition(int frontLeft, int frontRight,
+                                 int backLeft, int backRight)
     {
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFrontLeft.setTargetPosition(frontLeft);
+        motorFrontRight.setTargetPosition(frontRight);
+        motorBackLeft.setTargetPosition(backLeft);
+        motorBackRight.setTargetPosition(backRight);
+    }
+
+    //set all four motors to RUN_TO_POSITION
+    private void setRunToPosition()
+    {
+        //if(DcMotor.RunMode.RUN_TO_POSITION != motorFrontLeft.getMode()) {
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //}
     }
 
     //set all four motors to RUN_USING_ENCODER
-    private void stopRunToPosition()
+    private void setRunUsingEncoder()
     {
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //if(DcMotor.RunMode.RUN_USING_ENCODER != motorFrontLeft.getMode()) {
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //}
     }
 
 
-    //Distance sensor
-    public double getDistanceINCH(){
+    //Left distance sensor
+    public double getLeftDistanceINCH(){
         return distanceSensorSideLeft.getDistance(DistanceUnit.INCH);
     }
 
+    //Left distance sensor
+    public double getRightDistanceINCH(){
+        return distanceSensorSideRight.getDistance(DistanceUnit.INCH);
+    }
+
+    //Front Left distance sensor
+    public double getFrontLeftDistanceINCH(){
+        return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
+    }
+
+    //Front right distance sensor
+    public double getFrontRightDistanceINCH(){
+        return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
+    }
 }
