@@ -25,7 +25,12 @@ public class TeleOp1 extends LinearOpMode {
         redLED.setState(false);*/
 
         ////our robot hardware
+        telemetry.addLine("Initializing drive train");
+        telemetry.update();
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+
+        telemetry.addLine("Initializing slide, turret, and claw");
+        telemetry.update();
         Slide slide = new Slide(hardwareMap, this);
         Turret turret = new Turret(hardwareMap, slide);
         Claw claw = new Claw(hardwareMap, this);
@@ -48,10 +53,16 @@ public class TeleOp1 extends LinearOpMode {
             //hold right bumper to close the claw
             if (currentBumperState)
             {
-                claw.close();
-                sleep(100);
-                if (claw.holdingCone() && previousBumperState != currentBumperState)
-                    slide.moveTo(slide.getSlideHeightInches() + 5.5, 1);
+                if(gamepad2.right_trigger >= 0.5)
+                {
+                    claw.close();
+                }
+                else {
+                    claw.close();
+                    sleep(150);
+                    if (claw.holdingCone() && previousBumperState != currentBumperState)
+                        slide.moveTo(slide.getSlideHeightInches() + 5.5, 1);
+                }
             }
             else //release right bumper to open the claw
                 claw.open();
@@ -61,17 +72,6 @@ public class TeleOp1 extends LinearOpMode {
             //Move slide to specific junction height
             //left bumper + a dpad key
             if(gamepad2.left_bumper) {
-                if (gamepad2.dpad_down)
-                    slide.moveToJunctionWithoutWaiting(0, 1);
-                else if (gamepad2.dpad_left)
-                    slide.moveToJunctionWithoutWaiting(1, 1);
-                else if (gamepad2.dpad_up)
-                    slide.moveToJunctionWithoutWaiting(2, 1);
-                else if (gamepad2.dpad_right)
-                    slide.moveToJunctionWithoutWaiting(3, 1);
-            }
-            else //otherwise uses left stick y
-            {
                 slide.setPower(-gamepad2.left_stick_y);
 
 //                //use left stick y to set the power slide motors
@@ -80,6 +80,17 @@ public class TeleOp1 extends LinearOpMode {
 //                telemetry.addData("Slide power", slidePower);
 //                telemetry.addData("Low Limit Touch Sensor", slide.getTouchSensorState(true));
 //                telemetry.addData("High Limit Touch Sensor", slide.getTouchSensorState(false));
+            }
+            else //otherwise uses left stick y
+            {
+                if (gamepad2.dpad_down)
+                    slide.moveToJunctionWithoutWaiting(0, 1);
+                else if (gamepad2.dpad_left)
+                    slide.moveToJunctionWithoutWaiting(1, 1);
+                else if (gamepad2.dpad_up)
+                    slide.moveToJunctionWithoutWaiting(2, 1);
+                else if (gamepad2.dpad_right)
+                    slide.moveToJunctionWithoutWaiting(3, 1);
             }
 
             //Using right stick x and y for turret position

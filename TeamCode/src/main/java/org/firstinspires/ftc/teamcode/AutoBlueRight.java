@@ -65,9 +65,9 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(100);
 
         double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
-        //telemetry.addData("current distance", distanceToPole);
-        //telemetry.update();
-        driveTrain.moveLeft(distanceToPole - 1.1, 0.5);//Move closer 1.6 to the junction
+        telemetry.addData("current distance", distanceToPole);
+        telemetry.update();
+        driveTrain.moveLeft(distanceToPole - 1.5, 0.5);//Move closer 1.5 to the junction
         sleep(100);//100
 
 
@@ -93,20 +93,21 @@ public class AutoBlueRight extends LinearOpMode {
         distanceToPole = driveTrain.moveToPole(false,1,0.3);
         telemetry.addData("current distance", distanceToPole);
         telemetry.update();
-        driveTrain.moveLeft(5.5 - distanceToPole , 0.5);//Move closer to the junction
+        driveTrain.moveLeft(5.5 - distanceToPole , 0.5);//Move away from the junction to the middle of the tile
         sleep(50);//100
-        driveTrain.moveForward(13.75, 0.5);
+        driveTrain.moveForward(13.5, 0.5);
         sleep(50);
         claw.close();
         sleep( 150);
         slide.moveTo(14, 1);
-        driveTrain.moveForwardRamp(-33, 0.1, 1, 1.25);
+        //driveTrain.moveForwardRamp(-32.5, 0.1, 0.8, 1.25);
+        driveTrain.moveForward(-33, 0.5);
         sleep(100);
 
-        distanceToPole = driveTrain.moveToPole(true,1, -0.4);
-        //telemetry.addData("current distance", distanceToPole);
-        //telemetry.update();
-        driveTrain.moveLeft(distanceToPole - 2.5, 0.5);//Move closer to the junction
+        distanceToPole = driveTrain.moveToPole(false,1, -0.3);
+        telemetry.addData("current distance", distanceToPole);
+        telemetry.update();
+        driveTrain.moveLeft(11.5 - distanceToPole, 0.5);//Move closer to the junction
         sleep(50);//100
 
         //slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
@@ -115,6 +116,9 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(800);//800
         claw.open();//release cone to go into junction
         sleep(1000);
+        turret.setPosition(1);
+        sleep(800);
+        slide.moveTo(0,1);
 
 
 //        distanceToPole = driveTrain.moveToPole(false,1,-0.3);
