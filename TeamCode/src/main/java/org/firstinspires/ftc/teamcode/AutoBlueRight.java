@@ -119,10 +119,10 @@ public class AutoBlueRight extends LinearOpMode {
         turret.setPosition(1);
         sleep(800);
         slide.moveTo(0,1);
-        distanceToPole = driveTrain.moveToPole(true,1, -0.3);
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
-        driveTrain.moveLeft(-5 + distanceToPole,0.5);
+//        distanceToPole = driveTrain.moveToPole(true,1, -0.3);
+//        telemetry.addData("current distance", distanceToPole);
+//        telemetry.update();
+        driveTrain.moveLeft(-5,0.5);
         sleep(100);
         if(location == 1) {
             driveTrain.moveForward(-11, 0.6);//Go to area 1
