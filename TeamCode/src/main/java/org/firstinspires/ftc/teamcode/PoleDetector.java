@@ -17,7 +17,7 @@ public class PoleDetector {
     //set up distance sensor
     private DistanceSensor distanceSensor;
 
-    private double previousDistance = 322;
+    private double previousDistance = 0;
     private double currentDistance = 322;
 
     /**

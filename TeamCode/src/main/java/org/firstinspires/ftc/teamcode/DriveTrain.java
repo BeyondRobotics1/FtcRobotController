@@ -678,7 +678,7 @@ public class DriveTrain {
     }
 
     //set all four motors to RUN_TO_POSITION
-    private void setRunToPosition()
+    public void setRunToPosition()
     {
         //if(DcMotor.RunMode.RUN_TO_POSITION != motorFrontLeft.getMode()) {
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -689,13 +689,24 @@ public class DriveTrain {
     }
 
     //set all four motors to RUN_USING_ENCODER
-    private void setRunUsingEncoder()
+    public void setRunUsingEncoder()
     {
         //if(DcMotor.RunMode.RUN_USING_ENCODER != motorFrontLeft.getMode()) {
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //}
+    }
+
+    //set all four motors to RUN_WITHOUT_ENCODER
+    public void setRunWithoutEncoder()
+    {
+        //if(DcMotor.RunMode.RUN_WITHOUT_ENCODER != motorFrontLeft.getMode()) {
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //}
     }
 

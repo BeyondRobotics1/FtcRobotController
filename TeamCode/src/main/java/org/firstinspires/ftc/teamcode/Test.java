@@ -118,15 +118,15 @@ public class Test extends LinearOpMode {
                 driveTrain.moveForwardRamp(60, 0.1, 1.0, 1.25);
 
             if(gamepad1.x)
-                driveTrain.moveLeft(60, 0.8);
+                driveTrain.moveLeft(12, 0.5);
                 //driveTrain.moveForwardRamp(-40, 0.2, 0.8, 1.25);
             if(gamepad1.a)
-                //driveTrain.moveForwardRamp(-40, 0.1, 0.8, 1.25);
+                driveTrain.moveForwardRamp(-31, 0.1, 1, 1.25);
 
             if(gamepad1.left_bumper) {
 
                 driveTrain.moveForward(-33, 0.5);
-                sleep(5000);
+                sleep(1000);
 
                 double distanceToPole = driveTrain.moveToPole(true, 1, -0.3);
                 telemetry.addData("current distance", distanceToPole);
