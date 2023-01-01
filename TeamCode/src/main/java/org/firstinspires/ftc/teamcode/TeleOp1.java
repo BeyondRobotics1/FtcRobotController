@@ -28,11 +28,12 @@ public class TeleOp1 extends LinearOpMode {
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
-        driveTrain.setRunUsingEncoder();
+        //driveTrain.setRunUsingEncoder();
 
         telemetry.addLine("Initializing slide, turret, and claw");
         telemetry.update();
         Slide slide = new Slide(hardwareMap, this);
+        slide.runWithEncoder();
 
         Turret turret = new Turret(hardwareMap, slide);
         turret.setToCenterPosition();
@@ -64,32 +65,30 @@ public class TeleOp1 extends LinearOpMode {
             //hold right bumper to close the claw
             if (currentBumperState)
             {
-                //when right_trigger is pressed, no auto slide up
-                if(gamepad2.right_trigger >= 0.5)
-                {
-                    claw.close();
-                }
-                else {
-                    claw.close();
-                    sleep(150);
-                    if (claw.holdingCone() && previousBumperState != currentBumperState)
-                        slide.moveTo(slide.getSlideHeightInches() + 5.5, 1);
-                }
+                claw.close();
+
+//                //when right_trigger is pressed, no auto slide up
+//                if(gamepad2.right_trigger >= 0.5)
+//                {
+//                    claw.close();
+//                }
+//                else {
+//                    claw.close();
+//                    sleep(150);
+//                    if (claw.holdingCone() && previousBumperState != currentBumperState)
+//                        slide.moveTo(slide.getSlideHeightInches() + 5.5, 1);
+//                }
             }
             else //release right bumper to open the claw
                 claw.open();
 
-            previousBumperState  = currentBumperState ;
+            //previousBumperState  = currentBumperState ;
 
             //Move slide to specific junction height
-            //left bumper + left stick y (manual move slide)
+            //left bumper + a dpad key (auto move slide)
             if(gamepad2.left_bumper) {
-                slide.setPower(-gamepad2.left_stick_y);
-            }
-            else //otherwise uses a dpad key (auto move slide)
-            {
                 if (gamepad2.dpad_down)
-                    slide.moveToJunctionWithoutWaiting(0, 0.8);
+                    slide.moveToJunctionWithoutWaiting(0, 1);
                 else if (gamepad2.dpad_left)
                     slide.moveToJunctionWithoutWaiting(1, 1);
                 else if (gamepad2.dpad_up)
@@ -97,6 +96,10 @@ public class TeleOp1 extends LinearOpMode {
                 else if (gamepad2.dpad_right)
                     slide.moveToJunctionWithoutWaiting(3, 1);
             }
+            else //otherwise left stick y (manual move slide)
+                slide.setPower(-gamepad2.left_stick_y);
+
+            slide.autoMoveToWithoutWaitingLoop();
 
             //Using right stick x and y for turret position
             if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position

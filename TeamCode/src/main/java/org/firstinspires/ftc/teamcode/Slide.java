@@ -19,7 +19,18 @@ public class Slide {
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 14.5, 24, 34};
+    double junctionPoleHeights[] = {0, 14.5, 23.5, 33.5};
+
+    enum SlideMode
+    {
+        AUTO_UP,
+        AUTO_DOWN,
+        AUTO_STAY,
+        MANUAL;
+    }
+    int autoTargetPosition = 0;
+    SlideMode activeMode = SlideMode.AUTO_STAY;
+
 
     //two motors powering the slide
     DcMotorEx slideMotor1;
@@ -127,22 +138,34 @@ public class Slide {
      */
     public void moveToWithoutWaiting(double inches, double speed)
     {
-        int newTargetPosition = (int)(inches * COUNTS_PER_INCH);
+        //calc the target position
+        autoTargetPosition = (int)(inches * COUNTS_PER_INCH);
 
         int currentPosition = slideMotor1.getCurrentPosition();
 
-        if(newTargetPosition == currentPosition) {
+        //double autoMoveToPower = Math.abs(speed);
+        //if the target position and current position are the same
+        //stay
+        if(autoTargetPosition == currentPosition) {
+            activeMode = SlideMode.AUTO_STAY;
             return;
         }
-
-        slideMotor1.setTargetPosition(newTargetPosition);
-        slideMotor2.setTargetPosition(newTargetPosition);
-
-        if(slideMotor1.getMode() != DcMotor.RunMode.RUN_TO_POSITION)
+        else if(autoTargetPosition > currentPosition) //move up
         {
-            slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            activeMode = SlideMode.AUTO_UP;
         }
+        else { //move down
+            activeMode = SlideMode.AUTO_DOWN;
+            //autoMoveToPower = -autoMoveToPower;
+        }
+
+        //set target position
+        slideMotor1.setTargetPosition(autoTargetPosition);
+        slideMotor2.setTargetPosition(autoTargetPosition);
+
+        //set motor as RUN_TO_POSITION
+        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Power on
         slideMotor1.setPower(speed);
@@ -164,11 +187,62 @@ public class Slide {
     }
 
     /**
-     * Move slide up and down
-     * @param power negative move down, positive move up
+     * Call this function in op loop to stop motors if position
+     * is reached or touch sensor is pressed down
      */
+    public void autoMoveToWithoutWaitingLoop() {
+        //
+        if(activeMode == SlideMode.AUTO_UP ||
+                activeMode == SlideMode.AUTO_DOWN) {
+
+            int currentPosition = slideMotor1.getCurrentPosition();
+            boolean targetPositionReached = false;
+
+            mode.telemetry.addData("Target position", autoTargetPosition);
+            mode.telemetry.addData("current position", currentPosition);
+            mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
+            mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+            mode.telemetry.addData("mode", activeMode);
+            mode.telemetry.update();
+
+            //slide is moving up
+            //reached the target position or
+            //pressed down the upper limit touch sensor
+            if (activeMode == SlideMode.AUTO_UP)
+            {
+                if(currentPosition >= autoTargetPosition || !touchSensorHighLimit.getState())
+                    targetPositionReached = true;
+            }
+            //slide is moving down
+            //reached the target position or
+            //pressed down the low limit touch sensor
+            else if (currentPosition <= autoTargetPosition || !touchSensorLowLimit.getState()) {
+                targetPositionReached = true;
+            }
+
+            //reach the target position
+            //stop motors
+            if(targetPositionReached)
+            {
+                activeMode = SlideMode.AUTO_STAY;
+
+                slideMotor1.setPower(0);
+                slideMotor2.setPower(0);
+
+                slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+        }
+    }
+
+        /**
+         * Move slide up and down
+         * @param power negative move down, positive move up
+         */
     public void setPower(double power)
     {
+        activeMode = SlideMode.MANUAL;
+
         //set the motors to RUN_USING_ENCODER if not yet
         if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
         {
@@ -200,6 +274,8 @@ public class Slide {
      */
     public void resetSlide()
     {
+        activeMode = SlideMode.MANUAL;
+
         //set the motors to RUN_USING_ENCODER, otherwise, motor may not move
         if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
         {
@@ -237,5 +313,25 @@ public class Slide {
             return touchSensorLowLimit.getState();
         else
             return  touchSensorHighLimit.getState();
+    }
+
+    private void move(double power)
+    {
+        double localPower = power;
+
+        //slide move down
+        if(power < -0.01) {
+            //low limit touch sensor is pushed
+            if (!touchSensorLowLimit.getState())
+                localPower = 0;
+        }
+        else if(power > 0.01) { //slide move up
+            //high limit touch sensor is pushed
+            if (!touchSensorHighLimit.getState())
+                localPower = 0;
+        }
+
+        slideMotor1.setPower(localPower);
+        slideMotor2.setPower(localPower);
     }
 }
