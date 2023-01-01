@@ -72,12 +72,11 @@ public class AutoBlueRight extends LinearOpMode {
 
 
         //slide.moveToWithoutWaiting(33.6, 1);//Move 34 inches up to be taller than the high junction
-        slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
+        slide.moveTo(33.8, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(800);//800
         claw.open();//release cone to go into junction
         sleep(100);
-
 
         turret.setPosition(1);//Turret goes back to the middle
         sleep(250);//300
@@ -100,16 +99,16 @@ public class AutoBlueRight extends LinearOpMode {
         claw.close();
         sleep( 150);
         slide.moveTo(14, 1);
-        driveTrain.moveForward(-31, 0.5);
+        driveTrain.moveForward(-30, 0.5);
         sleep(100);
 
         distanceToPole = driveTrain.moveToPole(false,1, -0.3);
         //telemetry.addData("current distance", distanceToPole);
         //telemetry.update();
-        driveTrain.moveLeft(13 - distanceToPole, 0.5);//Move closer to the junction
-        sleep(50);//100
+        driveTrain.moveLeft(13.5 - distanceToPole, 0.5);//Move closer to the junction
+        sleep(100);//100
 
-        slide.moveTo(33.6, 1);//Move 34 inches up to be taller than the high junction
+        slide.moveTo(33.8, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(800);//800
         claw.open();//release cone to go into junction
