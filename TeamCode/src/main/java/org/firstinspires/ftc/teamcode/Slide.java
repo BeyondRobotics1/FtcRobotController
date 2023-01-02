@@ -19,7 +19,7 @@ public class Slide {
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 14.5, 23.5, 33.5};
+    double junctionPoleHeights[] = {0, 14.2, 23.4, 33.4};
 
     enum SlideMode
     {
