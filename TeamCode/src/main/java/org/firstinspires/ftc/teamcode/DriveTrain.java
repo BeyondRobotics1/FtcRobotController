@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.icu.util.TimeUnit;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,15 +20,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class DriveTrain {
 
-
-    //REV 2m distance sensor
-    //
+    //REV 2m distance sensors
     DistanceSensor distanceSensorFrontLeft;
     DistanceSensor distanceSensorFrontRight;
-
     DistanceSensor distanceSensorSideLeft;
     DistanceSensor distanceSensorSideRight;
-
 
     // The IMU sensor object
     IMU imu;
@@ -49,8 +47,8 @@ public class DriveTrain {
 
 
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 0.9; //forward/backward power adjustment
-    private double x_power_scale = 0.8; //left/right power adjustment, make it slower
+    private double y_power_scale = 0.9;//0.9; //forward/backward power adjustment
+    private double x_power_scale = 0.8;//0.8; //left/right power adjustment, make it slower
     private double rx_power_scale = 0.65;//rotation power adjustment, make it slower
 
 
@@ -60,7 +58,10 @@ public class DriveTrain {
     // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    static final double     MOVE_FORWARD_ADJUSTMENT = 0.95;
+    static final double     MOVE_FORWARD_ADJUSTMENT = 0.95; //adjustment moving forward auto
+    static final double     MOVE_BACKWARD_ADJUSTMENT = 0.95; //adjustment moving backward auto
+    static final double     MOVE_LEFT_ADJUSTMENT = 1.1; //adjustment moving backward auto
+
     static final double     COUNTS_PER_MOTOR_REV    = 537.7 ;    // eg: goBilda Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 3.7795 ;     // goBilda Mecanum wheel inches
@@ -70,6 +71,11 @@ public class DriveTrain {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+    /**
+     * Constructor
+     * @param hardwareMap: for hardware lookup
+     * @param mode: for telemetry
+     */
     public DriveTrain(HardwareMap hardwareMap, LinearOpMode mode)
     {
 
@@ -110,6 +116,14 @@ public class DriveTrain {
     }
 
     /**
+     * get the imu instance
+     * @return
+     */
+    public IMU getImu() {
+        return imu;
+    }
+
+    /**
      * reset the IMU, should be called by auto and NOT be called by teleop
      */
     public void resetYaw()
@@ -118,10 +132,11 @@ public class DriveTrain {
     }
 
     /**
-     * Set motors encoder position to 0, then set motor to RUN_USING_ENCODER.
+     * Stop motors and reset encoder STOP_AND_RESET_ENCODER,
+     * then set motor to RUN_USING_ENCODER.
      * Called by auto
      */
-    public void runWithEncoder()
+    public void resetAndRunUsingEncoder()
     {
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -134,41 +149,11 @@ public class DriveTrain {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void changeXYPowerScale(double delta)
-    {
-        y_power_scale += delta;
-        x_power_scale += delta;
-
-        y_power_scale = Range.clip(y_power_scale, 0, 1);
-        x_power_scale = Range.clip(x_power_scale, 0, 1);
-
-        mode.telemetry.addData("Y Power Scale", "%.2f", y_power_scale);
-        mode.telemetry.addData("X Power Scale", "%.2f", x_power_scale);
-    }
-
-    public void changeRXPowerScale(double delta)
-    {
-        rx_power_scale += delta;
-        rx_power_scale = Range.clip(rx_power_scale, 0, 1);
-
-        mode.telemetry.addData("RX Power Scale", "%.2f", rx_power_scale);
-    }
-
     //robot centric
     //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
     public void setPower(double left_stick_y,
                          double left_stick_x,
                          double right_stick_x) {
-
-//        //set the motors to RUN_WITHOUT_ENCODER  if not yet, just in case
-//        if(motorFrontLeft.getMode() != DcMotor.RunMode.RUN_WITHOUT_ENCODER )
-//        {
-//            motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-//            motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-//            motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-//            motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER );
-//        }
-
         //
         double y = left_stick_y;
         double x = left_stick_x;
@@ -255,20 +240,14 @@ public class DriveTrain {
         rrPos = motorBackRight.getCurrentPosition();
 
         // calculate new targets
-        lfPos -= howMuch * COUNTS_PER_INCH;
-        rfPos += howMuch * COUNTS_PER_INCH;
-        lrPos += howMuch * COUNTS_PER_INCH;
-        rrPos -= howMuch * COUNTS_PER_INCH;
+        lfPos -= howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+        rfPos += howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+        lrPos += howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+        rrPos -= howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
 
         // move robot to new position
         setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-//        motorFrontLeft.setTargetPosition(lfPos);
-//        motorFrontRight.setTargetPosition(rfPos);
-//        motorBackLeft.setTargetPosition(lrPos);
-//        motorBackRight.setTargetPosition(rrPos);
-
         setRunToPosition();
-
         setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
@@ -302,27 +281,25 @@ public class DriveTrain {
         lrPos = motorBackLeft.getCurrentPosition();
         rrPos = motorBackRight.getCurrentPosition();
 
+        //get the adjustment for inches
+        double adj = MOVE_FORWARD_ADJUSTMENT;
+        if(howMuch < 0)
+            adj = MOVE_BACKWARD_ADJUSTMENT;
+
         // calculate new targets
-        lfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
-        rfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
-        lrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
-        rrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        lfPos += howMuch * COUNTS_PER_INCH * adj;
+        rfPos += howMuch * COUNTS_PER_INCH * adj;
+        lrPos += howMuch * COUNTS_PER_INCH * adj;
+        rrPos += howMuch * COUNTS_PER_INCH * adj;
 
         // move robot to new position
         setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-//        motorFrontLeft.setTargetPosition(lfPos);
-//        motorFrontRight.setTargetPosition(rfPos);
-//        motorBackLeft.setTargetPosition(lrPos);
-//        motorBackRight.setTargetPosition(rrPos);
-
         setRunToPosition();
-
         setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
-
 
             //// Display it for the driver.
 //            mode.telemetry.addLine("Move forward");
@@ -348,30 +325,32 @@ public class DriveTrain {
      * @param overRange: overrange for verocity profile, default to 1.25
      */
     public void moveForwardRamp(double howMuch, double speedMin, double speedMax, double overRange) {
+
         // fetch motor positions
         lfPos = motorFrontLeft.getCurrentPosition();
         rfPos = motorFrontRight.getCurrentPosition();
         lrPos = motorBackLeft.getCurrentPosition();
         rrPos = motorBackRight.getCurrentPosition();
 
+        // remember the current position as start position
         int startPosition = lfPos;
 
+        //get the adjustment for inches
+        double adj = MOVE_FORWARD_ADJUSTMENT;
+        if(howMuch < 0)
+            adj = MOVE_BACKWARD_ADJUSTMENT;
+
         // calculate new targets
-        lfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
-        rfPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
-        lrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
-        rrPos += howMuch * COUNTS_PER_INCH * MOVE_FORWARD_ADJUSTMENT;
+        lfPos += howMuch * COUNTS_PER_INCH * adj;
+        rfPos += howMuch * COUNTS_PER_INCH * adj;
+        lrPos += howMuch * COUNTS_PER_INCH * adj;
+        rrPos += howMuch * COUNTS_PER_INCH * adj;
 
         int targetPosition = lfPos;
         double totalPositionChange = Math.abs(targetPosition - startPosition);
 
         // move robot to new position
         setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-//        motorFrontLeft.setTargetPosition(lfPos);
-//        motorFrontRight.setTargetPosition(rfPos);
-//        motorBackLeft.setTargetPosition(lrPos);
-//        motorBackRight.setTargetPosition(rrPos);
-
         setRunToPosition();
 
         double newSpeed = speedMin;
@@ -414,9 +393,14 @@ public class DriveTrain {
         setRunUsingEncoder();
     }
 
+    /**
+     * Move forward with PID using IMU heading
+     * We don't use this method now since the Gyro reading goes to 0 and stuck sometimes
+     *
+     * @param howMuch howMuch is in inches. A negative howMuch moves backward.
+     * @param speed motor speed
+     */
     public void moveForwardWithGyro(double howMuch, double speed) {
-        // howMuch is in inches. A negative howMuch moves backward.
-
         // fetch motor positions
         lfPos = motorFrontLeft.getCurrentPosition();
         rfPos = motorFrontRight.getCurrentPosition();
@@ -431,13 +415,7 @@ public class DriveTrain {
 
         // move robot to new position
         setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-//        motorFrontLeft.setTargetPosition(lfPos);
-//        motorFrontRight.setTargetPosition(rfPos);
-//        motorBackLeft.setTargetPosition(lrPos);
-//        motorBackRight.setTargetPosition(rrPos);
-
         setRunToPosition();
-
         setMotorPower(speed, speed, speed, speed);
 
         PID pid=new PID(0.05, 0, 0, 0);
@@ -476,7 +454,7 @@ public class DriveTrain {
     }
 
     /**
-     *
+     * Turn robot to IMU's heading angle
      * @param targetHeading: turn to gyro target heading, positive counter clock wise, negative clock
      * @param speed: turn speed
      */
@@ -490,16 +468,17 @@ public class DriveTrain {
 
         setRunUsingEncoder();
 
-        if(targetHeading < botHeading) //turn  clock
+        if(targetHeading < botHeading) //turn  clock wise
         {
             setMotorPower(speed, -speed, speed, -speed);
         }
-        else if ( targetHeading > botHeading) //turn counter clock wise
+        else if ( targetHeading > botHeading) //turn counter-clock wise
         {
             setMotorPower(-speed, speed, -speed, speed);
         }
 
-        while (Math.abs(targetHeading * 0.92 - botHeading) > 1) {//0.91
+        //adjust the adjust (0.92 default) as needed
+        while (Math.abs(targetHeading * 0.92 - botHeading) > 1) {
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         }
 
@@ -531,13 +510,7 @@ public class DriveTrain {
 
         // move robot to new position
         setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-//        motorFrontLeft.setTargetPosition(lfPos);
-//        motorFrontRight.setTargetPosition(rfPos);
-//        motorBackLeft.setTargetPosition(lrPos);
-//        motorBackRight.setTargetPosition(rrPos);
-
         setRunToPosition();
-
         setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
@@ -579,7 +552,6 @@ public class DriveTrain {
             detector = new PoleDetector(distanceSensorSideRight);
 
         setRunUsingEncoder();
-
         setMotorPower(speed, speed, speed, speed);
 
         //Log log = new Log("pole_detection_power_0.6", true);
@@ -589,18 +561,17 @@ public class DriveTrain {
             int polesDetected = detector.detectPoles();
             distanceToPole = detector.getPoleDistance();
 
-            //mode.telemetry.addData("current distance", detector.getPoleDistance());
+            //mode.telemetry.addData("current distance", detector.getCurrentDistance());
             //mode.telemetry.addData("Pole counted", polesDetected);
             //mode.telemetry.update();
 
-            //log.addData(detector.getPoleDistance());
+            //log.addData(detector.getCurrentDistance());
             //log.update();
 
             if (polesDetected >= poleToCount)
                 break;
         }
 
-        //mode.telemetry.update();
         //log.close();
 
         //stop all motors
@@ -609,6 +580,98 @@ public class DriveTrain {
         return distanceToPole;
     }
 
+    /**
+     * Square against two junction poles
+     * @param poleToCount: the nth pole to square
+     * @param speed: motor power, negative move backward
+     * @param timeOut: time difference between left and right distance detection in milliseconds
+     * @return the distance to left pole or right pole based on distance sensor
+     */
+    public double squareToPoles(int poleToCount, double speed, int timeOut){
+
+        double distanceToPoleLeft = 3;
+        double distanceToPoleRight = 3;
+
+        //create a pole detector instance
+        PoleDetector detectorLeft = new PoleDetector(distanceSensorSideLeft);
+        PoleDetector detectorRight = new PoleDetector(distanceSensorSideRight);
+
+        setRunUsingEncoder();
+        setMotorPower(speed, speed, speed, speed);
+
+        //Log log = new Log("pole_detection_power_0.6", true);
+
+        boolean leftDetect = false;
+        boolean rightDetect = false;
+        double leftPower = speed;
+        double rightPower = speed;
+
+        //Log logLeft = new Log("pole_squaring_power_l_0.1", true);
+        //Log logRight = new Log("pole_squaring_power_r_0.1", true);
+
+        //We use this timer to check the game time that has elapsed
+        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        while(true) {
+            //find out how many poles have been passed & detected
+            int polesDetectedLeft = detectorLeft.detectPoles();
+            int polesDetectedRight = detectorRight.detectPoles();
+
+            distanceToPoleLeft = detectorLeft.getPoleDistance();
+            distanceToPoleRight = detectorRight.getPoleDistance();
+
+            //logLeft.addData(detectorLeft.getCurrentDistance());
+            //logLeft.update();
+
+            if (polesDetectedLeft >= poleToCount) {
+                leftDetect = true;
+
+                leftPower = 0;
+
+                setMotorPower(0, rightPower, 0, rightPower);
+
+                timer.reset();
+            }
+
+            if (polesDetectedRight >= poleToCount) {
+                rightDetect = true;
+
+                setMotorPower(leftPower, 0, leftPower, 0);
+
+                rightPower = 0;
+
+                timer.reset();
+            }
+
+            if(rightDetect && leftDetect)
+                break;
+
+            if(leftDetect)
+            {
+                if(timer.milliseconds() >= timeOut) {
+                    break;
+                }
+            }
+            else if (rightDetect)
+            {
+                if(timer.milliseconds() >= timeOut) {
+
+                    distanceToPoleLeft = 14.5 - distanceToPoleRight;
+                    if(distanceToPoleLeft < 0 )
+                        distanceToPoleLeft = 0;
+
+                    break;
+                }
+            }
+        }
+
+        //logLeft.close();
+
+        //stop all motors
+        setMotorPower(0, 0, 0, 0);
+
+        return distanceToPoleLeft;
+    }
 
     public void moveToLine(double howMuch, double speed) {
         // howMuch is in inches. The robot will stop if the line is found before
@@ -628,13 +691,7 @@ public class DriveTrain {
 
         // move robot to new position
         setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-//        motorFrontLeft.setTargetPosition(lfPos);
-//        motorFrontRight.setTargetPosition(rfPos);
-//        motorBackLeft.setTargetPosition(lrPos);
-//        motorBackRight.setTargetPosition(rrPos);
-
         setRunToPosition();
-
         setMotorPower(speed, speed, speed, speed);
 
         // wait for move to complete
@@ -729,5 +786,25 @@ public class DriveTrain {
     //Front right distance sensor
     public double getFrontRightDistanceINCH(){
         return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
+    }
+
+    public void changeXYPowerScale(double delta)
+    {
+        y_power_scale += delta;
+        x_power_scale += delta;
+
+        y_power_scale = Range.clip(y_power_scale, 0, 1);
+        x_power_scale = Range.clip(x_power_scale, 0, 1);
+
+        mode.telemetry.addData("Y Power Scale", "%.2f", y_power_scale);
+        mode.telemetry.addData("X Power Scale", "%.2f", x_power_scale);
+    }
+
+    public void changeRXPowerScale(double delta)
+    {
+        rx_power_scale += delta;
+        rx_power_scale = Range.clip(rx_power_scale, 0, 1);
+
+        mode.telemetry.addData("RX Power Scale", "%.2f", rx_power_scale);
     }
 }

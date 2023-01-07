@@ -33,6 +33,7 @@ public class TeleOp1 extends LinearOpMode {
         telemetry.addLine("Initializing slide, turret, and claw");
         telemetry.update();
         Slide slide = new Slide(hardwareMap, this);
+        slide.setImu(driveTrain.getImu());
         slide.runWithEncoder();
 
         Turret turret = new Turret(hardwareMap, slide);

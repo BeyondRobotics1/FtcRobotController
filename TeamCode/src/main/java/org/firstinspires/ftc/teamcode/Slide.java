@@ -6,6 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /**
  * Slide class models robot's slide mechanism which includes two motors and two touch sensors
@@ -39,6 +43,10 @@ public class Slide {
     //Digital touch sensors used to stop the slide moving up/down too much
     DigitalChannel touchSensorLowLimit;
     DigitalChannel touchSensorHighLimit;
+
+    // The IMU sensor object
+    // We will use its pitch angle for pitching control
+    IMU imu;
 
     LinearOpMode mode;
 
@@ -79,6 +87,14 @@ public class Slide {
         //In the mode, the Control Hub uses the encoder to manage the motor's speed.
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     * set the slide imu
+     * @param imu
+     */
+    public void setImu(IMU imu){
+        this.imu = imu;
     }
 
     /**
@@ -143,20 +159,20 @@ public class Slide {
 
         int currentPosition = slideMotor1.getCurrentPosition();
 
-        //double autoMoveToPower = Math.abs(speed);
         //if the target position and current position are the same
-        //stay
+        //Set the current state as AUTO_STAY
         if(autoTargetPosition == currentPosition) {
             activeMode = SlideMode.AUTO_STAY;
             return;
         }
         else if(autoTargetPosition > currentPosition) //move up
         {
+            //Set the current state as AUTO_UP
             activeMode = SlideMode.AUTO_UP;
         }
         else { //move down
+            //Set the current state as AUTO_DOWN
             activeMode = SlideMode.AUTO_DOWN;
-            //autoMoveToPower = -autoMoveToPower;
         }
 
         //set target position
@@ -198,12 +214,12 @@ public class Slide {
             int currentPosition = slideMotor1.getCurrentPosition();
             boolean targetPositionReached = false;
 
-            mode.telemetry.addData("Target position", autoTargetPosition);
-            mode.telemetry.addData("current position", currentPosition);
-            mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
-            mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
-            mode.telemetry.addData("mode", activeMode);
-            mode.telemetry.update();
+//            mode.telemetry.addData("Target position", autoTargetPosition);
+//            mode.telemetry.addData("current position", currentPosition);
+//            mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
+//            mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+//            mode.telemetry.addData("mode", activeMode);
+//            mode.telemetry.update();
 
             //slide is moving up
             //reached the target position or
@@ -250,7 +266,26 @@ public class Slide {
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
+
         double localPower = Helper.cubicWithSign(power);//Helper.squareWithSign(power);
+
+        //anti-tipping control
+        //if slide is up
+        if (getSlideHeightInches() > 20) { //
+            //get the pitch angle of IMU
+            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
+
+            //if pitch angle is greater than 3 degrees, dangerous
+            if (Math.abs(pitchAngle) >= 2.5) {
+                //move slide up to level our robot
+                localPower = 0.5;
+
+                mode.telemetry.addData("local power after", localPower);
+                mode.telemetry.addData("pitch angle", pitchAngle);
+                mode.telemetry.update();
+            }
+        }
 
         //slide move down
         if(localPower < -0.01) {
