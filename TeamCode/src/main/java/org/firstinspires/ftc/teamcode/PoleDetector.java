@@ -19,6 +19,7 @@ public class PoleDetector {
 
     private double previousDistance = 0;
     private double currentDistance = 322;
+    private double lastPoleDistance = 0;
 
     /**
      * constructor for distance sensor
@@ -35,8 +36,10 @@ public class PoleDetector {
     {
         currentDistance = distanceSensor.getDistance(DistanceUnit.INCH);
 
-        if(currentDistance < 12 && currentDistance < (previousDistance-20)){
+        if(currentDistance <= 10 && currentDistance < previousDistance){//(previousDistance-20)
             polesToDetect++;
+
+            lastPoleDistance = currentDistance;
         }
 
         previousDistance = currentDistance;
@@ -44,7 +47,20 @@ public class PoleDetector {
         return polesToDetect;
     }
 
+    /**
+     * Get the last pole's distance
+     * @return the distance to the pole detected
+     */
     public double getPoleDistance(){
+        return lastPoleDistance;
+    }
+
+    /**
+     * Get the current distance measurement
+     * @return distance sensor's current measurement
+     */
+    public double getCurrentDistance()
+    {
         return currentDistance;
     }
 }

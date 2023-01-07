@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
-import java.util.List;
-
 @TeleOp(name="Test", group="Linear Opmode")
+//@Disabled
 public class Test extends LinearOpMode {
 
     @Override
@@ -21,7 +20,7 @@ public class Test extends LinearOpMode {
 
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
-        driveTrain.runWithEncoder();
+        driveTrain.resetAndRunUsingEncoder();
         //reset drive train's yaw angle
         driveTrain.resetYaw();
 
@@ -103,13 +102,17 @@ public class Test extends LinearOpMode {
 
             //turn test
             if(gamepad2.y)
-                driveTrain.turnToGyroHeading(90, 0.5);
+                driveTrain.moveLeft(10, .5);
+                //driveTrain.turnToGyroHeading(90, 0.5);
             if(gamepad2.x)
-                driveTrain.turnToGyroHeading(-90, 0.5);
+                driveTrain.moveLeft(5, .5);
+                //driveTrain.turnToGyroHeading(-90, 0.5);
             if(gamepad2.b)
-                driveTrain.turnToGyroHeading(0, 0.5);
+                driveTrain.moveLeft(-10, .5);
+                //driveTrain.turnToGyroHeading(0, 0.5);
             if(gamepad2.a)
-                driveTrain.turnClockwise(90, 0.5);
+                driveTrain.moveLeft(-5, .5);
+                //driveTrain.turnClockwise(90, 0.5);
 
             //ramp test
             if(gamepad1.y)
@@ -118,24 +121,49 @@ public class Test extends LinearOpMode {
                 driveTrain.moveForwardRamp(60, 0.1, 1.0, 1.25);
 
             if(gamepad1.x)
-                driveTrain.moveLeft(12, 0.5);
-                //driveTrain.moveForwardRamp(-40, 0.2, 0.8, 1.25);
+                driveTrain.moveForward(-31, 0.5);
             if(gamepad1.a)
-                driveTrain.moveForwardRamp(-31, 0.1, 1, 1.25);
+                driveTrain.moveForwardRamp(-31, 0.1, 0.9, 1.25);
 
             if(gamepad1.left_bumper) {
-
-                driveTrain.moveForward(-33, 0.5);
-                sleep(1000);
-
-                double distanceToPole = driveTrain.moveToPole(true, 1, -0.3);
+                double distanceToPole = driveTrain.squareToPoles(1, 0.1, 1);
                 telemetry.addData("current distance", distanceToPole);
                 telemetry.update();
 
-                sleep(10000);
+                //sleep(10000);
             }
 
-            //sleep(50);
+            if(gamepad1.right_bumper) {
+                double distanceToPole = driveTrain.squareToPoles(1, -0.1, 1000);
+                telemetry.addData("current distance", distanceToPole);
+                telemetry.update();
+
+                //sleep(10000);
+            }
+
+            if(gamepad2.left_bumper) {
+                double distanceToPole = driveTrain.squareToPoles(1, 0.2, 1000);
+                telemetry.addData("current distance", distanceToPole);
+                telemetry.update();
+
+                //sleep(10000);
+            }
+
+            if(gamepad2.right_bumper) {
+                double distanceToPole = driveTrain.squareToPoles(1, -0.2, 1000);
+                telemetry.addData("current distance", distanceToPole);
+                telemetry.update();
+
+                //sleep(10000);
+            }
+
+            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
+            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
+            telemetry.addData("Font left distance", driveTrain.getFrontLeftDistanceINCH());
+            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
+            telemetry.update();
+
+            sleep(100);
         }
     }
 }
