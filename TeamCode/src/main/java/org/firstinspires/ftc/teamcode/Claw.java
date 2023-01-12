@@ -34,7 +34,7 @@ public class Claw {
         // Get a reference to our sensor object. It's recommended to use NormalizedColorSensor over
         // ColorSensor, because NormalizedColorSensor consistently gives values between 0 and 1, while
         // the values you get from ColorSensor are dependent on the specific sensor you're using.
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
+        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
 
         //claw1.setPosition(0.5);
         //claw2.setPosition(0.5);
@@ -74,6 +74,9 @@ public class Claw {
      */
     public boolean holdingCone()
     {
+        if(colorSensor == null)
+            return false;
+
         // Get the normalized colors from the sensor
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
 

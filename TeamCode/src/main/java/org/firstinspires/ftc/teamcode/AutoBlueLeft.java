@@ -14,7 +14,7 @@ public class AutoBlueLeft extends LinearOpMode {
         telemetry.update();
 
         //drive train
-        DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
         driveTrain.resetAndRunUsingEncoder();
         //reset drive train's yaw angle
         driveTrain.resetYaw();
@@ -73,16 +73,18 @@ public class AutoBlueLeft extends LinearOpMode {
         slide.moveTo(33.5, 1);//Move 33.7 inches up to be taller than the high junction
         turret.setPosition(2);//turn turret right so cone is on top of junction
         sleep(800);//800
+
+        slide.moveTo(31, 1);//Move 33.7 inches up to be taller than the high junction
         claw.open();//release cone to go into junction
         sleep(100);
 
+        driveTrain.moveLeft(4.5, 0.5);//Move right 4.5 inches to not hit the junction when going to area
+        sleep(100);//100
 
         turret.setPosition(1);//Turret goes back to the middle
         sleep(250);//300
         slide.moveTo(5.2, 1);//move the slide down to 5.2 inches
 
-        driveTrain.moveLeft(4.5, 0.5);//Move right 4.5 inches to not hit the junction when going to area
-        sleep(100);//100
         driveTrain.moveForward(-10.5, 0.5);//go back 12 to be prepared to turn left
         sleep(100);
 
@@ -110,11 +112,15 @@ public class AutoBlueLeft extends LinearOpMode {
         driveTrain.moveForwardRamp(-32, 0.1, 0.9, 1.25);//-30
 
         sleep(100);
-        distanceToPole = driveTrain.squareToPoles(1, -0.1, 1200);//left distance to pole
+        SquareToPoolResult result = driveTrain.squareToPoles(1, -0.1, 1200);//left distance to pole
         sleep(50);
         driveTrain.moveForward(-1, 0.4);
 
-        driveTrain.moveLeft( distanceToPole - 10.5, 0.5);//Move closer to the junction 11.5
+        if(result.left) //left pole is squired
+            driveTrain.moveLeft( result.distance - 10.5, 0.5);//Move closer to the junction 11.5
+        else
+            driveTrain.moveLeft( 3 - result.distance, 0.5);//Move closer to the junction 11.5
+
         telemetry.addData("current distance", distanceToPole);
         telemetry.update();
 
@@ -122,12 +128,16 @@ public class AutoBlueLeft extends LinearOpMode {
         slide.moveTo(33.7, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(2);//turn turret left so cone is on top of junction
         sleep(800);//800
+        slide.moveTo(31.2, 1);//Move 34 inches up to be taller than the high junction
         claw.open();//release cone to go into junction
         sleep(100);
+
+        driveTrain.moveLeft(5, 0.5);//5
+
         turret.setPosition(1);
         sleep(250);
         slide.moveTo(0,1);
-        driveTrain.moveLeft(5, 0.5);//5
+
         sleep(100);
 
         //Move to area

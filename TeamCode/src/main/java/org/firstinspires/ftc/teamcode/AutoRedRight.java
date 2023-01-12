@@ -13,7 +13,7 @@ public class AutoRedRight extends LinearOpMode {
         telemetry.update();
 
         //drive train
-        DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
         driveTrain.resetAndRunUsingEncoder();
         //reset drive train's yaw angle
         driveTrain.resetYaw();
@@ -64,8 +64,8 @@ public class AutoRedRight extends LinearOpMode {
         double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
         //telemetry.addData("current distance", distanceToPole);
         //telemetry.update();
-        driveTrain.moveForward(-0.5, 0.4);
-        driveTrain.moveLeft(distanceToPole - 2.3, 0.5);//Move closer 2.0 to the junction
+        driveTrain.moveForward(-1, 0.4);
+        driveTrain.moveLeft(-2.3, 0.5);//Move closer distanceToPole - 2.3 to the junction
         sleep(100);//100
 
 
@@ -73,15 +73,18 @@ public class AutoRedRight extends LinearOpMode {
         slide.moveTo(33.5, 1);//Move 33.7 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(800);//800
+        slide.moveTo(31, 1);//Move 33.7 inches up to be taller than the high junction
         claw.open();//release cone to go into junction
         sleep(100);
+
+        driveTrain.moveLeft(-4.5, 0.5);//Move right 4.5 inches to not hit the junction when going to area
+        sleep(100);//100
 
         turret.setPosition(1);//Turret goes back to the middle
         sleep(250);//300
         slide.moveTo(5.2, 1);//move the slide down to 5.5 inches
 
-        driveTrain.moveLeft(-4.5, 0.5);//Move right 4.5 inches to not hit the junction when going to area
-        sleep(100);//100
+
         driveTrain.moveForward(-12, 0.5);//go back 12 to be prepared to turn right
         sleep(100);
 
@@ -106,24 +109,32 @@ public class AutoRedRight extends LinearOpMode {
 
         driveTrain.moveForwardRamp(-33.5, 0.1, 0.9, 1.25);//-33
         sleep(50);
-        distanceToPole = driveTrain.squareToPoles(1, -0.1, 1300);//left distance to pole
+        SquareToPoolResult result = driveTrain.squareToPoles(1, -0.1, 1300);//left distance to pole
         sleep(50);
         driveTrain.moveForward(-1, 0.4);//-1.5
         sleep(50);
-        driveTrain.moveLeft(distanceToPole - 3.7, 0.5);//Move closer to the junction - 3
+
+        if(result.left) //left pole is squired
+            driveTrain.moveLeft( result.distance - 3.5, 0.5);//Move closer to the junction distanceToPole - 3.7
+        else
+            driveTrain.moveLeft( 10.5 - result.distance, 0.5);//Move closer to the junction distanceToPole - 11.5
 
         sleep(50);
         slide.moveTo(33.7, 1);//Move 34 inches up to be taller than the high junction
         turret.setPosition(0);//turn turret left so cone is on top of junction
         sleep(800);//800
+        slide.moveTo(31.2, 1);//Move 31 inches up to be taller than the high junction
 
         claw.open();//release cone to go into junction
         sleep(100);
+
+        driveTrain.moveLeft(-4,0.5);//3
+        sleep(100);
+
         turret.setPosition(1);
         sleep(250);
         slide.moveTo(0,1);
-        driveTrain.moveLeft(-4,0.5);//3
-        sleep(100);
+
 
         //Move to area
         if(location == 3) {

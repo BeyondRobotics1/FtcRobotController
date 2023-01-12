@@ -27,7 +27,7 @@ public class DriveTrain {
     DistanceSensor distanceSensorSideRight;
 
     // The IMU sensor object
-    IMU imu;
+    IMU imu = null;
 
     //Use DcMotorEx to support bulk read.
     DcMotorEx motorFrontLeft;
@@ -76,7 +76,7 @@ public class DriveTrain {
      * @param hardwareMap: for hardware lookup
      * @param mode: for telemetry
      */
-    public DriveTrain(HardwareMap hardwareMap, LinearOpMode mode)
+    public DriveTrain(HardwareMap hardwareMap, LinearOpMode mode, boolean hasIMU)
     {
 
         this.mode = mode;
@@ -101,18 +101,20 @@ public class DriveTrain {
         distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
         distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
 
-        // Retrieve and initialize the IMU.
-        imu = hardwareMap.get(IMU.class, "imu");
+        if(hasIMU) {
+            // Retrieve and initialize the IMU.
+            imu = hardwareMap.get(IMU.class, "imu");
 
-        // The next two lines define Hub orientation.
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+            // The next two lines define Hub orientation.
+            RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+            RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+            RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-        // Now initialize the IMU with this mounting orientation
-        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+            // Now initialize the IMU with this mounting orientation
+            // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+            imu.initialize(new IMU.Parameters(orientationOnRobot));
+        }
     }
 
     /**
@@ -128,7 +130,8 @@ public class DriveTrain {
      */
     public void resetYaw()
     {
-        imu.resetYaw();
+        if(imu != null)
+            imu.resetYaw();
     }
 
     /**
@@ -225,7 +228,7 @@ public class DriveTrain {
 
         setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
 
-        mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
+        //mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
     }
 
     // Distances in inches, angles in deg, speed 0.0 to 0.6
@@ -401,6 +404,10 @@ public class DriveTrain {
      * @param speed motor speed
      */
     public void moveForwardWithGyro(double howMuch, double speed) {
+        //if there is no imu, do nothing
+        if(imu == null)
+            return;
+
         // fetch motor positions
         lfPos = motorFrontLeft.getCurrentPosition();
         rfPos = motorFrontRight.getCurrentPosition();
@@ -434,16 +441,16 @@ public class DriveTrain {
             else //backward
                 setMotorPower(speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment);
 
-            // Display it for the driver.
-            mode.telemetry.addLine("Move forward");
-            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-                    motorBackRight.getCurrentPosition());
-
-            mode.telemetry.addData("Adjustment and Heading", "%7f :%7f", powerAdjustment, botHeading);
-
-            mode.telemetry.update();
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Move forward");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//
+//            mode.telemetry.addData("Adjustment and Heading", "%7f :%7f", powerAdjustment, botHeading);
+//
+//            mode.telemetry.update();
         }
 
         // Stop all motion;
@@ -460,6 +467,10 @@ public class DriveTrain {
      */
     public void turnToGyroHeading(int targetHeading, double speed)
     {
+        //if there is no imu, do nothing
+        if(imu == null)
+            return;
+
         //current heading
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
@@ -482,8 +493,8 @@ public class DriveTrain {
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         }
 
-        mode.telemetry.addData("Heading", botHeading);
-        mode.telemetry.update();
+//        mode.telemetry.addData("Heading", botHeading);
+//        mode.telemetry.update();
 
         setMotorPower(0, 0, 0, 0);
     }
@@ -517,13 +528,13 @@ public class DriveTrain {
         while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
 
-            // Display it for the driver.
-            mode.telemetry.addLine("Turn Clockwise");
-            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-                    motorBackRight.getCurrentPosition());
-            mode.telemetry.update();
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Turn Clockwise");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
         }
 
         // Stop all motion;
@@ -587,7 +598,9 @@ public class DriveTrain {
      * @param timeOut: time difference between left and right distance detection in milliseconds
      * @return the distance to left pole or right pole based on distance sensor
      */
-    public double squareToPoles(int poleToCount, double speed, int timeOut){
+    public SquareToPoolResult squareToPoles(int poleToCount, double speed, int timeOut){
+
+        SquareToPoolResult result = new SquareToPoolResult();
 
         double distanceToPoleLeft = 3;
         double distanceToPoleRight = 3;
@@ -643,23 +656,27 @@ public class DriveTrain {
                 timer.reset();
             }
 
-            if(rightDetect && leftDetect)
+            if (rightDetect && leftDetect) {
+                result.left = true;
+                result.distance = distanceToPoleLeft;
                 break;
+             }
 
             if(leftDetect)
             {
+                result.left = true;
+                result.distance = distanceToPoleLeft;
+
                 if(timer.milliseconds() >= timeOut) {
                     break;
                 }
             }
             else if (rightDetect)
             {
+                result.left = false;
+                result.distance = distanceToPoleRight;
+
                 if(timer.milliseconds() >= timeOut) {
-
-                    distanceToPoleLeft = 14.5 - distanceToPoleRight;
-                    if(distanceToPoleLeft < 0 )
-                        distanceToPoleLeft = 0;
-
                     break;
                 }
             }
@@ -670,7 +687,7 @@ public class DriveTrain {
         //stop all motors
         setMotorPower(0, 0, 0, 0);
 
-        return distanceToPoleLeft;
+        return result;
     }
 
     public void moveToLine(double howMuch, double speed) {
@@ -699,13 +716,13 @@ public class DriveTrain {
                 motorBackLeft.isBusy() && motorBackRight.isBusy()) {
             //if (mrOds.getLightDetected() > lineThreshold) break;
 
-            // Display it for the driver.
-            mode.telemetry.addLine("Move To Line");
-            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-                    motorBackRight.getCurrentPosition());
-            mode.telemetry.update();
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Move To Line");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
         }
 
         // Stop all motion;
@@ -796,8 +813,8 @@ public class DriveTrain {
         y_power_scale = Range.clip(y_power_scale, 0, 1);
         x_power_scale = Range.clip(x_power_scale, 0, 1);
 
-        mode.telemetry.addData("Y Power Scale", "%.2f", y_power_scale);
-        mode.telemetry.addData("X Power Scale", "%.2f", x_power_scale);
+        //mode.telemetry.addData("Y Power Scale", "%.2f", y_power_scale);
+        //mode.telemetry.addData("X Power Scale", "%.2f", x_power_scale);
     }
 
     public void changeRXPowerScale(double delta)
@@ -805,6 +822,6 @@ public class DriveTrain {
         rx_power_scale += delta;
         rx_power_scale = Range.clip(rx_power_scale, 0, 1);
 
-        mode.telemetry.addData("RX Power Scale", "%.2f", rx_power_scale);
+        //mode.telemetry.addData("RX Power Scale", "%.2f", rx_power_scale);
     }
 }
