@@ -24,7 +24,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
         redLED.setState(false);
 
         //drivetrain
-        DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
 
         Arm arm = new Arm(hardwareMap);
         Claw claw = new Claw(hardwareMap, this);
@@ -70,7 +70,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
             //drive train
             driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            telemetry.update();
+            //telemetry.update();
 
             // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
             if(timer.time(TimeUnit.SECONDS) >= 85){

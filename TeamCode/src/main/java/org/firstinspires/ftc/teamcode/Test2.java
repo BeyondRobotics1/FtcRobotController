@@ -8,34 +8,88 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 @TeleOp(name="Test2", group="Linear Opmode")
-@Disabled
+//@Disabled
 public class Test2 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        DcMotorEx slideMotor1 =  hardwareMap.get(DcMotorEx.class, "slide1"); //hardwareMap.get(DcMotor.class, "slide1");
-        DcMotorEx slideMotor2 =  hardwareMap.get(DcMotorEx.class, "slide2"); //hardwareMap.get(DcMotor.class, "slide1");
+        //
+        telemetry.addLine("Initializing drive train");
+        telemetry.update();
 
-        slideMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
-        slideMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        //drive train
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
+        driveTrain.resetAndRunUsingEncoder();
+        //reset drive train's yaw angle
+        driveTrain.resetYaw();
+
+        //
+        telemetry.addLine("Initializing slide, turret, and claw");
+        telemetry.update();
+
+        //Our robot
+        Slide slide = new Slide(hardwareMap, this);
+        slide.runWithEncoder();
+
+        Turret turret = new Turret(hardwareMap, slide);
+        turret.setToCenterPosition();
+
+        Claw claw = new Claw(hardwareMap, this);
+
+        //April tag detector
+        telemetry.addLine("Initializing camera");
+        telemetry.update();
+
+        SleeveDetector sleeveDetector = new SleeveDetector(hardwareMap, this);
+        int location = 2;
+
+        while (!isStarted() && !isStopRequested()) {
+
+            // Arm arm = new Arm(hardwareMap);
+            location = sleeveDetector.detectPosition();
+
+            telemetry.addLine(String.format("\n\nLocation = %d", location));
+            telemetry.update();
+
+            sleep(20);
+        }
+
+        //grab the cone
+        claw.close();
+        sleep(100);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
-        while (opModeIsActive()) {
+//        //slide.moveTo(5.5, 1);//Move slide up by 5.5 inches
+//        slide.moveToWithoutWaiting(5.5, 0.8);//Move slide up by 5.5 inches
+//        driveTrain.moveForwardRamp(56, 0.1, 1.0, 1.25);//Move to (4,3) high junction
+//        sleep(100);
+//
+//        turret.setPosition(0);//turn turret left so cone is on top of junction
+//        slide.moveToWithoutWaiting(33.5, 0.8);//Move slide up by 5.5 inches
+//
+//        double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
+//        //telemetry.addData("current distance", distanceToPole);
+//        //telemetry.update();
+//        driveTrain.moveForward(-0.5, 0.4);
+//        driveTrain.moveLeft(distanceToPole - 2.2, 0.5);//Move closer 2 to the junction
+//        sleep(9000);//100
 
-            if(gamepad1.left_bumper) {
-                slideMotor1.setPower(-gamepad1.left_stick_y);
-            }
+        driveTrain.moveLeft(4, 0.5);
+        sleep(50);
+        driveTrain.moveLeft(-4, 0.5);
+        sleep(50);
+        driveTrain.moveLeft(4, 0.5);
+        sleep(50);
+        driveTrain.moveLeft(-4, 0.5);
+        sleep(50);
+        driveTrain.moveLeft(4, 0.5);
+        sleep(50);
+        driveTrain.moveLeft(-4, 0.5);
+        sleep(50);
 
-            if(gamepad2.left_bumper) {
-                slideMotor2.setPower(-gamepad2.left_stick_y);
-            }
-
-
-            //sleep(50);
-        }
     }
 }

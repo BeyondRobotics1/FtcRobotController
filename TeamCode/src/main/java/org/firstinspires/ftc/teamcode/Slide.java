@@ -21,6 +21,13 @@ public class Slide {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
 
+    //slide positions before grabbing the cones
+    static final double coneStackHeights[] = {5.2, 3.8, 2.4, 1.2, 0};
+    //slide positions after grabbing the cones
+    static final double coneLiftHeights[] = {11, 9.6, 8.2, 7.5, 7.5};
+    //distance for pole to cone stack
+    static final double moveFromPole[] = {13.4, 13.6, 13.6, 13.6, 13.6};
+
     //ground, low, medium, high junction heights
     //slide can move to
     double junctionPoleHeights[] = {0, 14.2, 23.4, 33.4};
@@ -44,9 +51,9 @@ public class Slide {
     DigitalChannel touchSensorLowLimit;
     DigitalChannel touchSensorHighLimit;
 
-    // The IMU sensor object
-    // We will use its pitch angle for pitching control
-    IMU imu;
+//    // The IMU sensor object
+//    // We will use its pitch angle for pitching control
+//    IMU imu;
 
     LinearOpMode mode;
 
@@ -89,13 +96,13 @@ public class Slide {
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * set the slide imu
-     * @param imu
-     */
-    public void setImu(IMU imu){
-        this.imu = imu;
-    }
+//    /**
+//     * set the slide imu
+//     * @param imu
+//     */
+//    public void setImu(IMU imu){
+//        this.imu = imu;
+//    }
 
     /**
      * Move slide up/down using RUN_TO_POSITION mode,
@@ -266,26 +273,24 @@ public class Slide {
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-
         double localPower = Helper.cubicWithSign(power);//Helper.squareWithSign(power);
 
-        //anti-tipping control
-        //if slide is up
-        if (getSlideHeightInches() > 20) { //
-            //get the pitch angle of IMU
-            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
-
-            //if pitch angle is greater than 3 degrees, dangerous
-            if (Math.abs(pitchAngle) >= 2.5) {
-                //move slide up to level our robot
-                localPower = 0.5;
-
-                mode.telemetry.addData("local power after", localPower);
-                mode.telemetry.addData("pitch angle", pitchAngle);
-                mode.telemetry.update();
-            }
-        }
+//        //Anti-tipping control kicks in when our side's height is bigger than 20 inches
+//        if (getSlideHeightInches() > 20) { //
+//            //get the pitch angle of IMU
+//            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+//            double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
+//
+//            //if pitch angle is greater than 3 degrees, dangerous
+//            if (Math.abs(pitchAngle) >= 2.5) {
+//                //move slide up to level our robot
+//                localPower = 0.5;
+//
+//                mode.telemetry.addData("local power after", localPower);
+//                mode.telemetry.addData("pitch angle", pitchAngle);
+//                mode.telemetry.update();
+//            }
+//        }
 
         //slide move down
         if(localPower < -0.01) {

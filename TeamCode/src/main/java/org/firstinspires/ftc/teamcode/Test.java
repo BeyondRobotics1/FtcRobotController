@@ -19,7 +19,7 @@ public class Test extends LinearOpMode {
         NormalizedColorSensor colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
 
         //drive train
-        DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
         driveTrain.resetAndRunUsingEncoder();
         //reset drive train's yaw angle
         driveTrain.resetYaw();
@@ -126,35 +126,39 @@ public class Test extends LinearOpMode {
                 driveTrain.moveForwardRamp(-31, 0.1, 0.9, 1.25);
 
             if(gamepad1.left_bumper) {
-                double distanceToPole = driveTrain.squareToPoles(1, 0.1, 1);
-                telemetry.addData("current distance", distanceToPole);
+                SquareToPoolResult result = driveTrain.squareToPoles(1, 0.1, 1);
+                telemetry.addData("left pole", result.left);
+                telemetry.addData("current distance", result.distance);
                 telemetry.update();
 
-                //sleep(10000);
+                sleep(10000);
             }
 
             if(gamepad1.right_bumper) {
-                double distanceToPole = driveTrain.squareToPoles(1, -0.1, 1000);
-                telemetry.addData("current distance", distanceToPole);
+                SquareToPoolResult result = driveTrain.squareToPoles(1, -0.1, 1000);
+                telemetry.addData("left pole", result.left);
+                telemetry.addData("current distance", result.distance);
                 telemetry.update();
 
-                //sleep(10000);
+                sleep(10000);
             }
 
             if(gamepad2.left_bumper) {
-                double distanceToPole = driveTrain.squareToPoles(1, 0.2, 1000);
-                telemetry.addData("current distance", distanceToPole);
+                SquareToPoolResult result = driveTrain.squareToPoles(1, 0.2, 1000);
+                telemetry.addData("left pole", result.left);
+                telemetry.addData("current distance", result.distance);
                 telemetry.update();
 
-                //sleep(10000);
+                sleep(10000);
             }
 
             if(gamepad2.right_bumper) {
-                double distanceToPole = driveTrain.squareToPoles(1, -0.2, 1000);
-                telemetry.addData("current distance", distanceToPole);
+                SquareToPoolResult result = driveTrain.squareToPoles(1, -0.2, 1000);
+                telemetry.addData("left pole", result.left);
+                telemetry.addData("current distance", result.distance);
                 telemetry.update();
 
-                //sleep(10000);
+                sleep(10000);
             }
 
             telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
