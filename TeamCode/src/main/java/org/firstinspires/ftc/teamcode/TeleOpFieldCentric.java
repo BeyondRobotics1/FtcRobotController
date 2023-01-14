@@ -15,13 +15,13 @@ public class TeleOpFieldCentric extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        DigitalChannel redLED = hardwareMap.get(DigitalChannel.class, "endgame_red");
-        DigitalChannel greenLED = hardwareMap.get(DigitalChannel.class, "endgame_green");
+        //DigitalChannel redLED = hardwareMap.get(DigitalChannel.class, "endgame_red");
+        //DigitalChannel greenLED = hardwareMap.get(DigitalChannel.class, "endgame_green");
 
-        redLED.setMode(DigitalChannel.Mode.OUTPUT);
-        greenLED.setMode(DigitalChannel.Mode.OUTPUT);
-        greenLED.setState(true);
-        redLED.setState(false);
+        //redLED.setMode(DigitalChannel.Mode.OUTPUT);
+        //greenLED.setMode(DigitalChannel.Mode.OUTPUT);
+        //greenLED.setState(true);
+        //redLED.setState(false);
 
         //drivetrain
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
@@ -72,11 +72,11 @@ public class TeleOpFieldCentric extends LinearOpMode {
 
             //telemetry.update();
 
-            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
-            if(timer.time(TimeUnit.SECONDS) >= 85){
-                redLED.setState(true);
-                greenLED.setState(false);
-            }
+//            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
+//            if(timer.time(TimeUnit.SECONDS) >= 85){
+//                redLED.setState(true);
+//                greenLED.setState(false);
+//            }
 
             //sleep(50);
         }

@@ -48,7 +48,7 @@ public class DriveTrain {
 
     //adjust forward/backward, left/right, and rotation power
     private double y_power_scale = 0.9;//0.9; //forward/backward power adjustment
-    private double x_power_scale = 0.8;//0.8; //left/right power adjustment, make it slower
+    private double x_power_scale = 0.9;//0.8; //left/right power adjustment, make it slower
     private double rx_power_scale = 0.65;//rotation power adjustment, make it slower
 
 
@@ -612,15 +612,12 @@ public class DriveTrain {
         setRunUsingEncoder();
         setMotorPower(speed, speed, speed, speed);
 
-        //Log log = new Log("pole_detection_power_0.6", true);
-
         boolean leftDetect = false;
         boolean rightDetect = false;
         double leftPower = speed;
         double rightPower = speed;
 
-        //Log logLeft = new Log("pole_squaring_power_l_0.1", true);
-        //Log logRight = new Log("pole_squaring_power_r_0.1", true);
+        //Log log = new Log("pole_squaring"+(int)(Math.random()*1000), true);
 
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
@@ -633,10 +630,7 @@ public class DriveTrain {
             distanceToPoleLeft = detectorLeft.getPoleDistance();
             distanceToPoleRight = detectorRight.getPoleDistance();
 
-            //logLeft.addData(detectorLeft.getCurrentDistance());
-            //logLeft.update();
-
-            if (polesDetectedLeft >= poleToCount) {
+            if (polesDetectedLeft >= poleToCount && !leftDetect) {
                 leftDetect = true;
 
                 leftPower = 0;
@@ -646,7 +640,7 @@ public class DriveTrain {
                 timer.reset();
             }
 
-            if (polesDetectedRight >= poleToCount) {
+            if (polesDetectedRight >= poleToCount && !rightDetect) {
                 rightDetect = true;
 
                 setMotorPower(leftPower, 0, leftPower, 0);
@@ -656,9 +650,17 @@ public class DriveTrain {
                 timer.reset();
             }
 
+            //log.addData(distanceToPoleLeft);
+            //log.addData(distanceToPoleRight);
+            //log.addData(leftDetect);
+            //log.addData(rightDetect);
+            //log.addData(timer.milliseconds());
+
             if (rightDetect && leftDetect) {
                 result.left = true;
                 result.distance = distanceToPoleLeft;
+
+                //log.update();
                 break;
              }
 
@@ -668,8 +670,10 @@ public class DriveTrain {
                 result.distance = distanceToPoleLeft;
 
                 if(timer.milliseconds() >= timeOut) {
+                    //log.update();
                     break;
                 }
+                //log.update();
             }
             else if (rightDetect)
             {
@@ -677,12 +681,16 @@ public class DriveTrain {
                 result.distance = distanceToPoleRight;
 
                 if(timer.milliseconds() >= timeOut) {
+                    //log.update();
                     break;
                 }
+                //log.update();
             }
+            //else
+            //    log.update();
         }
 
-        //logLeft.close();
+        //log.close();
 
         //stop all motors
         setMotorPower(0, 0, 0, 0);

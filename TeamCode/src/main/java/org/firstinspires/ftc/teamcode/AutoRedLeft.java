@@ -175,7 +175,8 @@ public class AutoRedLeft extends LinearOpMode {
 
         turret.setPosition(1);//Turret goes back to the middle
         sleep(250);//300
-        slide.moveTo(5.2, 1);//move the slide down to 5.2 inches
+
+        slide.moveTo(Slide.coneStackHeights[0], 1);//move the slide down to 5.2 inches
 
 
         driveTrain.moveForward(-10.5, 0.5);//go back 12 to be prepared to turn right
@@ -188,8 +189,43 @@ public class AutoRedLeft extends LinearOpMode {
         distanceToPole = driveTrain.moveToPole(true,1,0.3);
         sleep(100);
         double distanceToMove = distanceToPole - 7;//from robot cent to pole 7
-        driveTrain.moveLeft(distanceToMove, 0.5);//Move away 5.5 from the junction to the middle of the tile
-        sleep(50);
+        if(Math.abs(distanceToMove) > 0.4) {
+            driveTrain.moveLeft(distanceToMove, 0.5);//Move away 5.5 from the junction to the middle of the tile
+            sleep(50);
+        }
+
+        //Cone stack, one cones for now
+        for(int i = 0; i < 1; i++) {
+            driveTrain.moveForward(slide.moveFromPole[i]+0.2, 0.5);//13.5
+            sleep(50);//50
+            claw.close();
+            sleep(150);
+            slide.moveTo(slide.coneLiftHeights[i], 1);//11
+
+            //move back to the pole
+            turret.setPosition(0);//turn turret left
+            slide.moveToWithoutWaiting(14.5, 0.8);//move the slide up on top of low junction 15
+            distanceToPole = driveTrain.moveToPole(true, 1, -0.3);
+            sleep(50);
+
+            distanceToMove = distanceToPole - 3;//3.5
+
+            driveTrain.moveLeft(distanceToMove, 0.5);//Move left closer to the junction -4.2
+            sleep(50);
+
+            //slide down a little to make sure cone is in the pole
+            slide.moveTo(12.2, 1);//12.5
+            claw.open();
+            sleep(50);
+            driveTrain.moveLeft(-distanceToMove + 0.1, 0.5);//Move right away from the junction
+            turret.setPosition(1);//turn turret to the center so cone is on top of junction
+            sleep(380);
+            slide.moveToWithoutWaiting(slide.coneStackHeights[i+1], 0.8);//move the slide down to 3.8 inches
+
+            //log.addData(distanceToPole);
+            //log.update();
+        }
+
 
         //move to cone stack
         driveTrain.moveForward(13.2, 0.5);//13.5
@@ -207,12 +243,9 @@ public class AutoRedLeft extends LinearOpMode {
         driveTrain.moveForward(-1, 0.4);
 
         if(result.left) //left pole is squired
-            driveTrain.moveLeft( result.distance - 11, 0.5);//Move closer to the junction distanceToPole - 11.5
+            driveTrain.moveLeft( result.distance - 11.5, 0.5);//Move closer to the junction distanceToPole - 11.5
         else
-            driveTrain.moveLeft( 3.5 - result.distance, 0.5);//Move closer to the junction distanceToPole - 11.5
-
-        telemetry.addData("current distance", distanceToPole);
-        telemetry.update();
+            driveTrain.moveLeft( 2.5 - result.distance, 0.5);//Move closer to the junction 3.5 - result.distance
 
         sleep(50);
         slide.moveTo(33.7, 1);//Move 34 inches up to be taller than the high junction
@@ -223,23 +256,25 @@ public class AutoRedLeft extends LinearOpMode {
         claw.open();//release cone to go into junction
         sleep(100);
 
-        driveTrain.moveLeft(5, 0.5);//5
+        driveTrain.moveLeft(4.5, 0.5);//5
         sleep(100);
 
         turret.setPosition(1);
-        sleep(250);
-        slide.moveTo(0,1);
+        sleep(250);//250
 
+        slide.moveToWithoutWaiting(0,1);
 
         //Move to area
         if(location == 3) {
-            driveTrain.moveForward(-11, 0.6);//Go to area 1
+            driveTrain.moveForward(-11, 0.7);//0.6 Go to area 1
         }
         else if(location == 1){
-            driveTrain.moveForward(33.5,0.6);//Go to area 3
+            driveTrain.moveForward(33.5,0.7);//Go to area 3
         }
         else{
-            driveTrain.moveForward(11,0.6);
+            driveTrain.moveForward(11,0.7);
         }
+
+        sleep((8000));
     }
 }
