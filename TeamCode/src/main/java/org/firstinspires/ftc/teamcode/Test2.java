@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 @TeleOp(name="Test2", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class Test2 extends LinearOpMode {
 
     @Override

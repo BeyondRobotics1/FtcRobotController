@@ -157,7 +157,7 @@ public class AutoRedLeft extends LinearOpMode {
         double distanceToPole = driveTrain.moveToPole(false,1, 0.3);
         //telemetry.addData("current distance", distanceToPole);
         //telemetry.update();
-        driveTrain.moveForward(-0.5, 0.4);
+        driveTrain.moveForward(-0.4, 0.4);
         driveTrain.moveLeft(2.1 - distanceToPole, 0.5);//Move closer 1.6 to the junction
         sleep(100);//100
 
