@@ -26,7 +26,7 @@ public class Slide {
     //slide positions after grabbing the cones
     static final double coneLiftHeights[] = {11, 9.6, 8.2, 7.5, 7.5};
     //distance for pole to cone stack
-    static final double moveFromPole[] = {13.4, 13.6, 13.6, 13.6, 13.6};
+    static final double moveFromPole[] = {13.7, 13.9, 13.9, 13.9, 13.8};//{13.4, 13.6, 13.6, 13.6, 13.6}
 
     //ground, low, medium, high junction heights
     //slide can move to

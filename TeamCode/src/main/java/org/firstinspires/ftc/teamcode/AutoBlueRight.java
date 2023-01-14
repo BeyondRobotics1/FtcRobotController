@@ -78,7 +78,7 @@ public class AutoBlueRight extends LinearOpMode {
         turret.setPosition(1);//turn turret left so cone is on top of junction
         sleep(30);//100
 
-        driveTrain.moveForward(17, 0.8); //push the signal cone away 17
+        driveTrain.moveForward(18, 0.8); //push the signal cone away 17
         sleep(30);//100
         driveTrain.moveForward(-8, 0.8);
         sleep(100);//100
@@ -134,6 +134,8 @@ public class AutoBlueRight extends LinearOpMode {
 
         slide.moveToWithoutWaiting(0, 1);
 
+        driveTrain.moveLeft(1, 0.5);
+        sleep(20);
         if(location == 3)
             driveTrain.moveForward(12 , 0.9);//
         else if (location == 2)

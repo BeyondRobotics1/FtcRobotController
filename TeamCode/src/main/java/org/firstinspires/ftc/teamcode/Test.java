@@ -12,12 +12,6 @@ public class Test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-
-        // Get a reference to our sensor object. It's recommended to use NormalizedColorSensor over
-        // ColorSensor, because NormalizedColorSensor consistently gives values between 0 and 1, while
-        // the values you get from ColorSensor are dependent on the specific sensor you're using.
-        NormalizedColorSensor colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
-
         //drive train
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
         driveTrain.resetAndRunUsingEncoder();
