@@ -27,11 +27,12 @@ public class TeleOp1 extends LinearOpMode {
         ////our robot hardware
         telemetry.addLine("Initializing drive train");
         telemetry.update();
-        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, false);
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
 
         telemetry.addLine("Initializing slide, turret, and claw");
         telemetry.update();
         Slide slide = new Slide(hardwareMap, this);
+        slide.setImu(driveTrain.getImu());
         slide.runWithEncoder();
 
         Turret turret = new Turret(hardwareMap, slide);
@@ -110,7 +111,10 @@ public class TeleOp1 extends LinearOpMode {
             }
 
             //drive train
-            driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            if(gamepad1.left_bumper)
+                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            else
+                driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             //telemetry.update();
 
