@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 /**
  * Slide class models robot's slide mechanism which includes two motors and two touch sensors
@@ -16,9 +21,27 @@ public class Slide {
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
 
+    //slide positions before grabbing the cones
+    static final double coneStackHeights[] = {5.2, 3.8, 2.4, 1.2, 0};
+    //slide positions after grabbing the cones
+    static final double coneLiftHeights[] = {11, 9.6, 8.2, 7.5, 7.5};
+    //distance for pole to cone stack
+    static final double moveFromPole[] = {13.7, 13.9, 13.9, 13.9, 13.8};//{13.4, 13.6, 13.6, 13.6, 13.6}
+
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 14.5, 24, 34};
+    double junctionPoleHeights[] = {0, 14.2, 23.4, 33.4};
+
+    enum SlideMode
+    {
+        AUTO_UP,
+        AUTO_DOWN,
+        AUTO_STAY,
+        MANUAL;
+    }
+    int autoTargetPosition = 0;
+    SlideMode activeMode = SlideMode.AUTO_STAY;
+
 
     //two motors powering the slide
     DcMotorEx slideMotor1;
@@ -28,11 +51,18 @@ public class Slide {
     DigitalChannel touchSensorLowLimit;
     DigitalChannel touchSensorHighLimit;
 
+    // The IMU sensor object
+    // We will use its pitch angle for pitching control
+    IMU imu;
+
+    LinearOpMode mode;
+
     /**
      * Constructor
      * @param hardwareMap: used for sensor, motor, and telemetry
      */
-    public Slide(HardwareMap hardwareMap){
+    public Slide(HardwareMap hardwareMap, LinearOpMode mode){
+        this.mode = mode;
 
         //low and high limit touch sensor
         touchSensorLowLimit =  hardwareMap.get(DigitalChannel.class, "limit_low");
@@ -64,6 +94,14 @@ public class Slide {
         //In the mode, the Control Hub uses the encoder to manage the motor's speed.
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     * set the slide imu
+     * @param imu
+     */
+    public void setImu(IMU imu){
+        this.imu = imu;
     }
 
     /**
@@ -102,26 +140,6 @@ public class Slide {
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Move slide up/down using RUN_TO_POSITION mode
-     * This method will not wait for motors to reach the target position
-     * @param inches: inches to move up
-     * @param speed: power for motors
-     */
-    public void moveToWithNoWait(double inches, double speed)
-    {
-        // Determine new target position, and pass to motor controller
-        int newPosition = (int)(inches * COUNTS_PER_INCH);
-        slideMotor1.setTargetPosition(newPosition);
-        slideMotor2.setTargetPosition(newPosition);
-
-        // Turn On RUN_TO_POSITION
-        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        slideMotor1.setPower(speed);
-        slideMotor2.setPower(speed);
-    }
 
     /**
      * Move to specific junction position
@@ -137,11 +155,117 @@ public class Slide {
     }
 
     /**
-     * Move slide up and down
-     * @param power negative move down, positive move up
+     * Move to specific position without waiting for motor to finish
+     * @param inches: inches to move
+     * @param speed: motor power
      */
+    public void moveToWithoutWaiting(double inches, double speed)
+    {
+        //calc the target position
+        autoTargetPosition = (int)(inches * COUNTS_PER_INCH);
+
+        int currentPosition = slideMotor1.getCurrentPosition();
+
+        //if the target position and current position are the same
+        //Set the current state as AUTO_STAY
+        if(autoTargetPosition == currentPosition) {
+            activeMode = SlideMode.AUTO_STAY;
+            return;
+        }
+        else if(autoTargetPosition > currentPosition) //move up
+        {
+            //Set the current state as AUTO_UP
+            activeMode = SlideMode.AUTO_UP;
+        }
+        else { //move down
+            //Set the current state as AUTO_DOWN
+            activeMode = SlideMode.AUTO_DOWN;
+        }
+
+        //set target position
+        slideMotor1.setTargetPosition(autoTargetPosition);
+        slideMotor2.setTargetPosition(autoTargetPosition);
+
+        //set motor as RUN_TO_POSITION
+        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //Power on
+        slideMotor1.setPower(speed);
+        slideMotor2.setPower(speed);
+    }
+
+    /**
+     * Move to specific junction position without waiting for motor to finish
+     * @param junction: 0 - ground, 1 - low, 2 - medium, 3 - high junction
+     * @param speed: motor power
+     */
+    public void moveToJunctionWithoutWaiting(int junction, double speed)
+    {
+        //junction id should be 0, 1, 2, or 3
+        if(junction < 0 || junction > 3)
+            return;
+
+        moveToWithoutWaiting(junctionPoleHeights[junction], speed);
+    }
+
+    /**
+     * Call this function in op loop to stop motors if position
+     * is reached or touch sensor is pressed down
+     */
+    public void autoMoveToWithoutWaitingLoop() {
+        //
+        if(activeMode == SlideMode.AUTO_UP ||
+                activeMode == SlideMode.AUTO_DOWN) {
+
+            int currentPosition = slideMotor1.getCurrentPosition();
+            boolean targetPositionReached = false;
+
+//            mode.telemetry.addData("Target position", autoTargetPosition);
+//            mode.telemetry.addData("current position", currentPosition);
+//            mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
+//            mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+//            mode.telemetry.addData("mode", activeMode);
+//            mode.telemetry.update();
+
+            //slide is moving up
+            //reached the target position or
+            //pressed down the upper limit touch sensor
+            if (activeMode == SlideMode.AUTO_UP)
+            {
+                if(currentPosition >= autoTargetPosition || !touchSensorHighLimit.getState())
+                    targetPositionReached = true;
+            }
+            //slide is moving down
+            //reached the target position or
+            //pressed down the low limit touch sensor
+            else if (currentPosition <= autoTargetPosition || !touchSensorLowLimit.getState()) {
+                targetPositionReached = true;
+            }
+
+            //reach the target position
+            //stop motors
+            if(targetPositionReached)
+            {
+                activeMode = SlideMode.AUTO_STAY;
+
+                slideMotor1.setPower(0);
+                slideMotor2.setPower(0);
+
+                slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+        }
+    }
+
+        /**
+         * Move slide up and down
+         * @param power negative move down, positive move up
+         */
     public void setPower(double power)
     {
+        activeMode = SlideMode.MANUAL;
+
         //set the motors to RUN_USING_ENCODER if not yet
         if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
         {
@@ -149,17 +273,34 @@ public class Slide {
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-        double localPower = Helper.squareWithSign(power);
+        double localPower = Helper.cubicWithSign(power);//Helper.squareWithSign(power);
+
+        //Anti-tipping control kicks in when our side's height is bigger than 20 inches
+        if (getSlideHeightInches() > 20) { //
+            //get the pitch angle of IMU
+            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
+
+            //if pitch angle is greater than 3 degrees, dangerous
+            if (Math.abs(pitchAngle) >= 2.5) {
+                //move slide up to level our robot
+                localPower = 0.5;
+
+                mode.telemetry.addData("local power after", localPower);
+                mode.telemetry.addData("pitch angle", pitchAngle);
+                mode.telemetry.update();
+            }
+        }
 
         //slide move down
-        if(power < -0.01) {
+        if(localPower < -0.01) {
             //low limit touch sensor is pushed
-            if (touchSensorLowLimit.getState() == false)
+            if (!touchSensorLowLimit.getState())
                 localPower = 0;
         }
-        else if(power > 0.01) { //slide move up
+        else if(localPower > 0.01) { //slide move up
             //high limit touch sensor is pushed
-            if (touchSensorHighLimit.getState() == false)
+            if (!touchSensorHighLimit.getState())
                 localPower = 0;
         }
 
@@ -173,6 +314,8 @@ public class Slide {
      */
     public void resetSlide()
     {
+        activeMode = SlideMode.MANUAL;
+
         //set the motors to RUN_USING_ENCODER, otherwise, motor may not move
         if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
         {
@@ -210,5 +353,25 @@ public class Slide {
             return touchSensorLowLimit.getState();
         else
             return  touchSensorHighLimit.getState();
+    }
+
+    private void move(double power)
+    {
+        double localPower = power;
+
+        //slide move down
+        if(power < -0.01) {
+            //low limit touch sensor is pushed
+            if (!touchSensorLowLimit.getState())
+                localPower = 0;
+        }
+        else if(power > 0.01) { //slide move up
+            //high limit touch sensor is pushed
+            if (!touchSensorHighLimit.getState())
+                localPower = 0;
+        }
+
+        slideMotor1.setPower(localPower);
+        slideMotor2.setPower(localPower);
     }
 }

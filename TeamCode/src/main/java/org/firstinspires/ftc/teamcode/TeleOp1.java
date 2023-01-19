@@ -24,78 +24,99 @@ public class TeleOp1 extends LinearOpMode {
         greenLED.setState(true);
         redLED.setState(false);*/
 
-        //drivetrain
-        DriveTrain driveTrain = new DriveTrain(hardwareMap, this);
+        ////our robot hardware
+        telemetry.addLine("Initializing drive train");
+        telemetry.update();
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, true);
 
-        Slide slide = new Slide(hardwareMap);
+        telemetry.addLine("Initializing slide, turret, and claw");
+        telemetry.update();
+        Slide slide = new Slide(hardwareMap, this);
+        slide.setImu(driveTrain.getImu());
+        slide.runWithEncoder();
+
         Turret turret = new Turret(hardwareMap, slide);
+        turret.setToCenterPosition();
+
         Claw claw = new Claw(hardwareMap, this);
 
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
 
-        boolean previousBumperState = gamepad2.right_bumper;
+        //
+        telemetry.addLine("Initialization done, wait for start");
+        telemetry.update();
 
         waitForStart();
 
         if (isStopRequested()) return;
 
+        telemetry.addLine("All ready!!!");
+        telemetry.update();
+
         //restart the timer
         timer.reset();
 
+        boolean previousBumperState   = gamepad2.right_bumper;
         while (opModeIsActive()) {
 
+            boolean currentBumperState  = gamepad2.right_bumper;
+
             //hold right bumper to close the claw
-            boolean currentBumperState = gamepad2.right_bumper;
-            if (currentBumperState){
+            if (currentBumperState)
+            {
                 claw.close();
-                sleep(100);
-                if (claw.holdingCone()&&previousBumperState != currentBumperState)
-                    slide.moveTo(5.5, 1);
+
+//                //when right_trigger is pressed, no auto slide up
+//                if(gamepad2.right_trigger >= 0.5)
+//                {
+//                    claw.close();
+//                }
+//                else {
+//                    claw.close();
+//                    sleep(150);
+//                    if (claw.holdingCone() && previousBumperState != currentBumperState)
+//                        slide.moveTo(slide.getSlideHeightInches() + 5.5, 1);
+//                }
             }
             else //release right bumper to open the claw
                 claw.open();
 
-            previousBumperState = currentBumperState;
+            //previousBumperState  = currentBumperState ;
 
+            //Move slide to specific junction height
+            //left bumper + a dpad key (auto move slide)
+            if(gamepad2.left_bumper) {
+                if (gamepad2.dpad_down)
+                    slide.moveToJunctionWithoutWaiting(0, 1);
+                else if (gamepad2.dpad_left)
+                    slide.moveToJunctionWithoutWaiting(1, 1);
+                else if (gamepad2.dpad_up)
+                    slide.moveToJunctionWithoutWaiting(2, 1);
+                else if (gamepad2.dpad_right)
+                    slide.moveToJunctionWithoutWaiting(3, 1);
+            }
+            else //otherwise left stick y (manual move slide)
+                slide.setPower(-gamepad2.left_stick_y);
 
-
-            //one click slide moves
-            if (gamepad2.dpad_down)
-                slide.moveToJunction(0,1);
-            else if(gamepad2.dpad_left)
-                slide.moveToJunction(1,1);
-            else if(gamepad2.dpad_up)
-                slide.moveToJunction(2,1);
-            else if(gamepad2.dpad_right)
-                slide.moveToJunction(3,1);
-
+            slide.autoMoveToWithoutWaitingLoop();
 
             //Using right stick x and y for turret position
             if (Math.abs(gamepad2.right_stick_y) > 0.8) { //front position
-                turret.setPosition(1);
+                turret.setPositionCheckSlideHeight(1);
             } else if (gamepad2.right_stick_x > 0.8) { //right position
-                turret.setPosition(2);
+                turret.setPositionCheckSlideHeight(2);
             } else if (gamepad2.right_stick_x < -0.8) { //left position
-                turret.setPosition(0);
+                turret.setPositionCheckSlideHeight(0);
             }
 
-            //use left stick y to set the power slide motors
-            double slidePower = -gamepad2.left_stick_y;
-            slide.setPower(slidePower);
-            telemetry.addData("Slide power", slidePower);
-            telemetry.addData("Low Limit Touch Sensor", slide.getTouchSensorState(true));
-            telemetry.addData("High Limit Touch Sensor", slide.getTouchSensorState(false));
-
-            //double slideHeight = arm.getDistanceINCH();
-            //telemetry.addData("Slide height inches", slideHeight );
-            //double leftBackDistance = driveTrain.getDistanceINCH();
-            //telemetry.addData("Left back distance inches",leftBackDistance );
-
             //drive train
-            driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            if(gamepad1.left_bumper)
+                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            else
+                driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            telemetry.update();
+            //telemetry.update();
 
 //            // INDICATION OF ENDGAME START 5 SECOND LATER (WARNING) 100% WORKING
 //            if(timer.time(TimeUnit.SECONDS) >= 85){
