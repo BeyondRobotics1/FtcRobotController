@@ -276,7 +276,7 @@ public class Slide {
         double localPower = Helper.cubicWithSign(power);//Helper.squareWithSign(power);
 
         //Anti-tipping control kicks in when our side's height is bigger than 20 inches
-        if (getSlideHeightInches() > 20) { //
+        if (imu != null && getSlideHeightInches() > 20) { //
             //get the pitch angle of IMU
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
@@ -284,7 +284,7 @@ public class Slide {
             //if pitch angle is greater than 3 degrees, dangerous
             if (Math.abs(pitchAngle) >= 2.5) {
                 //move slide up to level our robot
-                localPower = 0.5;
+                localPower = 0.8;
 
                 mode.telemetry.addData("local power after", localPower);
                 mode.telemetry.addData("pitch angle", pitchAngle);
