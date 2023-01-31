@@ -79,7 +79,7 @@ import org.firstinspires.ftc.teamcode.Helper;
  * to use those parameters.
  */
 @TeleOp(name = "Sensor: IMU", group = "TeleOp")
-//@Disabled   // Comment this out to add to the OpMode list
+@Disabled   // Comment this out to add to the OpMode list
 public class IMUTest extends LinearOpMode
 {
     // The IMU sensor object

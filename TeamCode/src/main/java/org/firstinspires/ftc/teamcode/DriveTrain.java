@@ -46,9 +46,10 @@ public class DriveTrain {
     private double redThreshold = 1.9; // red should be below this value, blue above
 
 
+    //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 0.9;//0.9; //forward/backward power adjustment
-    private double x_power_scale = 0.9;//0.8; //left/right power adjustment, make it slower
+    private double y_power_scale = 0.9; //forward/backward power adjustment
+    private double x_power_scale = 0.9; //left/right power adjustment, make it slower
     private double rx_power_scale = 0.65;//rotation power adjustment, make it slower
 
 
@@ -102,18 +103,23 @@ public class DriveTrain {
         distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
 
         if(hasIMU) {
-            // Retrieve and initialize the IMU.
-            imu = hardwareMap.get(IMU.class, "imu");
+            try {
+                // Retrieve and initialize the IMU.
+                imu = hardwareMap.get(IMU.class, "imu");
 
-            // The next two lines define Hub orientation.
-            RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-            RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+                // The next two lines define Hub orientation.
+                RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+                RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-            RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+                RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
-            // Now initialize the IMU with this mounting orientation
-            // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-            imu.initialize(new IMU.Parameters(orientationOnRobot));
+                // Now initialize the IMU with this mounting orientation
+                // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+                imu.initialize(new IMU.Parameters(orientationOnRobot));
+            } catch (Exception e)
+            {
+                imu = null;
+            }
         }
     }
 
@@ -171,8 +177,8 @@ public class DriveTrain {
         y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
         x *= x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
-        x = Helper.squareWithSign(x);
-        y = Helper.squareWithSign(y);
+        x = Helper.cubicWithSign(x);//squareWithSign(x);
+        y = Helper.cubicWithSign(y);//squareWithSign(y);
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
@@ -192,6 +198,10 @@ public class DriveTrain {
                          double left_stick_x,
                          double right_stick_x) {
 
+        //field centric uses IMU, if no IMU, just do nothing
+        if(imu == null)
+            return;
+
         //
         double y = left_stick_y;
         double x = left_stick_x;
@@ -204,17 +214,14 @@ public class DriveTrain {
             y = 0.0;
 
         y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
-        x *= x_power_scale;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+        x *= x_power_scale * 1.1;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
-        // Read inverse IMU heading, as the IMU heading is CW positive
-        double botHeading = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        //Read heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-        double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-        double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
-        rotX = Helper.squareWithSign(rotX);
-        rotY = Helper.squareWithSign(rotY);
-
+        //Read inverse IMU heading, as the IMU heading is CW positive
+        double rotX = Helper.squareWithSign(x * Math.cos(-botHeading) - y * Math.sin(-botHeading));
+        double rotY = Helper.squareWithSign(x * Math.sin(-botHeading) + y * Math.cos(-botHeading));
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
