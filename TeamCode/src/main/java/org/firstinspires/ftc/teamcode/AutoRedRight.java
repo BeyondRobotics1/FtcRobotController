@@ -65,7 +65,7 @@ public class AutoRedRight extends LinearOpMode {
         //telemetry.addData("current distance", distanceToPole);
         //telemetry.update();
         driveTrain.moveForward(-1, 0.4);
-        driveTrain.moveLeft(-2.3, 0.5);//Move closer distanceToPole - 2.3 to the junction
+        driveTrain.moveLeft(2.3, 0.5);//Move closer distanceToPole - 2.3 to the junction
         sleep(100);//100
 
 
@@ -115,7 +115,7 @@ public class AutoRedRight extends LinearOpMode {
         sleep(50);
 
         if(result.left) //left pole is squired
-            driveTrain.moveLeft( result.distance - 3.5, 0.5);//Move closer to the junction distanceToPole - 3.7
+            driveTrain.moveLeft( result.distance - 1.5, 0.5);//Move closer to the junction distanceToPole - 3.7
         else
             driveTrain.moveLeft( 10.5 - result.distance, 0.5);//Move closer to the junction distanceToPole - 11.5
 
