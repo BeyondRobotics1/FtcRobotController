@@ -53,7 +53,7 @@ public class Slide {
 
     // The IMU sensor object
     // We will use its pitch angle for pitching control
-    IMU imu;
+    IMU imu = null;
 
     LinearOpMode mode;
 
