@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 @TeleOp(name="Test", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class Test extends LinearOpMode {
 
     @Override
