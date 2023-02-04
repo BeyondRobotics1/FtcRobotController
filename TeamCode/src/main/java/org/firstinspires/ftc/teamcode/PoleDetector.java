@@ -30,20 +30,29 @@ public class PoleDetector {
     }
     /**
      *function that does the actual pole counting
+     * this function is called repeatedly by drivetrain in a loop
      * @return The total number of poles detected
      */
     public int detectPoles()
     {
+        //set currentDistance to distance sensor's reading
         currentDistance = distanceSensor.getDistance(DistanceUnit.INCH);
 
-        if(currentDistance <= 10 && currentDistance < previousDistance){//(previousDistance-20)
+        //if current distance is less than 10 and less than previous
+        //pole has been detected
+        //10 is the constant because of the distance between our robot and a
+        //pole is always going to be less than or equal to 10 inches
+        if(currentDistance <= 10 && currentDistance < previousDistance){
+
+            //add 1 to poles counted variable
             polesToDetect++;
 
+            //set previous distance to current
             lastPoleDistance = currentDistance;
         }
 
         previousDistance = currentDistance;
-
+        //return poles counted
         return polesToDetect;
     }
 
