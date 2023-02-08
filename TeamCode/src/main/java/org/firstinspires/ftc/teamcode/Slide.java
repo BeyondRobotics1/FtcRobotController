@@ -26,11 +26,11 @@ public class Slide {
     //slide positions after grabbing the cones
     static final double coneLiftHeights[] = {11, 9.6, 8.2, 7.5, 7.5};
     //distance for pole to cone stack
-    static final double moveFromPole[] = {13.7, 13.9, 13.9, 13.9, 13.8};//{13.4, 13.6, 13.6, 13.6, 13.6}
+    static final double moveFromPole[] = {13.8, 13.9, 13.9, 13.9, 13.8};//{13.7, 13.9, 13.9, 13.9, 13.8}
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 14.2, 23.4, 33.4};
+    double junctionPoleHeights[] = {0, 14.2, 23.4, 33};//{0, 14.2, 23.4, 33.4}
 
     enum SlideMode
     {
