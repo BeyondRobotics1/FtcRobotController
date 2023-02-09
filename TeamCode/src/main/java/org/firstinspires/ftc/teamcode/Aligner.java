@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 /**
  * control code for aligner
  * aligner allows our drivers to see if cones are scorable more easily
- * this code sets the servo locations for up and down
+ * this code sets the servo locations for up and down positions
  */
 
 public class Aligner {
