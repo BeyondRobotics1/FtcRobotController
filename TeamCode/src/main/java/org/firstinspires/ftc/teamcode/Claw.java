@@ -20,6 +20,8 @@ public class Claw {
 
     LinearOpMode mode;//set the telemetry
 
+    boolean isClosed = false;
+
     /**
      * Constructor
       * @param hardwareMap: hardware map for finding claw servos
@@ -59,13 +61,27 @@ public class Claw {
      */
     public void close(){
         setPosition(0.42, 0.58);
+
+        isClosed = true;
     }
 
     /**
      * This function will open the claw
      */
     public void open(){
+
         setPosition(0.57, 0.43);
+
+        isClosed = false;
+    }
+
+    /**
+     *
+     * @return true: claw is set to close position
+     *         false: claw is set to open position
+     */
+    public boolean isClosed() {
+        return isClosed;
     }
 
     /**
