@@ -16,15 +16,51 @@ public class Aligner {
     double downPosition = 0.25;
     LinearOpMode mode;
 
+    int currentPosition = 1; //1 - up, 2 - down
+
+    //constructor
     public Aligner(HardwareMap hardwareMap, LinearOpMode mode){
         bar = hardwareMap.get(Servo.class, "bar");
         this.mode = mode;
 
-    }
-    public void moveUp(){
+        //move the aligner to the up position
         bar.setPosition(upPosition);
+        currentPosition = 1;
     }
+
+    //move the aligner to the up position
+    public void moveUp(){
+
+        if(currentPosition != 1) {
+            bar.setPosition(upPosition);
+            currentPosition = 1;
+        }
+    }
+
+    //move the aligner to the down position
     public void moveDown(){
-        bar.setPosition(downPosition);
+
+        if(currentPosition != 2) {
+            bar.setPosition(downPosition);
+            currentPosition = 2;
+        }
+    }
+
+    //return true is aligner is set to up position
+    public boolean isDownPosition()
+    {
+        if(currentPosition == 2)
+            return true;
+        else
+            return false;
+    }
+
+    //return true is aligner is set to down position
+    public boolean isUpPosition()
+    {
+        if(currentPosition == 1)
+            return true;
+        else
+            return false;
     }
 }
