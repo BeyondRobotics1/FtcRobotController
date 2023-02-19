@@ -9,7 +9,8 @@ public class Turret {
 
     //The left, middle, and right position for arm servo
     //0.265, 0.165, 0.065
-    double turretServoPositions[] = {0.267, 0.167, 0.063};
+    //0.267, 0.167, 0.063
+    double turretServoPositions[] = {0.268, 0.168, 0.063};
 
     Servo servoTurret;
     Slide slide;
@@ -28,9 +29,9 @@ public class Turret {
         //move to a different position
         if (this.turretPosition != turretPosition) {
 
-            //moving to middle
-            if (turretPosition == 1 && this.turretPosition == 0)
-                servoTurret.setPosition(0.165);
+            //from left to middle
+            if (turretPosition == 1 && this.turretPosition == 2)
+                servoTurret.setPosition(0.171);//0.165
             else
                 servoTurret.setPosition(turretServoPositions[turretPosition]);
 
@@ -51,9 +52,9 @@ public class Turret {
             //make sure the slide not in the low positions
             if(slide.getSlideHeightInches() > 13)
             {
-                //moving to middle
-                if (turretPosition == 1 && this.turretPosition == 0)
-                    servoTurret.setPosition(0.165);
+                //right moving to middle
+                if (turretPosition ==1 && this.turretPosition == 2)
+                    servoTurret.setPosition(0.171);//0.165
                 else
                     servoTurret.setPosition(turretServoPositions[turretPosition]);
 
@@ -67,8 +68,8 @@ public class Turret {
      */
     public void setToCenterPosition()
     {
-        int turretPosition = 1;
-        servoTurret.setPosition(0.165);
+        turretPosition = 1;
+        servoTurret.setPosition(turretServoPositions[turretPosition]);
     }
 
     public double getTurretPosition(){

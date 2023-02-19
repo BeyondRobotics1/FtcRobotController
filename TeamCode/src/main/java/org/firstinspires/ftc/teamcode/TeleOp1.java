@@ -40,6 +40,9 @@ public class TeleOp1 extends LinearOpMode {
 
         Claw claw = new Claw(hardwareMap, this);
 
+        Aligner aligner = new Aligner(hardwareMap, this);
+
+
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
 
@@ -115,6 +118,26 @@ public class TeleOp1 extends LinearOpMode {
                 driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+            //aligner control
+            //manual control
+            if (gamepad1.right_bumper)
+                aligner.moveUp();
+            else{
+                //When claw is closed, we will check the slide
+                if (claw.isClosed()) {
+
+                    //if slide is high enough, we will move the aligner down
+                    if (slide.getSlideHeightInches() > 15)
+                        aligner.moveDown();
+                        //otherwise, we will keep the aligner up
+                    else
+                        aligner.moveUp();
+                }
+                else//claw is in open position, aligner should be up
+                    aligner.moveUp();
+            }
+
 
             //telemetry.update();
 
