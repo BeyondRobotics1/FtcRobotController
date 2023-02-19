@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Aligner {
     Servo bar;
-    double upPosition = 0.95;
+    double upPosition = 1;//0.95
     double downPosition = 0.27;
     LinearOpMode mode;
 

@@ -30,6 +30,7 @@ public class AutoBlueRight extends LinearOpMode {
         turret.setToCenterPosition();
 
         Claw claw = new Claw(hardwareMap, this);
+        Aligner aligner = new Aligner(hardwareMap, this);
 
         //April tag detector
         telemetry.addLine("Initializing camera");
@@ -63,7 +64,7 @@ public class AutoBlueRight extends LinearOpMode {
         slide.moveTo(7.5, 1);//Move slide up by 8 inches, ready to turn the turret
         turret.setPosition(0);//turn turret left so cone is on top of junction
         slide.moveToWithoutWaiting(24.5, 1);//Move slide up by 5.5 inches
-        driveTrain.moveForwardRamp(33, 0.2, 0.9, 1.25);//Move to (4,3) high junction
+        driveTrain.moveForwardRamp(33, 0.2, 0.9, 1.25);//Move to (4,3) high junction, 1.25
         sleep(100);
 
         double distanceToPole = driveTrain.moveToPole(true,1, 0.3);
@@ -78,9 +79,9 @@ public class AutoBlueRight extends LinearOpMode {
         turret.setPosition(1);//turn turret left so cone is on top of junction
         sleep(30);//100
 
-        driveTrain.moveForward(18, 0.8); //push the signal cone away 17
+        driveTrain.moveForward(18, 0.8); //push the signal cone away 18
         sleep(30);//100
-        driveTrain.moveForward(-8, 0.8);
+        driveTrain.moveForward(-8, 0.8);//back -8
         sleep(100);//100
 
         slide.moveToWithoutWaiting(5.2, 0.8);//move the slide down to 5.5 inches
@@ -125,7 +126,7 @@ public class AutoBlueRight extends LinearOpMode {
             slide.moveTo(12.2, 1);//12
             claw.open();
             sleep(50);
-            driveTrain.moveLeft(distanceToMove-0.5, 0.5);//Move away from the junction distanceToMove-0.4
+            driveTrain.moveLeft(distanceToMove-0.4, 0.5);//Move away from the junction distanceToMove-0.4
             turret.setPosition(1);//turn turret to the center so cone is on top of junction
             sleep(350);//380
             slide.moveToWithoutWaiting(slide.coneStackHeights[i+1], 0.8);//move the slide down to 3.8 inches

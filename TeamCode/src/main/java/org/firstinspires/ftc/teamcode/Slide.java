@@ -26,11 +26,11 @@ public class Slide {
     //slide positions after grabbing the cones
     static final double coneLiftHeights[] = {11, 9.6, 8.2, 7.5, 7.5};
     //distance for pole to cone stack
-    static final double moveFromPole[] = {13.8, 13.9, 13.9, 13.9, 13.8};//{13.7, 13.9, 13.9, 13.9, 13.8}
+    static final double moveFromPole[] = {13.9, 14.1, 14.1, 14.1, 14};//{13.7, 13.9, 13.9, 13.9, 13.8}
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 14.2, 23.4, 33};//{0, 14.2, 23.4, 33.4}
+    double junctionPoleHeights[] = {0, 15.2, 24, 33.8};//{0, 14.2, 23.4, 33.4}
 
     enum SlideMode
     {
@@ -273,7 +273,7 @@ public class Slide {
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-        double localPower = Helper.cubicWithSign(power);//Helper.squareWithSign(power);
+        double localPower = Helper.squareWithSign(power);//Helper.cubicWithSign(power);//
 
         //Anti-tipping control kicks in when our side's height is bigger than 20 inches
         if (imu != null && getSlideHeightInches() > 20) { //
