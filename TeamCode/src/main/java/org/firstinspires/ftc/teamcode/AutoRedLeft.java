@@ -31,6 +31,7 @@ public class AutoRedLeft extends LinearOpMode {
         turret.setToCenterPosition();
 
         Claw claw = new Claw(hardwareMap, this);
+        Aligner aligner = new Aligner(hardwareMap, this);
 
         //April tag detector
         telemetry.addLine("Initializing camera");
@@ -228,7 +229,7 @@ public class AutoRedLeft extends LinearOpMode {
 
 
         //move to cone stack
-        driveTrain.moveForward(13.2, 0.5);//13.5
+        driveTrain.moveForward(14, 0.5);//13.2
         sleep(50);
         claw.close();
         sleep(150);
@@ -242,10 +243,22 @@ public class AutoRedLeft extends LinearOpMode {
         sleep(50);
         driveTrain.moveForward(-1, 0.4);
 
-        if(result.left) //left pole is squired
-            driveTrain.moveLeft( result.distance - 11.5, 0.5);//Move closer to the junction distanceToPole - 11.5
+//        if(result.left) //left pole is squared first
+//            driveTrain.moveLeft( result.distance - 11.5, 0.5);//Move closer to the junction distanceToPole - 11.5
+//        else
+//            driveTrain.moveLeft( 2.5 - result.distance, 0.5);//Move closer to the junction 3.5 - result.distance
+
+        sleep(50);
+        double leftDistance = driveTrain.getLeftDistanceINCH();
+        double rightDistance = driveTrain.getRightDistanceINCH();
+
+        if(rightDistance < 10)
+            driveTrain.moveLeft( 2.5 - rightDistance, 0.5);//Move closer to the junction 3.5 - result.distance
+        else if(leftDistance < 10)
+            driveTrain.moveLeft( leftDistance - 11.5, 0.5);//Move closer to the junction distanceToPole - 11.5
         else
-            driveTrain.moveLeft( 2.5 - result.distance, 0.5);//Move closer to the junction 3.5 - result.distance
+            driveTrain.moveLeft( -4.2, 0.5);
+
 
         sleep(50);
         slide.moveTo(33.7, 1);//Move 34 inches up to be taller than the high junction

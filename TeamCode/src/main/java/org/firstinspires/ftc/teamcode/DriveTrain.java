@@ -328,7 +328,7 @@ public class DriveTrain {
     }
 
     /**
-     * Rumping up/down
+     * Rumping up/down, based on our FLL code
      * @param howMuch: howMuch is in inches. A negative howMuch moves backward.
      * @param speedMin: minimum speed
      * @param speedMax: maximum speed
@@ -474,15 +474,30 @@ public class DriveTrain {
      */
     public void turnToGyroHeading(int targetHeading, double speed)
     {
-        //if there is no imu, do nothing
-        if(imu == null)
+        //if there is no imu, use encoder turn
+        if(imu == null) {
+            turnClockwise(-targetHeading, speed);
             return;
+        }
 
         //current heading
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
         if(botHeading == targetHeading)
             return;
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets (clock wise, the reverse direction of IMU)
+        lfPos -= targetHeading * COUNTS_PER_DEGREE;
+        rfPos += targetHeading * COUNTS_PER_DEGREE;
+        lrPos -= targetHeading * COUNTS_PER_DEGREE;
+        rrPos += targetHeading * COUNTS_PER_DEGREE;
+
 
         setRunUsingEncoder();
 
@@ -495,15 +510,52 @@ public class DriveTrain {
             setMotorPower(-speed, speed, -speed, speed);
         }
 
+        int bad_yaw_count = 0;
+
         //adjust the adjust (0.92 default) as needed
         while (Math.abs(targetHeading * 0.92 - botHeading) > 1) {
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+            if(Math.abs(botHeading) <= 0.01)
+                bad_yaw_count++;
+
+            //IMU stuck at 0
+            if(bad_yaw_count >= 12)
+                break;
         }
 
 //        mode.telemetry.addData("Heading", botHeading);
 //        mode.telemetry.update();
 
-        setMotorPower(0, 0, 0, 0);
+        //bad IMU, just turn targetHeading
+        if(bad_yaw_count >= 12)
+        {
+            setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+
+            setRunToPosition();
+            setMotorPower(speed, speed, speed, speed);
+
+            // wait for move to complete
+            while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                    motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            }
+            // Stop all motion;
+            setMotorPower(0, 0, 0, 0);
+
+            setRunUsingEncoder();
+
+            mode.telemetry.addData("BAD IMU", bad_yaw_count);
+            mode.telemetry.addData("Heading", botHeading);
+            mode.telemetry.update();
+        }
+        else {
+            setMotorPower(0, 0, 0, 0);
+
+            mode.telemetry.addData("GOOD IMU", bad_yaw_count);
+            mode.telemetry.addData("Heading", botHeading);
+            mode.telemetry.update();
+        }
     }
 
     /**

@@ -60,12 +60,24 @@ public class Test extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            if(gamepad1.right_bumper){
-                aligner.moveDown();
-            }
-            else{
-                aligner.moveUp();
-            }
+
+//
+//
+//            if(gamepad1.right_bumper) {
+//                sleep(10000);
+//
+//                SquareToPoolResult result = driveTrain.squareToPoles(1, -0.1, 5000);
+//                telemetry.addData("left pole", result.left);
+//                telemetry.addData("current distance", result.distance);
+//                telemetry.update();
+//            }
+
+//            if(gamepad1.right_bumper){
+//                aligner.moveDown();
+//            }
+//            else{
+//                aligner.moveUp();
+//            }
 
             //slide.moveTo(5, 0.8);
             //sleep(5000);
@@ -102,19 +114,20 @@ public class Test extends LinearOpMode {
 //                slide.setPower(-gamepad2.left_stick_y);
 //
 //
-//            //turn test
-//            if(gamepad2.y)
-//                driveTrain.moveLeft(10, .5);
-//                //driveTrain.turnToGyroHeading(90, 0.5);
-//            if(gamepad2.x)
-//                driveTrain.moveLeft(5, .5);
-//                //driveTrain.turnToGyroHeading(-90, 0.5);
-//            if(gamepad2.b)
-//                driveTrain.moveLeft(-10, .5);
-//                //driveTrain.turnToGyroHeading(0, 0.5);
-//            if(gamepad2.a)
-//                driveTrain.moveLeft(-5, .5);
-//                //driveTrain.turnClockwise(90, 0.5);
+            //turn test
+            if(gamepad2.x)
+                //driveTrain.moveLeft(10, .5);
+                driveTrain.turnToGyroHeading(90, 0.5);
+            if(gamepad2.y)
+                //driveTrain.moveLeft(5, .5);
+                driveTrain.turnToGyroHeading(-90, 0.5);
+            if(gamepad2.b)
+                //driveTrain.moveLeft(-10, .5);
+                driveTrain.turnClockwise(90, 0.5);
+            if(gamepad2.a)
+                //driveTrain.moveLeft(-5, .5);
+                driveTrain.turnClockwise(-90, 0.5);
+
 //
 //            //ramp test
 //            if(gamepad1.y)
@@ -136,13 +149,14 @@ public class Test extends LinearOpMode {
 //                sleep(10000);
 //            }
 //
+
+//            sleep(10000);
+//
 //            if(gamepad1.right_bumper) {
-//                SquareToPoolResult result = driveTrain.squareToPoles(1, -0.1, 1000);
+//                SquareToPoolResult result = driveTrain.squareToPoles(1, -0.1, 5000);
 //                telemetry.addData("left pole", result.left);
 //                telemetry.addData("current distance", result.distance);
 //                telemetry.update();
-//
-//                sleep(10000);
 //            }
 //
 //            if(gamepad2.left_bumper) {
@@ -163,11 +177,11 @@ public class Test extends LinearOpMode {
 //                sleep(10000);
 //            }
 //
-//            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
-//            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
-//            telemetry.addData("Font left distance", driveTrain.getFrontLeftDistanceINCH());
-//            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
-//            telemetry.update();
+            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
+            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
+            telemetry.addData("Font left distance", driveTrain.getFrontLeftDistanceINCH());
+            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
+            telemetry.update();
 //
 //            sleep(100);
         }

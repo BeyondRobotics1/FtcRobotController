@@ -128,7 +128,7 @@ public class TeleOp1 extends LinearOpMode {
                 if (claw.isClosed()) {
 
                     //if slide is high enough, we will move the aligner down
-                    if (slide.getSlideHeightInches() > 12.5)
+                    if (slide.getSlideHeightInches() > 15)
                         aligner.moveDown();
                         //otherwise, we will keep the aligner up
                     else
