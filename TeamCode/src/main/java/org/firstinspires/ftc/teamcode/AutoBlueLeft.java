@@ -86,7 +86,7 @@ public class AutoBlueLeft extends LinearOpMode {
         sleep(100);//100
 
         slide.moveToWithoutWaiting(5.2, 0.8);//move the slide down to 5.2 inches
-        driveTrain.turnToGyroHeading(93, 0.5); //turn right 90 degrees
+        driveTrain.turnToGyroHeading(90, 0.5); //turn right 90 degrees
         sleep(100);
 
         //move to pole (1, 2)
