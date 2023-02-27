@@ -179,8 +179,8 @@ public class Test extends LinearOpMode {
 //
             telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
             telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
-            telemetry.addData("Font left distance", driveTrain.getFrontLeftDistanceINCH());
-            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
+            //telemetry.addData("Font left distance", driveTrain.getFrontLeftDistanceINCH());
+            //telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
             telemetry.update();
 //
 //            sleep(100);
