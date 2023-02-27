@@ -105,7 +105,7 @@ public class DriveTrain {
         if(hasIMU) {
             try {
                 // Retrieve and initialize the IMU.
-                imu = hardwareMap.get(IMU.class, "imu");
+                imu = hardwareMap.get(IMU.class, "imu2");
 
                 // The next two lines define Hub orientation.
                 RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;//.RIGHT;
