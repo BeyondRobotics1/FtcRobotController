@@ -21,8 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class DriveTrain {
 
     //REV 2m distance sensors
-    DistanceSensor distanceSensorFrontLeft;
-    DistanceSensor distanceSensorFrontRight;
+    //DistanceSensor distanceSensorFrontLeft;
+    //DistanceSensor distanceSensorFrontRight;
     DistanceSensor distanceSensorSideLeft;
     DistanceSensor distanceSensorSideRight;
 
@@ -99,8 +99,8 @@ public class DriveTrain {
         //distance sensor
         distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
         distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
-        distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
-        distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
+        //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
+        //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
 
         if(hasIMU) {
             try {
@@ -108,8 +108,8 @@ public class DriveTrain {
                 imu = hardwareMap.get(IMU.class, "imu");
 
                 // The next two lines define Hub orientation.
-                RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-                RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;//.RIGHT;
+                RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;//.UP;
 
                 RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
 
@@ -864,12 +864,14 @@ public class DriveTrain {
 
     //Front Left distance sensor
     public double getFrontLeftDistanceINCH(){
-        return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
+        return 0;
+        //return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
     }
 
     //Front right distance sensor
     public double getFrontRightDistanceINCH(){
-        return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
+        return 0;
+        //return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
     }
 
     public void changeXYPowerScale(double delta)
