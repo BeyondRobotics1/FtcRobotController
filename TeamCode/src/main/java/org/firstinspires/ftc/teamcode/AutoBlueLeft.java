@@ -64,25 +64,26 @@ public class AutoBlueLeft extends LinearOpMode {
         slide.moveToWithoutWaiting(24.5, 1);//Move slide up by 5.5 inches
         driveTrain.moveForwardRamp(33, 0.2, 0.9, 1.25);//Move to (2,2) high junction
         sleep(100);
+        aligner.moveDown();
 
         double distanceToPole = driveTrain.moveToPole(false,1, 0.3);
         sleep(30);
-        driveTrain.moveForward(1.5,0.5);
+        driveTrain.moveForward(1,0.5);
         sleep(30);
         driveTrain.moveLeft(-5,0.5);//Move closer distanceToPole - 3.5 to the junction
         sleep(100);//100
 
-        slide.moveTo(19, 0.8);//Move slide down by 2.5 inches (21.5)
+        slide.moveTo(20, 0.8);//Move slide down by 2.5 inches (21.5)
         driveTrain.moveLeft(2, 0.5);//Move closer distanceToPole - 3.5 to the junction
         //sleep(20);//100
         claw.open();
+        aligner.moveUp();
         driveTrain.moveLeft(3.5, 0.5);//Move closer distanceToPole - 3.5 to the junction
         turret.setPosition(1);//turn turret left so cone is on top of junction
-        sleep(30);//100
 
         driveTrain.moveForward(20, 0.9); //push the signal cone away 17
         sleep(30);//100
-        driveTrain.moveForward(-8, 0.8);
+        driveTrain.moveForward(-9, 0.8); //originally 8 inches
         sleep(100);//100
 
         slide.moveToWithoutWaiting(5.2, 0.8);//move the slide down to 5.2 inches
@@ -131,8 +132,8 @@ public class AutoBlueLeft extends LinearOpMode {
             //log.addData(distanceToPole);
             //log.update();
         }
-
-
+//
+//
         driveTrain.moveLeft(-1, 0.5);//Move away from the junction
         slide.moveToWithoutWaiting(0, 1);
         if(location == 1)
@@ -144,10 +145,6 @@ public class AutoBlueLeft extends LinearOpMode {
 
 
         sleep(8000);
-
-
-
-
 
 /*
 
