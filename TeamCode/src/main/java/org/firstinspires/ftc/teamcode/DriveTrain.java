@@ -513,7 +513,7 @@ public class DriveTrain {
         int bad_yaw_count = 0;
 
         //adjust the adjust (0.92 default) as needed
-        while (Math.abs(targetHeading * 0.92 - botHeading) > 1) {
+        while (Math.abs(targetHeading * 0.89 - botHeading) > 1) {    //original is 0.92, 0.9 works a bit better than 0.92
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
             if(Math.abs(botHeading) <= 0.01)

@@ -117,10 +117,10 @@ public class Test extends LinearOpMode {
             //turn test
             if(gamepad2.x)
                 //driveTrain.moveLeft(10, .5);
-                driveTrain.turnToGyroHeading(90, 0.5);
+                driveTrain.turnToGyroHeading(90, 0.5); //original 90
             if(gamepad2.y)
                 //driveTrain.moveLeft(5, .5);
-                driveTrain.turnToGyroHeading(-90, 0.5);
+                driveTrain.turnToGyroHeading(-90, 0.5); // original -90
             if(gamepad2.b)
                 //driveTrain.moveLeft(-10, .5);
                 driveTrain.turnClockwise(90, 0.5);
