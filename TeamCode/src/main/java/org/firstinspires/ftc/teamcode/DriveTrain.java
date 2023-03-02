@@ -99,8 +99,8 @@ public class DriveTrain {
         //distance sensor
         distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
         distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
-        distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
-        distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
+        distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
+        distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
 
         if(hasIMU) {
             try {
