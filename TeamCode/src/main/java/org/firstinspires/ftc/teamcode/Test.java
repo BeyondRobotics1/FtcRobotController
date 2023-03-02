@@ -127,7 +127,8 @@ public class Test extends LinearOpMode {
             if(gamepad2.a)
                 //driveTrain.moveLeft(-5, .5);
                 driveTrain.turnClockwise(-90, 0.5);
-
+            if(gamepad1.dpad_up)
+                driveTrain.wallSquaring(0.3, 0);
 //
 //            //ramp test
 //            if(gamepad1.y)
@@ -179,8 +180,8 @@ public class Test extends LinearOpMode {
 //
             telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
             telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
-            //telemetry.addData("Font left distance", driveTrain.getFrontLeftDistanceINCH());
-            //telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
+            telemetry.addData("Front left distance", driveTrain.getFrontLeftDistanceINCH());
+            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
             telemetry.update();
 //
 //            sleep(100);

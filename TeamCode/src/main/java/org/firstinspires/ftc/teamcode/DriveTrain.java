@@ -21,8 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class DriveTrain {
 
     //REV 2m distance sensors
-    //DistanceSensor distanceSensorFrontLeft;
-    //DistanceSensor distanceSensorFrontRight;
+    DistanceSensor distanceSensorFrontLeft;
+    DistanceSensor distanceSensorFrontRight;
     DistanceSensor distanceSensorSideLeft;
     DistanceSensor distanceSensorSideRight;
 
@@ -99,8 +99,8 @@ public class DriveTrain {
         //distance sensor
         distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
         distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
-        //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
-        //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
+        distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
+        distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsRightForward");
 
         if(hasIMU) {
             try {
@@ -480,10 +480,13 @@ public class DriveTrain {
             return;
         }
 
+
+        double targetHeadingScaled = targetHeading * 0.89;
+
         //current heading
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-        if(botHeading == targetHeading)
+        if(Math.abs(targetHeadingScaled - botHeading) < 1)
             return;
 
         // fetch motor positions
@@ -513,7 +516,7 @@ public class DriveTrain {
         int bad_yaw_count = 0;
 
         //adjust the adjust (0.92 default) as needed
-        while (Math.abs(targetHeading * 0.89 - botHeading) > 1) {    //original is 0.92, 0.9 works a bit better than 0.92
+        while (Math.abs(targetHeadingScaled - botHeading) > 1) {    //original is 0.92, 0.9 works a bit better than 0.92
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
             if(Math.abs(botHeading) <= 0.01)
@@ -851,6 +854,24 @@ public class DriveTrain {
         //}
     }
 
+    public void wallSquaring(double speed, int timeoutms){
+        if (Math.abs (getFrontLeftDistanceINCH()-getFrontRightDistanceINCH()) < 0.3)
+            return;
+
+        if (getFrontLeftDistanceINCH()<getFrontRightDistanceINCH()){
+            setMotorPower(-speed, speed, -speed, speed);
+        }
+        else{
+            setMotorPower(speed, -speed, speed, -speed);
+        }
+        while (Math.abs (getFrontLeftDistanceINCH()-getFrontRightDistanceINCH()) > 0.3){
+            ;
+        }
+
+        setMotorPower(0,0,0,0);
+
+    }
+
 
     //Left distance sensor
     public double getLeftDistanceINCH(){
@@ -864,14 +885,12 @@ public class DriveTrain {
 
     //Front Left distance sensor
     public double getFrontLeftDistanceINCH(){
-        return 0;
-        //return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
+        return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
     }
 
     //Front right distance sensor
     public double getFrontRightDistanceINCH(){
-        return 0;
-        //return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
+        return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
     }
 
     public void changeXYPowerScale(double delta)
