@@ -411,7 +411,7 @@ public class DriveTrain {
      * @param speed motor speed
      */
     public void moveForwardWithGyro(double howMuch, double speed) {
-        //if there is no imu, do nothing
+        //if there is no imu, do nothin
         if(imu == null)
             return;
 
