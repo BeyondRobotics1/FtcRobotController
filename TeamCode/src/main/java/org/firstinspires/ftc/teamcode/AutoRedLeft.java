@@ -62,7 +62,7 @@ public class AutoRedLeft extends LinearOpMode {
         slide.moveTo(7.5, 1);//Move slide up by 8 inches, ready to turn the turret
         turret.setPosition(2);//turn turret right so cone is on top of junction
         slide.moveToWithoutWaiting(24.5, 1);//Move slide up by 5.5 inches
-        driveTrain.moveForwardRamp(33, 0.2, 0.9, 1.25);//Move to (2,2) high junction
+        driveTrain.moveForwardRamp(33, 0.1, 0.8, 1.25);//Move to (2,2) high junction
         sleep(75);//100
         aligner.moveDown();
         sleep(25);
@@ -140,7 +140,7 @@ public class AutoRedLeft extends LinearOpMode {
 
         driveTrain.moveLeft(-1, 0.5);//Move away from the junction
 
-        if(location == 3)
+        if(location == 1)
             driveTrain.moveForward(12 , 0.9);//
         else if (location == 2)
             driveTrain.moveForward(-10, 0.9);//
