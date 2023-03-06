@@ -30,7 +30,7 @@ public class Slide {
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 15.2, 24, 33.8};//{0, 14.2, 23.4, 33.4}
+    double junctionPoleHeights[] = {0, 15.2, 24.2, 34};//{0, 14.2, 24, 33.8}
 
     enum SlideMode
     {
@@ -56,6 +56,9 @@ public class Slide {
     IMU imu = null;
 
     LinearOpMode mode;
+
+    //slide 0 position is reset
+    boolean resetSlideDone = false;
 
     /**
      * Constructor
@@ -258,10 +261,10 @@ public class Slide {
         }
     }
 
-        /**
-         * Move slide up and down
-         * @param power negative move down, positive move up
-         */
+    /**
+     * Move slide up and down manually
+     * @param power negative move down, positive move up
+     */
     public void setPower(double power)
     {
         activeMode = SlideMode.MANUAL;
@@ -295,8 +298,17 @@ public class Slide {
         //slide move down
         if(localPower < -0.01) {
             //low limit touch sensor is pushed
-            if (!touchSensorLowLimit.getState())
+            if (!touchSensorLowLimit.getState()) {
                 localPower = 0;
+
+                //reset the slide 0 position
+                //we want to do this only once
+                if(!resetSlideDone)
+                {
+                    runWithEncoder();
+                    resetSlideDone = true;
+                }
+            }
         }
         else if(localPower > 0.01) { //slide move up
             //high limit touch sensor is pushed
@@ -308,30 +320,30 @@ public class Slide {
         slideMotor2.setPower(localPower);
     }
 
-    /**
-     * Reset the slide to the ground position
-     * it also reset the motors' encoder position back to 0
-     */
-    public void resetSlide()
-    {
-        activeMode = SlideMode.MANUAL;
-
-        //set the motors to RUN_USING_ENCODER, otherwise, motor may not move
-        if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
-        {
-            slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-
-        slideMotor1.setPower(-0.5);
-        slideMotor2.setPower(-0.5);
-
-        //check if the slide reach the ground by checking
-        //low stop limit touch sensor
-        while(touchSensorLowLimit.getState())
-            ;
-        runWithEncoder();
-    }
+//    /**
+//     * Reset the slide to the ground position
+//     * it also reset the motors' encoder position back to 0
+//     */
+//    public void resetSlide()
+//    {
+//        activeMode = SlideMode.MANUAL;
+//
+//        //set the motors to RUN_USING_ENCODER, otherwise, motor may not move
+//        if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
+//        {
+//            slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        }
+//
+//        slideMotor1.setPower(-0.5);
+//        slideMotor2.setPower(-0.5);
+//
+//        //check if the slide reach the ground by checking
+//        //low stop limit touch sensor
+//        while(touchSensorLowLimit.getState())
+//            ;
+//        runWithEncoder();
+//    }
 
     /**
      * Get the slide height in inches
@@ -355,23 +367,23 @@ public class Slide {
             return  touchSensorHighLimit.getState();
     }
 
-    private void move(double power)
-    {
-        double localPower = power;
-
-        //slide move down
-        if(power < -0.01) {
-            //low limit touch sensor is pushed
-            if (!touchSensorLowLimit.getState())
-                localPower = 0;
-        }
-        else if(power > 0.01) { //slide move up
-            //high limit touch sensor is pushed
-            if (!touchSensorHighLimit.getState())
-                localPower = 0;
-        }
-
-        slideMotor1.setPower(localPower);
-        slideMotor2.setPower(localPower);
-    }
+//    private void move(double power)
+//    {
+//        double localPower = power;
+//
+//        //slide move down
+//        if(power < -0.01) {
+//            //low limit touch sensor is pushed
+//            if (!touchSensorLowLimit.getState())
+//                localPower = 0;
+//        }
+//        else if(power > 0.01) { //slide move up
+//            //high limit touch sensor is pushed
+//            if (!touchSensorHighLimit.getState())
+//                localPower = 0;
+//        }
+//
+//        slideMotor1.setPower(localPower);
+//        slideMotor2.setPower(localPower);
+//    }
 }

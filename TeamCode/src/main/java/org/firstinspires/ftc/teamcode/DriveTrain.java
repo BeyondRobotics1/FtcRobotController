@@ -21,8 +21,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class DriveTrain {
 
     //REV 2m distance sensors
-    DistanceSensor distanceSensorFrontLeft;
-    DistanceSensor distanceSensorFrontRight;
+    //DistanceSensor distanceSensorFrontLeft;
+    //DistanceSensor distanceSensorFrontRight;
     DistanceSensor distanceSensorSideLeft;
     DistanceSensor distanceSensorSideRight;
 
@@ -99,8 +99,8 @@ public class DriveTrain {
         //distance sensor
         distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
         distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
-        distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
-        distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
+        //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
+        //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
 
         if(hasIMU) {
             try {
@@ -469,26 +469,31 @@ public class DriveTrain {
 
     /**
      * Turn robot to IMU's heading angle
-     * @param targetHeading: turn to gyro target heading, positive counter clock wise, negative clock
+     * @param targetHeadingDegree: turn to gyro target heading in degree,
+     *                           positive counter clockwise, negative clockwise
      * @param speed: turn speed
      */
-    public void turnToGyroHeading(int targetHeading, double speed)
+    public void turnToGyroHeading(int targetHeadingDegree, double speed)
     {
         //if there is no imu, use encoder turn
         if(imu == null) {
-            turnClockwise(-targetHeading, speed);
+            turnClockwise(-targetHeadingDegree, speed);
             return;
         }
 
 
-        double targetHeadingScaled = targetHeading * 0.89;
+        //adjust the heading (0.92 default) as needed
+        double targetHeading = targetHeadingDegree * 0.89;
 
         //current heading
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
-        if(Math.abs(targetHeadingScaled - botHeading) < 1)
+        //check if the target heading and current heading are closer enough
+        //if yes, already reached the target, do nothing
+        if(Math.abs(targetHeading - botHeading) <= 1)
             return;
 
+        //IMU could stuck in 0, in this case, we use regular turn
         // fetch motor positions
         lfPos = motorFrontLeft.getCurrentPosition();
         rfPos = motorFrontRight.getCurrentPosition();
@@ -496,10 +501,10 @@ public class DriveTrain {
         rrPos = motorBackRight.getCurrentPosition();
 
         // calculate new targets (clock wise, the reverse direction of IMU)
-        lfPos -= targetHeading * COUNTS_PER_DEGREE;
-        rfPos += targetHeading * COUNTS_PER_DEGREE;
-        lrPos -= targetHeading * COUNTS_PER_DEGREE;
-        rrPos += targetHeading * COUNTS_PER_DEGREE;
+        lfPos -= targetHeadingDegree * COUNTS_PER_DEGREE;
+        rfPos += targetHeadingDegree * COUNTS_PER_DEGREE;
+        lrPos -= targetHeadingDegree * COUNTS_PER_DEGREE;
+        rrPos += targetHeadingDegree * COUNTS_PER_DEGREE;
 
 
         setRunUsingEncoder();
@@ -515,23 +520,25 @@ public class DriveTrain {
 
         int bad_yaw_count = 0;
 
-        //adjust the adjust (0.92 default) as needed
-        while (Math.abs(targetHeadingScaled - botHeading) > 1) {    //original is 0.92, 0.9 works a bit better than 0.92
+        //keep turning until the difference of target heading and
+        // the current heading yaw angle is no bigger than 1 degree
+        while (Math.abs(targetHeading - botHeading) > 1) {    //original is 0.92, 0.9 works a bit better than 0.92
             botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
+            //is heading stuck at 0
             if(Math.abs(botHeading) <= 0.01)
                 bad_yaw_count++;
 
-            //IMU stuck at 0
-            if(bad_yaw_count >= 12)
+            //IMU stuck at 0,
+            if(bad_yaw_count >= 24)
                 break;
         }
 
 //        mode.telemetry.addData("Heading", botHeading);
 //        mode.telemetry.update();
 
-        //bad IMU, just turn targetHeading
-        if(bad_yaw_count >= 12)
+        //bad IMU, just turn targetHeading (12)
+        if(bad_yaw_count >= 24)
         {
             setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
 
@@ -559,6 +566,53 @@ public class DriveTrain {
             mode.telemetry.addData("Heading", botHeading);
             mode.telemetry.update();
         }
+    }
+
+
+    /**
+     * * Turn robot to IMU's heading angle
+     * @param targetHeading: turn to gyro target heading in degree,
+     *                           positive counter clockwise, negative clockwise
+     * @param speed: turn speed
+     * @param timeOut: timeout in milliseconds
+     */
+    public void fineTuneToGyroHeading(int targetHeading, double speed, int timeOut)
+    {
+        //if there is no imu, do nothing
+        if(imu == null)
+            return;
+
+        //current heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+        //check if the target heading and current heading are closer enough
+        //if yes, already reached the target, do nothing
+        if(Math.abs(targetHeading - botHeading) <= 1)
+            return;
+
+        //We use this timer to check the game time that has elapsed
+        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        if(targetHeading < botHeading) //turn  clock wise
+        {
+            setMotorPower(speed, -speed, speed, -speed);
+        }
+        else if ( targetHeading > botHeading) //turn counter-clock wise
+        {
+            setMotorPower(-speed, speed, -speed, speed);
+        }
+
+        //keep turning until the difference of target heading and
+        // the current heading yaw angle is no bigger than 1 degree
+        while (Math.abs(targetHeading - botHeading) > 1 && //original is 0.92, 0.9 works a bit better than 0.92
+                timer.milliseconds() < timeOut) {
+            botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        }
+
+        setMotorPower(0, 0, 0, 0);
+
+        mode.telemetry.addData("Heading", botHeading);
+        mode.telemetry.update();
     }
 
     /**
@@ -854,6 +908,7 @@ public class DriveTrain {
         //}
     }
 
+    //to be implemented
     public void wallSquaring(double speed, int timeoutms){
         if (Math.abs (getFrontLeftDistanceINCH()-getFrontRightDistanceINCH()) < 0.3)
             return;
@@ -885,12 +940,12 @@ public class DriveTrain {
 
     //Front Left distance sensor
     public double getFrontLeftDistanceINCH(){
-        return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
+        return 0;//return distanceSensorFrontLeft.getDistance(DistanceUnit.INCH);
     }
 
     //Front right distance sensor
     public double getFrontRightDistanceINCH(){
-        return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
+        return 0;//return distanceSensorFrontRight.getDistance(DistanceUnit.INCH);
     }
 
     public void changeXYPowerScale(double delta)

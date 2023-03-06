@@ -78,8 +78,8 @@ import org.firstinspires.ftc.teamcode.Helper;
  * Finally, choose the two correct parameters to define how your Hub is mounted and edit this OpMode
  * to use those parameters.
  */
-@TeleOp(name = "Sensor: IMU", group = "TeleOp")
-//@Disabled   // Comment this out to add to the OpMode list
+@TeleOp(name = "Z IMU Test", group = "TeleOp")
+@Disabled   // Comment this out to add to the OpMode list
 public class IMUTest extends LinearOpMode
 {
     // The IMU sensor object
