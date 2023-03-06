@@ -123,10 +123,12 @@ public class Test extends LinearOpMode {
                 driveTrain.turnToGyroHeading(-90, 0.5); // original -90
             if(gamepad2.b)
                 //driveTrain.moveLeft(-10, .5);
-                driveTrain.turnClockwise(90, 0.5);
+                //driveTrain.turnClockwise(90, 0.5);
+                driveTrain.fineTuneToGyroHeading(90, 0.2, 300);
             if(gamepad2.a)
                 //driveTrain.moveLeft(-5, .5);
-                driveTrain.turnClockwise(-90, 0.5);
+                //driveTrain.turnClockwise(-90, 0.5);
+                driveTrain.fineTuneToGyroHeading(-90, 0.2, 300);
             if(gamepad1.dpad_up)
                 driveTrain.wallSquaring(0.3, 0);
 //
@@ -178,11 +180,11 @@ public class Test extends LinearOpMode {
 //                sleep(10000);
 //            }
 //
-            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
-            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
-            telemetry.addData("Front left distance", driveTrain.getFrontLeftDistanceINCH());
-            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
-            telemetry.update();
+//            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
+//            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
+//            telemetry.addData("Front left distance", driveTrain.getFrontLeftDistanceINCH());
+//            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
+//            telemetry.update();
 //
 //            sleep(100);
         }

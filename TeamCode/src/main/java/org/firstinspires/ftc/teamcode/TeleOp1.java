@@ -90,17 +90,20 @@ public class TeleOp1 extends LinearOpMode {
             //Move slide to specific junction height
             //left bumper + a dpad key (auto move slide)
             if(gamepad2.left_bumper) {
-                if (gamepad2.dpad_down)
-                    slide.moveToJunctionWithoutWaiting(0, 1);
-                else if (gamepad2.dpad_left)
-                    slide.moveToJunctionWithoutWaiting(1, 1);
-                else if (gamepad2.dpad_up)
-                    slide.moveToJunctionWithoutWaiting(2, 1);
-                else if (gamepad2.dpad_right)
-                    slide.moveToJunctionWithoutWaiting(3, 1);
+                slide.setPower(-gamepad2.left_stick_y);
+
             }
             else //otherwise left stick y (manual move slide)
-                slide.setPower(-gamepad2.left_stick_y);
+            {
+                if (gamepad2.dpad_down)
+                    slide.moveToJunctionWithoutWaiting(0, 1); //ground
+                else if (gamepad2.dpad_left)
+                    slide.moveToJunctionWithoutWaiting(1, 1); //low
+                else if (gamepad2.dpad_up)
+                    slide.moveToJunctionWithoutWaiting(2, 1); //medium
+                else if (gamepad2.dpad_right)
+                    slide.moveToJunctionWithoutWaiting(3, 1); //high
+            }
 
             slide.autoMoveToWithoutWaitingLoop();
 
