@@ -10,8 +10,20 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name = "TeleOp1", group = "TeleOp")
 public class TeleOp1 extends LinearOpMode {
 
+    enum SlideOp
+    {
+        GROUND,
+        LOW,
+        MEDIUM,
+        HIGH,
+        SCORE,
+        MANUAL;
+    }
+
     @Override
     public void runOpMode() throws InterruptedException {
+
+
 
         // per Q & A 191,
         //REV Digital LED Indicator (https://www.revrobotics.com/rev-31-2010/) is NOT legal :(
@@ -60,7 +72,10 @@ public class TeleOp1 extends LinearOpMode {
         //restart the timer
         timer.reset();
 
+        SlideOp slideOp = SlideOp.MANUAL;
+
         boolean previousBumperState   = gamepad2.right_bumper;
+
         while (opModeIsActive()) {
 
             boolean currentBumperState  = gamepad2.right_bumper;
@@ -90,19 +105,32 @@ public class TeleOp1 extends LinearOpMode {
             //Move slide to specific junction height
             //left bumper + a dpad key (auto move slide)
             if(gamepad2.left_bumper) {
-                slide.setPower(-gamepad2.left_stick_y);
 
+                if (gamepad2.dpad_down && slideOp != SlideOp.GROUND) {
+                    slideOp = SlideOp.GROUND;
+                    slide.moveToJunctionWithoutWaiting(0, 1); //ground
+                }
+                else if (gamepad2.dpad_left && slideOp != SlideOp.LOW) {
+                    slideOp = SlideOp.LOW;
+                    slide.moveToJunctionWithoutWaiting(1, 1); //low
+                }
+                else if (gamepad2.dpad_up && slideOp != SlideOp.MEDIUM){
+                    slideOp = slideOp.MEDIUM;
+                    slide.moveToJunctionWithoutWaiting(2, 1); //medium//
+                     }
+                else if (gamepad2.dpad_right && slideOp != SlideOp.HIGH) {
+                    slideOp = slideOp.HIGH;
+                    slide.moveToJunctionWithoutWaiting(3, 1); //high
+                }
+            }
+            else if (Math.abs(gamepad2.left_trigger) > 0.5 && slideOp != SlideOp.SCORE){
+                slideOp = slideOp.SCORE;
+                slide.scoreToJunctionWithoutWaiting(0.7);
             }
             else //otherwise left stick y (manual move slide)
             {
-                if (gamepad2.dpad_down)
-                    slide.moveToJunctionWithoutWaiting(0, 1); //ground
-                else if (gamepad2.dpad_left)
-                    slide.moveToJunctionWithoutWaiting(1, 1); //low
-                else if (gamepad2.dpad_up)
-                    slide.moveToJunctionWithoutWaiting(2, 1); //medium
-                else if (gamepad2.dpad_right)
-                    slide.moveToJunctionWithoutWaiting(3, 1); //high
+                slideOp = slideOp.MANUAL;
+                slide.setPower(-gamepad2.left_stick_y);
             }
 
             slide.autoMoveToWithoutWaitingLoop();
