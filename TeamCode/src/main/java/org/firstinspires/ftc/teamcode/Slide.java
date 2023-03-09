@@ -200,6 +200,24 @@ public class Slide {
 
     /**
      * Move to specific junction position without waiting for motor to finish
+     * @param speed: motor power
+     */
+    public void scoreToJunctionWithoutWaiting(double speed)
+    {
+        double currentSlideHeight = getSlideHeightInches();
+
+        if(currentSlideHeight > junctionPoleHeights[3] - 2) //high junction
+            moveToWithoutWaiting(junctionPoleHeights[3] - 2 ,speed);
+        else if(currentSlideHeight > junctionPoleHeights[2] - 2.5 &&
+                currentSlideHeight < junctionPoleHeights[2] + 2) //medium junction
+            moveToWithoutWaiting(junctionPoleHeights[2] - 2 ,speed);
+        else if (currentSlideHeight > junctionPoleHeights[1] - 2.5 &&
+                currentSlideHeight < junctionPoleHeights[1] + 2) //low junction
+            moveToWithoutWaiting(junctionPoleHeights[1] - 2.5 ,speed);
+    }
+
+    /**
+     * Move to specific junction position without waiting for motor to finish
      * @param junction: 0 - ground, 1 - low, 2 - medium, 3 - high junction
      * @param speed: motor power
      */
@@ -270,7 +288,8 @@ public class Slide {
         activeMode = SlideMode.MANUAL;
 
         //set the motors to RUN_USING_ENCODER if not yet
-        if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
+        if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER ||
+                slideMotor2.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
         {
             slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -278,22 +297,22 @@ public class Slide {
 
         double localPower = Helper.squareWithSign(power);//Helper.cubicWithSign(power);//
 
-        //Anti-tipping control kicks in when our side's height is bigger than 20 inches
-        if (imu != null && getSlideHeightInches() > 20) { //
-            //get the pitch angle of IMU
-            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
-
-            //if pitch angle is greater than 3 degrees, dangerous
-            if (Math.abs(pitchAngle) >= 2.5) {
-                //move slide up to level our robot
-                localPower = 0.8;
-
-                mode.telemetry.addData("local power after", localPower);
-                mode.telemetry.addData("pitch angle", pitchAngle);
-                mode.telemetry.update();
-            }
-        }
+//        //Anti-tipping control kicks in when our side's height is bigger than 20 inches
+//        if (imu != null && getSlideHeightInches() > 20) { //
+//            //get the pitch angle of IMU
+//            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+//            double pitchAngle = orientation.getPitch(AngleUnit.DEGREES);
+//
+//            //if pitch angle is greater than 3 degrees, dangerous
+//            if (Math.abs(pitchAngle) >= 2.5) {
+//                //move slide up to level our robot
+//                localPower = 0.8;
+//
+//                mode.telemetry.addData("local power after", localPower);
+//                mode.telemetry.addData("pitch angle", pitchAngle);
+//                mode.telemetry.update();
+//            }
+//        }
 
         //slide move down
         if(localPower < -0.01) {
