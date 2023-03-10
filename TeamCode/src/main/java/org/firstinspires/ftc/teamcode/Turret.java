@@ -9,8 +9,8 @@ public class Turret {
 
     //The left, middle, and right position for arm servo
     //0.265, 0.165, 0.065
-    //0.267, 0.167, 0.063
-    double turretServoPositions[] = {0.268, 0.168, 0.063};
+    //0.268, 0.168, 0.063
+    double turretServoPositions[] = {0.269, 0.168, 0.063};
 
     Servo servoTurret;
     Slide slide;

@@ -70,11 +70,11 @@ public class AutoBlueLeft extends LinearOpMode {
         sleep(30);
         driveTrain.moveForward(1,0.5);//move 1
         sleep(30);
-        driveTrain.moveLeft(-3.5,0.5);//Move closer distanceToPole -5 to the junction
+        driveTrain.moveLeft(-4,0.5);//Move closer distanceToPole -3.5 to the junction
         sleep(100);//100
 
         slide.moveTo(20, 0.8);//Move slide down by 2.5 inches (21.5)
-        driveTrain.moveLeft(2, 0.5);//Move closer distanceToPole 2 to the junction
+        driveTrain.moveLeft(2, 0.5);//Move closer distanceToPole 2.5 to the junction
         claw.open();
         aligner.moveUp();
         driveTrain.moveLeft(3.5, 0.5);//Move closer distanceToPole - 3.5 to the junction
@@ -86,7 +86,7 @@ public class AutoBlueLeft extends LinearOpMode {
         driveTrain.moveForward(-9, 0.8); //originally 8 inches
         sleep(100);//100
 
-        slide.moveToWithoutWaiting(5.2, 0.8);//move the slide down to 5.2 inches
+        slide.moveToWithoutWaiting(5, 0.8);//move the slide down to 5.2 inches
         driveTrain.turnToGyroHeading(90, 0.5); //turn right 90 degrees
         sleep(100);
 
@@ -103,7 +103,7 @@ public class AutoBlueLeft extends LinearOpMode {
 
         //Cone stack, two cones for now
         for(int i = 0; i < 4; i++) {
-            driveTrain.moveForward(slide.moveFromPole[i]+0.2, 0.5);//13.5
+            driveTrain.moveForward(slide.moveFromPole[i], 0.6);//slide.moveFromPole[i]+0.2, 0.5
             sleep(25);//50
             claw.close();
             sleep(110);//150
@@ -111,11 +111,11 @@ public class AutoBlueLeft extends LinearOpMode {
 
             //move back to the pole
             turret.setPosition(0);//turn turret left
-            slide.moveToWithoutWaiting(14.5, 0.8);//move the slide up on top of low junction 15
+            slide.moveToWithoutWaiting(14.75, 0.8);//move the slide up on top of low junction 14.5
             distanceToPole = driveTrain.moveToPole(true, 1, -0.3);
             sleep(40);//50
 
-            distanceToMove = distanceToPole - 3;//3.5
+            distanceToMove = distanceToPole - 2.5;//3
 
             driveTrain.moveLeft(distanceToMove, 0.5);//Move left closer to the junction -4.2
             sleep(40);//50

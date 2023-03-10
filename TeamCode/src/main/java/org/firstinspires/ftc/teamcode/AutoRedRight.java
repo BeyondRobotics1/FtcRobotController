@@ -73,7 +73,7 @@ public class AutoRedRight extends LinearOpMode {
         sleep(100);//300
 
         slide.moveTo(20, 0.8);//Move slide down to 18 in. height
-        driveTrain.moveLeft(-2, 0.5);//Move closer distanceToPole - 3.5 to the junction
+        driveTrain.moveLeft(-2, 0.5);//Move away distanceToPole - 3.5 to the junction
         claw.open();
         aligner.moveUp();
         driveTrain.moveLeft(-3.5, 0.5);//Move closer distanceToPole - 3.5 to the junction
@@ -82,10 +82,10 @@ public class AutoRedRight extends LinearOpMode {
 
         driveTrain.moveForward(18, 0.8); //push the signal cone away 18
         sleep(30);//100
-        driveTrain.moveForward(-8, 0.8);//back -8
+        driveTrain.moveForward(-7.25, 0.8);//back -8
         sleep(100);//100
 
-        slide.moveToWithoutWaiting(5.2, 0.8);//move the slide down to 5.5 inches
+        slide.moveToWithoutWaiting(5, 0.8);//move the slide down to 5 inches
         driveTrain.turnToGyroHeading(-89, 0.5); //turn right 90 degrees
         sleep(100);
 
@@ -93,7 +93,7 @@ public class AutoRedRight extends LinearOpMode {
         distanceToPole = driveTrain.moveToPole(false,1,0.3);
         sleep(50);//100
 
-        double distanceToMove = 5.8 - distanceToPole;//move to center on red line
+        double distanceToMove = 5.3 - distanceToPole;//move to center on red line//5.8 - distanceToPole
         if(Math.abs(distanceToMove) >= 0.4) {
             driveTrain.moveLeft(distanceToMove, 0.5);//Move away 5.5 from the junction to the middle of the tile
             sleep(50);
@@ -111,7 +111,7 @@ public class AutoRedRight extends LinearOpMode {
 //
             //move back to the pole
             turret.setPosition(2);//turn turret right
-            slide.moveToWithoutWaiting(14.5, 0.8);//move the slide up on top of low junction 15
+            slide.moveToWithoutWaiting(14.75, 0.8);//move the slide up on top of low junction 14.5
             distanceToPole = driveTrain.moveToPole(false, 1, -0.3);
             sleep(40);//50
 
