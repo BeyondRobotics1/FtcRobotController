@@ -180,11 +180,11 @@ public class Test extends LinearOpMode {
 //                sleep(10000);
 //            }
 //
-//            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
-//            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
+            telemetry.addData("Side left distance", driveTrain.getLeftDistanceINCH());
+            telemetry.addData("Side right distance", driveTrain.getRightDistanceINCH());
 //            telemetry.addData("Front left distance", driveTrain.getFrontLeftDistanceINCH());
 //            telemetry.addData("Front right distance", driveTrain.getFrontRightDistanceINCH());
-//            telemetry.update();
+            telemetry.update();
 //
 //            sleep(100);
         }
