@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.teamcode.common.Helper;
+
 /**
  * Slide class models robot's slide mechanism which includes two motors and two touch sensors
  */

@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.powerplay;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name="Red Left Side", group="Linear Opmode")
+@Disabled
 public class AutoRedLeft extends LinearOpMode {
 
     @Override
