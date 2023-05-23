@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.powerplay;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name="Blue Left Side", group="Linear Opmode")
-public class AutoBlueLeft extends LinearOpMode {
+@Autonomous(name="Red Left Side", group="Linear Opmode")
+public class AutoRedLeft extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -63,27 +63,27 @@ public class AutoBlueLeft extends LinearOpMode {
         turret.setPosition(2);//turn turret right so cone is on top of junction
         slide.moveToWithoutWaiting(24.5, 1);//Move slide up by 5.5 inches
         driveTrain.moveForwardRamp(33, 0.1, 0.8, 1.25);//Move to (2,2) high junction
-        sleep(100);
+        sleep(100);//100
         aligner.moveDown();
 
         double distanceToPole = driveTrain.moveToPole(false,1, 0.3);
         sleep(30);
-        driveTrain.moveForward(1,0.5);//move 1
+        driveTrain.moveForward(0.5,0.5);
         sleep(30);
-        driveTrain.moveLeft(-4,0.5);//Move closer distanceToPole -3.5 to the junction
+        driveTrain.moveLeft(-3.5,0.5);//Move closer distanceToPole -3.5 to the junction
         sleep(100);//100
 
         slide.moveTo(20, 0.8);//Move slide down by 2.5 inches (21.5)
-        driveTrain.moveLeft(2, 0.5);//Move closer distanceToPole 2.5 to the junction
+        driveTrain.moveLeft(2.5, 0.5);//Move closer 2.5 to the junction
         claw.open();
         aligner.moveUp();
-        driveTrain.moveLeft(3.5, 0.5);//Move closer distanceToPole - 3.5 to the junction
+        driveTrain.moveLeft(3.5, 0.5);//Move closer 3.5 to the junction
         turret.setPosition(1);//turn turret left so cone is on top of junction
         sleep(30);//100
 
         driveTrain.moveForward(19, 0.9); //push the signal cone away 20
         sleep(30);//100
-        driveTrain.moveForward(-9, 0.8); //originally 8 inches
+        driveTrain.moveForward(-9, 0.8); //originally -9 inches
         sleep(100);//100
 
         slide.moveToWithoutWaiting(5, 0.8);//move the slide down to 5.2 inches
@@ -99,8 +99,6 @@ public class AutoBlueLeft extends LinearOpMode {
             sleep(50);
         }
 
-
-
         //Cone stack, two cones for now
         for(int i = 0; i < 4; i++) {
             driveTrain.moveForward(slide.moveFromPole[i], 0.6);//slide.moveFromPole[i]+0.2, 0.5
@@ -113,17 +111,17 @@ public class AutoBlueLeft extends LinearOpMode {
             turret.setPosition(0);//turn turret left
             slide.moveToWithoutWaiting(14.75, 0.8);//move the slide up on top of low junction 14.5
             distanceToPole = driveTrain.moveToPole(true, 1, -0.3);
-            sleep(40);//50
+            sleep(40);
 
-            distanceToMove = distanceToPole - 2.5;//3
+            distanceToMove = distanceToPole - 2.5;// original is 3
 
             driveTrain.moveLeft(distanceToMove, 0.5);//Move left closer to the junction -4.2
-            sleep(40);//50
+            sleep(40);
 
             //slide down a little to make sure cone is in the pole
             slide.moveTo(12.1, 1);//12.2
             claw.open();
-            sleep(40);//50
+            sleep(40);
             driveTrain.moveLeft(-distanceToMove + 0.1, 0.5);//Move right away from the junction
             turret.setPosition(1);//turn turret to the center so cone is on top of junction
             sleep(325);//350
@@ -132,25 +130,24 @@ public class AutoBlueLeft extends LinearOpMode {
             //log.addData(distanceToPole);
             //log.update();
         }
-//
-//
+////
+////
         slide.moveToWithoutWaiting(0, 1);
 
-        //driveTrain.moveLeft(-1, 0.5);//Move away from the junction
+        driveTrain.moveLeft(-1, 0.5);//Move away from the junction
 
         if(location == 1)
             driveTrain.moveForward(12 , 0.9);//
         else if (location == 2)
-            driveTrain.moveForward(-12, 0.9);//
+            driveTrain.moveForward(-10, 0.9);//
         else {
             driveTrain.fineTuneToGyroHeading(90, 0.2, 300);
             sleep(40);
-            driveTrain.moveForward(-33, 0.9);//
+            driveTrain.moveForward(-32.5, 0.9);//-33, 0.9
         }
 
-
         sleep(8000);
-
+//
 /*
 
         //grab the cone
