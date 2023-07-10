@@ -41,7 +41,7 @@ public class Arm {
 
     //The left, middle, and right position for arm servo
     //0.265, 0.165, 0.065
-    double turretServoPositions[] = {0.267, 0.167, 0.063};
+    double[] turretServoPositions = {0.267, 0.167, 0.063};
 
     //DistanceSensor distanceSensor;
     Servo servoTurret;

@@ -16,7 +16,7 @@ public class TeleOp1 extends LinearOpMode {
         MEDIUM,
         HIGH,
         SCORE,
-        MANUAL;
+        MANUAL
     }
 
     @Override
@@ -114,21 +114,21 @@ public class TeleOp1 extends LinearOpMode {
                     slide.moveToJunctionWithoutWaiting(1, 1); //low
                 }
                 else if (gamepad2.dpad_up && slideOp != SlideOp.MEDIUM){
-                    slideOp = slideOp.MEDIUM;
+                    slideOp = SlideOp.MEDIUM;
                     slide.moveToJunctionWithoutWaiting(2, 1); //medium//
                      }
                 else if (gamepad2.dpad_right && slideOp != SlideOp.HIGH) {
-                    slideOp = slideOp.HIGH;
+                    slideOp = SlideOp.HIGH;
                     slide.moveToJunctionWithoutWaiting(3, 1); //high
                 }
             }
             else if (Math.abs(gamepad2.left_trigger) > 0.5 && slideOp != SlideOp.SCORE){
-                slideOp = slideOp.SCORE;
+                slideOp = SlideOp.SCORE;
                 slide.scoreToJunctionWithoutWaiting(0.7);
             }
             else //otherwise left stick y (manual move slide)
             {
-                slideOp = slideOp.MANUAL;
+                slideOp = SlideOp.MANUAL;
                 slide.setPower(-gamepad2.left_stick_y);
             }
 

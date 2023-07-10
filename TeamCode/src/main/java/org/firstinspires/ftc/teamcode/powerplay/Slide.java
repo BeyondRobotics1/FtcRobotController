@@ -21,22 +21,22 @@ public class Slide {
             (PULLEY_DIAMETER_INCHES * 3.1415);
 
     //slide positions before grabbing the cones
-    static final double coneStackHeights[] = {5.2, 3.8, 2.4, 1.2, 0};
+    static final double[] coneStackHeights = {5.2, 3.8, 2.4, 1.2, 0};
     //slide positions after grabbing the cones
-    static final double coneLiftHeights[] = {11, 9.6, 8.2, 7.5, 7.5};
+    static final double[] coneLiftHeights = {11, 9.6, 8.2, 7.5, 7.5};
     //distance for pole to cone stack
-    static final double moveFromPole[] = {13.9, 14.1, 14.1, 14.1, 14};//{13.7, 13.9, 13.9, 13.9, 13.8}
+    static final double[] moveFromPole = {13.9, 14.1, 14.1, 14.1, 14};//{13.7, 13.9, 13.9, 13.9, 13.8}
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double junctionPoleHeights[] = {0, 15.2, 24.2, 34};//{0, 14.2, 24, 33.8}
+    double[] junctionPoleHeights = {0, 15.2, 24.2, 34};//{0, 14.2, 24, 33.8}
 
     enum SlideMode
     {
         AUTO_UP,
         AUTO_DOWN,
         AUTO_STAY,
-        MANUAL;
+        MANUAL
     }
     int autoTargetPosition = 0;
     SlideMode activeMode = SlideMode.AUTO_STAY;

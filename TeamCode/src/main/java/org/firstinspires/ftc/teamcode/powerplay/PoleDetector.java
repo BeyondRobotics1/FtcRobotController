@@ -15,7 +15,7 @@ public class PoleDetector {
     //poles to detect setting (defaults to third pole (high junction))
     private int polesToDetect = 0;
     //set up distance sensor
-    private DistanceSensor distanceSensor;
+    private final DistanceSensor distanceSensor;
 
     private double previousDistance = 0;
     private double currentDistance = 322;

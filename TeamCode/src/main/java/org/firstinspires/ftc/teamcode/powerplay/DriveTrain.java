@@ -37,13 +37,13 @@ public class DriveTrain {
 
     LinearOpMode mode;
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     private int lfPos;
     private int rfPos;
     private int lrPos;
     private int rrPos;
-    private double lineThreshold = 0.7; // floor should be below this value, line above
-    private double redThreshold = 1.9; // red should be below this value, blue above
+    private final double lineThreshold = 0.7; // floor should be below this value, line above
+    private final double redThreshold = 1.9; // red should be below this value, blue above
 
 
     //for teleop
@@ -920,7 +920,6 @@ public class DriveTrain {
             setMotorPower(speed, -speed, speed, -speed);
         }
         while (Math.abs (getFrontLeftDistanceINCH()-getFrontRightDistanceINCH()) > 0.3){
-            ;
         }
 
         setMotorPower(0,0,0,0);
