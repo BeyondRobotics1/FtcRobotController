@@ -105,11 +105,11 @@ public class AutoBlueRight extends LinearOpMode {
 
         //Cone stack, two cones for now
         for(int i = 0; i < 4; i++) {
-            driveTrain.moveForward(slide.moveFromPole[i], 0.6);//speed 0.5
+            driveTrain.moveForward(Slide.moveFromPole[i], 0.6);//speed 0.5
             sleep(25);//50
             claw.close();
             sleep(110);//150
-            slide.moveTo(slide.coneLiftHeights[i], 1);//11
+            slide.moveTo(Slide.coneLiftHeights[i], 1);//11
 
             //move back to the pole
             turret.setPosition(2);//turn turret right
@@ -132,7 +132,7 @@ public class AutoBlueRight extends LinearOpMode {
             driveTrain.moveLeft(distanceToMove-0.4, 0.5);//Move away from the junction distanceToMove-0.4
             turret.setPosition(1);//turn turret to the center so cone is on top of junction
             sleep(325);//350
-            slide.moveToWithoutWaiting(slide.coneStackHeights[i+1], 0.8);//move the slide down to 3.8 inches
+            slide.moveToWithoutWaiting(Slide.coneStackHeights[i+1], 0.8);//move the slide down to 3.8 inches
 
             //log.addData(distanceToPole);
             //log.update();

@@ -49,18 +49,12 @@ public class Aligner {
     //return true is aligner is set to up position
     public boolean isDownPosition()
     {
-        if(currentPosition == 2)
-            return true;
-        else
-            return false;
+        return currentPosition == 2;
     }
 
     //return true is aligner is set to down position
     public boolean isUpPosition()
     {
-        if(currentPosition == 1)
-            return true;
-        else
-            return false;
+        return currentPosition == 1;
     }
 }

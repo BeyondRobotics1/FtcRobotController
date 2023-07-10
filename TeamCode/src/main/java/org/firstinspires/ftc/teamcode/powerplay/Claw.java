@@ -97,9 +97,6 @@ public class Claw {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
         //use color sensor's alpha to detect if there is a cone or not
-        if(colors.alpha > 0.5)
-            return true;
-        else
-            return false;
+        return colors.alpha > 0.5;
     }
 }
