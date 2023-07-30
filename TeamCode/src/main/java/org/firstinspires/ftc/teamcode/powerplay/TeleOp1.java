@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "TeleOp1", group = "TeleOp")
+@TeleOp(name = "Power Play", group = "TeleOp")
 //@Disabled
 public class TeleOp1 extends LinearOpMode {
 
