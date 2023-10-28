@@ -31,8 +31,8 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.688976;   // in (35 mm Rotacadter Omni Wheel)
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 13.99; // in; distance between the left and right dead wheels
-    public static double FORWARD_OFFSET = 0.2; // in; offset of the lateral dead wheel
+    public static double LATERAL_DISTANCE = 11;//13.99; // in; distance between the left and right dead wheels
+    public static double FORWARD_OFFSET = 0.5;//0.2; // in; offset of the lateral dead wheel
 
     public static double X_MULTIPLIER = 1.00387154528; // Multiplier in the X direction
     public static double Y_MULTIPLIER = 1.00998928232; // Multiplier in the Y direction
