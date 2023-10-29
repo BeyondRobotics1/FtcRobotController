@@ -29,18 +29,30 @@ public class MosaicoTeleop extends LinearOpMode {
         MosaicoClaw claw = new MosaicoClaw(hardwareMap, this);
 
 
+
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
             drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            if(gamepad2.right_bumper ){
+                claw.close();
+            }else if (!gamepad2.right_bumper ){
+                claw.open();
+            }
 
             //hold right bumper to close the claw
-            //release right bumper to open the claw
+
+            //release right bumper to open the clawh
             //TBD
 
             //hold left bumper to keep the claw at down position
+            if(!gamepad2.left_bumper ){
+                claw.rotate_down();
+            }else if(gamepad2.left_bumper){
+                claw.rotate_up();
+            }
             //release left bumper to keep the claw at the up position
             //TBD
         }
