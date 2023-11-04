@@ -39,15 +39,20 @@ public class MosaicoTeleop extends LinearOpMode {
 
             if(gamepad2.right_bumper ){
                 claw.close();
-            }else if (!gamepad2.right_bumper ){
+            }
+            else if (!gamepad2.right_bumper ){
                 claw.open();
             }
 
             //hold left bumper to keep the claw at down position
             if(!gamepad2.left_bumper ){
                 claw.rotate_down();
-            }else if(gamepad2.left_bumper){
+            }
+            else if(gamepad2.left_bumper){
                 claw.rotate_up();
+            }
+            else if(gamepad2.dpad_down){
+                claw.rotate_middle();
             }
             //release left bumper to keep the claw at the up position
            slide.setPower(-gamepad2.left_stick_y);

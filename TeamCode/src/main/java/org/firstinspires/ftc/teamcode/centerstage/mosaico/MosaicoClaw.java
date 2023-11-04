@@ -36,14 +36,18 @@ public class MosaicoClaw {
         claw.setPosition(0.095);
     }
 
-    public void rotate_up()
-    {
-        rotor.setPosition(0.65);
+    public void rotate_up(){
+        rotor.setPosition(0.69);
     }
 
     public void rotate_down(){
         rotor.setPosition(0.91);
     }
+
+    public void rotate_middle(){
+        rotor.setPosition(0.75);
+    }
+
 
     {
         //TBD
