@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(group = "mosaico")
 //@Disabled
 public class MosaicoTeleop extends LinearOpMode {
-    public static double DISTANCE = 60; // in
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -40,20 +40,26 @@ public class MosaicoTeleop extends LinearOpMode {
             if(gamepad2.right_bumper ){
                 claw.close();
             }
-            else if (!gamepad2.right_bumper ){
+            else {
                 claw.open();
             }
 
-            //hold left bumper to keep the claw at down position
-            if(!gamepad2.left_bumper && !gamepad2.dpad_down ){
-                claw.rotate_down();
-            }
-            else if(gamepad2.left_bumper){
-                claw.rotate_up();
-            }
-            else if(gamepad2.dpad_down){
-                claw.rotate_middle();
-            }
+            claw.setArmPosition(1 - Math.abs(gamepad2.right_stick_y));
+
+            //hold left bumper or dpad right button to keep the claw at up position
+//            if(gamepad2.left_bumper || gamepad2.dpad_right){
+//                claw.setArmPosition(3); //up
+//            }
+//            else if(gamepad2.dpad_up){
+//                claw.setArmPosition(2);
+//            }
+//            else if(gamepad2.dpad_left){
+//                claw.setArmPosition(1);
+//            }
+//            else
+//                claw.setArmPosition(0); //down
+
+
             //release left bumper to keep the claw at the up position
            slide.setPower(-gamepad2.left_stick_y);
         }

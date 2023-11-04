@@ -6,50 +6,63 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class MosaicoClaw {
 
+    double armPosition[] = {1, 0.7, 0.4, 0};
+    int currentArmPosition = 0;
+
     //servo to close or open the claw
     //close position 0.01,
     //open position 0.095
     Servo claw;
 
     //servo to rotate the claw
-    //down position: 0.91
+    //down position: 0.9
     //up position: 0.65
-    Servo rotor;
+    Servo arm;
 
     LinearOpMode mode;
 
     boolean closed = false;
-    boolean up = false;
 
     public MosaicoClaw (HardwareMap hardwareMap, LinearOpMode mode) {
 
         this.mode = mode;
         claw = hardwareMap.get(Servo.class, "claw");
-        rotor = hardwareMap.get(Servo.class, "rotor");
+        arm = hardwareMap.get(Servo.class, "rotor");
+        arm.scaleRange(0.65, 0.87);
+
+        setArmPosition(1);
     }
 
    public void close(){
-        claw.setPosition(0.01);
+
+        if(!closed) {
+            claw.setPosition(0.01);
+            closed = true;
+        }
     }
 
     public void open(){
-        claw.setPosition(0.095);
+        if(closed) {
+            claw.setPosition(0.095);
+            closed = false;
+        }
     }
 
     public void rotate_up(){
-        rotor.setPosition(0.71);
+        setArmPosition(3);
     }
 
     public void rotate_down(){
-        rotor.setPosition(0.91);
+        setArmPosition(0);
     }
 
     public void rotate_middle(){
-        rotor.setPosition(0.81);
+        setArmPosition(2);
     }
 
-
+    //positionID 0 - down, 1, 2, middle, 3 - up
+    public void setArmPosition(double position)
     {
-        //TBD
+        arm.setPosition(position);
     }
 }
