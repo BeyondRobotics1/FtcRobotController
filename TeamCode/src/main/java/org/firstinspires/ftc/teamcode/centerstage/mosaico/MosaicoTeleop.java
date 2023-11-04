@@ -45,7 +45,7 @@ public class MosaicoTeleop extends LinearOpMode {
             }
 
             //hold left bumper to keep the claw at down position
-            if(!gamepad2.left_bumper ){
+            if(!gamepad2.left_bumper && !gamepad2.dpad_down ){
                 claw.rotate_down();
             }
             else if(gamepad2.left_bumper){
