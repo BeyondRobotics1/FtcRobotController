@@ -15,8 +15,8 @@ public class MosaicoClaw {
     Servo claw;
 
     //servo to rotate the claw
-    //down position: 0.9
-    //up position: 0.65
+    //down position: 0.82
+    //up position: 0.55
     Servo arm;
 
     LinearOpMode mode;
