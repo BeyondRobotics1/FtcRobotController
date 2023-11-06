@@ -44,18 +44,7 @@ public class MosaicoTeleop extends LinearOpMode {
             else {
                 claw.open();
             }
-             //hold left bumper to keep the claw at down position
 
-            if(gamepad2.left_bumper){
-                claw.rotate_up();
-            }
-            else if(gamepad2.dpad_down){
-                claw.rotate_middle();
-            }
-            else{
-                claw.rotate_down();
-            }
-            claw.setArmPosition(1 - Math.abs(gamepad2.right_stick_y));
 
             //hold left bumper or dpad right button to keep the claw at up position
 //            if(gamepad2.left_bumper || gamepad2.dpad_right){
@@ -69,6 +58,8 @@ public class MosaicoTeleop extends LinearOpMode {
 //            }
 //            else
 //                claw.setArmPosition(0); //down
+
+            claw.setArmPosition(1 - Math.abs(gamepad2.right_stick_y));
 
 
             //release left bumper to keep the claw at the up position

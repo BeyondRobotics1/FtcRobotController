@@ -28,7 +28,7 @@ public class MosaicoClaw {
         this.mode = mode;
         claw = hardwareMap.get(Servo.class, "claw");
         arm = hardwareMap.get(Servo.class, "rotor");
-        arm.scaleRange(0.65, 0.87);
+        arm.scaleRange(0.55, 0.82);
 
         setArmPosition(1);
     }
