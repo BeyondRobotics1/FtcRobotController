@@ -15,7 +15,7 @@ public class MosaicoClaw {
     Servo claw;
 
     //servo to rotate the claw
-    //down position: 0.82
+    //down position: 0.8
     //up position: 0.55
     Servo arm;
 
@@ -28,7 +28,10 @@ public class MosaicoClaw {
         this.mode = mode;
         claw = hardwareMap.get(Servo.class, "claw");
         arm = hardwareMap.get(Servo.class, "rotor");
-        arm.scaleRange(0.55, 0.82);
+        arm.scaleRange(0.55, 0.75);
+
+        closed = false;
+        open();
 
         setArmPosition(1);
     }
@@ -36,14 +39,14 @@ public class MosaicoClaw {
    public void close(){
 
         if(!closed) {
-            claw.setPosition(0.01);
+            claw.setPosition(0.4);//0.2
             closed = true;
         }
     }
 
     public void open(){
         if(closed) {
-            claw.setPosition(0.095);
+            claw.setPosition(0.5);//
             closed = false;
         }
     }
