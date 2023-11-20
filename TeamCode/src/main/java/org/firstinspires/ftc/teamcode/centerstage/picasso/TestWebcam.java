@@ -1,4 +1,5 @@
-package org.firstinspires.ftc.teamcode.easyopencv;
+package org.firstinspires.ftc.teamcode.centerstage.picasso;
+
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -17,12 +18,12 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
-@TeleOp(group="Test")
-@Disabled
-public class WebcamExample extends LinearOpMode
+@TeleOp(group="Picasso")
+//@Disabled
+public class TestWebcam extends LinearOpMode
 {
     OpenCvWebcam webcam;
-    SamplePipeline pipeline;
+    org.firstinspires.ftc.teamcode.centerstage.picasso.TestWebcam.SamplePipeline pipeline;
 
     @Override
     public void runOpMode()
@@ -48,7 +49,7 @@ public class WebcamExample extends LinearOpMode
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        pipeline = new SamplePipeline();
+        pipeline = new org.firstinspires.ftc.teamcode.centerstage.picasso.TestWebcam.SamplePipeline();
         webcam.setPipeline(pipeline);
 
         /*
@@ -146,7 +147,7 @@ public class WebcamExample extends LinearOpMode
             }
 
             //if(gamepad1.b)
-             //   pipeline.
+            //   pipeline.
 
             /*
              * For the purposes of this sample, throttle ourselves to 10Hz loop to avoid burning
@@ -202,12 +203,32 @@ public class WebcamExample extends LinearOpMode
             Imgproc.rectangle(
                     input,
                     new Point(
-                            input.cols()/4,
-                            input.rows()/4),
+                            0,
+                            input.rows()/3),
                     new Point(
-                            input.cols()*(3f/4f),
-                            input.rows()*(3f/4f)),
-                    new Scalar(0, 255, 0), 4);
+                            input.cols()*(1f/3f),
+                            input.rows()*(2f/3f)),
+                    new Scalar(0, 255, 0), 2);
+
+            Imgproc.rectangle(
+                    input,
+                    new Point(
+                            input.cols()/3,
+                            input.rows()/3),
+                    new Point(
+                            input.cols()*(2f/3f),
+                            input.rows()*(2f/3f)),
+                    new Scalar(0, 255, 0), 2);
+
+            Imgproc.rectangle(
+                    input,
+                    new Point(
+                            2*input.cols()/3,
+                            input.rows()/3),
+                    new Point(
+                            input.cols(),
+                            input.rows()*(2f/3f)),
+                    new Scalar(0, 255, 0), 2);
 
             /**
              * NOTE: to see how to get data from your pipeline to your OpMode as well as how
