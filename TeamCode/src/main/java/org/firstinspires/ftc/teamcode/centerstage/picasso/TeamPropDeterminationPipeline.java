@@ -109,9 +109,6 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         //convert image color fom RGB to HSV
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
 
-        //set the HSV value to the range of 0-255
-        //Core.inRange(hsvMat, lower, upper, binaryMat);
-
         //extract the hue channel
         Core.extractChannel(hsvMat, hueMat, 0);
 
