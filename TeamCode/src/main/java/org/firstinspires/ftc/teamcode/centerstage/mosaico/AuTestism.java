@@ -49,6 +49,20 @@ public class AuTestism extends LinearOpMode {
                 )
 
                 .build();
+        Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+                .lineTo(
+                        new Vector2d(-26.5, 0),
+                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+        Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
+                .lineTo(
+                        new Vector2d(-25.5, -80),
+                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
 
         if (isStopRequested()) return;
         waitForStart();
@@ -58,7 +72,9 @@ public class AuTestism extends LinearOpMode {
         sleep(200);
         claw.open();
         sleep(500);
-        sleep(4000);
+        drive.followTrajectory(trajectory2);
+        sleep(500);
+        drive.followTrajectory(trajectory3);
         Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("finalX", poseEstimate.getX());
         telemetry.addData("finalY", poseEstimate.getY());
