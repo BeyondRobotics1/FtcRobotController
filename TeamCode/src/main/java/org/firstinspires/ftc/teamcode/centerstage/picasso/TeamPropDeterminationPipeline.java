@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.centerstage.picasso;
 
-import org.firstinspires.ftc.teamcode.easyopencv.SkystoneDeterminationExample;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -11,15 +12,18 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
-    public TeamPropDeterminationPipeline(TeamPropColor teamPropColor){}
+    public TeamPropDeterminationPipeline(TeamPropColor teamPropColor, LinearOpMode mode){
+        this.mode = mode;
+        setHueRange(teamPropColor);
+    }
     /*
      * An enum to define the team prop position
      */
     public enum TeamPropPosition
     {
         LEFT,
-        CENTER,
-        RIGHT
+        RIGHT,
+        CENTER
     }
 
     public enum TeamPropColor
@@ -27,6 +31,8 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         RED,
         BLUE
     }
+
+    LinearOpMode mode;
 
     // Volatile since accessed by OpMode thread w/o synchronization
     private volatile TeamPropPosition position = TeamPropPosition.CENTER;
@@ -85,10 +91,10 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     //public Scalar upper = new Scalar(255, 255, 255);
 
     private Mat hsvMat = new Mat(); // converted image
-    private Mat binaryMat = new Mat(); // image analyzed after thresholding
     private Mat hueMat = new Mat();
-
-    Mat region1_hue, region2_hue, region3_hue;
+    private Mat region1_hue = new Mat();
+    private Mat region2_hue = new Mat();
+    private Mat region3_hue = new Mat();
 
     /*
      * Call this from the OpMode thread to obtain the latest analysis
@@ -100,7 +106,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
     @Override
     public void init(Mat firstFrame) {
-
+        processFrame(firstFrame);
     }
 
     @Override
@@ -109,28 +115,47 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         //convert image color fom RGB to HSV
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
 
-        //extract the hue channel
+//        mode.telemetry.addData("hsvMat rows", hsvMat.rows());
+//        mode.telemetry.addData("hsvMat cols", hsvMat.cols());
+
+
+        ////extract the hue channel col 0
+        //satuation is 1
+        //value is 2
         Core.extractChannel(hsvMat, hueMat, 0);
+
+//        mode.telemetry.addData("hueMat rows", hueMat.rows());
+//        mode.telemetry.addData("hueMat cols", hueMat.cols());
+
 
         //get the hue matrices for three regions
         region1_hue = hueMat.submat(new Rect(region1_pointA, region1_pointB));
-        region2_hue = hueMat.submat(new Rect(region2_pointA, region2_pointB));
-        region3_hue = hueMat.submat(new Rect(region3_pointA, region3_pointB));
+        region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
+        region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
 
         int region1_count = countInRange(region1_hue);
         int region2_count = countInRange(region2_hue);
         int region3_count = countInRange(region3_hue);
 
-        if(region1_count >= region2_count &&  region1_count >= region3_count)
+//        mode.telemetry.addData("Region 1 rows", region1_hue.rows());
+//        mode.telemetry.addData("Region 1 cols", region1_hue.cols());
+//
+//        mode.telemetry.addData("Region 1", region1_count);
+//        mode.telemetry.addData("Region 2", region2_count);
+//        mode.telemetry.addData("Region 3", region3_count);
+//        mode.telemetry.update();
+
+        if(region1_count > region2_count &&  region1_count > region3_count)
         {
             position = TeamPropPosition.LEFT;
         }
-        else if(region3_count >= region1_count &&  region3_count >= region2_count)
+        else if(region3_count > region1_count &&  region3_count > region2_count)
         {
             position = TeamPropPosition.RIGHT;
         }
         else
             position = TeamPropPosition.CENTER;
+
 
         if(position == TeamPropPosition.LEFT)
             Imgproc.rectangle(
@@ -138,7 +163,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                 region1_pointA, // First point which defines the rectangle
                 region1_pointB, // Second point which defines the rectangle
                 new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                4); // Thickness of the rectangle lines
+                6); // Thickness of the rectangle lines
         else
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -154,7 +179,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                     region2_pointA, // First point which defines the rectangle
                     region2_pointB, // Second point which defines the rectangle
                     new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    4); // Thickness of the rectangle lines
+                    6); // Thickness of the rectangle lines
         else
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -170,7 +195,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                     region3_pointA, // First point which defines the rectangle
                     region3_pointB, // Second point which defines the rectangle
                     new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    4); // Thickness of the rectangle lines
+                    6); // Thickness of the rectangle lines
         else
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -180,15 +205,15 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                     2); // Thickness of the rectangle lines
 
         //
-        return binaryMat;
+        return input;
     }
 
     private int countInRange(Mat hueMat)
     {
         int count = 0;
 
-        for (int i = 0; i <= hueMat.cols(); i++) {
-            for (int j = 0; j <= hueMat.rows(); j++) {
+        for (int i = 0; i < hueMat.rows(); i++) {
+            for (int j = 0; j < hueMat.cols(); j++) {
                 double hue = hueMat.get(i, j)[0];
 
                 //add 180 when less than 20 so we can use just one range
@@ -201,7 +226,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             }
         }
 
-        return 0;
+        return count;
     }
 
     //set the hue range for color Red or Blue
