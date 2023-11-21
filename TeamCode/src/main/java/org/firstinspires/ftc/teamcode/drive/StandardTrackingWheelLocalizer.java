@@ -31,11 +31,11 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 0.688976;   // in (35 mm Rotacadter Omni Wheel)
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 11.875;//11; // in; distance between the left and right dead wheels
+    public static double LATERAL_DISTANCE = 11.827923150976577;//11; // in; distance between the left and right dead wheels
     public static double FORWARD_OFFSET = -1;//0.5; // in; offset of the lateral dead wheel
 
-    public static double X_MULTIPLIER = 1;//1.00570883746; // Multiplier in the X direction
-    public static double Y_MULTIPLIER = 1;//1.00998928232; // Multiplier in the Y direction
+    public static double X_MULTIPLIER = 1.0027777778;//1.00570883746; // Multiplier in the X direction
+    public static double Y_MULTIPLIER = 0.9952222222;//1.00998928232; // Multiplier in the Y direction
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
@@ -54,7 +54,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftFront"));
         rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightFront"));
         frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftRear"));
-        frontEncoder.setDirection(Encoder.Direction.REVERSE);
+        leftEncoder.setDirection(Encoder.Direction.REVERSE); //temp test for right now
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
     }
 
