@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.centerstage.piccaso;
+package org.firstinspires.ftc.teamcode.centerstage.picasso;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -15,17 +15,16 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @Config
 @TeleOp(group = "PbnJ")
 //@Disabled;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-public class PiccasoTeleop extends LinearOpMode {
-
+public class PicassoTeleop extends LinearOpMode {
+    DcMotorEx intake;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         //implement new claw and slide later
-//        MosaicoClaw claw = new MosaicoClaw(hardwareMap, this);
-//        MosaicoSlide slide = new MosaicoSlide(hardwareMap, this);
+//        PicassoSlide slide = new PicassoSlide(hardwareMap, this);
 
 
         waitForStart();
@@ -35,6 +34,15 @@ public class PiccasoTeleop extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
+            if(gamepad1.left_bumper){
+                intake.setPower(-1);
+            }
+            else if(gamepad1.right_bumper){
+                intake.setPower(1);
+            }
+            else{
+                intake.setPower(0);
+            }
 //            if(gamepad2.right_bumper){
 //                claw.close();
 //            }
