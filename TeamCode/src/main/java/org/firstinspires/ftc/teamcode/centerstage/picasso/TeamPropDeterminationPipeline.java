@@ -134,16 +134,16 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
 
         int region1_count = countInRange(region1_hue);
-        int region2_count = countInRange(region2_hue);
+        int region2_count = countInRange(region2_hue) - 2500;
         int region3_count = countInRange(region3_hue);
 
 //        mode.telemetry.addData("Region 1 rows", region1_hue.rows());
 //        mode.telemetry.addData("Region 1 cols", region1_hue.cols());
 //
-//        mode.telemetry.addData("Region 1", region1_count);
-//        mode.telemetry.addData("Region 2", region2_count);
-//        mode.telemetry.addData("Region 3", region3_count);
-//        mode.telemetry.update();
+        mode.telemetry.addData("Region 1", region1_count);
+        mode.telemetry.addData("Region 2", region2_count);
+        mode.telemetry.addData("Region 3", region3_count);
+        mode.telemetry.update();
 
         if(region1_count > region2_count &&  region1_count > region3_count)
         {
@@ -211,10 +211,11 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     private int countInRange(Mat hueMat)
     {
         int count = 0;
+        double hue;
 
         for (int i = 0; i < hueMat.rows(); i++) {
             for (int j = 0; j < hueMat.cols(); j++) {
-                double hue = hueMat.get(i, j)[0];
+                hue = hueMat.get(i, j)[0];
 
                 //add 180 when less than 20 so we can use just one range
                 if(hue < 20)
