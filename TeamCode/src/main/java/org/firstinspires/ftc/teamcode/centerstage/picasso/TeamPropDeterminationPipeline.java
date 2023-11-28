@@ -15,6 +15,11 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     public TeamPropDeterminationPipeline(TeamPropColor teamPropColor, LinearOpMode mode){
         this.mode = mode;
         setHueRange(teamPropColor);
+
+        calibration_frame_count = 0;
+        region1_calibration = 0;
+        region2_calibration = 0;
+        region3_calibration = 0;
     }
     /*
      * An enum to define the team prop position
@@ -96,6 +101,12 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     private Mat region2_hue = new Mat();
     private Mat region3_hue = new Mat();
 
+    private long region1_calibration;
+    private long region2_calibration;
+    private long region3_calibration;
+    private int CALIBRATION_FRAMES = 100;
+    private int calibration_frame_count;
+
     /*
      * Call this from the OpMode thread to obtain the latest analysis
      */
@@ -133,84 +144,114 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
         region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
 
-        int region1_count = countInRange(region1_hue);
-        int region2_count = countInRange(region2_hue) - 1000;
-        int region3_count = countInRange(region3_hue);
-
-//        mode.telemetry.addData("Region 1 rows", region1_hue.rows());
-//        mode.telemetry.addData("Region 1 cols", region1_hue.cols());
-//
-        mode.telemetry.addData("Region 1", region1_count);
-        mode.telemetry.addData("Region 2", region2_count);
-        mode.telemetry.addData("Region 3", region3_count);
-        mode.telemetry.update();
-
-        if(region1_count > region2_count &&  region1_count > region3_count)
+        if(calibration_frame_count < CALIBRATION_FRAMES)
         {
-            position = TeamPropPosition.LEFT;
+            region1_calibration += countInRange(region1_hue);
+            region2_calibration += countInRange(region2_hue);
+            region3_calibration += countInRange(region3_hue);
+
+
+            mode.telemetry.addData("Calibrating frame", calibration_frame_count);
+            mode.telemetry.addData("Calibrating Region 1", region1_calibration);
+            mode.telemetry.addData("Calibrating Region 2", region2_calibration);
+            mode.telemetry.addData("Calibrating Region 3", region3_calibration);
+
+            calibration_frame_count++;
+
         }
-        else if(region3_count > region1_count &&  region3_count > region2_count)
+        else if (calibration_frame_count == CALIBRATION_FRAMES)
         {
-            position = TeamPropPosition.RIGHT;
+            double r1 = region1_calibration/calibration_frame_count;
+            double r2 = region2_calibration/calibration_frame_count;
+            double r3 = region3_calibration/calibration_frame_count;
+
+            region1_calibration = Math.round(r1);
+            region2_calibration = Math.round(r2);
+            region3_calibration = Math.round(r3);
+
+            mode.telemetry.addData("Calibrated frames", calibration_frame_count);
+            mode.telemetry.addData("Calibrated Region 1", region1_calibration);
+            mode.telemetry.addData("Calibrated Region 2", region2_calibration);
+            mode.telemetry.addData("Calibrated Region 3", region3_calibration);
+
+            calibration_frame_count++;
         }
-        else
-            position = TeamPropPosition.CENTER;
+        else {
+
+            long region1_count = countInRange(region1_hue) - region1_calibration;
+            long region2_count = countInRange(region2_hue) - region2_calibration;
+            long region3_count = countInRange(region3_hue) - region3_calibration;
 
 
-        if(position == TeamPropPosition.LEFT)
-            Imgproc.rectangle(
-                input, // Buffer to draw on
-                region1_pointA, // First point which defines the rectangle
-                region1_pointB, // Second point which defines the rectangle
-                new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                6); // Thickness of the rectangle lines
-        else
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
+            if (region1_count > region2_count && region1_count > region3_count) {
+                position = TeamPropPosition.LEFT;
+            } else if (region3_count > region1_count && region3_count > region2_count) {
+                position = TeamPropPosition.RIGHT;
+            } else
+                position = TeamPropPosition.CENTER;
+
+//            mode.telemetry.addData("Region 1", region1_count);
+//            mode.telemetry.addData("Region 2", region2_count);
+//            mode.telemetry.addData("Region 3", region3_count);
+//            mode.telemetry.addData("Realtime analysis", position);
+//            mode.telemetry.update();
 
 
-        if(position == TeamPropPosition.CENTER)
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region2_pointA, // First point which defines the rectangle
-                    region2_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    6); // Thickness of the rectangle lines
-        else
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region2_pointA, // First point which defines the rectangle
-                    region2_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
+            if (position == TeamPropPosition.LEFT)
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region1_pointA, // First point which defines the rectangle
+                        region1_pointB, // Second point which defines the rectangle
+                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        6); // Thickness of the rectangle lines
+            else
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region1_pointA, // First point which defines the rectangle
+                        region1_pointB, // Second point which defines the rectangle
+                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        2); // Thickness of the rectangle lines
 
 
-        if(position == TeamPropPosition.RIGHT)
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region3_pointA, // First point which defines the rectangle
-                    region3_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    6); // Thickness of the rectangle lines
-        else
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region3_pointA, // First point which defines the rectangle
-                    region3_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
+            if (position == TeamPropPosition.CENTER)
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region2_pointA, // First point which defines the rectangle
+                        region2_pointB, // Second point which defines the rectangle
+                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        6); // Thickness of the rectangle lines
+            else
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region2_pointA, // First point which defines the rectangle
+                        region2_pointB, // Second point which defines the rectangle
+                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        2); // Thickness of the rectangle lines
 
-        //
+
+            if (position == TeamPropPosition.RIGHT)
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region3_pointA, // First point which defines the rectangle
+                        region3_pointB, // Second point which defines the rectangle
+                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        6); // Thickness of the rectangle lines
+            else
+                Imgproc.rectangle(
+                        input, // Buffer to draw on
+                        region3_pointA, // First point which defines the rectangle
+                        region3_pointB, // Second point which defines the rectangle
+                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        2); // Thickness of the rectangle lines
+
+        }
+
         return input;
     }
 
-    private int countInRange(Mat hueMat)
+    private long countInRange(Mat hueMat)
     {
-        int count = 0;
+        long count = 0;
         double hue;
 
         for (int i = 0; i < hueMat.rows(); i++) {
