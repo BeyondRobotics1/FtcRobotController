@@ -14,6 +14,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.opmode.MaxVelocityTuner;
 
+import java.util.Vector;
+
 /*
  * This is a simple routine to test translational drive capabilities.
  */
@@ -21,8 +23,7 @@ import org.firstinspires.ftc.teamcode.drive.opmode.MaxVelocityTuner;
 @Autonomous(group = "drive")
 public class AutoBluBackstage extends LinearOpMode {
     public static double DISTANCE1 = 30.5; // in
-    public static double DISTANCE2 = 5; // in
-    Servo pixelplacer = hardwareMap.get(Servo.class, "pixelplacer"); //check this one
+    //Servo pixelplacer = hardwareMap.get(Servo.class, "pixelplacer"); //check this one
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -37,6 +38,15 @@ public class AutoBluBackstage extends LinearOpMode {
         Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
                 .lineToLinearHeading(new Pose2d(44.6,32, Math.toRadians(-90)))
                 .build();
+        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+                .strafeRight(20)
+                .build();
+        Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
+                .back(4)
+                .build();
+        Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
+                .strafeRight(20)
+                .build();
 
 
         waitForStart();
@@ -48,6 +58,11 @@ public class AutoBluBackstage extends LinearOpMode {
         sleep(100);
         drive.followTrajectory(trajectory3);
         sleep(100);
+        drive.followTrajectory(trajectory4);
+        sleep(100);
+        drive.followTrajectory(trajectory5);
+        sleep(500);
+        drive.followTrajectory(tra);
         if (isStopRequested()) return;
         Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("finalX", poseEstimate.getX());
