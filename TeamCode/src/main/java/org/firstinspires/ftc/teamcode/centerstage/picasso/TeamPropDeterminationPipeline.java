@@ -134,7 +134,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
 
         int region1_count = countInRange(region1_hue);
-        int region2_count = countInRange(region2_hue) - 2500;
+        int region2_count = countInRange(region2_hue) - 1000;
         int region3_count = countInRange(region3_hue);
 
 //        mode.telemetry.addData("Region 1 rows", region1_hue.rows());
