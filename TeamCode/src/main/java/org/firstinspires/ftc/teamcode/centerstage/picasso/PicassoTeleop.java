@@ -41,7 +41,19 @@ public class PicassoTeleop extends LinearOpMode {
 
         telemetry.addLine("Initializing intake");
         telemetry.update();
-        DcMotorEx intake = hardwareMap.get(DcMotorEx.class, "intake");
+        Intake intake = new Intake(hardwareMap, this);
+
+        telemetry.addLine("Initializing pixel placer");
+        telemetry.update();
+        PixelPlacer pixelPlacer = new PixelPlacer(hardwareMap, this);
+
+        telemetry.addLine("Initializing arm");
+        telemetry.update();
+        Arm arm = new Arm(hardwareMap, this);
+
+        telemetry.addLine("Initializing outtake");
+        telemetry.update();
+        Outtake outtake = new Outtake(hardwareMap, this);
 
         telemetry.addLine("Initializing slide");
         telemetry.update();
@@ -104,47 +116,47 @@ public class PicassoTeleop extends LinearOpMode {
 
             //intake
             if(gamepad1.left_bumper){
-                intake.setPower(-0.7);
-            }
-            else if(gamepad1.right_bumper){
+                //take in
+                outtake.TakeIn();
                 intake.setPower(0.7);
             }
+            else if(gamepad1.right_bumper){
+                //spit out
+                intake.setPower(-0.7);
+            }
             else{
-                if(gamepad1.left_trigger > 0.1)
-                    intake.setPower(-gamepad1.left_trigger);
-                else if (gamepad1.right_trigger > 0.1)
-                    intake.setPower(gamepad1.right_trigger);
+                if(gamepad1.left_trigger > 0.1) {
+                    //take in
+                    outtake.TakeIn();
+                    intake.setPower(gamepad1.left_trigger);
+                }
+                else if (gamepad1.right_trigger > 0.1) {
+                    //spit out
+                    intake.setPower(-gamepad1.right_trigger);
+                }
                 else
                     intake.setPower(0);
             }
 
-//            if(gamepad2.right_bumper){
-//                claw.close();
-//            }
-//
-//            else {
-//                claw.open();
-//            }
+            //release the pixel onto the backdrop using right bumper
+            if(gamepad2.right_bumper)
+                outtake.TakeOut();
+            else if(intake.intakeMode() == Intake.IntakeMode.IDLE)
+                outtake.Hold();
 
 
-            //hold left bumper or dpad right button to keep the claw at up position
-//            if(gamepad2.left_bumper || gamepad2.dpad_right){
-//                claw.setArmPosition(3); //up
-//            }
-//            else if(gamepad2.dpad_up){
-//                claw.setArmPosition(2);
-//            }
-//            else if(gamepad2.dpad_left){
-//                claw.setArmPosition(1);
-//            }
-//            else
-//                claw.setArmPosition(0); //down
+            //controlling the arm using right stick y
+            if(gamepad2.right_stick_y < -0.5){
 
-//            claw.setArmPosition(1 - Math.abs(gamepad2.right_stick_y));
-//
-//
-//            //release left bumper to keep the claw at the up position
-//            slide.setPower(-gamepad2.left_stick_y);
+                arm.goUp();
+            }
+            else {
+                //by default, the outtake will be in down position
+                arm.goDown();
+            }
+
+
+
         }
     }
 }

@@ -350,4 +350,50 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         setMotorPowers(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
     }
+
+    //field centric
+    //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+    public void setPower2(double left_stick_y,
+                          double left_stick_x,
+                          double right_stick_x) {
+
+        //field centric uses IMU, if no IMU, just do nothing
+        if(imu == null)
+            return;
+
+        //
+        double y = left_stick_y;
+        double x = left_stick_x;
+        double rx = right_stick_x * 0.65; //Helper.squareWithSign(right_stick_x);
+
+        if(x != 0.0 && Math.abs(y/x) >= 1.2)
+            x = 0.0;
+
+        if(y != 0.0 && Math.abs(x/y) >= 1.2)
+            y = 0.0;
+
+        y *= 0.9;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+        x *= 0.9;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+
+        //Read heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        //Read inverse IMU heading, as the IMU heading is CW positive
+        double rotX = Helper.squareWithSign(x * Math.cos(-botHeading) - y * Math.sin(-botHeading));
+        double rotY = Helper.squareWithSign(x * Math.sin(-botHeading) + y * Math.cos(-botHeading));
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio, but only when
+        // at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+
+        double frontLeftPower = (rotY  + rotX  + rx) / denominator;
+        double backLeftPower = (rotY  - rotX  + rx) / denominator;
+        double frontRightPower = (rotY  - rotX  - rx) / denominator;
+        double backRightPower = (rotY  + rotX  - rx) / denominator;
+
+        setMotorPowers(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
+
+        //mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
+    }
 }
