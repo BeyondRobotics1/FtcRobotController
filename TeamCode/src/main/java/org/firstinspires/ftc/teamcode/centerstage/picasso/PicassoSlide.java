@@ -47,8 +47,6 @@ public class PicassoSlide{
         //When there is no power, we want the motor to hold the position
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
     }
 
     /**
@@ -158,6 +156,7 @@ public class PicassoSlide{
 
     /**
      * Move to specific white strip position without waiting for motor to finish
+     * To be tested
      * @param speed: motor power
      */
     public void scoreToWhiteStripWithoutWaiting(double speed)

@@ -6,9 +6,11 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.powerplay.TeleOp1;
 
@@ -33,11 +35,14 @@ public class PicassoTeleop extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        //IMU imu = drive.imu();
 
         telemetry.addLine("Initializing intake");
         telemetry.update();
@@ -76,11 +81,11 @@ public class PicassoTeleop extends LinearOpMode {
         timer.reset();
 
         SlideOp slideOp = SlideOp.MANUAL;
+        boolean robotCentric = true;
 
         if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
-
             //drive train
             drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
@@ -155,8 +160,9 @@ public class PicassoTeleop extends LinearOpMode {
                 arm.goDown();
             }
 
-
-
+//            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+//            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
+//            telemetry.update();
         }
     }
 }

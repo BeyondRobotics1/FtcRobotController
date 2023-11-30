@@ -333,11 +333,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         if(y != 0.0 && Math.abs(x/y) >= 1.2)
             y = 0.0;
 
-        y *= 0.9;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
-        x *= 0.9;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+        //y *= 0.9;/
+        //x *= 0.9;//
 
-        x = Helper.cubicWithSign(x);//squareWithSign(x);
-        y = Helper.cubicWithSign(y);//squareWithSign(y);
+        x = Helper.squareWithSign(x);//.cubicWithSign(x);//squareWithSign(x);
+        y = Helper.squareWithSign(y);//cubicWithSign(y);//squareWithSign(y);
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio, but only when
@@ -358,8 +358,10 @@ public class SampleMecanumDrive extends MecanumDrive {
                           double right_stick_x) {
 
         //field centric uses IMU, if no IMU, just do nothing
-        if(imu == null)
+        if(imu == null) {
+            setPower(left_stick_y, left_stick_x, right_stick_x);
             return;
+        }
 
         //
         double y = left_stick_y;
@@ -372,8 +374,8 @@ public class SampleMecanumDrive extends MecanumDrive {
         if(y != 0.0 && Math.abs(x/y) >= 1.2)
             y = 0.0;
 
-        y *= 0.9;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
-        x *= 0.9;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+        //y *= 0.9;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+        //x *= 0.9;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
         //Read heading
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -395,5 +397,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         setMotorPowers(frontLeftPower, backLeftPower, backRightPower, frontRightPower);
 
         //mode.telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
+    }
+
+    public IMU imu()
+    {
+        return imu;
     }
 }
