@@ -19,7 +19,7 @@ public class PicassoSlide{
 
     //ground, low, medium, high junction heights
     //slide can move to
-    double[] whiteStripHeights = {0, 15, 22, 25};
+    double[] whiteStripHeights = {0, 11, 22, 25};
 
     enum SlideMode
     {

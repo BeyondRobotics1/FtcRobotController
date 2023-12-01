@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -19,8 +20,9 @@ import java.util.Vector;
 /*
  * This is a simple routine to test translational drive capabilities.
  */
-@Config
+
 @Autonomous(group = "drive")
+@Disabled
 public class AutoBluBackstage extends LinearOpMode {
     public static double DISTANCE1 = 30.5; // in
     //Servo pixelplacer = hardwareMap.get(Servo.class, "pixelplacer"); //check this one
