@@ -133,7 +133,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
-                drive.turn(Math.toRadians(-93));
+                drive.turn(Math.toRadians(93));
                 sleep(100);
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -156,7 +156,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory33 = drive.trajectoryBuilder(trajectory3.end())
-                        .strafeLeft(24)
+                        .strafeRight(24)
                         .build();
                 drive.followTrajectory(trajectory33);
                 sleep(100);
@@ -169,22 +169,22 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajector4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(15,-80.5, Math.toRadians(90)))//44
+                        .lineToLinearHeading(new Pose2d(13.5,-80.5, Math.toRadians(90)))//44
                         .build();
 
                 drive.followTrajectory(trajector4);
                 sleep(100);
 
 
-                slide.moveToWithoutWaiting(9, 1); //low
+                slide.moveToWithoutWaiting(7.6, 1); //low
                 arm.goUp();
                 sleep(1000);
 
                 Trajectory trajectory5 = drive.trajectoryBuilder(trajector4.end())
                         .back(8.5)
                         .build();
-
                 drive.followTrajectory(trajectory5);
+                sleep(100);
 
                 outtake.TakeOut();
                 sleep(400);
@@ -192,10 +192,10 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(600);
 
                 Trajectory trajectory6 = drive.trajectoryBuilder(trajectory5.end())
-                        .forward(5)
+                        .forward(10)
                         .build();
-
                 drive.followTrajectory(trajectory6);
+                sleep(200);
 
                 arm.goDown();
                 slide.moveToWhiteStripWithoutWaiting(0, 1); //low
@@ -204,7 +204,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory tra = drive.trajectoryBuilder(trajectory6.end())
-                        .strafeLeft(35)
+                        .strafeRight(35)
                         .build();
 
                 drive.followTrajectory(tra);
@@ -225,7 +225,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(200);
 
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory1.end())
-                        .forward(17)
+                        .forward(15)
                         .build();
                 drive.followTrajectory(trajectory22);
                 sleep(100);
@@ -241,20 +241,20 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(33,-80.5, Math.toRadians(90)))//33
+                        .lineToLinearHeading(new Pose2d(31.4,-80.5, Math.toRadians(90)))//33
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
 
-                slide.moveToWithoutWaiting(9, 1); //low
+                slide.moveToWithoutWaiting(7.6, 1); //low
                 arm.goUp();
                 sleep(1000);
 
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
                         .back(8.5)
                         .build();
-
                 drive.followTrajectory(trajectory4);
+                sleep(100);
 
                 outtake.TakeOut();
                 sleep(400);
@@ -262,10 +262,11 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(600);
 
                 Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
-                        .forward(5)
+                        .forward(10)
                         .build();
 
                 drive.followTrajectory(trajectory5);
+                sleep(100);
 
                 arm.goDown();
                 slide.moveToWhiteStripWithoutWaiting(0, 1); //low
@@ -304,51 +305,51 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory22 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .back(50)
+                        .back(55)
                         .build();
                 drive.followTrajectory(trajectory22);
                 sleep(100);
 
                 //
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(27,-80.5, Math.toRadians(90)))//27, 32
+                        .lineToLinearHeading(new Pose2d(25,-80.5, Math.toRadians(90)))//27, 32
                         .build();
 
-//                drive.followTrajectory(trajectory3);
-//                sleep(100);
-//
-//
-//
-//                slide.moveToWithoutWaiting(9, 1); //low
-//                arm.goUp();
-//                sleep(1000);
-//
-//                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
-//                        .back(8.5)
-//                        .build();
-//
-//                drive.followTrajectory(trajectory4);
-//
-//                outtake.TakeOut();
-//                sleep(400);
-//                outtake.Hold();
-//                sleep(600);
-//
-//                Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
-//                        .forward(5)
-//                        .build();
-//                sleep(100);
-//                drive.followTrajectory(trajectory5);
-//
-//                arm.goDown();
-//                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
-//                sleep(100);
-//
-//
-//                Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
-//                        .strafeLeft(20)
-//                        .build();
-//                drive.followTrajectory(tra);
+                drive.followTrajectory(trajectory3);
+                sleep(100);
+
+
+
+                slide.moveToWithoutWaiting(7.6, 1); //low
+                arm.goUp();
+                sleep(1000);
+
+                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+                        .back(8.5)
+                        .build();
+                drive.followTrajectory(trajectory4);
+                sleep(100);
+
+                outtake.TakeOut();
+                sleep(400);
+                outtake.Hold();
+                sleep(600);
+
+                Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
+                        .forward(10)
+                        .build();
+                drive.followTrajectory(trajectory5);
+                sleep(200);
+
+                arm.goDown();
+                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+                sleep(100);
+
+
+                Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
+                        .strafeRight(25)
+                        .build();
+                drive.followTrajectory(tra);
 
                 break;
             }
