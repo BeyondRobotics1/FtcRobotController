@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode.centerstage.picasso;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -21,19 +27,16 @@ public class CCAutoRedLeft extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         //
+        telemetry.addLine("Initializing drive train");
+        telemetry.update();
+
+        Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+        //
         telemetry.addLine("Initializing camera");
         telemetry.update();
 
-        /*
-         * Instantiate an OpenCvCamera object for the camera we'll be using.
-         * In this sample, we're using a webcam. Note that you will need to
-         * make sure you have added the webcam to your configuration file and
-         * adjusted the name here to match what you named it in said config file.
-         *
-         * We pass it the view that we wish to use for camera monitor (on
-         * the RC phone). If no camera monitor is desired, use the alternate
-         * single-parameter constructor instead (commented out below)
-         */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
@@ -104,26 +107,249 @@ public class CCAutoRedLeft extends LinearOpMode {
             sleep(100);
         }
 
+        //locking the pixel
+        PixelPlacer pixelPlacer = new PixelPlacer(hardwareMap, this);
+
 
         if (isStopRequested()) return;
 
+        PicassoSlide slide = new PicassoSlide(hardwareMap, this);
+        slide.runWithEncoder();
+
+        Outtake outtake = new Outtake(hardwareMap, this);
+        Arm arm = new Arm(hardwareMap, this);
+
+        //TEST ONLY
+        //position = TeamPropDeterminationPipeline.TeamPropPosition.LEFT;
         switch (position)
         {
-            case LEFT:
+            case RIGHT:
             {
-                /* Your autonomous code */
+                //move the position
+                Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
+                        .forward(28)
+                        .build();
+
+                drive.followTrajectory(trajectory1);
+                sleep(100);
+
+                drive.turn(Math.toRadians(-93));
+                sleep(100);
+
+                Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .back(7)
+                        .build();
+
+
+                drive.followTrajectory(trajectory2);
+
+                //unlock the pixel
+                pixelPlacer.Unlock();
+                sleep(200);
+
+
+                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
+                        .forward(10)
+                        .build();
+                drive.followTrajectory(trajectory3);
+                sleep(100);
+
+
+                Trajectory trajectory33 = drive.trajectoryBuilder(trajectory3.end())
+                        .strafeLeft(24)
+                        .build();
+                drive.followTrajectory(trajectory33);
+                sleep(100);
+
+                Trajectory trajectory34 = drive.trajectoryBuilder(trajectory33.end())
+                        .back(60)
+                        .build();
+                drive.followTrajectory(trajectory34);
+                sleep(100);
+
+
+                Trajectory trajector4 = drive.trajectoryBuilder(trajectory34.end())
+                        .lineToLinearHeading(new Pose2d(15,-80.5, Math.toRadians(90)))//44
+                        .build();
+
+                drive.followTrajectory(trajector4);
+                sleep(100);
+
+
+                slide.moveToWithoutWaiting(9, 1); //low
+                arm.goUp();
+                sleep(1000);
+
+                Trajectory trajectory5 = drive.trajectoryBuilder(trajector4.end())
+                        .back(8.5)
+                        .build();
+
+                drive.followTrajectory(trajectory5);
+
+                outtake.TakeOut();
+                sleep(400);
+                outtake.Hold();
+                sleep(600);
+
+                Trajectory trajectory6 = drive.trajectoryBuilder(trajectory5.end())
+                        .forward(5)
+                        .build();
+
+                drive.followTrajectory(trajectory6);
+
+                arm.goDown();
+                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+                sleep(100);
+
+
+
+                Trajectory tra = drive.trajectoryBuilder(trajectory6.end())
+                        .strafeLeft(35)
+                        .build();
+
+                drive.followTrajectory(tra);
+
                 break;
             }
 
-            case RIGHT:
+            case LEFT:
             {
-                /* Your autonomous code */
+                Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
+                        .lineToLinearHeading(new Pose2d(38,13))
+                        .build();
+                drive.followTrajectory(trajectory1);
+                sleep(100);
+
+                //unlock the pixel
+                pixelPlacer.Unlock();
+                sleep(200);
+
+                Trajectory trajectory22 = drive.trajectoryBuilder(trajectory1.end())
+                        .forward(17)
+                        .build();
+                drive.followTrajectory(trajectory22);
+                sleep(100);
+
+                drive.turn(Math.toRadians(93));
+                sleep(100);
+
+                Trajectory trajectory34 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .back(60)
+                        .build();
+                drive.followTrajectory(trajectory34);
+                sleep(100);
+
+
+                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
+                        .lineToLinearHeading(new Pose2d(33,-80.5, Math.toRadians(90)))//33
+                        .build();
+                drive.followTrajectory(trajectory3);
+                sleep(100);
+
+                slide.moveToWithoutWaiting(9, 1); //low
+                arm.goUp();
+                sleep(1000);
+
+                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+                        .back(8.5)
+                        .build();
+
+                drive.followTrajectory(trajectory4);
+
+                outtake.TakeOut();
+                sleep(400);
+                outtake.Hold();
+                sleep(600);
+
+                Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
+                        .forward(5)
+                        .build();
+
+                drive.followTrajectory(trajectory5);
+
+                arm.goDown();
+                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+                sleep(100);
+
+                Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
+                        .strafeRight(18)
+                        .build();
+
+                drive.followTrajectory(tra);
+
                 break;
             }
 
             case CENTER:
             {
-                /* Your autonomous code*/
+                //move the position
+                Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
+                        .forward(43)
+                        .build();
+                drive.followTrajectory(trajectory1);
+
+                //unlock the pixel
+                pixelPlacer.Unlock();
+                sleep(200);
+
+                //move forward
+                Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+                        .forward(10)
+                        .build();
+
+                drive.followTrajectory(trajectory2);
+                sleep(100);
+
+                drive.turn(Math.toRadians(94));
+                sleep(100);
+
+                Trajectory trajectory22 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .back(50)
+                        .build();
+                drive.followTrajectory(trajectory22);
+                sleep(100);
+
+                //
+                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
+                        .lineToLinearHeading(new Pose2d(27,-80.5, Math.toRadians(90)))//27, 32
+                        .build();
+
+//                drive.followTrajectory(trajectory3);
+//                sleep(100);
+//
+//
+//
+//                slide.moveToWithoutWaiting(9, 1); //low
+//                arm.goUp();
+//                sleep(1000);
+//
+//                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+//                        .back(8.5)
+//                        .build();
+//
+//                drive.followTrajectory(trajectory4);
+//
+//                outtake.TakeOut();
+//                sleep(400);
+//                outtake.Hold();
+//                sleep(600);
+//
+//                Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
+//                        .forward(5)
+//                        .build();
+//                sleep(100);
+//                drive.followTrajectory(trajectory5);
+//
+//                arm.goDown();
+//                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+//                sleep(100);
+//
+//
+//                Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
+//                        .strafeLeft(20)
+//                        .build();
+//                drive.followTrajectory(tra);
+
                 break;
             }
         }

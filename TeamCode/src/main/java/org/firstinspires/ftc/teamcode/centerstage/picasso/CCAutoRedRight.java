@@ -2,10 +2,11 @@ package org.firstinspires.ftc.teamcode.centerstage.picasso;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name="Red Right", group="Picasso")
-//@Disabled
+@Disabled
 
 public class CCAutoRedRight extends LinearOpMode {
 

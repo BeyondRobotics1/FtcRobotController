@@ -145,7 +145,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
-                sleep(100);
+                sleep(200);
 
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
@@ -219,7 +219,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
-                sleep(100);
+                sleep(200);
 
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory2.end())
                         .forward(5)
@@ -278,7 +278,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
-                sleep(100);
+                sleep(200);
 
                 //move forward
                 Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
