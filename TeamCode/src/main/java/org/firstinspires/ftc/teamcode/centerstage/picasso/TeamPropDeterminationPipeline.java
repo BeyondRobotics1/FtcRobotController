@@ -158,6 +158,27 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
             calibration_frame_count++;
 
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region1_pointA, // First point which defines the rectangle
+                    region1_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    2); // Thickness of the rectangle lines
+
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region2_pointA, // First point which defines the rectangle
+                    region2_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    2); // Thickness of the rectangle lines
+
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region3_pointA, // First point which defines the rectangle
+                    region3_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    2); // Thickness of the rectangle lines
+
         }
         else if (calibration_frame_count == CALIBRATION_FRAMES)
         {
