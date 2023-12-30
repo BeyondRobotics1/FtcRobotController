@@ -65,6 +65,14 @@ public class PicassoTeleop extends LinearOpMode {
         PicassoSlide slide = new PicassoSlide(hardwareMap, this);
         slide.runWithEncoder();
 
+        telemetry.addLine("Initializing Hanger");
+        telemetry.update();
+        Hanger hanger = new Hanger(hardwareMap, this);
+
+        telemetry.addLine("Initializing Launcher");
+        telemetry.update();
+        DroneLauncher launcher = new DroneLauncher(hardwareMap, this);
+
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
 
@@ -86,10 +94,10 @@ public class PicassoTeleop extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
-            //drive train
+            /////drive train
             drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            //Slide operation
+            /////Slide control
             //Move slide to specific white strip height
             //left bumper + a dpad key (auto move slide)
             if(gamepad2.left_bumper) {
@@ -119,7 +127,7 @@ public class PicassoTeleop extends LinearOpMode {
             slide.autoMoveToWithoutWaitingLoop();
 
 
-            //intake
+            //////intake & outtake control
             if(gamepad1.left_bumper){
                 //take in
                 outtake.TakeIn();
@@ -130,17 +138,7 @@ public class PicassoTeleop extends LinearOpMode {
                 intake.setPower(-0.7);
             }
             else{
-                if(gamepad1.left_trigger > 0.1) {
-                    //take in
-                    outtake.TakeIn();
-                    intake.setPower(gamepad1.left_trigger);
-                }
-                else if (gamepad1.right_trigger > 0.1) {
-                    //spit out
-                    intake.setPower(-gamepad1.right_trigger);
-                }
-                else
-                    intake.setPower(0);
+                intake.setPower(0);
             }
 
             //release the pixel onto the backdrop using right bumper
@@ -149,16 +147,41 @@ public class PicassoTeleop extends LinearOpMode {
             else if(intake.intakeMode() == Intake.IntakeMode.IDLE)
                 outtake.Hold();
 
-
+            //////Arm control
             //controlling the arm using right stick y
             if(gamepad2.right_stick_y < -0.5){
-
                 arm.goUp();
             }
             else {
                 //by default, the outtake will be in down position
                 arm.goDown();
             }
+
+
+            //////hanger control
+            //use gamepad1 left/right trigger to move the hook servos
+            if(gamepad1.left_trigger > 0.1) {
+                hanger.HookDown();
+            }
+            else if (gamepad1.right_trigger > 0.1) {
+                hanger.HookUp();
+            }
+            else
+                hanger.HookStay();
+
+            //use gamepad1 X and Y button to rotate the hanger motor
+            if(gamepad1.y)
+                hanger.SetMotorPower(1);
+            else if(gamepad1.x)
+                hanger.SetMotorPower(-1);
+            else
+                hanger.SetMotorPower(0);
+
+
+            /////Launcher control
+            if(gamepad2.y)
+                launcher.ReleaseTrigger();
+
 
 //            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 //            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
