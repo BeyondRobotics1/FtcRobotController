@@ -16,7 +16,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         this.mode = mode;
         setHueRange(teamPropColor);
 
-        calibration_frame_count = 0;
+        calibration_frame_count = 1; //starting from 1
         region1_calibration = 0;
         region2_calibration = 0;
         region3_calibration = 0;
@@ -104,7 +104,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     private long region1_calibration;
     private long region2_calibration;
     private long region3_calibration;
-    private int CALIBRATION_FRAMES = 100;
+    private int CALIBRATION_FRAMES = 90;
     private int calibration_frame_count;
 
     /*
@@ -117,7 +117,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
     @Override
     public void init(Mat firstFrame) {
-        processFrame(firstFrame);
+        //processFrame(firstFrame);
     }
 
     @Override
@@ -130,9 +130,10 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 //        mode.telemetry.addData("hsvMat cols", hsvMat.cols());
 
 
-        ////extract the hue channel col 0
-        //satuation is 1
-        //value is 2
+        ////extract the hue channel col
+        // hue is column 0
+        //saturation is column 1
+        //value is column 2
         Core.extractChannel(hsvMat, hueMat, 0);
 
 //        mode.telemetry.addData("hueMat rows", hueMat.rows());
@@ -150,11 +151,10 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             region2_calibration += countInRange(region2_hue);
             region3_calibration += countInRange(region3_hue);
 
-
             mode.telemetry.addData("Calibrating frame", calibration_frame_count);
-            mode.telemetry.addData("Calibrating Region 1", region1_calibration);
-            mode.telemetry.addData("Calibrating Region 2", region2_calibration);
-            mode.telemetry.addData("Calibrating Region 3", region3_calibration);
+            mode.telemetry.addData("Calibrating Region 1", region1_calibration/calibration_frame_count);
+            mode.telemetry.addData("Calibrating Region 2", region2_calibration/calibration_frame_count);
+            mode.telemetry.addData("Calibrating Region 3", region3_calibration/calibration_frame_count);
 
             calibration_frame_count++;
 
@@ -162,7 +162,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                     input, // Buffer to draw on
                     region1_pointA, // First point which defines the rectangle
                     region1_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    new Scalar(255, 0, 0), // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
 
             Imgproc.rectangle(
@@ -176,7 +176,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                     input, // Buffer to draw on
                     region3_pointA, // First point which defines the rectangle
                     region3_pointB, // Second point which defines the rectangle
-                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    new Scalar(0, 0, 255), // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
 
         }
@@ -196,12 +196,26 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             mode.telemetry.addData("Calibrated Region 3", region3_calibration);
 
             calibration_frame_count++;
+
         }
         else {
 
-            long region1_count = countInRange(region1_hue) - region1_calibration;
-            long region2_count = countInRange(region2_hue) - region2_calibration;
-            long region3_count = countInRange(region3_hue) - region3_calibration;
+            long region1_count = countInRange(region1_hue);
+            long region2_count = countInRange(region2_hue);
+            long region3_count = countInRange(region3_hue);
+
+
+            mode.telemetry.addData("Raw Region 1", region1_count);
+            mode.telemetry.addData("Raw Region 2", region2_count);
+            mode.telemetry.addData("Raw Region 3", region3_count);
+
+            region1_count -= region1_calibration;
+            region2_count -= region2_calibration;
+            region3_count -= region3_calibration;
+
+            mode.telemetry.addData("Base Region 1", region1_calibration);
+            mode.telemetry.addData("Base Region 2", region2_calibration);
+            mode.telemetry.addData("Base Region 3", region3_calibration);
 
 
             if (region1_count > region2_count && region1_count > region3_count) {
@@ -211,11 +225,11 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             } else
                 position = TeamPropPosition.CENTER;
 
-//            mode.telemetry.addData("Region 1", region1_count);
-//            mode.telemetry.addData("Region 2", region2_count);
-//            mode.telemetry.addData("Region 3", region3_count);
-//            mode.telemetry.addData("Realtime analysis", position);
-//            mode.telemetry.update();
+            mode.telemetry.addData("Calibrated Region 1", region1_count);
+            mode.telemetry.addData("Calibrated Region 2", region2_count);
+            mode.telemetry.addData("Calibrated Region 3", region3_count);
+            mode.telemetry.addData("Realtime analysis", position);
+            mode.telemetry.update();
 
 
             if (position == TeamPropPosition.LEFT)
@@ -223,14 +237,14 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                         input, // Buffer to draw on
                         region1_pointA, // First point which defines the rectangle
                         region1_pointB, // Second point which defines the rectangle
-                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        new Scalar(255, 0, 0), // The color the rectangle is drawn in
                         6); // Thickness of the rectangle lines
             else
                 Imgproc.rectangle(
                         input, // Buffer to draw on
                         region1_pointA, // First point which defines the rectangle
                         region1_pointB, // Second point which defines the rectangle
-                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        new Scalar(255, 0, 0), // The color the rectangle is drawn in
                         2); // Thickness of the rectangle lines
 
 
@@ -255,14 +269,14 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                         input, // Buffer to draw on
                         region3_pointA, // First point which defines the rectangle
                         region3_pointB, // Second point which defines the rectangle
-                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        new Scalar(0, 0, 255), // The color the rectangle is drawn in
                         6); // Thickness of the rectangle lines
             else
                 Imgproc.rectangle(
                         input, // Buffer to draw on
                         region3_pointA, // First point which defines the rectangle
                         region3_pointB, // Second point which defines the rectangle
-                        new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                        new Scalar(0, 0, 255), // The color the rectangle is drawn in
                         2); // Thickness of the rectangle lines
 
         }
@@ -302,10 +316,10 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             hueRangeLow = 160;
             hueRangeHigh = 200;
         }
-        else
+        else //blue
         {
-            hueRangeLow = 100;
-            hueRangeHigh = 140;
+            hueRangeLow = 90;//100
+            hueRangeHigh = 140;//140
         }
     }
 }
