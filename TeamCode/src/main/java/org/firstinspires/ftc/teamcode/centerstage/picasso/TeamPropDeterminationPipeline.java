@@ -16,7 +16,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         this.mode = mode;
         setHueRange(teamPropColor);
 
-        calibration_frame_count = 1; //starting from 1
+        calibration_frame_count = 0; //starting from 1
         region1_calibration = 0;
         region2_calibration = 0;
         region3_calibration = 0;
@@ -95,11 +95,11 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     //public Scalar lower = new Scalar(0, 0, 0); // HSV threshold bounds
     //public Scalar upper = new Scalar(255, 255, 255);
 
-    private Mat hsvMat = new Mat(); // converted image
-    private Mat hueMat = new Mat();
-    private Mat region1_hue = new Mat();
-    private Mat region2_hue = new Mat();
-    private Mat region3_hue = new Mat();
+//    private Mat hsvMat = new Mat(); // converted image
+//    private Mat hueMat = new Mat();
+//    private Mat region1_hue = new Mat();
+//    private Mat region2_hue = new Mat();
+//    private Mat region3_hue = new Mat();
 
     private long region1_calibration;
     private long region2_calibration;
@@ -123,6 +123,13 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input)
     {
+
+        Mat hsvMat = new Mat(); // converted image
+        Mat hueMat = new Mat();
+        //Mat region1_hue = new Mat();
+        //Mat region2_hue = new Mat();
+        //Mat region3_hue = new Mat();
+
         //convert image color fom RGB to HSV
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
 
@@ -141,9 +148,9 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
 
         //get the hue matrices for three regions
-        region1_hue = hueMat.submat(new Rect(region1_pointA, region1_pointB));
-        region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
-        region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
+        Mat region1_hue = hueMat.submat(new Rect(region1_pointA, region1_pointB));
+        Mat region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
+        Mat region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
 
         if(calibration_frame_count < CALIBRATION_FRAMES)
         {
@@ -151,12 +158,15 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             region2_calibration += countInRange(region2_hue);
             region3_calibration += countInRange(region3_hue);
 
+
+            calibration_frame_count++;
+
             mode.telemetry.addData("Calibrating frame", calibration_frame_count);
             mode.telemetry.addData("Calibrating Region 1", region1_calibration/calibration_frame_count);
             mode.telemetry.addData("Calibrating Region 2", region2_calibration/calibration_frame_count);
             mode.telemetry.addData("Calibrating Region 3", region3_calibration/calibration_frame_count);
 
-            calibration_frame_count++;
+
 
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -200,10 +210,13 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         }
         else {
 
+            mode.telemetry.addData("Base Region 1", region1_calibration);
+            mode.telemetry.addData("Base Region 2", region2_calibration);
+            mode.telemetry.addData("Base Region 3", region3_calibration);
+
             long region1_count = countInRange(region1_hue);
             long region2_count = countInRange(region2_hue);
             long region3_count = countInRange(region3_hue);
-
 
             mode.telemetry.addData("Raw Region 1", region1_count);
             mode.telemetry.addData("Raw Region 2", region2_count);
@@ -212,10 +225,6 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             region1_count -= region1_calibration;
             region2_count -= region2_calibration;
             region3_count -= region3_calibration;
-
-            mode.telemetry.addData("Base Region 1", region1_calibration);
-            mode.telemetry.addData("Base Region 2", region2_calibration);
-            mode.telemetry.addData("Base Region 3", region3_calibration);
 
 
             if (region1_count > region2_count && region1_count > region3_count) {
@@ -318,8 +327,8 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         }
         else //blue
         {
-            hueRangeLow = 90;//100
-            hueRangeHigh = 140;//140
+            hueRangeLow = 100;//100
+            hueRangeHigh = 130;//140
         }
     }
 }
