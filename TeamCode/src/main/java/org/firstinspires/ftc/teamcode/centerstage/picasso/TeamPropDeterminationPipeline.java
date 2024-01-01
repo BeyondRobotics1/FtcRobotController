@@ -210,17 +210,30 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         }
         else {
 
-            mode.telemetry.addData("Base Region 1", region1_calibration);
-            mode.telemetry.addData("Base Region 2", region2_calibration);
-            mode.telemetry.addData("Base Region 3", region3_calibration);
+            mode.telemetry.addLine()
+                    .addData("Region 1", region1_hue.rows())
+                    .addData("x ", region1_hue.cols());
+            mode.telemetry.addLine()
+                    .addData("Region 2", region2_hue.rows())
+                    .addData("x ", region2_hue.cols());
+            mode.telemetry.addLine()
+                    .addData("Region 3", region3_hue.rows())
+                    .addData("x ", region3_hue.cols());
+
 
             long region1_count = countInRange(region1_hue);
             long region2_count = countInRange(region2_hue);
             long region3_count = countInRange(region3_hue);
 
-            mode.telemetry.addData("Raw Region 1", region1_count);
-            mode.telemetry.addData("Raw Region 2", region2_count);
-            mode.telemetry.addData("Raw Region 3", region3_count);
+            mode.telemetry.addLine()
+                    .addData("Region 1 base", region1_calibration)
+                    .addData("raw", region1_count);
+            mode.telemetry.addLine()
+                    .addData("Region 2 base", region2_calibration)
+                    .addData("raw", region2_count);
+            mode.telemetry.addLine()
+                    .addData("Region 3 base", region3_calibration)
+                    .addData("raw", region3_count);
 
             region1_count -= region1_calibration;
             region2_count -= region2_calibration;
