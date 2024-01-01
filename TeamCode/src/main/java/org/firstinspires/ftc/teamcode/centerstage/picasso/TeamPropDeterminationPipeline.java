@@ -10,11 +10,17 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import java.util.ArrayList;
+
 public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
     public TeamPropDeterminationPipeline(TeamPropColor teamPropColor, LinearOpMode mode){
         this.mode = mode;
         setHueRange(teamPropColor);
+
+        region1_history = new long[CALIBRATION_FRAMES];
+        region2_history = new long[CALIBRATION_FRAMES];
+        region3_history = new long[CALIBRATION_FRAMES];
 
         calibration_frame_count = 0; //starting from 1
         region1_calibration = 0;
@@ -92,19 +98,28 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
             REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
-    //public Scalar lower = new Scalar(0, 0, 0); // HSV threshold bounds
-    //public Scalar upper = new Scalar(255, 255, 255);
 
-//    private Mat hsvMat = new Mat(); // converted image
-//    private Mat hueMat = new Mat();
-//    private Mat region1_hue = new Mat();
-//    private Mat region2_hue = new Mat();
-//    private Mat region3_hue = new Mat();
+    private Mat hsvMat = new Mat(); // converted image
+    private Mat hueMat = new Mat();
+    private Mat region1_hue = new Mat();
+    private Mat region2_hue = new Mat();
+    private Mat region3_hue = new Mat();
 
     private long region1_calibration;
     private long region2_calibration;
     private long region3_calibration;
-    private int CALIBRATION_FRAMES = 90;
+    long region1_count;
+    long region2_count;
+    long region3_count;
+
+
+    long[] region1_history;
+    long[] region2_history;
+    long[] region3_history;
+
+    private int ignored_frames_count = 0;
+
+    private int CALIBRATION_FRAMES = 240;
     private int calibration_frame_count;
 
     /*
@@ -123,19 +138,21 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input)
     {
+        testWithSaturation(input);
 
-        Mat hsvMat = new Mat(); // converted image
-        Mat hueMat = new Mat();
-        //Mat region1_hue = new Mat();
-        //Mat region2_hue = new Mat();
-        //Mat region3_hue = new Mat();
+        return input;
+    }
+
+    //@Override
+    private void testWithHue(Mat input)
+    {
+        ignored_frames_count++;
+
+        if(ignored_frames_count < 10)
+            return ;
 
         //convert image color fom RGB to HSV
         Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
-
-//        mode.telemetry.addData("hsvMat rows", hsvMat.rows());
-//        mode.telemetry.addData("hsvMat cols", hsvMat.cols());
-
 
         ////extract the hue channel col
         // hue is column 0
@@ -143,30 +160,27 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         //value is column 2
         Core.extractChannel(hsvMat, hueMat, 0);
 
-//        mode.telemetry.addData("hueMat rows", hueMat.rows());
-//        mode.telemetry.addData("hueMat cols", hueMat.cols());
-
 
         //get the hue matrices for three regions
-        Mat region1_hue = hueMat.submat(new Rect(region1_pointA, region1_pointB));
-        Mat region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
-        Mat region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
+        region1_hue = hueMat.submat(new Rect(region1_pointA, region1_pointB));
+        region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
+        region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
+
 
         if(calibration_frame_count < CALIBRATION_FRAMES)
         {
-            region1_calibration += countInRange(region1_hue);
-            region2_calibration += countInRange(region2_hue);
-            region3_calibration += countInRange(region3_hue);
 
+            region1_history[calibration_frame_count] = countInRange(region1_hue);
+            region2_history[calibration_frame_count] = countInRange(region2_hue);
+            region3_history[calibration_frame_count] = countInRange(region3_hue);
+
+            mode.telemetry.addLine()
+                    .addData("Calibrating", calibration_frame_count)
+                    .addData("L", region1_history[calibration_frame_count])
+                    .addData("C", region2_history[calibration_frame_count])
+                    .addData("R", region3_history[calibration_frame_count]);
 
             calibration_frame_count++;
-
-            mode.telemetry.addData("Calibrating frame", calibration_frame_count);
-            mode.telemetry.addData("Calibrating Region 1", region1_calibration/calibration_frame_count);
-            mode.telemetry.addData("Calibrating Region 2", region2_calibration/calibration_frame_count);
-            mode.telemetry.addData("Calibrating Region 3", region3_calibration/calibration_frame_count);
-
-
 
             Imgproc.rectangle(
                     input, // Buffer to draw on
@@ -192,47 +206,38 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         }
         else if (calibration_frame_count == CALIBRATION_FRAMES)
         {
-            double r1 = region1_calibration/calibration_frame_count;
-            double r2 = region2_calibration/calibration_frame_count;
-            double r3 = region3_calibration/calibration_frame_count;
+            for(int i = 0; i < CALIBRATION_FRAMES; i++) {
+                region1_calibration += region1_history[i];
+                region2_calibration += region2_history[i];
+                region3_calibration += region3_history[i];
+            }
 
-            region1_calibration = Math.round(r1);
-            region2_calibration = Math.round(r2);
-            region3_calibration = Math.round(r3);
-
-            mode.telemetry.addData("Calibrated frames", calibration_frame_count);
-            mode.telemetry.addData("Calibrated Region 1", region1_calibration);
-            mode.telemetry.addData("Calibrated Region 2", region2_calibration);
-            mode.telemetry.addData("Calibrated Region 3", region3_calibration);
+            region1_calibration = Math.round(region1_calibration * 1.0 / calibration_frame_count);
+            region2_calibration = Math.round(region2_calibration * 1.0 / calibration_frame_count);
+            region3_calibration = Math.round(region3_calibration * 1.0 / calibration_frame_count);
 
             calibration_frame_count++;
 
         }
         else {
 
-            mode.telemetry.addLine()
-                    .addData("Region 1", region1_hue.rows())
-                    .addData("x ", region1_hue.cols());
-            mode.telemetry.addLine()
-                    .addData("Region 2", region2_hue.rows())
-                    .addData("x ", region2_hue.cols());
-            mode.telemetry.addLine()
-                    .addData("Region 3", region3_hue.rows())
-                    .addData("x ", region3_hue.cols());
-
-
-            long region1_count = countInRange(region1_hue);
-            long region2_count = countInRange(region2_hue);
-            long region3_count = countInRange(region3_hue);
+            region1_count = countInRange(region1_hue);
+            region2_count = countInRange(region2_hue);
+            region3_count = countInRange(region3_hue);
 
             mode.telemetry.addLine()
-                    .addData("Region 1 base", region1_calibration)
+                    .addData("TH", hueRangeHigh)
+                    .addData("TL", hueRangeLow);
+
+            mode.telemetry.addData("Calibrated frames", calibration_frame_count - 1);
+            mode.telemetry.addLine()
+                    .addData("L base", region1_calibration)
                     .addData("raw", region1_count);
             mode.telemetry.addLine()
-                    .addData("Region 2 base", region2_calibration)
+                    .addData("C base", region2_calibration)
                     .addData("raw", region2_count);
             mode.telemetry.addLine()
-                    .addData("Region 3 base", region3_calibration)
+                    .addData("R base", region3_calibration)
                     .addData("raw", region3_count);
 
             region1_count -= region1_calibration;
@@ -247,9 +252,11 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
             } else
                 position = TeamPropPosition.CENTER;
 
-            mode.telemetry.addData("Calibrated Region 1", region1_count);
-            mode.telemetry.addData("Calibrated Region 2", region2_count);
-            mode.telemetry.addData("Calibrated Region 3", region3_count);
+            mode.telemetry.addLine()
+                    .addData("Calibrated L", region1_count)
+                    .addData("C", region2_count)
+                    .addData("R", region3_count);
+
             mode.telemetry.addData("Realtime analysis", position);
             mode.telemetry.update();
 
@@ -302,8 +309,6 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                         2); // Thickness of the rectangle lines
 
         }
-
-        return input;
     }
 
     private long countInRange(Mat hueMat)
@@ -341,7 +346,89 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         else //blue
         {
             hueRangeLow = 100;//100
-            hueRangeHigh = 130;//140
+            hueRangeHigh = 125;//140
         }
     }
+
+    private void testWithSaturation(Mat input)
+    {
+        //convert image color fom RGB to HSV
+        Imgproc.cvtColor(input, hsvMat, Imgproc.COLOR_RGB2HSV);
+
+
+        //get the hue matrices for three regions
+        region1_hue = hsvMat.submat(new Rect(region1_pointA, region1_pointB));
+        region2_hue = hsvMat.submat(new Rect(region2_pointA, region2_pointB));
+        region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
+
+
+        double satRectLeft = Core.mean(region1_hue).val[1];
+        double satRectMiddle = Core.mean(region2_hue).val[1];
+        double satRectRight = Core.mean(region3_hue).val[1];
+
+        mode.telemetry.addLine()
+                .addData("L", "%.3f", satRectLeft)
+                .addData("C", "%.3f", satRectMiddle)
+                .addData("R", "%.3f", satRectRight);
+
+        mode.telemetry.addData("Realtime analysis", position);
+        mode.telemetry.update();
+
+        if ((satRectLeft > satRectMiddle) && (satRectLeft > satRectRight)) {
+            position = TeamPropPosition.LEFT;
+        } else if ((satRectMiddle > satRectLeft) && (satRectMiddle > satRectRight)) {
+            position = TeamPropPosition.CENTER;
+        }
+        else
+            position = TeamPropPosition.RIGHT;
+
+        if (position == TeamPropPosition.LEFT)
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region1_pointA, // First point which defines the rectangle
+                    region1_pointB, // Second point which defines the rectangle
+                    new Scalar(255, 0, 0), // The color the rectangle is drawn in
+                    6); // Thickness of the rectangle lines
+        else
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region1_pointA, // First point which defines the rectangle
+                    region1_pointB, // Second point which defines the rectangle
+                    new Scalar(255, 0, 0), // The color the rectangle is drawn in
+                    2); // Thickness of the rectangle lines
+
+
+        if (position == TeamPropPosition.CENTER)
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region2_pointA, // First point which defines the rectangle
+                    region2_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    6); // Thickness of the rectangle lines
+        else
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region2_pointA, // First point which defines the rectangle
+                    region2_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 255, 0), // The color the rectangle is drawn in
+                    2); // Thickness of the rectangle lines
+
+
+        if (position == TeamPropPosition.RIGHT)
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region3_pointA, // First point which defines the rectangle
+                    region3_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 0, 255), // The color the rectangle is drawn in
+                    6); // Thickness of the rectangle lines
+        else
+            Imgproc.rectangle(
+                    input, // Buffer to draw on
+                    region3_pointA, // First point which defines the rectangle
+                    region3_pointB, // Second point which defines the rectangle
+                    new Scalar(0, 0, 255), // The color the rectangle is drawn in
+                    2); // Thickness of the rectangle lines
+    }
+
+
 }
