@@ -48,7 +48,7 @@ public class CCAutoRedRight extends LinearOpMode {
          * of a frame from the camera. Note that switching pipelines on-the-fly
          * (while a streaming session is in flight) *IS* supported.
          */
-        pipeline = new TeamPropDeterminationPipeline(TeamPropDeterminationPipeline.TeamPropColor.BLUE, this);
+        pipeline = new TeamPropDeterminationPipeline(TeamPropDeterminationPipeline.TeamPropColor.RED, this);
         webcam.setPipeline(pipeline);
 
         /*
