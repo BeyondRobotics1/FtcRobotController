@@ -168,45 +168,56 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 Trajectory trajector4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(15,80.5, Math.toRadians(-90)))//44
+                        .lineToLinearHeading(new Pose2d(16,80.5, Math.toRadians(-90)))//15, 80.5
                         .build();
 
                 drive.followTrajectory(trajector4);
                 sleep(100);
 
+                placePixelAndPark(drive, slide, outtake, arm, 35);
 
-                slide.moveToWithoutWaiting(7.6, 1); //low
-                arm.goUp();
-                sleep(1000);
+                break;
+            }
 
-                Trajectory trajectory5 = drive.trajectoryBuilder(trajector4.end())
-                        .back(8.5)
+            case CENTER:
+            {
+                //move the position
+                Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
+                        .forward(43)
                         .build();
-                drive.followTrajectory(trajectory5);
-                sleep(100);
+                drive.followTrajectory(trajectory1);
 
-                outtake.TakeOut();
-                sleep(400);
-                outtake.Hold();
-                sleep(600);
-
-                Trajectory trajectory6 = drive.trajectoryBuilder(trajectory5.end())
-                        .forward(8)
-                        .build();
-                drive.followTrajectory(trajectory6);
+                //unlock the pixel
+                pixelPlacer.Unlock();
                 sleep(200);
 
-                arm.goDown();
-                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+                //move forward
+                Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+                        .forward(10)
+                        .build();
+
+                drive.followTrajectory(trajectory2);
+                sleep(100);
+
+                drive.turn(Math.toRadians(-94));
+                sleep(100);
+
+                Trajectory trajectory22 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .back(60)
+                        .build();
+                drive.followTrajectory(trajectory22);
+                sleep(100);
+
+                //
+                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
+                        .lineToLinearHeading(new Pose2d(28,80.5, Math.toRadians(-90)))//26.5, 32
+                        .build();
+
+                drive.followTrajectory(trajectory3);
                 sleep(100);
 
 
-
-                Trajectory tra = drive.trajectoryBuilder(trajectory6.end())
-                        .strafeLeft(25)
-                        .build();
-
-                drive.followTrajectory(tra);
+                placePixelAndPark(drive, slide, outtake, arm, 25);
 
                 break;
             }
@@ -245,121 +256,62 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(33,80.5, Math.toRadians(-90)))
+                        .lineToLinearHeading(new Pose2d(33.5,80.5, Math.toRadians(-90)))//33
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
 
-                slide.moveToWithoutWaiting(7.6, 1); //low
-                arm.goUp();
-                sleep(1000);
+                placePixelAndPark(drive, slide, outtake, arm, 18);
 
-                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
-                        .back(8.5)
-                        .build();
-                drive.followTrajectory(trajectory4);
-                sleep(100);
-
-                outtake.TakeOut();
-                sleep(400);
-                outtake.Hold();
-                sleep(600);
-
-                Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
-                        .forward(8)
-                        .build();
-                drive.followTrajectory(trajectory5);
-                sleep(200);
-
-
-                arm.goDown();
-                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
-                sleep(100);
-
-                Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
-                        .strafeLeft(18)
-                        .build();
-
-                drive.followTrajectory(tra);
 
                 break;
             }
 
-            case CENTER:
-            {
-                //move the position
-                Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
-                        .forward(43)
-                        .build();
-                drive.followTrajectory(trajectory1);
 
-                //unlock the pixel
-                pixelPlacer.Unlock();
-                sleep(200);
-
-                //move forward
-                Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-                        .forward(10)
-                        .build();
-
-                drive.followTrajectory(trajectory2);
-                sleep(100);
-
-                drive.turn(Math.toRadians(-94));
-                sleep(100);
-
-                Trajectory trajectory22 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .back(60)
-                        .build();
-                drive.followTrajectory(trajectory22);
-                sleep(100);
-
-                //
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(26.5,80.5, Math.toRadians(-90)))//27, 32
-                        .build();
-
-                drive.followTrajectory(trajectory3);
-                sleep(100);
-
-
-
-                slide.moveToWithoutWaiting(7.6, 1); //low
-                arm.goUp();
-                sleep(1000);
-
-                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
-                        .back(8.5)
-                        .build();
-                drive.followTrajectory(trajectory4);
-                sleep(100);
-
-                outtake.TakeOut();
-                sleep(400);
-                outtake.Hold();
-                sleep(600);
-
-                Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
-                        .forward(8)
-                        .build();
-                drive.followTrajectory(trajectory5);
-                sleep(200);
-
-                arm.goDown();
-                slide.moveToWhiteStripWithoutWaiting(0, 1); //low
-                sleep(100);
-
-
-                Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
-                        .strafeLeft(20)
-                        .build();
-                drive.followTrajectory(tra);
-
-                break;
-            }
         }
 
         sleep(8000);
+    }
+
+    private void placePixelAndPark(SampleMecanumDrive drive,
+                                   PicassoSlide slide,
+                                   Outtake outtake,
+                                   Arm arm,
+                                   double strafeLeftInches
+    )
+    {
+
+        slide.moveToWithoutWaiting(7.3, 1); //7.6
+        arm.goUp();
+        sleep(1000);
+
+        Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .back(8.5)
+                .build();
+        drive.followTrajectory(trajectory4);
+        sleep(100);
+
+        outtake.TakeOut();
+        sleep(400);
+        outtake.Hold();
+        sleep(600);
+
+        Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
+                .forward(8)
+                .build();
+        drive.followTrajectory(trajectory5);
+        sleep(100);
+
+        arm.goDown();
+        slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+        sleep(100);
+
+
+        Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
+                .strafeLeft(strafeLeftInches)
+                .build();
+
+        drive.followTrajectory(tra);
 
     }
 }
