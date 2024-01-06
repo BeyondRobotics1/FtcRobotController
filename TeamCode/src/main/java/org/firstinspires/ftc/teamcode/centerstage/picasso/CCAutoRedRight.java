@@ -136,7 +136,7 @@ public class CCAutoRedRight extends LinearOpMode {
                 drive.turn(Math.toRadians(-94));
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .back(5)
+                        .back(7)
                         .build();
                 sleep(100);
 
@@ -147,7 +147,7 @@ public class CCAutoRedRight extends LinearOpMode {
                 sleep(200);
 
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory2.end())
-                        .forward(5)
+                        .forward(10)
                         .build();
                 drive.followTrajectory(trajectory22);
                 sleep(100);
@@ -255,7 +255,7 @@ public class CCAutoRedRight extends LinearOpMode {
     )
     {
 
-        slide.moveToWithoutWaiting(7.3, 1); //7.6
+        slide.moveToWithoutWaiting(7.4, 1); //7.6
         arm.goUp();
         sleep(1000);
 

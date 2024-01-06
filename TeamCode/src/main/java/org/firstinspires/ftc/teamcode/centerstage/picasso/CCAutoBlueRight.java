@@ -168,7 +168,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 Trajectory trajector4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(16,80.5, Math.toRadians(-90)))//15, 80.5
+                        .lineToLinearHeading(new Pose2d(15,80.5, Math.toRadians(-90)))//16, 80.5
                         .build();
 
                 drive.followTrajectory(trajector4);

@@ -214,7 +214,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 drive.turn(Math.toRadians(92));
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .back(5)
+                        .back(7)
                         .build();
                 sleep(100);
 
@@ -225,7 +225,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 sleep(200);
 
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory2.end())
-                        .forward(5)
+                        .forward(7)
                         .build();
                 drive.followTrajectory(trajectory22);
                 sleep(100);
