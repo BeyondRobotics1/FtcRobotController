@@ -250,11 +250,11 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(100);
 
 
-                Trajectory trajector4 = drive.trajectoryBuilder(trajectory34.end())
+                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
                         .lineToLinearHeading(new Pose2d(14,-80.5, Math.toRadians(90)))//13.5
                         .build();
 
-                drive.followTrajectory(trajector4);
+                drive.followTrajectory(trajectory4);
                 sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 35);
@@ -275,7 +275,7 @@ public class CCAutoRedLeft extends LinearOpMode {
     )
     {
 
-        slide.moveToWithoutWaiting(7.3, 1); //7.6
+        slide.moveToWithoutWaiting(7.4, 1); //7.3
         arm.goUp();
         sleep(1000);
 

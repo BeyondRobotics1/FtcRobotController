@@ -167,11 +167,11 @@ public class CCAutoBlueRight extends LinearOpMode {
                 sleep(100);
 
 
-                Trajectory trajector4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(15,80.5, Math.toRadians(-90)))//16, 80.5
+                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
+                        .lineToLinearHeading(new Pose2d(13.5,79, Math.toRadians(-90)))//15, 80.5
                         .build();
 
-                drive.followTrajectory(trajector4);
+                drive.followTrajectory(trajectory4);
                 sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 35);
@@ -210,7 +210,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
                 //
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(28,80.5, Math.toRadians(-90)))//26.5, 32
+                        .lineToLinearHeading(new Pose2d(25.5,79.5, Math.toRadians(-90)))//26.5, 80.5
                         .build();
 
                 drive.followTrajectory(trajectory3);
@@ -256,7 +256,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(33.5,80.5, Math.toRadians(-90)))//33
+                        .lineToLinearHeading(new Pose2d(34,80.5, Math.toRadians(-90)))//33.5
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
@@ -270,7 +270,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
         }
 
-        sleep(8000);
+        sleep(3000);
     }
 
     private void placePixelAndPark(SampleMecanumDrive drive,
@@ -280,8 +280,7 @@ public class CCAutoBlueRight extends LinearOpMode {
                                    double strafeLeftInches
     )
     {
-
-        slide.moveToWithoutWaiting(7.3, 1); //7.6
+        slide.moveToWithoutWaiting(7.4, 1); //7.3
         arm.goUp();
         sleep(1000);
 

@@ -155,7 +155,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
-                        .lineToLinearHeading(new Pose2d(21,32, Math.toRadians(-90)))//21
+                        .lineToLinearHeading(new Pose2d(21,31.5, Math.toRadians(-90)))//21, 32
                         .build();
 
                 drive.followTrajectory(trajectory4);
@@ -188,7 +188,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
-                        .lineToLinearHeading(new Pose2d(26,32, Math.toRadians(-90)))//27
+                        .lineToLinearHeading(new Pose2d(26,32, Math.toRadians(-90)))//27, 32
                         .build();
 
 
@@ -231,7 +231,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(36.5,32, Math.toRadians(-90)))//36
+                        .lineToLinearHeading(new Pose2d(36.5,32, Math.toRadians(-90)))//36, 32
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
@@ -255,7 +255,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                                    )
     {
 
-        slide.moveToWithoutWaiting(7.3, 1); //7.6
+        slide.moveToWithoutWaiting(7.4, 1); //7.6
         arm.goUp();
         sleep(1000);
 
