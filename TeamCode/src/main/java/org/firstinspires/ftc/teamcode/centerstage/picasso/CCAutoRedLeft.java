@@ -152,7 +152,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(32.4,-80.5, Math.toRadians(90)))//31.4
+                        .lineToLinearHeading(new Pose2d(32.4,-80.5, Math.toRadians(90)))//31.4, -80.5
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
@@ -251,7 +251,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(14,-80.5, Math.toRadians(90)))//13.5
+                        .lineToLinearHeading(new Pose2d(14.5,-79.5, Math.toRadians(90)))//14, -80.5
                         .build();
 
                 drive.followTrajectory(trajectory4);
