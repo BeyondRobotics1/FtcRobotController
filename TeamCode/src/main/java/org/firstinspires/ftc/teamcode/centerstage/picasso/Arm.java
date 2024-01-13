@@ -36,13 +36,13 @@ public class Arm {
         if(!isDown) {
 
             //two step to simulate slower speed
-            arm1.setPosition(0.25);
-            arm2.setPosition(0.25);
+            //arm1.setPosition(0.25);//0.25
+            //arm2.setPosition(0.25);
 
             mode.sleep(2);
 
-            arm1.setPosition(0.18);
-            arm2.setPosition(0.18);
+            arm1.setPosition(0.3);
+            arm2.setPosition(0.3);
 
             isDown = true;
         }
@@ -53,16 +53,16 @@ public class Arm {
         if(isDown) {
 
             //three step to simulate slower speed
-            arm1.setPosition(0.3);
-            arm2.setPosition(0.3);
+            //arm1.setPosition(0.3);
+           // arm2.setPosition(0.3);
             mode.sleep(2);
 
             arm1.setPosition(0.6);
             arm2.setPosition(0.6);
             mode.sleep(1);
 
-            arm1.setPosition(0.8);
-            arm2.setPosition(0.8);
+            arm1.setPosition(0.92);
+            arm2.setPosition(0.92);
 
             isDown = false;
         }
