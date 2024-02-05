@@ -25,7 +25,14 @@ public class Outtake {
     //release pixels on the backdrop
     public void TakeOut()
     {
-        outTake.setPosition(0.8);
+        //outTake.setPosition(0.8);
+        TakeOut(0.8);
+    }
+
+    //release pixels on the backdrop
+    public void TakeOut(double speed)
+    {
+        outTake.setPosition(speed);
     }
 
     //stop moving

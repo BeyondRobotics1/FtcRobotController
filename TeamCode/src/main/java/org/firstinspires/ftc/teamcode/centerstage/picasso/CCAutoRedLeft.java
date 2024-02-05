@@ -152,7 +152,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(32.4,-80.5, Math.toRadians(90)))//31.4, -80.5
+                        .lineToLinearHeading(new Pose2d(32,-80.5, Math.toRadians(90)))//32.4, -80.5
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
@@ -215,7 +215,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
-                drive.turn(Math.toRadians(93));
+                drive.turn(Math.toRadians(92));//93
                 sleep(100);
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -238,7 +238,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory33 = drive.trajectoryBuilder(trajectory3.end())
-                        .strafeRight(24)
+                        .strafeRight(22) //24
                         .build();
                 drive.followTrajectory(trajectory33);
                 sleep(100);
@@ -251,19 +251,19 @@ public class CCAutoRedLeft extends LinearOpMode {
 
 
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(14.5,-79.5, Math.toRadians(90)))//14, -80.5
+                        .lineToLinearHeading(new Pose2d(12.5,-79.5, Math.toRadians(90)))//14.5, -80.5
                         .build();
 
                 drive.followTrajectory(trajectory4);
                 sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 35);
+                placePixelAndPark(drive, slide, outtake, arm, 33);
 
                 break;
             }
         }
 
-        sleep(8000);
+        sleep(1000);
 
     }
 
@@ -274,33 +274,38 @@ public class CCAutoRedLeft extends LinearOpMode {
                                    double strafeRightInches
     )
     {
-
-        slide.moveToWithoutWaiting(7.4, 1); //7.3
+        //move slide up to two pixel high
+        slide.moveToWithoutWaiting(10.5, 1); //7.3
         arm.goUp();
         sleep(1000);
 
+        //move close to the backdrop
         Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .back(8.5)
                 .build();
         drive.followTrajectory(trajectory4);
         sleep(100);
 
-        outtake.TakeOut();
-        sleep(400);
+        //outtake the pixel
+        outtake.TakeOut(0.65);
+        sleep(900);
         outtake.Hold();
-        sleep(600);
+        sleep(100);
 
+        //move away from the backdrop
         Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
                 .forward(8)
                 .build();
         drive.followTrajectory(trajectory5);
         sleep(100);
 
+        //move the arm and slide down
         arm.goDown();
         slide.moveToWhiteStripWithoutWaiting(0, 1); //low
         sleep(100);
 
 
+        //move to the right side of backstage
         Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
                 .strafeRight(strafeRightInches)
                 .build();
