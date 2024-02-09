@@ -112,6 +112,11 @@ public class CCAutoBlueRight extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+        //sleep for other team to finish the auto
+        //avoid collision
+        sleep(2000);
+
+
         PicassoSlide slide = new PicassoSlide(hardwareMap, this);
         slide.runWithEncoder();
 
@@ -183,7 +188,7 @@ public class CCAutoBlueRight extends LinearOpMode {
             {
                 //move the position
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
-                        .forward(43)
+                        .forward(42.5)//43
                         .build();
                 drive.followTrajectory(trajectory1);
 
@@ -193,13 +198,13 @@ public class CCAutoBlueRight extends LinearOpMode {
 
                 //move forward
                 Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-                        .forward(10)
+                        .forward(9)//10
                         .build();
 
                 drive.followTrajectory(trajectory2);
                 sleep(100);
 
-                drive.turn(Math.toRadians(-94));
+                drive.turn(Math.toRadians(-96));//-94
                 sleep(100);
 
                 Trajectory trajectory22 = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -210,7 +215,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
                 //
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(25.5,79.5, Math.toRadians(-90)))//26.5, 80.5
+                        .lineToLinearHeading(new Pose2d(26,79.5, Math.toRadians(-90)))//26.5, 80.5
                         .build();
 
                 drive.followTrajectory(trajectory3);
@@ -290,7 +295,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
         //outtake the pixel
         outtake.TakeOut(0.65);
-        sleep(900);
+        sleep(800);
         outtake.Hold();
         sleep(100);
 
@@ -302,7 +307,7 @@ public class CCAutoBlueRight extends LinearOpMode {
         sleep(100);
 
         //move the arm and slide down
-        arm.goDown();
+        //arm.goDown();
         slide.moveToWhiteStripWithoutWaiting(0, 1); //low
         sleep(100);
 

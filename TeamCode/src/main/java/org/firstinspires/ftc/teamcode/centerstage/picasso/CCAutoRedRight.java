@@ -175,15 +175,29 @@ public class CCAutoRedRight extends LinearOpMode {
                 pixelPlacer.Unlock();
                 sleep(200);
 
+//                //move forward
+//                Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+//                        .forward(13)
+//                        .build();
+//
+//                drive.followTrajectory(trajectory2);
+//                sleep(100);
+
                 //move forward
                 Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-                        .forward(13)
+                        .forward(7)//13
                         .build();
 
                 drive.followTrajectory(trajectory2);
                 sleep(100);
 
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
+                Trajectory tra = drive.trajectoryBuilder(trajectory2.end())
+                        .strafeRight(15)
+                        .build();
+                drive.followTrajectory(tra);
+                sleep(100);
+
+                Trajectory trajectory3 = drive.trajectoryBuilder(tra.end())
                         .lineToLinearHeading(new Pose2d(25,-32, Math.toRadians(90)))//26
                         .build();
 
@@ -278,7 +292,7 @@ public class CCAutoRedRight extends LinearOpMode {
     )
     {
         //move slide up to one pixels high
-        slide.moveToWithoutWaiting(10.5, 1); //7.6
+        slide.moveToWithoutWaiting(7.6, 1); //7.6
         arm.goUp();
         sleep(1000);
 
@@ -303,7 +317,7 @@ public class CCAutoRedRight extends LinearOpMode {
         sleep(100);
 
         //move the arm and slide down
-        arm.goDown();
+        //arm.goDown();
         slide.moveToWhiteStripWithoutWaiting(0, 1); //low
         sleep(100);
 

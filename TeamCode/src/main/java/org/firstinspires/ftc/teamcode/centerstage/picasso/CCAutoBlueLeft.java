@@ -145,7 +145,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory2.end())
-                        .lineToLinearHeading(new Pose2d(17,32, Math.toRadians(-90)))//21, 31.5
+                        .lineToLinearHeading(new Pose2d(21,32, Math.toRadians(-90)))//21, 31.5
                         .build();
 
                 drive.followTrajectory(trajectory4);
@@ -264,7 +264,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
         //outtake the pixel
         outtake.TakeOut(0.65);
-        sleep(900);
+        sleep(800);
         outtake.Hold();
         sleep(100);
 
@@ -276,7 +276,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
         sleep(100);
 
         //move the arm and slide down
-        arm.goDown();
+        //arm.goDown();
         slide.moveToWhiteStripWithoutWaiting(0, 1); //low
         sleep(100);
 
