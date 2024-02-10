@@ -129,7 +129,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                         .lineToLinearHeading(new Pose2d(35,13.5))
                         .build();
                 drive.followTrajectory(trajectory1);
-                sleep(100);
+                //sleep(100);
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
@@ -145,14 +145,17 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory2.end())
-                        .lineToLinearHeading(new Pose2d(21,32, Math.toRadians(-90)))//21, 31.5
+                        .lineToLinearHeading(new Pose2d(18,32, Math.toRadians(-90)))//21, 31.5
                         .build();
 
                 drive.followTrajectory(trajectory4);
-                sleep(100);
+                //sleep(100);
 
 
                 placePixelAndPark(drive, slide, outtake, arm, 22);//20
+
+                //test
+                //Plus(drive, slide, outtake, arm);
 
                 break;
             }
@@ -189,7 +192,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
 
                 drive.followTrajectory(trajectory3);
-                sleep(100);
+                //sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 26);
 
@@ -205,14 +208,14 @@ public class CCAutoBlueLeft extends LinearOpMode {
                         .build();
 
                 drive.followTrajectory(trajectory1);
-                sleep(100);
+                //sleep(100);
 
                 drive.turn(Math.toRadians(94));//92
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .back(7)
                         .build();
-                sleep(100);
+                //sleep(100);
 
                 drive.followTrajectory(trajectory2);
 
@@ -230,7 +233,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                         .lineToLinearHeading(new Pose2d(36.5,33, Math.toRadians(-90)))//36.5, 32
                         .build();
                 drive.followTrajectory(trajectory3);
-                sleep(100);
+                //sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 30);
 
@@ -287,7 +290,51 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 .build();
 
         drive.followTrajectory(tra);
+    }
 
+    private void Plus(SampleMecanumDrive drive,
+                      PicassoSlide slide,
+                      Outtake outtake,
+                      Arm arm)
+    {
+        Trajectory trajectory0 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(0,0, Math.toRadians(-90)))
+                .build();
+
+        drive.followTrajectory(trajectory0);
+
+        sleep(100);
+
+        //adjust heading here
+
+        //move the position
+        Trajectory trajectory1 = drive.trajectoryBuilder(trajectory0.end())
+                .forward(48) //28
+                .build();
+
+        drive.followTrajectory(trajectory1);
+
+        sleep(100);
+
+        Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+                .lineToLinearHeading(new Pose2d(27,-66, Math.toRadians(-90)))
+                .build();
+        drive.followTrajectory(trajectory2);
+        sleep(100);
+
+
+        Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
+                .lineToLinearHeading(new Pose2d(0,-50, Math.toRadians(-90)))
+                .build();
+        drive.followTrajectory(trajectory3);
+        sleep(100);
+
+        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
+                .lineToLinearHeading(new Pose2d(0,0, Math.toRadians(-90)))
+                .build();
+
+        drive.followTrajectory(trajectory4);
+        sleep(100);
     }
 
 }
