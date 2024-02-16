@@ -114,7 +114,10 @@ public class CCAutoBlueRight extends LinearOpMode {
 
         //sleep for other team to finish the auto
         //avoid collision
-        sleep(2000);
+        if(position == TeamPropDeterminationPipeline.TeamPropPosition.LEFT)
+            sleep(4000);
+        else
+            sleep(6000);
 
 
         PicassoSlide slide = new PicassoSlide(hardwareMap, this);
@@ -129,11 +132,10 @@ public class CCAutoBlueRight extends LinearOpMode {
         {
             case LEFT:
             {
-                //move the position
+                //move the left mark position
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .forward(28)
                         .build();
-
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
@@ -143,8 +145,6 @@ public class CCAutoBlueRight extends LinearOpMode {
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .back(7)
                         .build();
-
-
                 drive.followTrajectory(trajectory2);
 
                 //unlock the pixel
@@ -152,6 +152,7 @@ public class CCAutoBlueRight extends LinearOpMode {
                 sleep(200);
 
 
+                //move forward
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
                         .forward(10)
                         .build();
@@ -172,12 +173,12 @@ public class CCAutoBlueRight extends LinearOpMode {
                 sleep(100);
 
 
+                //move the left side of the backdrop
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
                         .lineToLinearHeading(new Pose2d(12.75,79, Math.toRadians(-90)))//13.5, 80.5
                         .build();
-
                 drive.followTrajectory(trajectory4);
-                sleep(100);
+                //sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 33);//35
 
@@ -186,7 +187,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
             case CENTER:
             {
-                //move the position
+                //move the center mark position
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .forward(42.5)//43
                         .build();
@@ -213,14 +214,12 @@ public class CCAutoBlueRight extends LinearOpMode {
                 drive.followTrajectory(trajectory22);
                 sleep(100);
 
-                //
+                //move to the center position of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(26,79.5, Math.toRadians(-90)))//26.5, 80.5
+                        .lineToLinearHeading(new Pose2d(26.5,79.5, Math.toRadians(-90)))//26.5, 80.5
                         .build();
-
                 drive.followTrajectory(trajectory3);
-                sleep(100);
-
+                //sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 25);
 
@@ -229,7 +228,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
             case RIGHT:
             {
-
+                //move the right mark position in a straight line
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .lineToLinearHeading(new Pose2d(38,-13.5)) //38, -14
                         .build();
@@ -240,35 +239,36 @@ public class CCAutoBlueRight extends LinearOpMode {
                 pixelPlacer.Unlock();
                 sleep(200);
 
+                //move forward
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory1.end())
                         .forward(14) //15
                         .build();
                 drive.followTrajectory(trajectory22);
                 sleep(100);
 
+                //turn right a little bit more than 90 degrees to avoid
+                //colliding the structure
                 drive.turn(Math.toRadians(-97));//-94
                 sleep(100);
 
+                //move backward
                 Trajectory trajectory34 = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .back(60)
                         .build();
                 drive.followTrajectory(trajectory34);
                 sleep(100);
 
-
+                //move to the right position of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
                         .lineToLinearHeading(new Pose2d(34.5,81.5, Math.toRadians(-90)))//35.5, 80.5
                         .build();
                 drive.followTrajectory(trajectory3);
-                sleep(100);
+                //sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 18);
 
-
                 break;
             }
-
-
         }
 
         sleep(1000);
@@ -311,12 +311,10 @@ public class CCAutoBlueRight extends LinearOpMode {
         slide.moveToWhiteStripWithoutWaiting(0, 1); //low
         sleep(100);
 
-
         //move to the right side of backstage
         Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
                 .strafeLeft(strafeLeftInches)
                 .build();
-
         drive.followTrajectory(tra);
 
     }

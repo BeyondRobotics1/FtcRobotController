@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.centerstage.picasso;
 
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,7 +14,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 @Config
 @TeleOp(group="Picasso", name="Red Prop Detection Test")
-//@Disabled
+@Disabled
 public class TestRedPropDetection extends LinearOpMode
 {
     OpenCvWebcam webcam;

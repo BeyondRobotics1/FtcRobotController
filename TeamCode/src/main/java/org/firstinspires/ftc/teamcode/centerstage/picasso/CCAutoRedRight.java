@@ -125,33 +125,33 @@ public class CCAutoRedRight extends LinearOpMode {
         {
             case LEFT:
             {
-                //move the position
+                //move the left mark position
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .forward(28)
                         .build();
-
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
                 drive.turn(Math.toRadians(-94));
+                sleep(100);
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .back(7)
                         .build();
-                sleep(100);
-
                 drive.followTrajectory(trajectory2);
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
                 sleep(200);
 
+                //move forward
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory2.end())
                         .forward(10)
                         .build();
                 drive.followTrajectory(trajectory22);
                 sleep(100);
 
+                //move to the left side of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
                         .lineToLinearHeading(new Pose2d(36.5,-32, Math.toRadians(90)))//36
                         .build();
@@ -165,7 +165,7 @@ public class CCAutoRedRight extends LinearOpMode {
 
             case CENTER:
             {
-                //move the position
+                //move the center mark position
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .forward(43)
                         .build();
@@ -175,19 +175,10 @@ public class CCAutoRedRight extends LinearOpMode {
                 pixelPlacer.Unlock();
                 sleep(200);
 
-//                //move forward
-//                Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-//                        .forward(13)
-//                        .build();
-//
-//                drive.followTrajectory(trajectory2);
-//                sleep(100);
-
                 //move forward
                 Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
                         .forward(7)//13
                         .build();
-
                 drive.followTrajectory(trajectory2);
                 sleep(100);
 
@@ -197,60 +188,26 @@ public class CCAutoRedRight extends LinearOpMode {
                 drive.followTrajectory(tra);
                 sleep(100);
 
+                //move the center position of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(tra.end())
                         .lineToLinearHeading(new Pose2d(25,-32, Math.toRadians(90)))//26
                         .build();
-
-
                 drive.followTrajectory(trajectory3);
                 sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 25);
-
 
                 break;
             }
 
             case RIGHT:
             {
-//                //move the position
-//                Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
-//                        .forward(28)
-//                        .build();
-//
-//                drive.followTrajectory(trajectory1);
-//                sleep(100);
-//
-//                drive.turn(Math.toRadians(-94));
-//                sleep(100);
-//
-//                Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
-//                        .forward(18)
-//                        .build();
-//
-//
-//                drive.followTrajectory(trajectory2);
-//
-//                //unlock the pixel
-//                pixelPlacer.Unlock();
-//                sleep(200);
-//
-//
-//                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory2.end())
-//                        .forward(10)
-//                        .build();
-//                drive.followTrajectory(trajectory3);
-//                sleep(100);
-//
-//                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory3.end())
-//                        .lineToLinearHeading(new Pose2d(22,-32, Math.toRadians(90)))//21
-//                        .build();
-
+                //move to the right mark position in a straight line
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .lineToLinearHeading(new Pose2d(35,-13.5))
                         .build();
                 drive.followTrajectory(trajectory1);
-                sleep(100);
+                //sleep(100);//no sleep here, unlocking takes time
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
@@ -261,17 +218,15 @@ public class CCAutoRedRight extends LinearOpMode {
                 Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
                         .forward(12)//13
                         .build();
-
                 drive.followTrajectory(trajectory2);
                 sleep(100);
 
+                //move to the left side of the backdrop
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory2.end())
                         .lineToLinearHeading(new Pose2d(18,-32, Math.toRadians(90)))//22, -32
                         .build();
-
                 drive.followTrajectory(trajectory4);
-                sleep(100);
-
+                //sleep(100);
 
                 placePixelAndPark(drive, slide, outtake, arm, 20);
 
@@ -292,7 +247,7 @@ public class CCAutoRedRight extends LinearOpMode {
     )
     {
         //move slide up to one pixels high
-        slide.moveToWithoutWaiting(7.6, 1); //7.6
+        slide.moveToWithoutWaiting(7.7, 1); //7.6
         arm.goUp();
         sleep(1000);
 
@@ -325,7 +280,6 @@ public class CCAutoRedRight extends LinearOpMode {
         Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
                 .strafeLeft(strafeLeftInches)
                 .build();
-
         drive.followTrajectory(tra);
 
     }
