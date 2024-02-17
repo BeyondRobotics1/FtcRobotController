@@ -163,7 +163,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
                 //move to the left side of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(32,-80.5, Math.toRadians(90)))//31.5, -80.5
+                        .lineToLinearHeading(new Pose2d(31.5,-80.5, Math.toRadians(90)))//32, -80.5
                         .build();
                 drive.followTrajectory(trajectory3);
                 //sleep(100);

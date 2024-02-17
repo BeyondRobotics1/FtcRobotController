@@ -190,7 +190,7 @@ public class CCAutoRedRight extends LinearOpMode {
 
                 //move the center position of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(tra.end())
-                        .lineToLinearHeading(new Pose2d(25,-32, Math.toRadians(90)))//26
+                        .lineToLinearHeading(new Pose2d(24.5,-32, Math.toRadians(90)))//25
                         .build();
                 drive.followTrajectory(trajectory3);
                 sleep(100);
