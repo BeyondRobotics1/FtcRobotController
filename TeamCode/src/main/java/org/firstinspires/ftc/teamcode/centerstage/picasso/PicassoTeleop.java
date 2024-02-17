@@ -51,6 +51,7 @@ public class PicassoTeleop extends LinearOpMode {
         telemetry.addLine("Initializing pixel placer");
         telemetry.update();
         PixelPlacer pixelPlacer = new PixelPlacer(hardwareMap, this);
+        pixelPlacer.Unlock();
 
         telemetry.addLine("Initializing arm");
         telemetry.update();
@@ -182,6 +183,12 @@ public class PicassoTeleop extends LinearOpMode {
             if(gamepad2.y)
                 launcher.ReleaseTrigger();
 
+            //////damage control for pixel placer
+            //Pixel placer may accidentally lock a pixel during teleop
+            if (gamepad1.dpad_down)
+                pixelPlacer.Lock();
+            else
+                pixelPlacer.Unlock();
 
 //            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 //            telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", botHeading * 180 / Math.PI);
