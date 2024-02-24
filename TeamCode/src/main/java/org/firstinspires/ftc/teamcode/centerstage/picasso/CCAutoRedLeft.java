@@ -206,7 +206,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
                 //move to the center position of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(26.5,-80.5, Math.toRadians(90)))//26
+                        .lineToLinearHeading(new Pose2d(26,-80.5, Math.toRadians(90)))//26.5
                         .build();
                 drive.followTrajectory(trajectory3);
                 //sleep(100);
@@ -227,7 +227,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
-                drive.turn(Math.toRadians(94));//92
+                drive.turn(Math.toRadians(93));//92
                 sleep(100);
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -262,7 +262,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
                 //move to the right side of the backdrop
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(14.5,-79.5, Math.toRadians(90)))//12.5, -79.5
+                        .lineToLinearHeading(new Pose2d(14,-79.5, Math.toRadians(90)))//12.5, -79.5
                         .build();
                 drive.followTrajectory(trajectory4);
                 sleep(100);

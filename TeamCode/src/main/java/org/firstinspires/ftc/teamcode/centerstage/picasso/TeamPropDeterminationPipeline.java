@@ -299,14 +299,14 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
                         region3_pointA, // First point which defines the rectangle
                         region3_pointB, // Second point which defines the rectangle
                         new Scalar(0, 0, 255), // The color the rectangle is drawn in
-                        6); // Thickness of the rectangle lines
+                        6); // Thick rectangle lines
             else
                 Imgproc.rectangle(
                         input, // Buffer to draw on
                         region3_pointA, // First point which defines the rectangle
                         region3_pointB, // Second point which defines the rectangle
                         new Scalar(0, 0, 255), // The color the rectangle is drawn in
-                        2); // Thickness of the rectangle lines
+                        2); // Thin rectangle lines
 
         }
     }

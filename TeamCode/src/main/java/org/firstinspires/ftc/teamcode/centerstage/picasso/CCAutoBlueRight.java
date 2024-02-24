@@ -175,7 +175,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
                 //move the left side of the backdrop
                 Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(14.5,79, Math.toRadians(-90)))//12.75, 79
+                        .lineToLinearHeading(new Pose2d(14.5,79, Math.toRadians(-90)))//14.5, 79
                         .build();
                 drive.followTrajectory(trajectory4);
                 sleep(100);
@@ -260,7 +260,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
                 //move to the right position of the backdrop
                 Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(34.5,81.5, Math.toRadians(-90)))//35.5, 80.5
+                        .lineToLinearHeading(new Pose2d(33,81.5, Math.toRadians(-90)))//34.5, 80.5
                         .build();
                 drive.followTrajectory(trajectory3);
                 //sleep(100);
