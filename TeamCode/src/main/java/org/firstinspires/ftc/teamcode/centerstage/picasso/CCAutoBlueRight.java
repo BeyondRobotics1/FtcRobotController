@@ -174,13 +174,13 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 //move the left side of the backdrop
-                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(14.5,79, Math.toRadians(-90)))//14.5, 79
-                        .build();
-                drive.followTrajectory(trajectory4);
-                sleep(100);
+//                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
+//                        .lineToLinearHeading(new Pose2d(14.5,79, Math.toRadians(-90)))//14.5, 79
+//                        .build();
+//                drive.followTrajectory(trajectory4);
+//                sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 33);//35
+                placePixelAndPark(drive, slide, outtake, arm,14.5,79,-90, 33);//35
 
                 break;
             }
@@ -206,22 +206,17 @@ public class CCAutoBlueRight extends LinearOpMode {
                 sleep(100);
 
                 drive.turn(Math.toRadians(-96));//-94
-                sleep(100);
-
                 Trajectory trajectory22 = drive.trajectoryBuilder(drive.getPoseEstimate())
                         .back(60)
                         .build();
+
                 drive.followTrajectory(trajectory22);
-                sleep(100);
+
 
                 //move to the center position of the backdrop
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(26.5,79.5, Math.toRadians(-90)))//26.5, 80.5
-                        .build();
-                drive.followTrajectory(trajectory3);
                 //sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 25);
+                placePixelAndPark(drive, slide, outtake, arm,26.5, 79.5, -90, 25);
 
                 break;
             }
@@ -256,16 +251,16 @@ public class CCAutoBlueRight extends LinearOpMode {
                         .back(60)
                         .build();
                 drive.followTrajectory(trajectory34);
-                sleep(100);
+
 
                 //move to the right position of the backdrop
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(33,81.5, Math.toRadians(-90)))//34.5, 80.5
-                        .build();
-                drive.followTrajectory(trajectory3);
+//                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
+//                        .lineToLinearHeading(new Pose2d(33,81.5, Math.toRadians(-90)))//34.5, 80.5
+//                        .build();
+//                drive.followTrajectory(trajectory3);
                 //sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 18);
+                placePixelAndPark(drive, slide, outtake, arm,33, 81.5, -90, 18);
 
                 break;
             }
@@ -278,16 +273,22 @@ public class CCAutoBlueRight extends LinearOpMode {
                                    PicassoSlide slide,
                                    Outtake outtake,
                                    Arm arm,
+                                   double x,
+                                   double y,
+                                   double heading,
                                    double strafeLeftInches
     )
     {
+        Trajectory trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(x,y, Math.toRadians(heading)))//26.5, 79.5, -90 for center
+                .build();
+        drive.followTrajectory(trajectory);
         //move slide up to two pixels high
         slide.moveToWithoutWaiting(10.5, 1);
         arm.goUp();
-        sleep(1000);
 
         //move close to the backdrop
-        Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
+        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory.end())
                 .back(8.5)
                 .build();
         drive.followTrajectory(trajectory4);

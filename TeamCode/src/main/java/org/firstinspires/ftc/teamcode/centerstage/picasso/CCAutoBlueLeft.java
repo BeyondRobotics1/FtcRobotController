@@ -143,15 +143,11 @@ public class CCAutoBlueLeft extends LinearOpMode {
                         .build();
                 drive.followTrajectory(trajectory2);
                 sleep(100);
+                //move slide up to one pixel high
+                slide.moveToWithoutWaiting(7.7, 1); //7.4
+                arm.goUp();
 
-                //move to the left side of the backdrop
-                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory2.end())
-                        .lineToLinearHeading(new Pose2d(18,32, Math.toRadians(-90)))//21, 31.5
-                        .build();
-                drive.followTrajectory(trajectory4);
-
-
-                placePixelAndPark(drive, slide, outtake, arm, 22);//20
+                placePixelAndPark(drive, slide, outtake, arm, 18, 32, -90, 22);//20
 
                 //test
                 //Plus(drive, slide, outtake, arm);
@@ -184,14 +180,12 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 drive.followTrajectory(tra);
                 sleep(100);
 
-                //move to the center of the backdrop
-                Trajectory trajectory3 = drive.trajectoryBuilder(tra.end())
-                        .lineToLinearHeading(new Pose2d(24.5,32, Math.toRadians(-90)))//25, 32
-                        .build();
-                drive.followTrajectory(trajectory3);
                 //sleep(100);
+                //move slide up to one pixel high
+                slide.moveToWithoutWaiting(7.7, 1); //7.4
+                arm.goUp();
 
-                placePixelAndPark(drive, slide, outtake, arm, 26);
+                placePixelAndPark(drive, slide, outtake, arm, 24.5,32,-90, 26);
 
 
                 break;
@@ -224,13 +218,12 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory22);
                 sleep(100);
 
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(36.5,33, Math.toRadians(-90)))//36.5, 32
-                        .build();
-                drive.followTrajectory(trajectory3);
+                //move slide up to one pixel high
+                slide.moveToWithoutWaiting(7.7, 1); //7.4
+                arm.goUp();
                 //sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 30);
+                placePixelAndPark(drive, slide, outtake, arm, 36.5, 32, -90, 30);
 
                 break;
             }
@@ -245,16 +238,19 @@ public class CCAutoBlueLeft extends LinearOpMode {
                                    PicassoSlide slide,
                                    Outtake outtake,
                                    Arm arm,
+                                   double x,
+                                   double y,
+                                   double heading,
                                    double strafeRightInches
                                    )
     {
-        //move slide up to one pixel high
-        slide.moveToWithoutWaiting(7.7, 1); //7.4
-        arm.goUp();
-        sleep(1000);
 
+        Trajectory trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(x,y, Math.toRadians(heading)))
+                .build();
+        drive.followTrajectory(trajectory);
         //move close to the backdrop
-        Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
+        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory.end())
                 .back(8.5)
                 .build();
         drive.followTrajectory(trajectory4);
