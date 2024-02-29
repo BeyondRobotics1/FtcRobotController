@@ -403,4 +403,17 @@ public class SampleMecanumDrive extends MecanumDrive {
     {
         return imu;
     }
+
+    public void resetIMU()
+    {
+        if(imu != null)
+            imu.resetYaw();
+    }
+    public double getIMUHeadingDegrees()
+    {
+        if(imu != null)
+            return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        else
+            return 0;
+    }
 }

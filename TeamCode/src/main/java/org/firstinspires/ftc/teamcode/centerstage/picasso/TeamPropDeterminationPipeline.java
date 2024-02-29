@@ -16,6 +16,7 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
 
     public TeamPropDeterminationPipeline(TeamPropColor teamPropColor, LinearOpMode mode){
         this.mode = mode;
+
         setHueRange(teamPropColor);
 
         region1_history = new long[CALIBRATION_FRAMES];
@@ -44,6 +45,11 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     }
 
     LinearOpMode mode;
+
+    double satRectLeft = 0;
+    double satRectMiddle = 0;
+    double satRectRight = 0;
+
 
     // Volatile since accessed by OpMode thread w/o synchronization
     private volatile TeamPropPosition position = TeamPropPosition.CENTER;
@@ -128,6 +134,20 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
     public TeamPropPosition getAnalysis()
     {
         return position;
+    }
+
+    public double getSatRectLeft()
+    {
+        return satRectLeft;
+    }
+
+    public double getSatRectMiddle()
+    {
+        return satRectMiddle;
+    }
+    public double getSatRectRight()
+    {
+        return satRectRight;
     }
 
     @Override
@@ -362,17 +382,17 @@ public class TeamPropDeterminationPipeline extends OpenCvPipeline {
         region3_hue = hsvMat.submat(new Rect(region3_pointA, region3_pointB));
 
 
-        double satRectLeft = Core.mean(region1_hue).val[1];
-        double satRectMiddle = Core.mean(region2_hue).val[1];
-        double satRectRight = Core.mean(region3_hue).val[1];
+        satRectLeft = Core.mean(region1_hue).val[1];
+        satRectMiddle = Core.mean(region2_hue).val[1];
+        satRectRight = Core.mean(region3_hue).val[1];
 
-        mode.telemetry.addLine()
-                .addData("L", "%.3f", satRectLeft)
-                .addData("C", "%.3f", satRectMiddle)
-                .addData("R", "%.3f", satRectRight);
-
-        mode.telemetry.addData("Realtime analysis", position);
-        mode.telemetry.update();
+//        mode.telemetry.addLine()
+//                .addData("L", "%.3f", satRectLeft)
+//                .addData("C", "%.3f", satRectMiddle)
+//                .addData("R", "%.3f", satRectRight);
+//
+//        mode.telemetry.addData("Realtime analysis", position);
+//        mode.telemetry.update();
 
         if ((satRectLeft > satRectMiddle) && (satRectLeft > satRectRight)) {
             position = TeamPropPosition.LEFT;

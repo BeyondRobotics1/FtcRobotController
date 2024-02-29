@@ -97,11 +97,27 @@ public class CCAutoRedLeft extends LinearOpMode {
 
         TeamPropDeterminationPipeline.TeamPropPosition position = TeamPropDeterminationPipeline.TeamPropPosition.CENTER;
 
+        double satRectLeft = 0;
+        double satRectMiddle = 0;
+        double satRectRight = 0;
+
         while (!isStarted() && !isStopRequested()) {
 
             position = pipeline.getAnalysis();
-            telemetry.addData("Position Detected", position);
+            satRectLeft = pipeline.getSatRectLeft();
+            satRectMiddle = pipeline.getSatRectMiddle();
+            satRectRight = pipeline.getSatRectRight();
+
+            telemetry.addLine("Auto Red Left");
+            telemetry.addData("L", "%.2f", satRectLeft);
+            telemetry.addData("C", "%.2f", satRectMiddle);
+            telemetry.addData("R", "%.2f", satRectRight);
+
+            telemetry.addData("Realtime analysis", position);
             telemetry.update();
+
+            //telemetry.addData("Auto Blue Left: Position Detected", position);
+            //telemetry.update();
 
             // Don't burn CPU cycles busy-looping in this sample
             sleep(100);
