@@ -416,4 +416,28 @@ public class SampleMecanumDrive extends MecanumDrive {
         else
             return 0;
     }
+
+    /**
+     * Adjust robot heading using imu yaw angle
+     * @param targetHeadingDegree the target heading
+     */
+    public double adjustHeading(double targetHeadingDegree)
+    {
+        double deltaAngle = 0;
+        if(imu != null) {
+            deltaAngle = targetHeadingDegree - imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+            if (deltaAngle < -6)
+                deltaAngle = -6;
+            else if (deltaAngle > 6)
+                deltaAngle = 6;
+
+            //only significant enough
+            if (Math.abs(deltaAngle) > 0.3) {
+                turn(Math.toRadians(deltaAngle));
+            }
+        }
+
+        return deltaAngle;
+    }
 }

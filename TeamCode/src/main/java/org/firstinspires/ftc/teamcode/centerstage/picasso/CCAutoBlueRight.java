@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name="Blue Right", group="Picasso")
+@Autonomous(name="Blue Right Right", group="Picasso")
 //@Disabled
 
 public class CCAutoBlueRight extends LinearOpMode {
@@ -100,14 +100,24 @@ public class CCAutoBlueRight extends LinearOpMode {
         double satRectMiddle = 0;
         double satRectRight = 0;
 
+        long delaySeconds = 10;
         while (!isStarted() && !isStopRequested()) {
+
+            if (gamepad1.dpad_down)
+                delaySeconds = 0;
+            else  if (gamepad1.dpad_left)
+                delaySeconds = 4;
+            else  if (gamepad1.dpad_up)
+                delaySeconds = 8;
+            else  if (gamepad1.dpad_right)
+                delaySeconds = 10;
 
             position = pipeline.getAnalysis();
             satRectLeft = pipeline.getSatRectLeft();
             satRectMiddle = pipeline.getSatRectMiddle();
             satRectRight = pipeline.getSatRectRight();
 
-            telemetry.addLine("Auto Blue Right");
+            telemetry.addData("Auto Blue Right. Delayed seconds", "%d", delaySeconds);
             telemetry.addData("L", "%.2f", satRectLeft);
             telemetry.addData("C", "%.2f", satRectMiddle);
             telemetry.addData("R", "%.2f", satRectRight);
@@ -130,10 +140,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
         //sleep for other team to finish the auto
         //avoid collision
-        if(position == TeamPropDeterminationPipeline.TeamPropPosition.LEFT)
-            sleep(4000);
-        else
-            sleep(6000);
+            sleep(delaySeconds * 1000);
 
 
         PicassoSlide slide = new PicassoSlide(hardwareMap, this);
@@ -156,6 +163,8 @@ public class CCAutoBlueRight extends LinearOpMode {
                 sleep(100);
 
                 drive.turn(Math.toRadians(-93));
+                sleep(100);
+                drive.adjustHeading(-90);
                 sleep(100);
 
                 Trajectory trajectory2 = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -196,7 +205,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 //                drive.followTrajectory(trajectory4);
 //                sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm,14.5,79,-90, 33);//35
+                placePixelAndPark(drive, slide, outtake, arm,14.5,78,-90, 33);//35, 79
 
                 break;
             }
@@ -232,7 +241,7 @@ public class CCAutoBlueRight extends LinearOpMode {
                 //move to the center position of the backdrop
                 //sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm,26.5, 79.5, -90, 25);
+                placePixelAndPark(drive, slide, outtake, arm,26.5, 78, -90, 25);//26.5, 79.5
 
                 break;
             }
@@ -270,13 +279,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 //move to the right position of the backdrop
-//                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-//                        .lineToLinearHeading(new Pose2d(33,81.5, Math.toRadians(-90)))//34.5, 80.5
-//                        .build();
-//                drive.followTrajectory(trajectory3);
-                //sleep(100);
-
-                placePixelAndPark(drive, slide, outtake, arm,33, 81.5, -90, 18);
+                placePixelAndPark(drive, slide, outtake, arm,33, 80, -90, 18);//33, 81.5
 
                 break;
             }

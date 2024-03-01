@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name="Red Right", group="Picasso")
+@Autonomous(name="Red Right Right", group="Picasso")
 //@Disabled
 
 public class CCAutoRedRight extends LinearOpMode {
