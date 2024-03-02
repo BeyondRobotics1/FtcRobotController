@@ -478,7 +478,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 .forward(7)
                 .build();
         drive.followTrajectory(trajectory_i3);
-        sleep(100);
+        sleep(50);//100
 
         Trajectory trajectory_ie = drive.trajectoryBuilder(trajectory_i3.end())
                 .back(7)
