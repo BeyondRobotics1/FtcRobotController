@@ -100,6 +100,7 @@ public class CCAutoRedLeft extends LinearOpMode {
         double satRectLeft = 0;
         double satRectMiddle = 0;
         double satRectRight = 0;
+        long delaySeconds = 10;
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -108,7 +109,16 @@ public class CCAutoRedLeft extends LinearOpMode {
             satRectMiddle = pipeline.getSatRectMiddle();
             satRectRight = pipeline.getSatRectRight();
 
-            telemetry.addLine("Auto Red Left");
+            if (gamepad1.dpad_down)
+                delaySeconds = 0;
+            else  if (gamepad1.dpad_left)
+                delaySeconds = 4;
+            else  if (gamepad1.dpad_up)
+                delaySeconds = 8;
+            else  if (gamepad1.dpad_right)
+                delaySeconds = 10;
+
+            telemetry.addData("Auto Red Left. Delayed seconds", "%d", delaySeconds);
             telemetry.addData("L", "%.2f", satRectLeft);
             telemetry.addData("C", "%.2f", satRectMiddle);
             telemetry.addData("R", "%.2f", satRectRight);
@@ -131,10 +141,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
         //sleep for other team to finish the auto
         //avoid collision
-        if(position == TeamPropDeterminationPipeline.TeamPropPosition.RIGHT)
-            sleep(4000);
-        else
-            sleep(6000);
+        sleep(delaySeconds * 1000);
 
         PicassoSlide slide = new PicassoSlide(hardwareMap, this);
         slide.runWithEncoder();
@@ -150,14 +157,14 @@ public class CCAutoRedLeft extends LinearOpMode {
             {
                 //move to the left mark position in a straight line
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
-                        .lineToLinearHeading(new Pose2d(38,13))
+                        .lineToLinearHeading(new Pose2d(38,12.5))
                         .build();
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
-                sleep(200);
+                sleep(100);
 
                 //move forward
                 Trajectory trajectory22 = drive.trajectoryBuilder(trajectory1.end())
@@ -177,14 +184,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory34);
                 sleep(100);
 
-                //move to the left side of the backdrop
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(31.5,-80.5, Math.toRadians(90)))//32, -80.5
-                        .build();
-                drive.followTrajectory(trajectory3);
-                //sleep(100);
-
-                placePixelAndPark(drive, slide, outtake, arm, 21);
+                placePixelAndPark(drive, slide, outtake, arm, 35, -78.5, 93, 21);//31.5, -80.5, 90
 
                 break;
             }
@@ -199,7 +199,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
-                sleep(200);
+                sleep(100);
 
                 //move forward
                 Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
@@ -220,15 +220,8 @@ public class CCAutoRedLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory22);
                 sleep(100);
 
-                //move to the center position of the backdrop
-                Trajectory trajectory3 = drive.trajectoryBuilder(trajectory22.end())
-                        .lineToLinearHeading(new Pose2d(26,-80.5, Math.toRadians(90)))//26.5
-                        .build();
-                drive.followTrajectory(trajectory3);
-                //sleep(100);
 
-
-                placePixelAndPark(drive, slide, outtake, arm, 27);
+                placePixelAndPark(drive, slide, outtake, arm, 26.5, -78.5, 93, 27);//26, -80.5
 
                 break;
             }
@@ -239,7 +232,6 @@ public class CCAutoRedLeft extends LinearOpMode {
                 Trajectory trajectory1 = drive.trajectoryBuilder(new Pose2d())
                         .forward(28)
                         .build();
-
                 drive.followTrajectory(trajectory1);
                 sleep(100);
 
@@ -253,7 +245,7 @@ public class CCAutoRedLeft extends LinearOpMode {
 
                 //unlock the pixel
                 pixelPlacer.Unlock();
-                sleep(200);
+                sleep(100);
 
 
                 //move forward
@@ -271,19 +263,18 @@ public class CCAutoRedLeft extends LinearOpMode {
 
                 //move back
                 Trajectory trajectory34 = drive.trajectoryBuilder(trajectory33.end())
-                        .back(62)//60
+                        .back(40)//62
                         .build();
                 drive.followTrajectory(trajectory34);
-                sleep(200);
-
-                //move to the right side of the backdrop
-                Trajectory trajectory4 = drive.trajectoryBuilder(trajectory34.end())
-                        .lineToLinearHeading(new Pose2d(14,-79.5, Math.toRadians(90)))//12.5, -79.5
+                sleep(100);
+                Trajectory trajectory35 = drive.trajectoryBuilder(trajectory34.end())
+                        .back(26)//60
                         .build();
-                drive.followTrajectory(trajectory4);
+                drive.followTrajectory(trajectory35);
                 sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 34);
+
+                placePixelAndPark(drive, slide, outtake, arm, 17, -78, 92,30);//14, -79.5, 90, 34
 
                 break;
             }
@@ -297,9 +288,17 @@ public class CCAutoRedLeft extends LinearOpMode {
                                    PicassoSlide slide,
                                    Outtake outtake,
                                    Arm arm,
+                                   double x,
+                                   double y,
+                                   double heading,
                                    double strafeRightInches
     )
     {
+        Trajectory trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(new Pose2d(x,y, Math.toRadians(heading)))
+                .build();
+        drive.followTrajectory(trajectory);
+
         //move slide up to two pixel high
         slide.moveToWithoutWaiting(10.5, 1); //7.3
         arm.goUp();

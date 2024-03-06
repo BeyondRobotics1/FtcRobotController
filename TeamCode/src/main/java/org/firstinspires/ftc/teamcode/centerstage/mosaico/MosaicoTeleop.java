@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  */
 
 @TeleOp(group = "mosaico")
-@Disabled
+//@Disabled
 
 public class MosaicoTeleop extends LinearOpMode {
 
@@ -28,8 +28,8 @@ public class MosaicoTeleop extends LinearOpMode {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        MosaicoClaw claw = new MosaicoClaw(hardwareMap, this);
-        MosaicoSlide slide = new MosaicoSlide(hardwareMap, this);
+        //MosaicoClaw claw = new MosaicoClaw(hardwareMap, this);
+        //MosaicoSlide slide = new MosaicoSlide(hardwareMap, this);
 
 
         waitForStart();
@@ -39,12 +39,19 @@ public class MosaicoTeleop extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            if(gamepad2.right_bumper){
-                claw.close();
-            }
+//            if(gamepad2.right_bumper){
+//                claw.close();
+//            }
+//            else {
+//                claw.open();
+//            }
 
-            else {
-                claw.open();
+            if(gamepad1.y) {
+                double deltaAngle = drive.adjustHeading(-90);
+                telemetry.addData("delta angle", "%f.3", deltaAngle);
+                telemetry.update();
+                if (Math.abs(deltaAngle) > 0.3)
+                    sleep(50);
             }
 
 
@@ -61,11 +68,11 @@ public class MosaicoTeleop extends LinearOpMode {
 //            else
 //                claw.setArmPosition(0); //down
 
-            claw.setArmPosition(1 - Math.abs(gamepad2.right_stick_y));
+            //claw.setArmPosition(1 - Math.abs(gamepad2.right_stick_y));
 
 
             //release left bumper to keep the claw at the up position
-           slide.setPower(-gamepad2.left_stick_y);
+           //slide.setPower(-gamepad2.left_stick_y);
         }
     }
 }

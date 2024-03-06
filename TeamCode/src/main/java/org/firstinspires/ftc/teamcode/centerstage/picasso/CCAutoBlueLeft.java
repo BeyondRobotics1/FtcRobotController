@@ -116,6 +116,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
             satRectRight = pipeline.getSatRectRight();
 
             telemetry.addData("Auto Blue Left. Plus 2", "%s", plus2?" Enabled":"Disabled");
+            telemetry.addLine("X - Disable +2, Y - Enable +2");
             telemetry.addData("L", "%.2f", satRectLeft);
             telemetry.addData("C", "%.2f", satRectMiddle);
             telemetry.addData("R", "%.2f", satRectRight);
@@ -172,15 +173,18 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 if(plus2)
                     strafeRightInches = 0;
 
-                placePixelAndPark(drive, slide, outtake, arm, 7.7,18.5, 32.5, -90, strafeRightInches);//18, 32, -90
+                placePixelAndPark(drive, slide, outtake, arm, 7.9,19.5, 36.5, -90, strafeRightInches);//18, 32.5, -90
 
                 //test
                 if(plus2)
                 {
-                    plusLeftRoute(drive, slide, intake, outtake, arm);
+                    plusLeftRoute(drive, slide, intake, outtake, arm,
+                            new Pose2d(3,2, Math.toRadians(-94)),
+                            new Pose2d(28,-72, Math.toRadians(-94)),
+                            new Pose2d(-1,-58, Math.toRadians(-94)));//0, -50
 
-                    //center backdrop
-                    placePixelAndPark(drive, slide, outtake, arm, 13, 25, 33, -90, 0); //24.5, 32, -90
+                    ///center backdrop
+                    placePixelAndPark(drive, slide, outtake, arm, 14, 26, 36.8, -90, 5); //25, 36, -90
                 }
 
                 break;
@@ -213,14 +217,23 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 if(plus2)
                     strafeRightInches = 0;
 
-                placePixelAndPark(drive, slide, outtake, arm, 7.7,26,32.5,-90, strafeRightInches); //24.5, 32, -90
+                placePixelAndPark(drive, slide, outtake, arm, 7.9,29.5,37.5,-90, strafeRightInches); //24.5, 32.5, -90
 
                 //test
                 if(plus2) {
-                    plusCenterRoute(drive, slide, intake, outtake, arm);
+
+                    Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                    .forward(20)
+                    .build();
+                    drive.followTrajectory(trajectory4);
+
+                    plusLeftRoute(drive, slide, intake, outtake, arm,
+                            new Pose2d(2,2, Math.toRadians(-94)),
+                            new Pose2d(25,-73, Math.toRadians(-94)),
+                            new Pose2d(-2.5,-58, Math.toRadians(-94)));
 
                     //on left backdrop
-                    placePixelAndPark(drive, slide, outtake, arm, 13, 20, 32.5, -90, 0);//18, 32, -90
+                    placePixelAndPark(drive, slide, outtake, arm, 14, 26, 36.8, -90, 5);//18, 32, -90
                 }
 
                 break;
@@ -257,14 +270,17 @@ public class CCAutoBlueLeft extends LinearOpMode {
                 if(plus2)
                     strafeRightInches = 0;
 
-                placePixelAndPark(drive, slide, outtake, arm, 7.7,35, 32.2, -90, strafeRightInches);//35, 32, -90
+                placePixelAndPark(drive, slide, outtake, arm, 7.9,37.5, 38.5, -90, strafeRightInches);//35, 32.2, -90
 
                 //test
                 if(plus2) {
-                    plusLeftRoute(drive, slide, intake, outtake, arm);
+                    plusLeftRoute(drive, slide, intake, outtake, arm,
+                            new Pose2d(3,2, Math.toRadians(-94)),
+                            new Pose2d(28,-72, Math.toRadians(-94)),
+                            new Pose2d(-1,-58, Math.toRadians(-94)));
 
                     //on left side
-                    placePixelAndPark(drive, slide, outtake, arm, 13, 24, 32.5, -90, 0);//18, 32, -90
+                    placePixelAndPark(drive, slide, outtake, arm, 14, 26, 36.8, -90, 5);//18, 32, -90
                 }
 
                 break;
@@ -272,7 +288,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
         }
 
-        //sleep(1000);
+        sleep(5000);
     }
 
     private void placePixelAndPark(SampleMecanumDrive drive,
@@ -287,38 +303,36 @@ public class CCAutoBlueLeft extends LinearOpMode {
                                    ) {
         //move slide up to one pixel high
         arm.goUp();
-        slide.moveToWithoutWaiting(slideHeight, 1); //7.4
+        slide.moveToWithoutWaiting(slideHeight, 1); //7.8
 
-        Trajectory trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+        //directly move to the backdrop
+        Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
                 .lineToLinearHeading(new Pose2d(x, y, Math.toRadians(heading)))
                 .build();
-        drive.followTrajectory(trajectory);
-
-        //move close to the backdrop
-        Trajectory trajectory4 = drive.trajectoryBuilder(trajectory.end())
-                .back(8.5)
-                .build();
         drive.followTrajectory(trajectory4);
+        sleep(50);
 
         //outtake the pixel
         outtake.TakeOut(0.65);
-        sleep(500);//800
+        sleep(750);//500
         outtake.Hold();
-        //sleep(100);
 
-        //move away from the backdrop
-        Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
-                .forward(8)//
-                .build();
-        drive.followTrajectory(trajectory5);
-        //sleep(10);
-
-        //move the arm and slide down
-        slide.moveToWhiteStripWithoutWaiting(0, 1); //low
-        //sleep(100);
-
+        //need parking
         if (Math.abs(strafeRightInches) > 1)
         {
+            sleep(200);
+
+            //move away from the backdrop
+            Trajectory trajectory5 = drive.trajectoryBuilder(trajectory4.end())
+                    .forward(5)//8
+                    .build();
+            drive.followTrajectory(trajectory5);
+            //sleep(10);
+
+            //move the arm and slide down
+            slide.moveToWhiteStripWithoutWaiting(0, 1); //low
+            //sleep(100);
+
             Trajectory tra = drive.trajectoryBuilder(trajectory5.end())
                     .strafeRight(strafeRightInches)
                     .build();
@@ -337,25 +351,32 @@ public class CCAutoBlueLeft extends LinearOpMode {
                                PicassoSlide slide,
                                Intake intake,
                                Outtake outtake,
-                               Arm arm)
+                               Arm arm,
+                               Pose2d pos1,
+                               Pose2d pos2,
+                               Pose2d pos3)
     {
         //move the starting point
+        //pos1 new Pose2d(3,2, Math.toRadians(-94))
         Trajectory trajectory0 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(1,0, Math.toRadians(-94)))
+                .lineToLinearHeading(pos1)//1, 0, -94
                 .build();
         drive.followTrajectory(trajectory0);
+
+        slide.moveToWhiteStripWithoutWaiting(0, 1); //low
         //sleep(10);
 
         //adjust heading here
-        //adjust heading
         double deltaAngle = drive.adjustHeading(-90);
+        telemetry.addData("delta angle", "%f.3", deltaAngle);
+        telemetry.update();
         if(Math.abs(deltaAngle) > 0.3)
             sleep(50);
 
 
         //move forward to the blue right starting position
         Trajectory trajectory1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .forward(48) //28
+                .forward(56) //48
                 .build();
         drive.followTrajectory(trajectory1);
         //sleep(50);
@@ -363,18 +384,51 @@ public class CCAutoBlueLeft extends LinearOpMode {
         //arm down
         arm.goDown();
 
+
+        //disturb pixels
+        intake.setPower(-0.4);
+
+
         //go to in the front of the right stack
+        //pose2
         Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-                .lineToLinearHeading(new Pose2d(27,-66, Math.toRadians(-94)))//26.5,-66
+                .lineToLinearHeading(pos2)//26.5,-66
                 .build();
         drive.followTrajectory(trajectory2);
 
-        //intake the pixels
-        plusIntake(drive, intake, outtake);
+
+        //take in pixels
+        outtake.TakeIn();
+        intake.setPower(0.7);
+        Trajectory trajectory_i2 = drive.trajectoryBuilder(trajectory2.end())
+                .back(4)
+                .build();
+        drive.followTrajectory(trajectory_i2);
+
+        intake.setPower(-0.5);
+        sleep(100);//100
+        intake.setPower(0.7);
+
+        Trajectory trajectory_i3 = drive.trajectoryBuilder(trajectory_i2.end())
+                .forward(6)
+                .build();
+        drive.followTrajectory(trajectory_i3);
+        sleep(50);//100
+
+        Trajectory trajectory_ie = drive.trajectoryBuilder(trajectory_i3.end())
+                .back(6)
+                .build();
+        drive.followTrajectory(trajectory_ie);
+
+        //spit out extra pixels
+        outtake.Hold();
+        intake.setPower(-0.85);
+        sleep(250);//300
+        intake.setPower(0);
 
         //move back to the blue right starting position
         Trajectory trajectory3 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToLinearHeading(new Pose2d(0,-50, Math.toRadians(-94)))
+                .lineToLinearHeading(pos3)
                 .build();
         drive.followTrajectory(trajectory3);
 
@@ -385,7 +439,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
         //move to backstage
         Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .back(60)
+                .back(53)
                 .build();
         drive.followTrajectory(trajectory4);
         //sleep(50);
