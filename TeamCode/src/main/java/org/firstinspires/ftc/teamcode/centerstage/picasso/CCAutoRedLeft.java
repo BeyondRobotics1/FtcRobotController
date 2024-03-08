@@ -184,7 +184,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 drive.followTrajectory(trajectory34);
                 sleep(100);
 
-                placePixelAndPark(drive, slide, outtake, arm, 35, -78.5, 93, 21);//31.5, -80.5, 90
+                placePixelAndPark(drive, slide, outtake, arm, 35, -79, 93, 21);//31.5, -80.5, 90
 
                 break;
             }
@@ -221,7 +221,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(100);
 
 
-                placePixelAndPark(drive, slide, outtake, arm, 26.5, -78.5, 93, 27);//26, -80.5
+                placePixelAndPark(drive, slide, outtake, arm, 27, -79, 93, 27);//26.5, -80.5
 
                 break;
             }
@@ -274,7 +274,7 @@ public class CCAutoRedLeft extends LinearOpMode {
                 sleep(100);
 
 
-                placePixelAndPark(drive, slide, outtake, arm, 17, -78, 92,30);//14, -79.5, 90, 34
+                placePixelAndPark(drive, slide, outtake, arm, 17, -78.5, 92,30);//14, -79.5, 90, 34
 
                 break;
             }

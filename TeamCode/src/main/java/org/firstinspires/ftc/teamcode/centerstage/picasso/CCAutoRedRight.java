@@ -100,20 +100,22 @@ public class CCAutoRedRight extends LinearOpMode {
         double satRectLeft = 0;
         double satRectMiddle = 0;
         double satRectRight = 0;
+
         Boolean plus2 = false;
+
         while (!isStarted() && !isStopRequested()) {
-//            if(gamepad1.y)
-//                plus2 = true;
-//            else if(gamepad1.x)
-//                plus2 = false;
+            if(gamepad1.y)
+                plus2 = true;
+            else if(gamepad1.x)
+                plus2 = false;
 
             position = pipeline.getAnalysis();
             satRectLeft = pipeline.getSatRectLeft();
             satRectMiddle = pipeline.getSatRectMiddle();
             satRectRight = pipeline.getSatRectRight();
 
-            telemetry.addData("Auto Blue Right. Plus 2", "%s", plus2?" Enabled":"Disabled");
-            //telemetry.addLine("X - Disable +2, Y - Enable +2");
+            telemetry.addData("Auto Red Right. Plus 2", "%s", plus2?" Enabled":"Disabled");
+            telemetry.addLine("X - Disable +2, Y - Enable +2");
             telemetry.addData("L", "%.2f", satRectLeft);
             telemetry.addData("C", "%.2f", satRectMiddle);
             telemetry.addData("R", "%.2f", satRectRight);
@@ -141,8 +143,6 @@ public class CCAutoRedRight extends LinearOpMode {
         Outtake outtake = new Outtake(hardwareMap, this);
         Arm arm = new Arm(hardwareMap, this);
 
-        //TEST ONLY
-        //position = TeamPropDeterminationPipeline.TeamPropPosition.LEFT;
         switch (position)
         {
             case LEFT:
@@ -171,22 +171,8 @@ public class CCAutoRedRight extends LinearOpMode {
                 drive.followTrajectory(trajectory22);
 
                 double strafeLeftInches = 30;//
-                if(plus2)
-                    strafeLeftInches = 0;
 
                 placePixelAndPark(drive, slide, outtake, arm, 7.9,36, -38, 90, strafeLeftInches);//36.5
-
-                //test
-                if(plus2)
-                {
-                    plusRightRoute(drive, slide, intake, outtake, arm,
-                            new Pose2d(2,-2, Math.toRadians(90)),
-                            new Pose2d(29,72, Math.toRadians(90)),
-                            new Pose2d(1,58, Math.toRadians(90)));
-
-                    //center backdrop
-                    //placePixelAndPark(drive, slide, outtake, arm, 14, 26, -38, 90, 0); //24.5, 32, -90
-                }
 
                 break;
             }
@@ -226,12 +212,12 @@ public class CCAutoRedRight extends LinearOpMode {
                 if(plus2)
                 {
                     plusRightRoute(drive, slide, intake, outtake, arm,
-                            new Pose2d(2,-2, Math.toRadians(90)),
-                            new Pose2d(29,72, Math.toRadians(90)),
-                            new Pose2d(1,58, Math.toRadians(90)));
+                            new Pose2d(3,-2, Math.toRadians(88)),
+                            new Pose2d(30,70, Math.toRadians(88)),
+                            new Pose2d(3,46, Math.toRadians(89)));//58
 
                     //center backdrop
-                    //placePixelAndPark(drive, slide, outtake, arm, 14, 26, -37, 90, 0); //24.5, 32, -90
+                    placePixelAndPark(drive, slide, outtake, arm, 14.5, 26, -37, 90, 0); //24.5, 32, -90
                 }
 
                 break;
@@ -265,12 +251,12 @@ public class CCAutoRedRight extends LinearOpMode {
                 if(plus2)
                 {
                     plusRightRoute(drive, slide, intake, outtake, arm,
-                            new Pose2d(2,-2, Math.toRadians(94)),
-                            new Pose2d(29,72, Math.toRadians(94)),
-                            new Pose2d(1,58, Math.toRadians(94)));
+                            new Pose2d(3,-2, Math.toRadians(88)),
+                            new Pose2d(30,70, Math.toRadians(88)),//72
+                            new Pose2d(2,46, Math.toRadians(89)));//
 
                     //center backdrop
-                    //placePixelAndPark(drive, slide, outtake, arm, 14, 26, -37, 90, 0); //24.5, 32, -90
+                    placePixelAndPark(drive, slide, outtake, arm, 14.5, 26, -37, 90, 0); //24.5, 32, -90
                 }
 
                 break;
@@ -357,44 +343,82 @@ public class CCAutoRedRight extends LinearOpMode {
 
         //adjust heading here
         //adjust heading
-        double deltaAngle = drive.adjustHeading(92);//changed
+        double deltaAngle = drive.adjustHeading(94);//changed
         if(Math.abs(deltaAngle) > 0.3)
             sleep(50);
 
 
-//        //move forward to the blue right starting position
-//        Trajectory trajectory1 = drive.trajectoryBuilder(drive.getPoseEstimate())
-//                .forward(48) //28
-//                .build();
-//        drive.followTrajectory(trajectory1);
-//        //sleep(50);
-//
-//        //arm down
-//        arm.goDown();
-//
-//        //go to in the front of the right stack
-//        Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
-//                .lineToLinearHeading(pos2)//changed
-//                .build();
-//        drive.followTrajectory(trajectory2);
-//
-//
-//        //move back to the blue right starting position
-//        Trajectory trajectory3 = drive.trajectoryBuilder(drive.getPoseEstimate())
-//                .lineToLinearHeading(pos3)//changed
-//                .build();
-//        drive.followTrajectory(trajectory3);
-//
-//        //adjust heading
-//        deltaAngle = drive.adjustHeading(92);//changed
-//        if(Math.abs(deltaAngle) > 0.3)
-//            sleep(50);
-//
-//        //move to backstage
-//        Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
-//                .back(53)//60
-//                .build();
-//        drive.followTrajectory(trajectory4);
+//move forward to the blue right starting position
+        Trajectory trajectory1 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .forward(56) //48
+                .build();
+        drive.followTrajectory(trajectory1);
+        //sleep(50);
+
+        //arm down
+        arm.goDown();
+
+
+        //disturb pixels
+        intake.setPower(-0.3);
+
+        //go to in the front of the right stack
+        //pose2
+        Trajectory trajectory2 = drive.trajectoryBuilder(trajectory1.end())
+                .lineToLinearHeading(pos2)//26.5,-66
+                .build();
+        drive.followTrajectory(trajectory2);
+
+
+        //take in pixels
+        outtake.TakeIn();
+        intake.setPower(0.7);
+        Trajectory trajectory_i2 = drive.trajectoryBuilder(trajectory2.end())
+                .back(4)
+                .build();
+        drive.followTrajectory(trajectory_i2);
+
+        intake.setPower(-0.5);
+        sleep(100);//100
+        intake.setPower(0.7);
+
+        Trajectory trajectory_i3 = drive.trajectoryBuilder(trajectory_i2.end())
+                .forward(6)
+                .build();
+        drive.followTrajectory(trajectory_i3);
+        sleep(50);//100
+
+        Trajectory trajectory_ie = drive.trajectoryBuilder(trajectory_i3.end())
+                .back(7)
+                .build();
+        drive.followTrajectory(trajectory_ie);
+
+        //spit out extra pixels
+        outtake.Hold();
+        intake.setPower(-0.85);
+        sleep(250);//300
+        intake.setPower(-0.4);
+
+
+
+        //move back to the blue right starting position
+        Trajectory trajectory3 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToLinearHeading(pos3)//changed
+                .build();
+        drive.followTrajectory(trajectory3);
+
+        intake.setPower(0);
+
+        //adjust heading
+        deltaAngle = drive.adjustHeading(92);//changed
+        if(Math.abs(deltaAngle) > 0.3)
+            sleep(50);
+
+        //move to backstage
+        Trajectory trajectory4 = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .back(48)//53
+                .build();
+        drive.followTrajectory(trajectory4);
       //sleep(50);
     }
 

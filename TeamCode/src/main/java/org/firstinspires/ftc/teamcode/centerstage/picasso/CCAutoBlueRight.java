@@ -192,17 +192,12 @@ public class CCAutoBlueRight extends LinearOpMode {
                 sleep(100);
 
                 Trajectory trajectory34 = drive.trajectoryBuilder(trajectory33.end())
-                        .back(40)//62
+                        .back(62)//62
                         .build();
                 drive.followTrajectory(trajectory34);
                 sleep(100);
 
-                Trajectory trajectory35 = drive.trajectoryBuilder(trajectory34.end())
-                        .back(28)//60
-                        .build();
-                drive.followTrajectory(trajectory35);
-
-                placePixelAndPark(drive, slide, outtake, arm,14,77,-90, 32);//14.5, 78, 33, -90
+                placePixelAndPark(drive, slide, outtake, arm,15,78,-90, 32);//14, 78, 33, -90
 
                 break;
             }
@@ -235,7 +230,7 @@ public class CCAutoBlueRight extends LinearOpMode {
                 drive.followTrajectory(trajectory22);
 
 
-                placePixelAndPark(drive, slide, outtake, arm,27, 78, -93, 25);//26.5, 78, -90
+                placePixelAndPark(drive, slide, outtake, arm,26.5, 79, -93, 25);//26.5, 78, -90
 
                 break;
             }
@@ -273,7 +268,7 @@ public class CCAutoBlueRight extends LinearOpMode {
 
 
                 //move to the right position of the backdrop
-                placePixelAndPark(drive, slide, outtake, arm,33, 78, -93, 20);//33, 80, -90
+                placePixelAndPark(drive, slide, outtake, arm,32, 79.5, -93, 20);//33, 80, -90
 
                 break;
             }
