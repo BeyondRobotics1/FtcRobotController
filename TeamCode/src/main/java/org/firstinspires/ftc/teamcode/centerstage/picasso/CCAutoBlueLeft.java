@@ -101,7 +101,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
         double satRectMiddle = 0;
         double satRectRight = 0;
 
-        Boolean plus2 = false;
+        Boolean plus2 = true;
 
         while (!isStarted() && !isStopRequested()) {
 
@@ -182,16 +182,11 @@ public class CCAutoBlueLeft extends LinearOpMode {
                     plusLeftRoute(drive, slide, intake, outtake, arm,
                             new Pose2d(3,2, Math.toRadians(-94)),
                             new Pose2d(26,-72, Math.toRadians(-94)),//28
-                            new Pose2d(-0.5,-46, Math.toRadians(-94)),
+                            new Pose2d(0,-46, Math.toRadians(-94)),//-0.5
                             0);//0, -50
 
-                    Trajectory tuneTra = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(new Pose2d(20,20, Math.toRadians(-94)))
-                            .build();
-                    drive.followTrajectory(tuneTra);
-
-                    ///center backdrop
-                    placePixelAndPark(drive, slide, outtake, arm, 14, 32, 36.8, -90, 5); //25, 36, -90
+                    ///right backdrop
+                    placePixelAndPark(drive, slide, outtake, arm, 14.5, 40, 36.8, -90, 5); //25, 36, -90
                 }
 
                 break;
@@ -236,17 +231,12 @@ public class CCAutoBlueLeft extends LinearOpMode {
 
                     plusLeftRoute(drive, slide, intake, outtake, arm,
                             new Pose2d(1,2, Math.toRadians(-94)),
-                            new Pose2d(24,-73, Math.toRadians(-94)),//25
+                            new Pose2d(24,-72, Math.toRadians(-94)),//25
                             new Pose2d(-1.5,-46, Math.toRadians(-94)),
                             0);
 
-                    Trajectory tuneTra = drive.trajectoryBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(new Pose2d(20,20, Math.toRadians(-94)))
-                            .build();
-                    drive.followTrajectory(tuneTra);
-//
-//                    //on left backdrop
-                    placePixelAndPark(drive, slide, outtake, arm, 14, 32, 36.8, -90, 5);//18, 32, -90
+//                    //on right backdrop
+                    placePixelAndPark(drive, slide, outtake, arm, 14.5, 42, 36.8, -90, 5);//18, 32, -90
                 }
 
                 break;
@@ -417,7 +407,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
         sleep(50);//100
 
         Trajectory trajectory_ie = drive.trajectoryBuilder(trajectory_i3.end())
-                .back(6)
+                .back(7)
                 .build();
         drive.followTrajectory(trajectory_ie);
 
@@ -425,7 +415,7 @@ public class CCAutoBlueLeft extends LinearOpMode {
         outtake.Hold();
         intake.setPower(-0.85);
         sleep(250);//300
-        intake.setPower(-0.4);
+        intake.setPower(-0.5);
 
         //move to the right side of backstage
         if(strafeRight > 1) {

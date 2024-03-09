@@ -118,6 +118,7 @@ public class CCAutoBlueRight extends LinearOpMode {
             satRectRight = pipeline.getSatRectRight();
 
             telemetry.addData("Auto Blue Right. Delayed seconds", "%d", delaySeconds);
+            telemetry.addLine("d-down 0, d-left 4, d-up 8, d-right 10");
             telemetry.addData("L", "%.2f", satRectLeft);
             telemetry.addData("C", "%.2f", satRectMiddle);
             telemetry.addData("R", "%.2f", satRectRight);
