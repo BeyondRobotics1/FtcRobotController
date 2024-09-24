@@ -3,23 +3,20 @@ package org.firstinspires.ftc.teamcode.centerstage.picasso;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.powerplay.TeleOp1;
 
 /*
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
 @TeleOp(group = "PbnJ")
-//@Disabled;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+@Disabled
+
 public class PicassoTeleop extends LinearOpMode {
 
     enum SlideOp
@@ -40,7 +37,7 @@ public class PicassoTeleop extends LinearOpMode {
 
         telemetry.addLine("Initializing drive train");
         telemetry.update();
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        //SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
         //IMU imu = drive.imu();
 
@@ -96,7 +93,7 @@ public class PicassoTeleop extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
             /////drive train
-            drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            //drive.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             /////Slide control
             //Move slide to specific white strip height
