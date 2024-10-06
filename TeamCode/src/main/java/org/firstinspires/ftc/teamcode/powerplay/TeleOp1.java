@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Power Play", group = "TeleOp")
-@Disabled
+//@Disabled
 public class TeleOp1 extends LinearOpMode {
 
     enum SlideOp
