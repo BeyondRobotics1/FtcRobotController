@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Arm {
 
     LinearOpMode mode;
+    Servo arm1;
     Servo arm2;
 
     boolean isDown;
@@ -15,6 +16,7 @@ public class Arm {
     {
         this.mode = mode;
 
+        arm1 = hardwareMap.get(Servo.class, "arm1");
         arm2 = hardwareMap.get(Servo.class, "arm2");
 
         arm2.setDirection(Servo.Direction.REVERSE);
@@ -33,10 +35,14 @@ public class Arm {
     {
         if(!isDown) {
 
+            //two step to simulate slower speed
+            //arm1.setPosition(0.25);//0.25
+            //arm2.setPosition(0.25);
 
             mode.sleep(2);
 
-            arm2.setPosition(0.32);//0.32
+            arm1.setPosition(0.3);
+            arm2.setPosition(0.3);
 
             isDown = true;
         }
@@ -46,19 +52,17 @@ public class Arm {
     {
         if(isDown) {
 
-            arm2.setPosition(0.65);
+            //three step to simulate slower speed
+            //arm1.setPosition(0.3);
+           // arm2.setPosition(0.3);
+            mode.sleep(2);
 
-//            //three step to simulate slower speed
-//            //arm1.setPosition(0.3);
-//           // arm2.setPosition(0.3);
-//            mode.sleep(2);
-//
-//           // arm1.setPosition(0.6);
-//            arm2.setPosition(0.6);
-//            mode.sleep(1);
-//
-//            //arm1.setPosition(0.92);
-//            arm2.setPosition(0.92);
+            arm1.setPosition(0.6);
+            arm2.setPosition(0.6);
+            mode.sleep(1);
+
+            arm1.setPosition(0.92);
+            arm2.setPosition(0.92);
 
             isDown = false;
         }
