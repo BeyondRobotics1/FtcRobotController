@@ -78,25 +78,24 @@ public class RedLeft extends LinearOpMode {
         sleep(50);
         driveTrain.moveForwardRamp(45, 0.2, 0.6, 1.25);
 //
-//        //move to second blue
+        //move to second blue
 //        driveTrain.moveForwardRamp(38, 0.2, 0.7, 1.25);
 //        sleep(50);
-//        driveTrain.moveLeft(-11, 0.7);
-//        //move back second blue
-//        sleep(50);
-//        driveTrain.moveForwardRamp(-41, 0.2, 0.7, 1.25);
-//        sleep(50);
+        driveTrain.moveLeft(12,0.7);
+        sleep(50);
+        driveTrain.moveForwardRamp(-41, 0.2, 0.7, 1.25);
+        sleep(50);
 //
 //        //move to third blue
-//        driveTrain.moveForwardRamp(39, 0.2, 0.7, 1.25);
-//        sleep(50);
-//        driveTrain.moveLeft(-7.7, 0.7);
-//        sleep(50);
+driveTrain.moveForwardRamp(39, 0.2, 0.7, 1.25);
+sleep(50);
+driveTrain.moveLeft(4, 0.7);
+sleep(50);
 //
-//        //move back third blue
-//        driveTrain.moveForwardRamp(-48, 0.2, 0.7, 1.25);
-//        sleep(50);
-//        driveTrain.moveForwardRamp(1.5,0.2,0.7,1.25);
-//        sleep(50);
+//        move back third blue
+driveTrain.moveForwardRamp(-44, 0.2, 0.7, 1.25);
+sleep(50);
+driveTrain.moveForwardRamp(1.5,0.2,0.7,1.25);
+sleep(50);
     }
 }
