@@ -82,14 +82,12 @@ public class DriveTrain {
 
         this.mode = mode;
 
-        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "motorFrontLeft"); //hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.get(DcMotorEx.class, "motorBackLeft"); //hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.get(DcMotorEx.class, "motorFrontRight"); //hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.get(DcMotorEx.class, "motorBackRight"); //hardwareMap.dcMotor.get("motorBackRight");
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "left_front"); //hardwareMap.dcMotor.get("motorFrontLeft");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "left_back"); //hardwareMap.dcMotor.get("motorBackLeft");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "right_front"); //hardwareMap.dcMotor.get("motorFrontRight");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "right_back"); //hardwareMap.dcMotor.get("motorBackRight");
 
         //Reverse motors
-        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -97,8 +95,8 @@ public class DriveTrain {
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //distance sensor
-        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
-        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
+//        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
+//        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
         //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
         //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
 
