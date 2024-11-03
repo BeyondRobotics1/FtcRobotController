@@ -486,4 +486,11 @@ public class MecanumDrive {
                 defaultVelConstraint, defaultAccelConstraint
         );
     }
+
+    public void setMotorPowers(double v, double v1, double v2, double v3) {
+        leftFront.setPower(v);
+        leftBack.setPower(v1);
+        rightBack.setPower(v2);
+        rightFront.setPower(v3);
+    }
 }
