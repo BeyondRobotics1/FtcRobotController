@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode.powerplay;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
-
-@TeleOp(name = "IntoTheDeep1", group = "TeleOp")
+@Autonomous(name = "IntoTheAutonomous", group = "TeleOp")
 //@Disabled
 public class IntoThe1 extends LinearOpMode {
 
@@ -32,6 +30,8 @@ public class IntoThe1 extends LinearOpMode {
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         DriveTrain driveTrain = new DriveTrain(hardwareMap, this, false);
+        GoBildaPinpointDriver odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
 
@@ -56,5 +56,10 @@ public class IntoThe1 extends LinearOpMode {
             else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        
     }
 }
