@@ -82,10 +82,10 @@ public class DriveTrain {
 
         this.mode = mode;
 
-        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "left_front"); //hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.get(DcMotorEx.class, "left_back"); //hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.get(DcMotorEx.class, "right_front"); //hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.get(DcMotorEx.class, "right_back"); //hardwareMap.dcMotor.get("motorBackRight");
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "leftFront"); //hardwareMap.dcMotor.get("motorFrontLeft");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "leftBack"); //hardwareMap.dcMotor.get("motorBackLeft");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront"); //hardwareMap.dcMotor.get("motorFrontRight");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "rightBack"); //hardwareMap.dcMotor.get("motorBackRight");
 
         //Reverse motors
         motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
