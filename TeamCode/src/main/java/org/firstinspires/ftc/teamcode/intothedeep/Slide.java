@@ -196,12 +196,12 @@ public class Slide{
             int currentPosition = slideMotor1.getCurrentPosition();
             boolean targetPositionReached = false;
 
-            mode.telemetry.addData("Target position", autoTargetPosition);
-            mode.telemetry.addData("current position", currentPosition);
+            //mode.telemetry.addData("Target position", autoTargetPosition);
+            //mode.telemetry.addData("current position", currentPosition);
             //mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
             //mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
-            mode.telemetry.addData("mode", activeMode);
-            mode.telemetry.update();
+            //mode.telemetry.addData("mode", activeMode);
+            //mode.telemetry.update();
 
             //slide is moving up
             //reached the target position or

@@ -56,92 +56,12 @@ public class TeleOp extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
 
-
             //telemetry.addData("Slide.SlideTargetPosition.DOWN", "%d index", Slide.SlideTargetPosition.DOWN.getValue());
             //telemetry.addData("Slide.SlideTargetPosition.LOW_BASKET", "%d index", Slide.SlideTargetPosition.LOW_BASKET.getValue());
 
 
-            //slide operation
+            //slide, arm, and intake manual operation
             if(gamepad2.left_bumper) {
-                if (gamepad2.a) {
-                    //when button a is clicked, go to the aiming position
-                    // slide down, arm down, intake aiming
-
-                    intake.MoveToAimingPosition();
-
-                    if(slide.getSlideHeightInches() > 6) {
-                        slideOp = Slide.SlideTargetPosition.DOWN;
-                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-                    }
-                   sleep(200);
-
-                    //arm down
-                    if(armOp != Arm.ArmTargetAngle.INTAKE) {
-                        armOp = Arm.ArmTargetAngle.INTAKE;
-                        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -1.0);
-                    }
-
-                    //slide out
-                    if(slideOp != Slide.SlideTargetPosition.INTAKE){
-                        slideOp = Slide.SlideTargetPosition.INTAKE;
-                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE, 1.0);
-                    }
-
-
-                } else if (gamepad2.x) {
-
-                    //when x button is clicked, goto outtake position
-                    //intake outtake position, slide down, arm up
-
-                    intake.MoveToOuttakePosition(); //
-
-                    if (slideOp != Slide.SlideTargetPosition.DOWN) {
-                        slideOp = Slide.SlideTargetPosition.DOWN;
-                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-                    }
-
-                    sleep(1000);
-
-                    if (armOp != Arm.ArmTargetAngle.OUTTAKE) {
-                        armOp = Arm.ArmTargetAngle.OUTTAKE;
-                        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1.0);
-                    }
-                }
-                else if (gamepad2.y) {
-                    if(slideOp != Slide.SlideTargetPosition.HIGH_BASkET ){
-
-                        //arm position is down
-                        if(armOp != Arm.ArmTargetAngle.INTAKE)
-                        {
-                            slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
-                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1.0);
-                        }
-                    }
-                }
-                else if (gamepad2.b) { //intake position and close
-                    if(slideOp == Slide.SlideTargetPosition.INTAKE){
-
-                        intake.MoveToIntakePosition();//
-                        sleep(100);
-                        claw.close();
-
-//                        if(armOp != Arm.ArmTargetAngle.INTAKE) {
-//                            slideOp = Slide.SlideTargetPosition.LOW_BASKET;
-//                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.LOW_BASKET, 1.0);
-//                        }
-                    }
-                }
-
-//                } else if (gamepad2.y && armOp != Arm.ArmTargetAngle.SPECIMEN) {
-//                    armOp = Arm.ArmTargetAngle.SPECIMEN;
-//                    arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.SPECIMEN, -1.0);
-//                } else if (gamepad2.b && armOp != Arm.ArmTargetAngle.HANG) {
-//                    armOp = Arm.ArmTargetAngle.HANG;
-//                    arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.HANG, -1.0);
-//                }
-            }
-            else
-            {
                 slideOp = Slide.SlideTargetPosition.MANUAL;
                 slide.setPower(-gamepad2.left_stick_y);
 
@@ -161,6 +81,82 @@ public class TeleOp extends LinearOpMode {
                 else if (gamepad2.dpad_right) {
                     intake.MoveToIntakePosition();
                 }
+            }
+            else
+            {
+                if (gamepad2.x) {
+                    //when button a is clicked, go to the aiming position
+                    // slide down, arm down, intake aiming
+
+                    intake.MoveToAimingPosition();
+
+                    if(slideOp != Slide.SlideTargetPosition.INTAKE) {
+                        if (slide.getSlideHeightInches() > 6) {
+                            slideOp = Slide.SlideTargetPosition.DOWN;
+                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
+
+                            sleep(800);
+                        }
+                    }
+
+                    //arm down
+                    if(armOp != Arm.ArmTargetAngle.INTAKE) {
+                        armOp = Arm.ArmTargetAngle.INTAKE;
+                        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
+                        sleep(400);
+                    }
+
+                    //slide out
+                    if(slideOp != Slide.SlideTargetPosition.INTAKE){
+                        slideOp = Slide.SlideTargetPosition.INTAKE;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE, 1);//
+                    }
+
+
+                } else if (gamepad2.b) {
+
+                    //when x button is clicked, goto outtake position
+                    //intake outtake position, slide down, arm up
+
+                    intake.MoveToOuttakePosition(); //
+
+                    if (slideOp != Slide.SlideTargetPosition.DOWN) {
+                        slideOp = Slide.SlideTargetPosition.DOWN;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);//
+                    }
+
+                    sleep(1000);
+
+                    //arm up
+                    if (armOp != Arm.ArmTargetAngle.OUTTAKE) {
+                        armOp = Arm.ArmTargetAngle.OUTTAKE;
+                        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1);//
+                    }
+                }
+                else if (gamepad2.y) {
+                    //slide up to high basket
+                    if(slideOp != Slide.SlideTargetPosition.HIGH_BASkET ){
+
+                        //arm position is down
+                        if(armOp != Arm.ArmTargetAngle.INTAKE)
+                        {
+                            slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
+                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1.0);
+                        }
+                    }
+                }
+                else if (gamepad2.a) {
+
+                    //intake position, claw person should close the claw
+                    //if failed to grab a sample, click button x back to aiming position
+                    if(slideOp == Slide.SlideTargetPosition.INTAKE){
+
+                        intake.MoveToIntakePosition();//
+                    }
+                }
+
+
+
             }
             slide.autoMoveToWithoutWaitingLoop();
             arm.autoRotateToWithoutWaitingLoop();

@@ -70,17 +70,27 @@ public class AutoLeft extends LinearOpMode {
         telemetry.update();
         Claw claw = new Claw(hardwareMap, this);
         claw.close();
+
+        //create trajectories
+
+
+
+        //preloaded
         TrajectoryActionBuilder score = driveTrain.actionBuilder(initialPosition) //use trajectoryactionbuilder to make your trajectories
                 .lineToXSplineHeading(-54.375, Math.toRadians(-45)) //this is used for heading setting and reaching x position
                 .waitSeconds(0.25)
-                .strafeTo(new Vector2d(-54.375,61)) //-55.375,62 //this is used for moving to the correct y position (does not change heading)
+                .strafeTo(new Vector2d(-55.375,61)) //-54.375,62 //this is used for moving to the correct y position (does not change heading)
                 .waitSeconds(0.25);
         Action scoringTime = score.build();
+
         waitForStart();
         //restart the timer
         timer.reset();
 
-        sleep(100);
+        //sleep(100);
+
+        ///////////////////////////
+        //preloaded
 
         //main scoring function, can be reused to score (run this after you pick up a sample)
         Actions.runBlocking(
@@ -95,18 +105,70 @@ public class AutoLeft extends LinearOpMode {
 
         slide.moveToPredefinedPositionWithoutWaiting(slideOp, 1);
 
-        sleep(1200);
+        sleep(1300);
         intake.MoveToOuttakePosition();
-        sleep(100);
+        sleep(300);
         claw.open();
-        sleep(10000);
-
+        sleep(400);
         //score function ends here
 
+        //////////////////////////////////////
+        //right sample
+        intake.MoveToAimingPosition();
+        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
+        sleep(800);
+        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
+        sleep(400);
+
+        Actions.runBlocking(
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .splineToLinearHeading(new Pose2d(-55, 48, 0), Math.toRadians(0))
+                        .waitSeconds(0.25).build()
+        );
+
+        //reach out
+        slide.moveToWithoutWaiting(12, 1);//
+        sleep(300);
+        intake.MoveToIntakePosition();
+        sleep(300);
+        claw.close();
+        sleep(300);
+
+        //track back
+        intake.MoveToAimingPosition();
+        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
+
+
+        Actions.runBlocking(
+                driveTrain.actionBuilder(driveTrain.pose)
+                        //.splineToLinearHeading(new Pose2d(-58, 55, 0), Math.toRadians(-45))
+                        .strafeTo(new Vector2d(-58, 55))
+                        .turn(Math.toRadians(-45))
+                        .waitSeconds(0.25).build()
+        );
+
+        //slide, arm, claw action here
+        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1);
+        sleep(300);
+
+        slide.moveToPredefinedPositionWithoutWaiting(slideOp, 1);
+
+        sleep(1300);
+        intake.MoveToOuttakePosition();
+        sleep(300);
+        claw.open();
+        sleep(400);
+
+        //canter sample
+
+
+        sleep(2000);
 
 
         if (isStopRequested()) return;
 
 
     }
+
+
 }

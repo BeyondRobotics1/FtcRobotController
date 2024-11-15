@@ -19,15 +19,15 @@ public class Intake {
     final double rotationServoCenterPosition = 0.36;
 
     //pivot servo predefined positions
-    final double pivotServoStartPosition = 0.8;//
-    final double pivotServoAimingPosition = 0.2;//
-    final double pivotServoIntakePosition = 0.2;//
-    final double pivotServoOuttakePosition = 0.68;//
+    final double pivotServoStartPosition = 0.8;//0.8
+    final double pivotServoAimingPosition = 0.2;//0.2
+    final double pivotServoIntakePosition = 0.2;//0.2
+    final double pivotServoOuttakePosition = 0.68;//0.68
 
     //4bar servo predefined positions
     final double fourBarServoStartPosition = 0.2;//
     final double fourBarServoAimingPosition =0.65;//
-    final double fourBarServoIntakePosition =0.77;//
+    final double fourBarServoIntakePosition =0.75;//77
     final double fourBarServoOuttakePosition = 0.58;
 
     IntakePosition currentPosition;
