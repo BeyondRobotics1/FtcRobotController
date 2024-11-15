@@ -2,12 +2,13 @@ package org.firstinspires.ftc.teamcode.powerplay;
 
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "IntoTheAutonomous", group = "TeleOp")
-//@Disabled
+@Disabled
 public class IntoThe1 extends LinearOpMode {
 
     @Override

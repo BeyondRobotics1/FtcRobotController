@@ -16,9 +16,30 @@ public class Slide{
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
 
-    //ground, low, medium, high junction heights
+    //predefined position
     //slide can move to
-    double[] whiteStripHeights = {0, 12, 22, 25};
+    enum SlideTargetPosition
+    {
+        DOWN(0),
+        INTAKE(1),
+        LOW_BASKET(2),
+        HIGH_BASkET(3),
+        SPECIMEN_PICKUP(4),
+        SPECIMEN_DELIVERY(5),
+        MANUAL(6);
+
+        private final int value;
+        private SlideTargetPosition(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+    //the slide extension length in inches corresponding to the above
+    //predefined position
+    double[] slidePositionInches = {0, 10.0, 5.0, 28.0, 0, 5.0, 0};
 
     enum SlideMode
     {
@@ -41,7 +62,7 @@ public class Slide{
         slideMotor1 = hardwareMap.get(DcMotorEx.class, "slide1");
         slideMotor2 = hardwareMap.get(DcMotorEx.class, "slide2");
 
-        slideMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //When there is no power, we want the motor to hold the position
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -100,15 +121,13 @@ public class Slide{
 
     /**
      * Move to specific junction position
-     * @param stripNumber: 0 - ground, 1 - low, 2 - medium, 3 - high white strip
+     * @param position: predefined position
      * @param speed: motor power
      */
-    public void moveToWhiteStrip(int stripNumber, double speed)
+    public void moveToPredefinedPosition(SlideTargetPosition position, double speed)
     {
-        if(stripNumber < 0 || stripNumber > 3)
-            return;
 
-        moveTo(whiteStripHeights[stripNumber], speed);
+        moveTo(slidePositionInches[position.getValue()], speed);
     }
 
 
@@ -153,37 +172,16 @@ public class Slide{
         slideMotor2.setPower(speed);
     }
 
-    /**
-     * Move to specific white strip position without waiting for motor to finish
-     * To be tested
-     * @param speed: motor power
-     */
-    public void scoreToWhiteStripWithoutWaiting(double speed)
-    {
-        double currentSlideHeight = getSlideHeightInches();
-
-        if(currentSlideHeight > whiteStripHeights[3] - 2) //high strip
-            moveToWithoutWaiting(whiteStripHeights[3] - 2 ,speed);
-        else if(currentSlideHeight > whiteStripHeights[2] - 2.5 &&
-                currentSlideHeight < whiteStripHeights[2] + 2) //medium strip
-            moveToWithoutWaiting(whiteStripHeights[2] - 2 ,speed);
-        else if (currentSlideHeight > whiteStripHeights[1] - 2.5 &&
-                currentSlideHeight < whiteStripHeights[1] + 2) //low strip
-            moveToWithoutWaiting(whiteStripHeights[1] - 2.5 ,speed);
-    }
 
     /**
-     * Move to specific junction position without waiting for motor to finish
-     * @param stripNumber: 0 - ground, 1 - low, 2 - medium, 3 - high strip
+     * Move to specific position without waiting for motor to finish
+     * @param position: predefined position
      * @param speed: motor power
      */
-    public void moveToWhiteStripWithoutWaiting(int stripNumber, double speed)
+    public void moveToPredefinedPositionWithoutWaiting(SlideTargetPosition position, double speed)
     {
-        //junction id should be 0, 1, 2, or 3
-        if(stripNumber < 0 || stripNumber > 3)
-            return;
 
-        moveToWithoutWaiting(whiteStripHeights[stripNumber], speed);
+        moveToWithoutWaiting(slidePositionInches[position.getValue()], speed);
     }
 
     /**
@@ -198,12 +196,12 @@ public class Slide{
             int currentPosition = slideMotor1.getCurrentPosition();
             boolean targetPositionReached = false;
 
-//            mode.telemetry.addData("Target position", autoTargetPosition);
-//            mode.telemetry.addData("current position", currentPosition);
-//            mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
-//            mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
-//            mode.telemetry.addData("mode", activeMode);
-//            mode.telemetry.update();
+            mode.telemetry.addData("Target position", autoTargetPosition);
+            mode.telemetry.addData("current position", currentPosition);
+            //mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
+            //mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+            mode.telemetry.addData("mode", activeMode);
+            mode.telemetry.update();
 
             //slide is moving up
             //reached the target position or

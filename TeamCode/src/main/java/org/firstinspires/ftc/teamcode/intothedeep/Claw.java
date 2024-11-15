@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class Claw {
 
-    Servo claw;//left claw servo
+    Servo claw;//claw servo
 
     /** The colorSensor field will contain a reference to our color sensor hardware object */
     NormalizedColorSensor colorSensor;
@@ -30,15 +30,6 @@ public class Claw {
 
         this.mode = mode;
         claw = hardwareMap.get(Servo.class, "claw");
-
-
-        // Get a reference to our sensor object. It's recommended to use NormalizedColorSensor over
-        // ColorSensor, because NormalizedColorSensor consistently gives values between 0 and 1, while
-        // the values you get from ColorSensor are dependent on the specific sensor you're using.
-        //colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSlide");
-
-        //claw1.setPosition(0.5);
-        //claw2.setPosition(0.5);
     }
 
     /**
@@ -58,20 +49,20 @@ public class Claw {
     /**
      * This function will close the claw
      */
-    public void close(){
+    public void open(){
         setPosition(0.2);
+        isClosed = false;
 
-        isClosed = true;
     }
 
     /**
      * This function will open the claw
      */
-    public void open(){
+    public void close(){
 
         setPosition(1);
 
-        isClosed = false;
+        isClosed = true;
     }
 
     /**

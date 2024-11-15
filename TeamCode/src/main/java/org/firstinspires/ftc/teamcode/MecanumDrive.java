@@ -501,7 +501,7 @@ public class MecanumDrive {
         //
         double y = left_stick_y;
         double x = left_stick_x;
-        double rx = right_stick_x * 1; //Helper.squareWithSign(right_stick_x);
+        double rx = right_stick_x * 0.7; //Helper.squareWithSign(right_stick_x);
 
         if(x != 0.0 && Math.abs(y/x) >= 1.2)
             x = 0.0;
