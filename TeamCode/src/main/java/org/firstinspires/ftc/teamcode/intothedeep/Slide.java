@@ -21,12 +21,14 @@ public class Slide{
     enum SlideTargetPosition
     {
         DOWN(0),
-        INTAKE(1),
-        LOW_BASKET(2),
-        HIGH_BASkET(3),
-        SPECIMEN_PICKUP(4),
-        SPECIMEN_DELIVERY(5),
-        MANUAL(6);
+        INTAKE(1),//max extention during intake
+        INTAKE1(2),
+        INTAKE2(3),
+        LOW_BASKET(4),
+        HIGH_BASkET(5),
+        SPECIMEN_PICKUP(6),
+        SPECIMEN_DELIVERY(7),
+        MANUAL(8);
 
         private final int value;
         private SlideTargetPosition(int value) {
@@ -39,7 +41,8 @@ public class Slide{
     }
     //the slide extension length in inches corresponding to the above
     //predefined position
-    double[] slidePositionInches = {0, 10.0, 5.0, 28.0, 0, 5.0, 0};
+    //we can extend 16 inches to keep in 42 size limit
+    double[] slidePositionInches = {0, 12, 4, 8, 5.0, 21.0, 0, 8.0, 0};//28
 
     enum SlideMode
     {
@@ -51,13 +54,15 @@ public class Slide{
     int autoTargetPosition = 0;
     org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_STAY;
 
+    Arm arm;
     DcMotorEx slideMotor1;
     DcMotorEx slideMotor2;
 
     LinearOpMode mode;
 
-    public Slide(HardwareMap hardwareMap, LinearOpMode mode) {
+    public Slide(HardwareMap hardwareMap, LinearOpMode mode, Arm arm) {
         this.mode = mode;
+        this.arm  = arm;
 
         slideMotor1 = hardwareMap.get(DcMotorEx.class, "slide1");
         slideMotor2 = hardwareMap.get(DcMotorEx.class, "slide2");
@@ -245,11 +250,24 @@ public class Slide{
             slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
+        mode.telemetry.addData("arm angle", "%f", arm.getArmAngle());
+        mode.telemetry.addData("slide extension", "%f", getSlideHeightInches());
+        //mode.telemetry.update();
+
+        //if slide is moving up and arm is angled less than 30 degrees and we are about to exceed the size constraint, stop the slide
+        //reached robot horizontal limit
+        //set the power to 0 and stop the slide
+//        if(power >= 0.05 && Math.abs(arm.getArmAngle()) <= 30 &&
+//                getSlideHeightInches() >= slidePositionInches[SlideTargetPosition.INTAKE.getValue()]-2)
+//            power = 0;
+
+
+
         double localPower = Helper.squareWithSign(power);//Helper.cubicWithSign(power);//
 
 //        //slide move down
 //        if(localPower < -0.01) {
-//            //low limit touch sensor is pushed
+//            //low limit touch sensor is
 //            if (!touchSensorLowLimit.getState()) {
 //                localPower = 0;
 //

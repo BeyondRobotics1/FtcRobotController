@@ -15,17 +15,20 @@ public class Intake {
         NONE,
     }
 
+    boolean isRotationServoRotated;
+
     //rotation servo predefined positions
     final double rotationServoCenterPosition = 0.36;
+    final double rotationServo90DegreePosition = 0.8;
 
     //pivot servo predefined positions
-    final double pivotServoStartPosition = 0.8;//0.8
+    final double pivotServoStartPosition = 0.9;//0.5
     final double pivotServoAimingPosition = 0.2;//0.2
     final double pivotServoIntakePosition = 0.2;//0.2
     final double pivotServoOuttakePosition = 0.68;//0.68
 
     //4bar servo predefined positions
-    final double fourBarServoStartPosition = 0.2;//
+    final double fourBarServoStartPosition = 0.3;//0.2;//
     final double fourBarServoAimingPosition =0.65;//
     final double fourBarServoIntakePosition =0.75;//77
     final double fourBarServoOuttakePosition = 0.58;
@@ -60,12 +63,29 @@ public class Intake {
         //fourBarServo.setPosition(0.5);
         //pivotServo.setPosition(0.5);
         rotateServo.setPosition(rotationServoCenterPosition);
+        isRotationServoRotated = false;
         //pivotServo.setPosition(pivotServoStartPosition);
         //fourBarServo.setPosition(fourBarServoStartPosition);
 
 //        mode.telemetry.addLine().addData("intake4bar", "%.3f", fourBarServo.getPosition())
 //                .addData("intakerotate", "%.3f", pivotServo.getPosition())
 //                .addData("intakepivot", "%.3f", rotateServo.getPosition());
+    }
+
+    public void ChangeClawDirection(boolean to90Degree)
+    {
+        if(to90Degree) {
+            if(!isRotationServoRotated) {
+                rotateServo.setPosition(rotationServo90DegreePosition);
+                isRotationServoRotated = true;
+            }
+        }
+        else {
+            if( isRotationServoRotated) {
+                rotateServo.setPosition(rotationServoCenterPosition);
+                isRotationServoRotated = false;
+            }
+        }
     }
 
     public void MoveToStartPosition()

@@ -42,14 +42,14 @@ public class Arm {
     }
     //the arm angle in degrees corresponding to the above
     //predefined position
-    final double[] TARGET_ANGLES = {0, -90, -50, -90, 0};
+    final double[] TARGET_ANGLES = {0, -89, -50, -90, 0};
 
     int autoTargetPosition = 0;
 
     ArmMode activeMode = ArmMode.AUTO_STAY;
 
     DcMotorEx armMotor1;
-    DcMotorEx armMotor2;
+    //DcMotorEx armMotor2;
 
     LinearOpMode mode;
 
@@ -57,14 +57,14 @@ public class Arm {
         this.mode = mode;
 
         armMotor1 = hardwareMap.get(DcMotorEx.class, "arm1");
-        armMotor2 = hardwareMap.get(DcMotorEx.class, "arm2");
+        //armMotor2 = hardwareMap.get(DcMotorEx.class, "arm2");
 
-        armMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        //armMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
         //armMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //When there is no power, we want the motor to hold the position
         armMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       // armMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
@@ -74,11 +74,11 @@ public class Arm {
     {
         //When the motor is in this mode it would turn the encoder position back to 0. The motor will stop.
         armMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //armMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //In the mode, the Control Hub uses the encoder to manage the motor's speed.
         armMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -92,14 +92,14 @@ public class Arm {
         // Determine new target position, and pass to motor controller
         int newPosition = (int)(angle * COUNTS_PER_DEGREE);
         armMotor1.setTargetPosition(newPosition);
-        armMotor2.setTargetPosition(newPosition);
+        //armMotor2.setTargetPosition(newPosition);
 
         // Turn On RUN_TO_POSITION
         armMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //armMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         armMotor1.setPower(speed);
-        armMotor2.setPower(speed);
+        //armMotor2.setPower(speed);
 
         // keep looping while we are still active and both motors are running.
         while (armMotor1.isBusy()){
@@ -110,11 +110,11 @@ public class Arm {
 
         // Stop all motion
         armMotor1.setPower(0);
-        armMotor2.setPower(0);
+        //armMotor2.setPower(0);
 
         // Turn off RUN_TO_POSITION
         armMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -158,15 +158,15 @@ public class Arm {
 
         //set target position
         armMotor1.setTargetPosition(autoTargetPosition);
-        armMotor2.setTargetPosition(autoTargetPosition);
+        //armMotor2.setTargetPosition(autoTargetPosition);
 
         //set motor as RUN_TO_POSITION
         armMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        armMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //armMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Power on
         armMotor1.setPower(speed);
-        armMotor2.setPower(speed);
+        //armMotor2.setPower(speed);
     }
 
     /**
@@ -191,12 +191,12 @@ public class Arm {
             int currentPosition = armMotor1.getCurrentPosition();
             boolean targetPositionReached = false;
 
-            mode.telemetry.addData("Target position", autoTargetPosition);
-            mode.telemetry.addData("current position", currentPosition);
+            //mode.telemetry.addData("Target position", autoTargetPosition);
+            //mode.telemetry.addData("current position", currentPosition);
             //mode.telemetry.addData("High sensor pressed", !touchSensorHighLimit.getState());
             //mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
-            mode.telemetry.addData("mode", activeMode);
-            mode.telemetry.update();
+            //mode.telemetry.addData("mode", activeMode);
+            //mode.telemetry.update();
 
             //slide is moving up
             //reached the target position or
@@ -220,10 +220,10 @@ public class Arm {
                 activeMode = ArmMode.AUTO_STAY;
 
                 armMotor1.setPower(0);
-                armMotor2.setPower(0);
+                //armMotor2.setPower(0);
 
                 armMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                //armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
         }
     }
@@ -234,11 +234,11 @@ public class Arm {
         activeMode = ArmMode.MANUAL;
 
         //set the motors to RUN_USING_ENCODER if not yet
-        if(armMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER ||
-                armMotor2.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
+        if(armMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)// ||
+                //armMotor2.getMode() != DcMotor.RunMode.RUN_USING_ENCODER)
         {
             armMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //armMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
         double localPower = Helper.squareWithSign(power);//Helper.cubicWithSign(power);//
@@ -265,7 +265,7 @@ public class Arm {
 //        }
 
         armMotor1.setPower(localPower);
-        armMotor2.setPower(localPower);
+        //armMotor2.setPower(localPower);
     }
 
     /**

@@ -19,7 +19,16 @@ public class Claw {
 
     LinearOpMode mode;//set the telemetry
 
-    boolean isClosed = false;
+    enum ClawState
+    {
+        OPENED,
+        CLOSED,
+        NONE
+    }
+
+    ClawState state;
+
+    //boolean isClosed = false;
 
     /**
      * Constructor
@@ -30,6 +39,8 @@ public class Claw {
 
         this.mode = mode;
         claw = hardwareMap.get(Servo.class, "claw");
+
+        state = ClawState.NONE;
     }
 
     /**
@@ -50,8 +61,11 @@ public class Claw {
      * This function will close the claw
      */
     public void open(){
-        setPosition(0.2);
-        isClosed = false;
+
+        if(state != ClawState.OPENED) {
+            setPosition(0.2);
+            state = ClawState.OPENED;
+        }
 
     }
 
@@ -60,9 +74,10 @@ public class Claw {
      */
     public void close(){
 
-        setPosition(1);
-
-        isClosed = true;
+        if(state != ClawState.CLOSED) {
+            setPosition(1);
+            state = ClawState.CLOSED;
+        }
     }
 
     /**
@@ -71,7 +86,10 @@ public class Claw {
      *         false: claw is set to open position
      */
     public boolean isClosed() {
-        return isClosed;
+        if(state == ClawState.CLOSED)
+            return true;
+        else
+            return false;
     }
 
     /**

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
@@ -15,22 +16,24 @@ public class TeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        ElapsedTime timer = new ElapsedTime();
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         PinpointDrive driveTrain = new PinpointDrive(hardwareMap, new Pose2d(0,0, 0));
 
-        telemetry.addLine("Initializing slide");
-        telemetry.update();
-        Slide slide = new Slide(hardwareMap, this);
-        slide.runWithEncoder();
-
         telemetry.addLine("Initializing slide arm");
         telemetry.update();
         Arm arm = new Arm(hardwareMap, this);
         arm.runWithEncoder();
+
+        telemetry.addLine("Initializing slide");
+        telemetry.update();
+        Slide slide = new Slide(hardwareMap, this, arm);
+        slide.runWithEncoder();
+
+
 
         telemetry.addLine("Initializing intake arm");
         telemetry.update();
@@ -40,6 +43,7 @@ public class TeleOp extends LinearOpMode {
         telemetry.addLine("Initializing claw");
         telemetry.update();
         Claw claw = new Claw(hardwareMap, this);
+
 
 
         waitForStart();
@@ -52,12 +56,42 @@ public class TeleOp extends LinearOpMode {
 
         boolean robotCentric = true;
 
+        boolean sampleMode = true;
+
         if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
 
-            //telemetry.addData("Slide.SlideTargetPosition.DOWN", "%d index", Slide.SlideTargetPosition.DOWN.getValue());
+            if(gamepad1.left_bumper)
+            {
+                sampleMode = false;
+            }
+            else{
+                sampleMode = true;
+            }
+
+            if(sampleMode)
+            {
+                telemetry.addLine("SAMPLE MODE");
+            }
+            else
+            {
+                telemetry.addLine("SPECIMAN MODE");
+            }
+
+            telemetry.addData("Arm angle", "%f", arm.getArmAngle());
+            telemetry.addData("Slide extension", "%f", slide.getSlideHeightInches());
             //telemetry.addData("Slide.SlideTargetPosition.LOW_BASKET", "%d index", Slide.SlideTargetPosition.LOW_BASKET.getValue());
+
+
+            if(Math.abs(gamepad2.left_trigger) > 0.5) {
+                //telemetry.addLine("claw turned");
+                intake.ChangeClawDirection(true);
+            }
+            else {
+                //telemetry.addLine("claw centered");
+                intake.ChangeClawDirection(false);
+            }
 
 
             //slide, arm, and intake manual operation
@@ -88,29 +122,49 @@ public class TeleOp extends LinearOpMode {
                     //when button a is clicked, go to the aiming position
                     // slide down, arm down, intake aiming
 
-                    intake.MoveToAimingPosition();
+                    if(sampleMode)
+                        intake.MoveToAimingPosition();
+                    else
+                        intake.MoveToStartPosition();
 
-                    if(slideOp != Slide.SlideTargetPosition.INTAKE) {
-                        if (slide.getSlideHeightInches() > 6) {
+                    if(slideOp != Slide.SlideTargetPosition.INTAKE &&
+                            slideOp != Slide.SlideTargetPosition.INTAKE1 &&
+                            slideOp != Slide.SlideTargetPosition.INTAKE2) {
+                        //if (slide.getSlideHeightInches() > 6) {
+                        if(slideOp != Slide.SlideTargetPosition.DOWN)
+                        {
                             slideOp = Slide.SlideTargetPosition.DOWN;
-                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
+                            slide.moveToPredefinedPosition(Slide.SlideTargetPosition.DOWN, 1.0);
 
-                            sleep(800);
+                            //sleep(800);
+//                            //use a timer instead of sleeping entire bot
+//                            timer.reset();
+//                            if (timer.milliseconds() > 800){
+//                                continue;
+//                            }
                         }
                     }
 
                     //arm down
                     if(armOp != Arm.ArmTargetAngle.INTAKE) {
                         armOp = Arm.ArmTargetAngle.INTAKE;
-                        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
-                        sleep(400);
+                        //arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
+                        arm.rotateToTargetAngle(Arm.ArmTargetAngle.INTAKE, -0.5);
+
+                        //sleep(400);
+
+//                        //use a timer instead of sleeping the entire robot
+//                        timer.reset();
+//                        if (timer.milliseconds() > 400){
+//                            continue;
+//                        }
                     }
 
-                    //slide out
-                    if(slideOp != Slide.SlideTargetPosition.INTAKE){
-                        slideOp = Slide.SlideTargetPosition.INTAKE;
-                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE, 1);//
-                    }
+//                    //slide out
+//                    if(slideOp != Slide.SlideTargetPosition.INTAKE){
+//                        slideOp = Slide.SlideTargetPosition.INTAKE;
+//                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE, 1);//
+//                    }
 
 
                 } else if (gamepad2.b) {
@@ -118,14 +172,25 @@ public class TeleOp extends LinearOpMode {
                     //when x button is clicked, goto outtake position
                     //intake outtake position, slide down, arm up
 
-                    intake.MoveToOuttakePosition(); //
+                    if(sampleMode)
+                        intake.MoveToOuttakePosition();
+                    else
+                        intake.MoveToStartPosition();
+
 
                     if (slideOp != Slide.SlideTargetPosition.DOWN) {
                         slideOp = Slide.SlideTargetPosition.DOWN;
-                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);//
-                    }
 
-                    sleep(1000);
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);//
+                        //slide.moveToPredefinedPosition(Slide.SlideTargetPosition.DOWN, 1);//
+
+                        sleep(800);
+//                        //use a timer instead of sleeping the rest of the robot
+//                        timer.reset();
+//                        if (timer.milliseconds() > 1000){
+//                            continue;
+//                        }
+                    }
 
                     //arm up
                     if (armOp != Arm.ArmTargetAngle.OUTTAKE) {
@@ -134,14 +199,27 @@ public class TeleOp extends LinearOpMode {
                     }
                 }
                 else if (gamepad2.y) {
-                    //slide up to high basket
-                    if(slideOp != Slide.SlideTargetPosition.HIGH_BASkET ){
+                    if(sampleMode) {
+                        //slide up to high basket
+                        if (slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {
 
-                        //arm position is down
-                        if(armOp != Arm.ArmTargetAngle.INTAKE)
-                        {
-                            slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
-                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1.0);
+                            //arm position is down
+                            if (armOp != Arm.ArmTargetAngle.INTAKE ) {
+                                slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
+                                slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1.0);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //slide up to high basket
+                        if (slideOp != Slide.SlideTargetPosition.SPECIMEN_DELIVERY) {
+
+                            //arm position is down
+                            if (armOp != Arm.ArmTargetAngle.INTAKE) {
+                                slideOp = Slide.SlideTargetPosition.SPECIMEN_DELIVERY;
+                                slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.SPECIMEN_DELIVERY, 1.0);
+                            }
                         }
                     }
                 }
@@ -149,12 +227,46 @@ public class TeleOp extends LinearOpMode {
 
                     //intake position, claw person should close the claw
                     //if failed to grab a sample, click button x back to aiming position
-                    if(slideOp == Slide.SlideTargetPosition.INTAKE){
+                    if(slideOp == Slide.SlideTargetPosition.DOWN||
+                            slideOp == Slide.SlideTargetPosition.INTAKE ||
+                            slideOp == Slide.SlideTargetPosition.INTAKE1 ||
+                            slideOp == Slide.SlideTargetPosition.INTAKE2){
 
-                        intake.MoveToIntakePosition();//
+                        if(sampleMode)
+                            intake.MoveToIntakePosition();
+                        else
+                            intake.MoveToStartPosition();
+
                     }
                 }
-
+                else if (gamepad2.dpad_down)
+                {
+                    if (slideOp != Slide.SlideTargetPosition.DOWN && Math.abs(arm.getArmAngle()) < 5) {
+                        slideOp = Slide.SlideTargetPosition.DOWN;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);//
+                    }
+                }
+                else if (gamepad2.dpad_left)
+                {
+                    if (slideOp != Slide.SlideTargetPosition.INTAKE1 && Math.abs(arm.getArmAngle()) < 5) {
+                        slideOp = Slide.SlideTargetPosition.INTAKE1;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE1, 1);//
+                    }
+                }
+                else if (gamepad2.dpad_up)
+                {
+                    if (slideOp != Slide.SlideTargetPosition.INTAKE2 && Math.abs(arm.getArmAngle()) < 5) {
+                        slideOp = Slide.SlideTargetPosition.INTAKE2;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE2, 1);//
+                    }
+                }
+                else if (gamepad2.dpad_right)
+                {
+                    if (slideOp != Slide.SlideTargetPosition.INTAKE && Math.abs(arm.getArmAngle()) < 5) {
+                        slideOp = Slide.SlideTargetPosition.INTAKE;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.INTAKE, 1);//
+                    }
+                }
 
 
             }
@@ -164,10 +276,14 @@ public class TeleOp extends LinearOpMode {
             //claw operation
             boolean currentBumperState  = gamepad2.right_bumper;
             //hold right bumper to close the claw
-            if (currentBumperState)
+            if (currentBumperState) {
                 claw.close();
-            else
+                //telemetry.addLine("Close");
+            }
+            else {
                 claw.open();
+                //telemetry.addLine("Open");
+            }
 
 
             //drive train
@@ -176,6 +292,7 @@ public class TeleOp extends LinearOpMode {
             //else
             //    driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
+            //TODO add rotation to claw
             telemetry.update();
         }
     }
