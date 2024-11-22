@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.pedroPathing.localization.localizers;
 
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.leftFrontMotorName;
-import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.leftRearMotorName;
+import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.leftBackMotorName;
 import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.rightFrontMotorName;
-import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.rightRearMotorName;
+import static org.firstinspires.ftc.teamcode.pedroPathing.tuning.FollowerConstants.rightBackMotorName;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -35,8 +35,8 @@ public class DriveEncoderLocalizer extends Localizer {
     private long deltaTimeNano;
     private Encoder leftFront;
     private Encoder rightFront;
-    private Encoder leftRear;
-    private Encoder rightRear;
+    private Encoder leftBack;
+    private Encoder rightBack;
     private double totalHeading;
     public static double FORWARD_TICKS_TO_INCHES = 1;
     public static double STRAFE_TICKS_TO_INCHES = 1;
@@ -65,15 +65,15 @@ public class DriveEncoderLocalizer extends Localizer {
         hardwareMap = map;
 
         leftFront = new Encoder(hardwareMap.get(DcMotorEx.class, leftFrontMotorName));
-        leftRear = new Encoder(hardwareMap.get(DcMotorEx.class, leftRearMotorName));
-        rightRear = new Encoder(hardwareMap.get(DcMotorEx.class, rightRearMotorName));
+        leftBack = new Encoder(hardwareMap.get(DcMotorEx.class, leftBackMotorName));
+        rightBack = new Encoder(hardwareMap.get(DcMotorEx.class, rightBackMotorName));
         rightFront = new Encoder(hardwareMap.get(DcMotorEx.class, rightFrontMotorName));
 
         // TODO: reverse any encoders necessary
         leftFront.setDirection(Encoder.REVERSE);
-        rightRear.setDirection(Encoder.REVERSE);
-        leftRear.setDirection(Encoder.FORWARD);
-        rightRear.setDirection(Encoder.FORWARD);
+        rightBack.setDirection(Encoder.REVERSE);
+        leftBack.setDirection(Encoder.FORWARD);
+        rightBack.setDirection(Encoder.FORWARD);
 
         setStartPose(setStartPose);
         timer = new NanoTimer();
@@ -193,8 +193,8 @@ public class DriveEncoderLocalizer extends Localizer {
     public void updateEncoders() {
         leftFront.update();
         rightFront.update();
-        leftRear.update();
-        rightRear.update();
+        leftBack.update();
+        rightBack.update();
     }
 
     /**
@@ -203,8 +203,8 @@ public class DriveEncoderLocalizer extends Localizer {
     public void resetEncoders() {
         leftFront.reset();
         rightFront.reset();
-        leftRear.reset();
-        rightRear.reset();
+        leftBack.reset();
+        rightBack.reset();
     }
 
     /**
@@ -216,11 +216,11 @@ public class DriveEncoderLocalizer extends Localizer {
     public Matrix getRobotDeltas() {
         Matrix returnMatrix = new Matrix(3,1);
         // x/forward movement
-        returnMatrix.set(0,0, FORWARD_TICKS_TO_INCHES * (leftFront.getDeltaPosition() + rightFront.getDeltaPosition() + leftRear.getDeltaPosition() + rightRear.getDeltaPosition()));
+        returnMatrix.set(0,0, FORWARD_TICKS_TO_INCHES * (leftFront.getDeltaPosition() + rightFront.getDeltaPosition() + leftBack.getDeltaPosition() + rightBack.getDeltaPosition()));
         //y/strafe movement
-        returnMatrix.set(1,0, STRAFE_TICKS_TO_INCHES * (-leftFront.getDeltaPosition() + rightFront.getDeltaPosition() + leftRear.getDeltaPosition() - rightRear.getDeltaPosition()));
+        returnMatrix.set(1,0, STRAFE_TICKS_TO_INCHES * (-leftFront.getDeltaPosition() + rightFront.getDeltaPosition() + leftBack.getDeltaPosition() - rightBack.getDeltaPosition()));
         // theta/turning
-        returnMatrix.set(2,0, TURN_TICKS_TO_RADIANS * ((-leftFront.getDeltaPosition() + rightFront.getDeltaPosition() - leftRear.getDeltaPosition() + rightRear.getDeltaPosition()) / (ROBOT_WIDTH + ROBOT_LENGTH)));
+        returnMatrix.set(2,0, TURN_TICKS_TO_RADIANS * ((-leftFront.getDeltaPosition() + rightFront.getDeltaPosition() - leftBack.getDeltaPosition() + rightBack.getDeltaPosition()) / (ROBOT_WIDTH + ROBOT_LENGTH)));
         return returnMatrix;
     }
 

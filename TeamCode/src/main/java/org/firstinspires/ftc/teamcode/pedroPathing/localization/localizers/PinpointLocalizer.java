@@ -45,7 +45,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Vector;
 public class PinpointLocalizer extends Localizer {
     private HardwareMap hardwareMap;
     private Pose startPose;
-    private GoBildaPinpointDriver odo;
+    private GoBildaPinpointDriver pinpoint;
     private double previousHeading;
     private double totalHeading;
 
@@ -67,20 +67,20 @@ public class PinpointLocalizer extends Localizer {
     public PinpointLocalizer(HardwareMap map, Pose setStartPose){
         hardwareMap = map;
         // TODO: replace this with your Pinpoint port
-        odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
         //This uses mm, to use inches divide these numbers by 25.4
-        odo.setOffsets(-84.0, -168.0); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(6.41680304729448*25.4, 2.0703455067658703*25.4); //these are tuned for 3110-0002-0001 Product Insight #1
         //TODO: If you find that the gobilda Yaw Scaling is incorrect you can edit this here
       //  odo.setYawScalar(1.0);
         //TODO: Set your encoder resolution here, I have the Gobilda Odometry products already included.
         //TODO: If you would like to use your own odometry pods input the ticks per mm in the commented part below
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         //odo.setEncoderResolution(13.26291192);
         //TODO: Set encoder directions
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-        odo.resetPosAndIMU();
+        pinpoint.resetPosAndIMU();
 
         setStartPose(setStartPose);
         totalHeading = 0;
@@ -96,7 +96,7 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public Pose getPose() {
-        Pose2D rawPose = odo.getPosition();
+        Pose2D rawPose = pinpoint.getPosition();
         Pose pose = new Pose(rawPose.getX(DistanceUnit.INCH), rawPose.getY(DistanceUnit.INCH), rawPose.getHeading(AngleUnit.RADIANS));
 
         return MathFunctions.addPoses(startPose, MathFunctions.rotatePose(pose, startPose.getHeading(), false));
@@ -109,7 +109,7 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public Pose getVelocity() {
-        Pose2D pose = odo.getVelocity();
+        Pose2D pose = pinpoint.getVelocity();
         return new Pose(pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH), pose.getHeading(AngleUnit.RADIANS));
     }
 
@@ -120,7 +120,7 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public Vector getVelocityVector() {
-        Pose2D pose = odo.getVelocity();
+        Pose2D pose = pinpoint.getVelocity();
         Vector returnVector = new Vector();
         returnVector.setOrthogonalComponents(pose.getX(DistanceUnit.INCH), pose.getY(DistanceUnit.INCH));
         return returnVector;
@@ -145,7 +145,7 @@ public class PinpointLocalizer extends Localizer {
     public void setPose(Pose setPose) {
     resetPinpoint();
     Pose setPinpointPose = MathFunctions.subtractPoses(setPose, startPose);
-    odo.setPosition(new Pose2D(DistanceUnit.INCH, setPinpointPose.getX(), setPinpointPose.getY(), AngleUnit.RADIANS, setPinpointPose.getHeading()));
+    pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, setPinpointPose.getX(), setPinpointPose.getY(), AngleUnit.RADIANS, setPinpointPose.getHeading()));
     }
 
     /**
@@ -153,9 +153,9 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public void update() {
-        odo.update();
-    totalHeading += MathFunctions.getSmallestAngleDifference(odo.getHeading(),previousHeading);
-    previousHeading = odo.getHeading();
+        pinpoint.update();
+    totalHeading += MathFunctions.getSmallestAngleDifference(pinpoint.getHeading(),previousHeading);
+    previousHeading = pinpoint.getHeading();
     }
 
     /**
@@ -175,7 +175,7 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public double getForwardMultiplier() {
-        return odo.getEncoderY();
+        return pinpoint.getEncoderY();
     }
 
     /**
@@ -184,7 +184,7 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public double getLateralMultiplier() {
-        return odo.getEncoderX();
+        return pinpoint.getEncoderX();
     }
 
     /**
@@ -193,7 +193,7 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public double getTurningMultiplier() {
-        return odo.getYawScalar();
+        return pinpoint.getYawScalar();
     }
 
     /**
@@ -201,13 +201,13 @@ public class PinpointLocalizer extends Localizer {
      */
     @Override
     public void resetIMU() {
-    odo.recalibrateIMU();
+    pinpoint.recalibrateIMU();
     }
 
     /**
      * This resets the OTOS.
      */
     public void resetPinpoint(){
-        odo.resetPosAndIMU();
+        pinpoint.resetPosAndIMU();
     }
 }
