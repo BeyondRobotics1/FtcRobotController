@@ -97,7 +97,7 @@ measurements will be in centimeters.
   up FTC Dashboard and enable everything under the `Follower` tab. Then, run `CurvedBackAndForth`
   and turn off its timer. If you notice the robot is correcting towards the inside of the curve
   as/after running a path, then increase `centripetalScaling`, which can be found on line `89` of
-  `FollowerConstants`. If the robot is correcting towards the outside of the curve, then decrease
+  `FollowerConstants`. If the robot is correcting towards the outside of the curve, then decrease 
   `centripetalScaling`.
 
 * Once you've found satisfactory tunings for everything, run the robot around in
