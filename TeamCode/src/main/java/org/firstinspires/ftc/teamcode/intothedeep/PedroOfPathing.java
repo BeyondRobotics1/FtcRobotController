@@ -87,14 +87,14 @@ public class PedroOfPathing extends OpMode {
     private Follower follower;
     private Pose startPose = new Pose(0,0,0);
     private Pose secondPose = new Pose(20,0,0);
-    private Pose thirdPose = new Pose(40,20,90);
+    private Pose thirdPose = new Pose(40,20,Math.toRadians(90));
     private PathChain cycleStackTo;
     public void buildPaths() {
         cycleStackTo = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(secondPose)))
                 .setConstantHeadingInterpolation(0)
                 .addPath(new BezierLine(new Point(secondPose), new Point(thirdPose)))
-                .setConstantHeadingInterpolation(90)
+                .setLinearHeadingInterpolation(0,Math.toRadians(90))
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
@@ -105,11 +105,9 @@ public class PedroOfPathing extends OpMode {
 
         // These loop the actions and movement of the robot
         follower.update();
-        follower.followPath(cycleStackTo);
-
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.update();
     }
 
@@ -130,6 +128,7 @@ public class PedroOfPathing extends OpMode {
     @Override
     public void start() {
         buildPaths();
+        follower.followPath(cycleStackTo);
     }
 
     /** We do not use this because everything should automatically disable **/
