@@ -33,11 +33,11 @@ public class PedroOfCurving extends OpMode {
     private Pose thirdPose = new Pose(94,0,0);
     private Pose fourthPose = new Pose(118, 0, 0);
     private Pose fifthPose = new Pose(118,-20,Math.toRadians(-90));
-    private Pose sixthPose = new Pose(0,0,0);
+    private Pose sixthPose = new Pose(118,-60,Math.toRadians(-90));
     private PathChain cycleStackTo;
     public void buildPaths() {
         cycleStackTo = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(startPose), new Point(secondPose), new Point(thirdPose), new Point(fourthPose), new Point(fifthPose)))
+                .addPath(new BezierCurve(new Point(startPose), new Point(secondPose), new Point(thirdPose), new Point(fourthPose), new Point(fifthPose), new Point(sixthPose)))
                 .setLinearHeadingInterpolation(0,Math.toRadians(-90))
                 .setPathEndTimeoutConstraint(0)
                 .build();
