@@ -1,33 +1,15 @@
 package org.firstinspires.ftc.teamcode.intothedeep;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 
 
-
-
-import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.SimpleDrive;
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.*;
-        import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * This is an example auto that showcases movement and control of three servos autonomously.
@@ -43,20 +25,52 @@ import java.util.concurrent.TimeUnit;
 public class PedroOfScoring extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private Follower follower;
+    private int pathState = 1;
     private Pose startPose = new Pose(-62.5, 41.5, 0);
     private Pose scorePose = new Pose(-56, 55, Math.toRadians(-46));
     private Pose firstSample = new Pose(-46.5, 48.5, 0);
-    private PathChain cycleStackTo;
-    public void buildPaths() {
-        cycleStackTo = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(firstSample)))
+    private PathChain cycleStackTo, scorePathOne, scorePathTwo, scorePathThree, scorePathFour, first, second, third;
 
+    public void buildPaths() {
+        first = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(firstSample)))
                 .setConstantHeadingInterpolation(0)
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        scorePathOne = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
                 .setLinearHeadingInterpolation(0,Math.toRadians(-46))
-
+                .setPathEndTimeoutConstraint(0)
                 .build();
-
+        scorePathTwo = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(firstSample), new Point(scorePose)))
+                .setLinearHeadingInterpolation(0,-46)
+                .setPathEndTimeoutConstraint(0)
+                .build();
+    }
+    public void setPathState(int state){
+        pathState = state;
+        pathTimer.resetTimer();
+    }
+    public void autonomousPathUpdate() {
+        switch (pathState) {
+            case 1:
+                follower.followPath(scorePathOne);
+                setPathState(2);
+                break;
+            case 2:
+                if (pathTimer.getElapsedTimeSeconds() > 5) {
+                    follower.followPath(first);
+                    setPathState(3);
+                }
+                break;
+            case 3:
+                if(pathTimer.getElapsedTimeSeconds() > 5) {
+                    follower.followPath(scorePathOne);
+                    setPathState(4);
+                }
+                break;
+        }
     }
 
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
@@ -65,6 +79,7 @@ public class PedroOfScoring extends OpMode {
 
         // These loop the actions and movement of the robot
         follower.update();
+        autonomousPathUpdate();
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
@@ -74,10 +89,11 @@ public class PedroOfScoring extends OpMode {
     /** This method is called once at the init of the OpMode. **/
     @Override
     public void init() {
-
+        pathTimer = new Timer();
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
-        follower.setMaxPower(0.3);
+        buildPaths();
+        follower.setMaxPower(0.5);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -87,10 +103,6 @@ public class PedroOfScoring extends OpMode {
      * It runs all the setup actions, including building paths and starting the path system **/
     @Override
     public void start() {
-
-        buildPaths();
-
-        follower.followPath(cycleStackTo);
 
     }
 

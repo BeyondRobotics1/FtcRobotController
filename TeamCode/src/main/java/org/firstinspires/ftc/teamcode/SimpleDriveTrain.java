@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -16,7 +15,7 @@ public class SimpleDriveTrain {
     double yPowerScale = 0.9;
     double xPowerScale = 0.9;
     double rxPowerScale = 0.65;
-    public SimpleDriveTrain(HardwareMap hardwareMap, LinearOpMode mode) {
+    public SimpleDriveTrain(HardwareMap hardwareMap) {
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
