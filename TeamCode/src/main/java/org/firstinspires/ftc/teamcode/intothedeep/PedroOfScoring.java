@@ -1,12 +1,24 @@
 package org.firstinspires.ftc.teamcode.intothedeep;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
+
+
+
+
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.PinpointDrive;
 import org.firstinspires.ftc.teamcode.SimpleDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.*;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
+        import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
@@ -26,23 +38,17 @@ import java.util.concurrent.TimeUnit;
  * @version 2.0, 9/8/2024
  */
 
-@Autonomous(name = "PedroCurving", group = "Examples")
-public class PedroOfCurving extends OpMode {
-
+@Autonomous(name = "PedroScoring", group = "Examples")
+public class PedroOfScoring extends OpMode {
 
     private Follower follower;
-    private Pose startPose = new Pose(0,0,0);
-    private Pose secondPose = new Pose(46.5,0,0);
-    private Pose thirdPose = new Pose(94,0,0);
-    private Pose fourthPose = new Pose(118, 0, 0);
-    private Pose fifthPose = new Pose(118,-20,Math.toRadians(-90));
-    private Pose sixthPose = new Pose(118,-60,Math.toRadians(-90));
+    private Pose startPose = new Pose(-62.5, 41.5, 0);
+    private Pose firstPose = new Pose(-56, 55, Math.toRadians(-46));
     private PathChain cycleStackTo;
     public void buildPaths() {
         cycleStackTo = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(startPose), new Point(secondPose), new Point(thirdPose), new Point(fourthPose), new Point(fifthPose), new Point(sixthPose)))
-                .setLinearHeadingInterpolation(0,Math.toRadians(-90))
-                .setPathEndTimeoutConstraint(0)
+                .addPath(new BezierLine(new Point(startPose), new Point(firstPose)))
+                .setLinearHeadingInterpolation(0,Math.toRadians(-46))
                 .build();
     }
 
@@ -64,7 +70,7 @@ public class PedroOfCurving extends OpMode {
 
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
-        follower.setMaxPower(0.5);
+        follower.setMaxPower(0.3);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -76,6 +82,7 @@ public class PedroOfCurving extends OpMode {
     public void start() {
 
         buildPaths();
+
         follower.followPath(cycleStackTo);
 
     }

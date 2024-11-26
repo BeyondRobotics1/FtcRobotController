@@ -36,6 +36,7 @@ public class PedroOfPathing extends OpMode {
         cycleStackTo = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(secondPose)))
                 .setConstantHeadingInterpolation(0)
+
                 .addPath(new BezierLine(new Point(secondPose), new Point(thirdPose)))
                 .setLinearHeadingInterpolation(0,Math.toRadians(90))
                 .setPathEndTimeoutConstraint(0)
@@ -72,6 +73,7 @@ public class PedroOfPathing extends OpMode {
     public void start() {
         buildPaths();
         follower.followPath(cycleStackTo);
+
     }
 
     /** We do not use this because everything should automatically disable **/
