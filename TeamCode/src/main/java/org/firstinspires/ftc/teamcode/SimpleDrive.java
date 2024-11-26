@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp
-public class SimpleDrive extends LinearOpMode {
+public class SimpleDrive     extends LinearOpMode {
     SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap);
     @Override
     public void runOpMode() throws InterruptedException {

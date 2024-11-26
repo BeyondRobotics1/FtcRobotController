@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.intothedeep;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
@@ -40,16 +41,22 @@ import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "PedroScoring", group = "Examples")
 public class PedroOfScoring extends OpMode {
-
+    private Timer pathTimer, actionTimer, opmodeTimer;
     private Follower follower;
     private Pose startPose = new Pose(-62.5, 41.5, 0);
-    private Pose firstPose = new Pose(-56, 55, Math.toRadians(-46));
+    private Pose scorePose = new Pose(-56, 55, Math.toRadians(-46));
+    private Pose firstSample = new Pose(-46.5, 48.5, 0);
     private PathChain cycleStackTo;
     public void buildPaths() {
         cycleStackTo = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(firstPose)))
+                .addPath(new BezierLine(new Point(startPose), new Point(firstSample)))
+
+                .setConstantHeadingInterpolation(0)
+                .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
                 .setLinearHeadingInterpolation(0,Math.toRadians(-46))
+
                 .build();
+
     }
 
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
