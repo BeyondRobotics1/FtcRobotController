@@ -28,8 +28,9 @@ public class PedroOfScoring extends OpMode {
     private int pathState = 1;
     private Pose startPose = new Pose(-62.5, 41.5, 0);
     private Pose scorePose = new Pose(-56, 55, Math.toRadians(-46));
-    private Pose firstSample = new Pose(-46.5, 48.5, 0);
-    private PathChain cycleStackTo, scorePathOne, scorePathTwo, scorePathThree, scorePathFour, first, second, third;
+    private Pose firstSample = new Pose(-50.5, 50, 0);
+    private Pose secondSample = new Pose(-50.5, 57, 0);
+    private PathChain scorePathOne, scorePathTwo, scorePathThree, scorePathFour, first, second, third;
 
     public void buildPaths() {
         first = follower.pathBuilder()
@@ -44,7 +45,16 @@ public class PedroOfScoring extends OpMode {
                 .build();
         scorePathTwo = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(firstSample), new Point(scorePose)))
-                .setLinearHeadingInterpolation(0,-46)
+                .setLinearHeadingInterpolation(0,Math.toRadians(-46))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        second = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(secondSample)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+        scorePathThree = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(secondSample), new Point(scorePose)))
+                .setLinearHeadingInterpolation(0, Math.toRadians(-46))
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
@@ -59,17 +69,27 @@ public class PedroOfScoring extends OpMode {
                 setPathState(2);
                 break;
             case 2:
-                if (pathTimer.getElapsedTimeSeconds() > 5) {
+                if (pathTimer.getElapsedTimeSeconds() > 3) {
                     follower.followPath(first);
                     setPathState(3);
                 }
                 break;
             case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 5) {
-                    follower.followPath(scorePathOne);
+                if(pathTimer.getElapsedTimeSeconds() > 3) {
+                    follower.followPath(scorePathTwo);
                     setPathState(4);
                 }
                 break;
+            case 4:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(second);
+                    setPathState(5);
+                }
+            case 5:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(scorePathThree);
+                    setPathState(6);
+                }
         }
     }
 
