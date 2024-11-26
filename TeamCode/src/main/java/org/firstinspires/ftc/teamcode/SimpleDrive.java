@@ -4,10 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 
 @TeleOp
 public class SimpleDrive     extends LinearOpMode {
-    SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap);
+
+    SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap, this);
     @Override
     public void runOpMode() throws InterruptedException {
 
