@@ -27,25 +27,25 @@ public class PedroOfScoring extends OpMode {
     private Follower follower;
     private int pathState = 1;
     private Pose startPose = new Pose(-62.5, 41.5, 0);
-    private Pose scorePose = new Pose(-56, 55, Math.toRadians(-46));
-    private Pose firstSample = new Pose(-50.5, 50, 0);
+    private Pose scorePose = new Pose(-56, 55, Math.toRadians(-45));
+    private Pose firstSample = new Pose(-50.5, 52, 0);
     private Pose secondSample = new Pose(-50.5, 57, 0);
     private PathChain scorePathOne, scorePathTwo, scorePathThree, scorePathFour, first, second, third;
 
     public void buildPaths() {
+        scorePathOne = follower.pathBuilder()
+            .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
+            .setConstantHeadingInterpolation(Math.toRadians(-45))
+            .setPathEndTimeoutConstraint(0)
+            .build();
         first = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose), new Point(firstSample)))
                 .setConstantHeadingInterpolation(0)
                 .setPathEndTimeoutConstraint(0)
                 .build();
-        scorePathOne = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(0,Math.toRadians(-46))
-                .setPathEndTimeoutConstraint(0)
-                .build();
         scorePathTwo = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(firstSample), new Point(scorePose)))
-                .setLinearHeadingInterpolation(0,Math.toRadians(-46))
+                .setConstantHeadingInterpolation(Math.toRadians(-45))
                 .setPathEndTimeoutConstraint(0)
                 .build();
         second = follower.pathBuilder()
@@ -54,7 +54,7 @@ public class PedroOfScoring extends OpMode {
                 .build();
         scorePathThree = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(secondSample), new Point(scorePose)))
-                .setLinearHeadingInterpolation(0, Math.toRadians(-46))
+                .setConstantHeadingInterpolation(Math.toRadians(-45))
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
@@ -75,13 +75,13 @@ public class PedroOfScoring extends OpMode {
                 }
                 break;
             case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
+                if(pathTimer.getElapsedTimeSeconds() > 2) {
                     follower.followPath(scorePathTwo);
                     setPathState(4);
                 }
                 break;
             case 4:
-                if(pathTimer.getElapsedTimeSeconds()>3){
+                if(pathTimer.getElapsedTimeSeconds()>2){
                     follower.followPath(second);
                     setPathState(5);
                 }
@@ -113,7 +113,7 @@ public class PedroOfScoring extends OpMode {
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
-        follower.setMaxPower(0.5);
+        follower.setMaxPower(0.3);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
