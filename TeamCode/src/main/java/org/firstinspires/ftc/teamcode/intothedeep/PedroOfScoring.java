@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 
@@ -27,15 +28,18 @@ public class PedroOfScoring extends OpMode {
     private Follower follower;
     private int pathState = 1;
     private Pose startPose = new Pose(-62.5, 41.5, 0);
-    private Pose scorePose = new Pose(-56, 55, Math.toRadians(-45));
-    private Pose firstSample = new Pose(-50.5, 52, 0);
-    private Pose secondSample = new Pose(-50.5, 57, 0);
-    private PathChain scorePathOne, scorePathTwo, scorePathThree, scorePathFour, first, second, third;
+    private Pose scorePose = new Pose(-56, 55, Math.toRadians(-46));
+    private Pose firstSample = new Pose(-50.5, 49, 0);
+    private Pose secondSample = new Pose(-50.5, 58, 0);
+    private Pose thirdSample = new Pose(-48.5, 57, Math.toRadians(27.5));
+    private Pose subsystem = new Pose(-8, 24, Math.toRadians(-90));
+    private Pose curve = new Pose(-20, 48, 0);
+    private PathChain scorePathOne, scorePathTwo, scorePathThree, scorePathFour, first, second, third, sub;
 
     public void buildPaths() {
         scorePathOne = follower.pathBuilder()
             .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-            .setConstantHeadingInterpolation(Math.toRadians(-45))
+            .setConstantHeadingInterpolation(Math.toRadians(-46))
             .setPathEndTimeoutConstraint(0)
             .build();
         first = follower.pathBuilder()
@@ -45,7 +49,7 @@ public class PedroOfScoring extends OpMode {
                 .build();
         scorePathTwo = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(firstSample), new Point(scorePose)))
-                .setConstantHeadingInterpolation(Math.toRadians(-45))
+                .setConstantHeadingInterpolation(Math.toRadians(-46))
                 .setPathEndTimeoutConstraint(0)
                 .build();
         second = follower.pathBuilder()
@@ -54,9 +58,25 @@ public class PedroOfScoring extends OpMode {
                 .build();
         scorePathThree = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(secondSample), new Point(scorePose)))
-                .setConstantHeadingInterpolation(Math.toRadians(-45))
+                .setConstantHeadingInterpolation(Math.toRadians(-46))
                 .setPathEndTimeoutConstraint(0)
                 .build();
+        third = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(thirdSample)))
+                .setConstantHeadingInterpolation( Math.toRadians(27.5))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        scorePathFour = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(thirdSample), new Point(scorePose)))
+                .setConstantHeadingInterpolation(Math.toRadians(-46))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        sub = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePose), new Point(curve), new Point(subsystem)))
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+
     }
     public void setPathState(int state){
         pathState = state;
@@ -85,11 +105,32 @@ public class PedroOfScoring extends OpMode {
                     follower.followPath(second);
                     setPathState(5);
                 }
+                break;
             case 5:
                 if(pathTimer.getElapsedTimeSeconds()>3){
                     follower.followPath(scorePathThree);
                     setPathState(6);
                 }
+                break;
+            case 6:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(third);
+                    setPathState(7);
+                }
+                break;
+            case 7:
+                if(pathTimer.getElapsedTimeSeconds()>2){
+                    follower.followPath(scorePathFour);
+                    setPathState(8);
+                }
+                break;
+            case 8:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(sub);
+                    setPathState(9);
+                }
+                break;
+
         }
     }
 
