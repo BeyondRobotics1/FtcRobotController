@@ -16,13 +16,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.PID;
+import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 
 
 public class SimpleDriveTrain {
-
-
-    // The IMU sensor object
-    IMU imu = null;
 
     //Use DcMotorEx to support bulk read.
     DcMotorEx motorFrontLeft;
@@ -69,8 +66,7 @@ public class SimpleDriveTrain {
      * @param hardwareMap: for hardware lookup
      * @param mode: for telemetry
      */
-    public SimpleDriveTrain(HardwareMap hardwareMap, LinearOpMode mode, boolean hasIMU)
-    {
+    public SimpleDriveTrain(HardwareMap hardwareMap, LinearOpMode mode){
 
         this.mode = mode;
 
@@ -93,61 +89,6 @@ public class SimpleDriveTrain {
 //        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
         //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
         //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
-
-        if(hasIMU) {
-            try {
-                // Retrieve and initialize the IMU.
-                imu = hardwareMap.get(IMU.class, "imu2");
-
-                // The next two lines define Hub orientation.
-                RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;//.RIGHT;
-                RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;//.UP;
-
-                RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-                // Now initialize the IMU with this mounting orientation
-                // Note: if you choose two conflicting directions, this initialization will cause a code exception.
-                imu.initialize(new IMU.Parameters(orientationOnRobot));
-            } catch (Exception e)
-            {
-                imu = null;
-            }
-        }
-    }
-
-    /**
-     * get the imu instance
-     * @return
-     */
-    public IMU getImu() {
-        return imu;
-    }
-
-    /**
-     * reset the IMU, should be called by auto and NOT be called by teleop
-     */
-    public void resetYaw()
-    {
-        if(imu != null)
-            imu.resetYaw();
-    }
-
-    /**
-     * Stop motors and reset encoder STOP_AND_RESET_ENCODER,
-     * then set motor to RUN_USING_ENCODER.
-     * Called by auto
-     */
-    public void resetAndRunUsingEncoder()
-    {
-        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //robot centric
@@ -188,11 +129,10 @@ public class SimpleDriveTrain {
     //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
     public void setPower2(double left_stick_y,
                           double left_stick_x,
-                          double right_stick_x) {
+                          double right_stick_x,
+                          double botHeading) {
 
         //field centric uses IMU, if no IMU, just do nothing
-        if(imu == null)
-            return;
 
         //
         double y = left_stick_y;
@@ -209,8 +149,6 @@ public class SimpleDriveTrain {
         x *= x_power_scale * 1.1;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
         //Read heading
-        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
         //Read inverse IMU heading, as the IMU heading is CW positive
         double rotX = Helper.squareWithSign(x * Math.cos(-botHeading) - y * Math.sin(-botHeading));
         double rotY = Helper.squareWithSign(x * Math.sin(-botHeading) + y * Math.cos(-botHeading));
@@ -232,94 +170,7 @@ public class SimpleDriveTrain {
 
     // Distances in inches, angles in deg, speed 0.0 to 0.6
     // move forward
-    public void moveLeft(double howMuch, double speed) {
-        // howMuch is in inches. A negative howMuch moves backward.
 
-        // fetch motor positions
-        lfPos = motorFrontLeft.getCurrentPosition();
-        rfPos = motorFrontRight.getCurrentPosition();
-        lrPos = motorBackLeft.getCurrentPosition();
-        rrPos = motorBackRight.getCurrentPosition();
-
-        // calculate new targets
-        lfPos -= howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
-        rfPos += howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
-        lrPos += howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
-        rrPos -= howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
-
-        // move robot to new position
-        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-        setRunToPosition();
-        setMotorPower(speed, speed, speed, speed);
-
-        // wait for move to complete
-        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
-                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
-
-//            // Display it for the driver.
-//            mode.telemetry.addLine("Move left");
-//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-//                    motorBackRight.getCurrentPosition());
-//            mode.telemetry.update();
-        }
-
-        // Stop all motion;
-        setMotorPower(0, 0, 0, 0);
-
-        setRunUsingEncoder();
-    }
-
-    /**
-     *  // howMuch is in inches. A negative howMuch moves backward.
-     * @param howMuch
-     * @param speed
-     */
-    public void moveForward(double howMuch, double speed) {
-        // fetch motor positions
-        lfPos = motorFrontLeft.getCurrentPosition();
-        rfPos = motorFrontRight.getCurrentPosition();
-        lrPos = motorBackLeft.getCurrentPosition();
-        rrPos = motorBackRight.getCurrentPosition();
-
-        //get the adjustment for inches
-        double adj = MOVE_FORWARD_ADJUSTMENT;
-        if(howMuch < 0)
-            adj = MOVE_BACKWARD_ADJUSTMENT;
-
-        // calculate new targets
-        lfPos += howMuch * COUNTS_PER_INCH * adj;
-        rfPos += howMuch * COUNTS_PER_INCH * adj;
-        lrPos += howMuch * COUNTS_PER_INCH * adj;
-        rrPos += howMuch * COUNTS_PER_INCH * adj;
-
-        // move robot to new position
-        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
-        setRunToPosition();
-        setMotorPower(speed, speed, speed, speed);
-
-        // wait for move to complete
-        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
-                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
-
-            //// Display it for the driver.
-//            mode.telemetry.addLine("Move forward");
-//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
-//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
-//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
-//                    motorBackRight.getCurrentPosition());
-//            mode.telemetry.update();
-        }
-
-        // Stop all motion;
-
-        setMotorPower(0, 0, 0, 0);
-
-        setRunUsingEncoder();
-    }
-
-    //set power for each motors
     public void setMotorPower(double frontLeft, double frontRight,
                               double backLeft, double backRight)
     {

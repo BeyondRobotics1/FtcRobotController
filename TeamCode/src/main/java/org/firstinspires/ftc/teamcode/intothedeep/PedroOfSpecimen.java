@@ -119,7 +119,7 @@ public class PedroOfSpecimen extends OpMode {
                     follower.followPath(pickScore);
                     setPathState(9);
                     break;
-                }    
+                }
 
 
 
