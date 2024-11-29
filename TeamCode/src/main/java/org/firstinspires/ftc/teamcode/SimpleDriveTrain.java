@@ -176,10 +176,10 @@ public class SimpleDriveTrain {
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y - x - rx) / denominator;
-        double backLeftPower = (y + x - rx) / denominator;
-        double frontRightPower = (y + x + rx) / denominator;
-        double backRightPower = (y - x + rx) / denominator;
+        double frontLeftPower = (y + x + rx) / denominator;
+        double backLeftPower = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower = (y + x - rx) / denominator;
 
         setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
     }
@@ -188,11 +188,10 @@ public class SimpleDriveTrain {
     //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
     public void setPower2(double left_stick_y,
                           double left_stick_x,
-                          double right_stick_x) {
+                          double right_stick_x,
+                          double botHeading) {
 
         //field centric uses IMU, if no IMU, just do nothing
-        if(imu == null)
-            return;
 
         //
         double y = left_stick_y;
@@ -209,7 +208,6 @@ public class SimpleDriveTrain {
         x *= x_power_scale * 1.1;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
         //Read heading
-        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         //Read inverse IMU heading, as the IMU heading is CW positive
         double rotX = Helper.squareWithSign(x * Math.cos(-botHeading) - y * Math.sin(-botHeading));

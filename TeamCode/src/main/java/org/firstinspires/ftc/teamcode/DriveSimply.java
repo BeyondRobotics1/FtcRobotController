@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 
 @TeleOp(name = "DriveSimply", group = "TeleOp")
 
@@ -48,10 +49,17 @@ public class DriveSimply extends LinearOpMode {
         //restart the timer
         timer.reset();
         while (opModeIsActive()) {
+            follower.update();
             if (gamepad1.left_bumper)
-                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, follower.getPose().getHeading());
             else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
+            telemetry.update();
+            if (gamepad1.back){
+                follower.setCurrentPoseWithOffset(new Pose(0,0,0));
+            }
         }
+
     }
 }
