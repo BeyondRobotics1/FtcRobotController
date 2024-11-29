@@ -16,10 +16,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.PID;
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 
 
 public class SimpleDriveTrain {
+
+
+    // The IMU sensor object
+    IMU imu = null;
 
     //Use DcMotorEx to support bulk read.
     DcMotorEx motorFrontLeft;
@@ -66,7 +69,8 @@ public class SimpleDriveTrain {
      * @param hardwareMap: for hardware lookup
      * @param mode: for telemetry
      */
-    public SimpleDriveTrain(HardwareMap hardwareMap, LinearOpMode mode){
+    public SimpleDriveTrain(HardwareMap hardwareMap, LinearOpMode mode, boolean hasIMU)
+    {
 
         this.mode = mode;
 
@@ -89,6 +93,61 @@ public class SimpleDriveTrain {
 //        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
         //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
         //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
+
+        if(hasIMU) {
+            try {
+                // Retrieve and initialize the IMU.
+                imu = hardwareMap.get(IMU.class, "imu2");
+
+                // The next two lines define Hub orientation.
+                RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;//.RIGHT;
+                RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;//.UP;
+
+                RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+                // Now initialize the IMU with this mounting orientation
+                // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+                imu.initialize(new IMU.Parameters(orientationOnRobot));
+            } catch (Exception e)
+            {
+                imu = null;
+            }
+        }
+    }
+
+    /**
+     * get the imu instance
+     * @return
+     */
+    public IMU getImu() {
+        return imu;
+    }
+
+    /**
+     * reset the IMU, should be called by auto and NOT be called by teleop
+     */
+    public void resetYaw()
+    {
+        if(imu != null)
+            imu.resetYaw();
+    }
+
+    /**
+     * Stop motors and reset encoder STOP_AND_RESET_ENCODER,
+     * then set motor to RUN_USING_ENCODER.
+     * Called by auto
+     */
+    public void resetAndRunUsingEncoder()
+    {
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //robot centric
@@ -129,10 +188,11 @@ public class SimpleDriveTrain {
     //https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
     public void setPower2(double left_stick_y,
                           double left_stick_x,
-                          double right_stick_x,
-                          double botHeading) {
+                          double right_stick_x) {
 
         //field centric uses IMU, if no IMU, just do nothing
+        if(imu == null)
+            return;
 
         //
         double y = left_stick_y;
@@ -149,6 +209,8 @@ public class SimpleDriveTrain {
         x *= x_power_scale * 1.1;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
         //Read heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
         //Read inverse IMU heading, as the IMU heading is CW positive
         double rotX = Helper.squareWithSign(x * Math.cos(-botHeading) - y * Math.sin(-botHeading));
         double rotY = Helper.squareWithSign(x * Math.sin(-botHeading) + y * Math.cos(-botHeading));
@@ -170,7 +232,467 @@ public class SimpleDriveTrain {
 
     // Distances in inches, angles in deg, speed 0.0 to 0.6
     // move forward
+    public void moveLeft(double howMuch, double speed) {
+        // howMuch is in inches. A negative howMuch moves backward.
 
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets
+        lfPos -= howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+        rfPos += howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+        lrPos += howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+        rrPos -= howMuch * COUNTS_PER_INCH * MOVE_LEFT_ADJUSTMENT;
+
+        // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+        setRunToPosition();
+        setMotorPower(speed, speed, speed, speed);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Move left");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+        setMotorPower(0, 0, 0, 0);
+
+        setRunUsingEncoder();
+    }
+
+    /**
+     *  // howMuch is in inches. A negative howMuch moves backward.
+     * @param howMuch
+     * @param speed
+     */
+    public void moveForward(double howMuch, double speed) {
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        //get the adjustment for inches
+        double adj = MOVE_FORWARD_ADJUSTMENT;
+        if(howMuch < 0)
+            adj = MOVE_BACKWARD_ADJUSTMENT;
+
+        // calculate new targets
+        lfPos += howMuch * COUNTS_PER_INCH * adj;
+        rfPos += howMuch * COUNTS_PER_INCH * adj;
+        lrPos += howMuch * COUNTS_PER_INCH * adj;
+        rrPos += howMuch * COUNTS_PER_INCH * adj;
+
+        // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+        setRunToPosition();
+        setMotorPower(speed, speed, speed, speed);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            //// Display it for the driver.
+//            mode.telemetry.addLine("Move forward");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+
+        setMotorPower(0, 0, 0, 0);
+
+        setRunUsingEncoder();
+    }
+
+    /**
+     * Rumping up/down, based on our FLL code
+     * @param howMuch: howMuch is in inches. A negative howMuch moves backward.
+     * @param speedMin: minimum speed
+     * @param speedMax: maximum speed
+     * @param overRange: overrange for verocity profile, default to 1.25
+     */
+    public void moveForwardRamp(double howMuch, double speedMin, double speedMax, double overRange) {
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // remember the current position as start position
+        int startPosition = lfPos;
+
+        //get the adjustment for inches
+        double adj = MOVE_FORWARD_ADJUSTMENT;
+        if(howMuch < 0)
+            adj = MOVE_BACKWARD_ADJUSTMENT;
+
+        // calculate new targets
+        lfPos += howMuch * COUNTS_PER_INCH * adj;
+        rfPos += howMuch * COUNTS_PER_INCH * adj;
+        lrPos += howMuch * COUNTS_PER_INCH * adj;
+        rrPos += howMuch * COUNTS_PER_INCH * adj;
+
+        int targetPosition = lfPos;
+        double totalPositionChange = Math.abs(targetPosition - startPosition);
+
+        // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+        setRunToPosition();
+
+        double newSpeed = speedMin;
+        double speedRange = (speedMax - speedMin) * overRange;//1.25;
+
+        setMotorPower(newSpeed, newSpeed, newSpeed, newSpeed);
+
+        //Log log = new Log("moveForwardRamp", true);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            //find out the percentage of distance traveled
+            int currentPosition = motorFrontLeft.getCurrentPosition();
+            double percentComplete = (Math.abs(currentPosition - startPosition) * 1.0) / totalPositionChange;
+
+            //if(percentComplete > 0.6)
+            //    percentComplete *= 0.9;
+
+            //based on the percentage, find the new power value
+            newSpeed = Math.min(speedMin + speedRange * Math.sin(percentComplete * Math.PI), speedMax);
+            setMotorPower(newSpeed, newSpeed, newSpeed, newSpeed);
+
+            //log.addData(startPosition);
+            //log.addData(currentPosition);
+            //log.addData(totalPositionChange);
+            //log.addData(percentComplete);
+            //log.addData(newSpeed);
+
+            //log.update();
+        }
+
+        //log.close();
+
+        //Stop all motion
+        setMotorPower(0, 0, 0, 0);
+
+        //Turn off RUN_TO_POSITION
+        setRunUsingEncoder();
+    }
+
+    /**
+     * Move forward with PID using IMU heading
+     * We don't use this method now since the Gyro reading goes to 0 and stuck sometimes
+     *
+     * @param howMuch howMuch is in inches. A negative howMuch moves backward.
+     * @param speed motor speed
+     */
+    public void moveForwardWithGyro(double howMuch, double speed) {
+        //if there is no imu, do nothin
+        if(imu == null)
+            return;
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets
+        lfPos += howMuch * COUNTS_PER_INCH;
+        rfPos += howMuch * COUNTS_PER_INCH;
+        lrPos += howMuch * COUNTS_PER_INCH;
+        rrPos += howMuch * COUNTS_PER_INCH;
+
+        // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+        setRunToPosition();
+        setMotorPower(speed, speed, speed, speed);
+
+        PID pid=new PID(0.05, 0, 0, 0);
+
+        pid.setIntegrationBounds(-10, 10);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            double powerAdjustment = pid.calculate(botHeading);
+
+            if(howMuch > 0) //forward
+                setMotorPower(speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment);
+            else //backward
+                setMotorPower(speed+powerAdjustment, speed-powerAdjustment, speed+powerAdjustment, speed-powerAdjustment);
+
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Move forward");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//
+//            mode.telemetry.addData("Adjustment and Heading", "%7f :%7f", powerAdjustment, botHeading);
+//
+//            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+
+        setMotorPower(0, 0, 0, 0);
+
+        setRunUsingEncoder();
+    }
+
+    /**
+     * Turn robot to IMU's heading angle
+     * @param targetHeadingDegree: turn to gyro target heading in degree,
+     *                           positive counter clockwise, negative clockwise
+     * @param speed: turn speed
+     */
+    public void turnToGyroHeading(int targetHeadingDegree, double speed)
+    {
+        //if there is no imu, use encoder turn
+        if(imu == null) {
+            turnClockwise(-targetHeadingDegree, speed);
+            return;
+        }
+
+
+        //adjust the heading (0.92 default) as needed
+        double targetHeading = targetHeadingDegree * 0.89;
+
+        //current heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+        //check if the target heading and current heading are closer enough
+        //if yes, already reached the target, do nothing
+        if(Math.abs(targetHeading - botHeading) <= 1)
+            return;
+
+        //IMU could stuck in 0, in this case, we use regular turn
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets (clock wise, the reverse direction of IMU)
+        lfPos -= targetHeadingDegree * COUNTS_PER_DEGREE;
+        rfPos += targetHeadingDegree * COUNTS_PER_DEGREE;
+        lrPos -= targetHeadingDegree * COUNTS_PER_DEGREE;
+        rrPos += targetHeadingDegree * COUNTS_PER_DEGREE;
+
+
+        setRunUsingEncoder();
+
+        if(targetHeading < botHeading) //turn  clock wise
+        {
+            setMotorPower(speed, -speed, speed, -speed);
+        }
+        else if ( targetHeading > botHeading) //turn counter-clock wise
+        {
+            setMotorPower(-speed, speed, -speed, speed);
+        }
+
+        int bad_yaw_count = 0;
+
+        //keep turning until the difference of target heading and
+        // the current heading yaw angle is no bigger than 1 degree
+        while (Math.abs(targetHeading - botHeading) > 1) {    //original is 0.92, 0.9 works a bit better than 0.92
+            botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+            //is heading stuck at 0
+            if(Math.abs(botHeading) <= 0.01)
+                bad_yaw_count++;
+
+            //IMU stuck at 0,
+            if(bad_yaw_count >= 24)
+                break;
+        }
+
+//        mode.telemetry.addData("Heading", botHeading);
+//        mode.telemetry.update();
+
+        //bad IMU, just turn targetHeading (12)
+        if(bad_yaw_count >= 24)
+        {
+            setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+
+            setRunToPosition();
+            setMotorPower(speed, speed, speed, speed);
+
+            // wait for move to complete
+            while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                    motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+            }
+            // Stop all motion;
+            setMotorPower(0, 0, 0, 0);
+
+            setRunUsingEncoder();
+
+            mode.telemetry.addData("BAD IMU", bad_yaw_count);
+            mode.telemetry.addData("Heading", botHeading);
+            mode.telemetry.update();
+        }
+        else {
+            setMotorPower(0, 0, 0, 0);
+
+            mode.telemetry.addData("GOOD IMU", bad_yaw_count);
+            mode.telemetry.addData("Heading", botHeading);
+            mode.telemetry.update();
+        }
+    }
+
+
+    /**
+     * * Turn robot to IMU's heading angle
+     * @param targetHeading: turn to gyro target heading in degree,
+     *                           positive counter clockwise, negative clockwise
+     * @param speed: turn speed
+     * @param timeOut: timeout in milliseconds
+     */
+    public void fineTuneToGyroHeading(int targetHeading, double speed, int timeOut)
+    {
+        //if there is no imu, do nothing
+        if(imu == null)
+            return;
+
+        //current heading
+        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+        //check if the target heading and current heading are closer enough
+        //if yes, already reached the target, do nothing
+        if(Math.abs(targetHeading - botHeading) <= 1)
+            return;
+
+        //We use this timer to check the game time that has elapsed
+        ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        if(targetHeading < botHeading) //turn  clock wise
+        {
+            setMotorPower(speed, -speed, speed, -speed);
+        }
+        else if ( targetHeading > botHeading) //turn counter-clock wise
+        {
+            setMotorPower(-speed, speed, -speed, speed);
+        }
+
+        //keep turning until the difference of target heading and
+        // the current heading yaw angle is no bigger than 1 degree
+        while (Math.abs(targetHeading - botHeading) > 1 && //original is 0.92, 0.9 works a bit better than 0.92
+                timer.milliseconds() < timeOut) {
+            botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        }
+
+        setMotorPower(0, 0, 0, 0);
+
+        mode.telemetry.addData("Heading", botHeading);
+        mode.telemetry.update();
+    }
+
+    /**
+     * Turn robot clockwise
+     * @param whatAngle: angle in degrees
+     * @param speed: motor power
+     */
+    public void turnClockwise(int whatAngle, double speed) {
+        // whatAngle is in degrees. A negative whatAngle turns counterclockwise.
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets
+        lfPos += whatAngle * COUNTS_PER_DEGREE;
+        rfPos -= whatAngle * COUNTS_PER_DEGREE;
+        lrPos += whatAngle * COUNTS_PER_DEGREE;
+        rrPos -= whatAngle * COUNTS_PER_DEGREE;
+
+        // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+        setRunToPosition();
+        setMotorPower(speed, speed, speed, speed);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Turn Clockwise");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+        setMotorPower(0, 0, 0, 0);
+
+        setRunUsingEncoder();
+    }
+
+    public void moveToLine(double howMuch, double speed) {
+        // howMuch is in inches. The robot will stop if the line is found before
+        // this distance is reached. A negative howMuch moves left, positive moves right.
+
+        // fetch motor positions
+        lfPos = motorFrontLeft.getCurrentPosition();
+        rfPos = motorFrontRight.getCurrentPosition();
+        lrPos = motorBackLeft.getCurrentPosition();
+        rrPos = motorBackRight.getCurrentPosition();
+
+        // calculate new targets
+        lfPos += howMuch * COUNTS_PER_INCH;
+        rfPos -= howMuch * COUNTS_PER_INCH;
+        lrPos -= howMuch * COUNTS_PER_INCH;
+        rrPos += howMuch * COUNTS_PER_INCH;
+
+        // move robot to new position
+        setMotorTargetPosition(lfPos, rfPos, lrPos, rrPos);
+        setRunToPosition();
+        setMotorPower(speed, speed, speed, speed);
+
+        // wait for move to complete
+        while (motorFrontLeft.isBusy() && motorFrontRight.isBusy() &&
+                motorBackLeft.isBusy() && motorBackRight.isBusy()) {
+            //if (mrOds.getLightDetected() > lineThreshold) break;
+
+//            // Display it for the driver.
+//            mode.telemetry.addLine("Move To Line");
+//            mode.telemetry.addData("Target", "%7d :%7d", lfPos, rfPos, lrPos, rrPos);
+//            mode.telemetry.addData("Actual", "%7d :%7d", motorFrontLeft.getCurrentPosition(),
+//                    motorFrontRight.getCurrentPosition(), motorBackLeft.getCurrentPosition(),
+//                    motorBackRight.getCurrentPosition());
+//            mode.telemetry.update();
+        }
+
+        // Stop all motion;
+        setMotorPower(0, 0, 0, 0);
+
+        setRunUsingEncoder();
+    }
+
+    //set power for each motors
     public void setMotorPower(double frontLeft, double frontRight,
                               double backLeft, double backRight)
     {
@@ -215,13 +737,12 @@ public class SimpleDriveTrain {
     //set all four motors to RUN_WITHOUT_ENCODER
     public void setRunWithoutEncoder()
     {
-        //if(DcMotor.RunMode.RUN_WITHOUT_ENCODER != motorFrontLeft.getMode()) {
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //}
     }
+
     public void changeXYPowerScale(double delta)
     {
         y_power_scale += delta;

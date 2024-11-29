@@ -29,7 +29,7 @@ public class DriveSimply extends LinearOpMode {
         ////our robot hardware
         telemetry.addLine("Initializing drive train");
         telemetry.update();
-        SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap, this);
+        SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap, this, false);
 
         //We use this timer to check the game time that has elapsed
         ElapsedTime timer = new ElapsedTime();
@@ -49,7 +49,7 @@ public class DriveSimply extends LinearOpMode {
         timer.reset();
         while (opModeIsActive()) {
             if (gamepad1.left_bumper)
-                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, follower.getTotalHeading());
+                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
             else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }
