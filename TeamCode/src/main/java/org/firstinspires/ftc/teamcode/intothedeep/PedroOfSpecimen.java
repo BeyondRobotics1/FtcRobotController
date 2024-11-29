@@ -20,15 +20,15 @@ public class PedroOfSpecimen extends OpMode {
         private Pose startPose = new Pose(-64.5, -7.75, Math.toRadians(180));
         private Pose scorePose = new Pose(-36.5, -3, Math.toRadians(180));
         private Pose curvePoint = new Pose(-44, -3, Math.toRadians(180));
-        private Pose sampleOne = new Pose(-40.5, -33, Math.toRadians(-55));
+        private Pose sampleOne = new Pose(-42.5, -31, Math.toRadians(-55));
         private Pose sampleTwo = new Pose(-42.5, -43, Math.toRadians(-50));
-        private Pose sampleThree = new Pose(-42.5, -53, Math.toRadians(-50));
-        private Pose grab = new Pose(-60, -31, Math.toRadians(180));
-        private PathChain scorePathOne, pickOne, giveOne, pickTwo, giveTwo, pickThree, giveThree, pickScore;
+        private Pose sampleThree = new Pose(-44.5, -51, Math.toRadians(-50));
+        private Pose grab = new Pose(-60, -33, Math.toRadians(180));
+        private PathChain scorePathOne, pickOne, giveOne, pickTwo, giveTwo, pickThree, giveThree, pickScore, scoreHuman, comeHuman;
         public void buildPaths(){
             scorePathOne = follower.pathBuilder()
                     .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-                    .setConstantHeadingInterpolation(Math.toRadians(180))
+                    .setConstantHeadingInterpolation( Math.toRadians(180))
                     .setPathEndTimeoutConstraint(0)
                     .build();
             pickOne = follower.pathBuilder()
@@ -65,6 +65,18 @@ public class PedroOfSpecimen extends OpMode {
                     .setConstantHeadingInterpolation(Math.toRadians(180))
                     .setPathEndTimeoutConstraint(0)
                     .build();
+            scoreHuman = follower.pathBuilder()
+                    .addPath(new BezierLine(new Point(grab), new Point(scorePose)))
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
+                    .setPathEndTimeoutConstraint(0)
+                    .build();
+            comeHuman = follower.pathBuilder()
+                    .addPath(new BezierLine(new Point(scorePose), new Point(grab)))
+                    .setConstantHeadingInterpolation(Math.toRadians(180))
+                    .setPathEndTimeoutConstraint(0)
+                    .build();
+
+
 
 
         }
@@ -120,13 +132,22 @@ public class PedroOfSpecimen extends OpMode {
                     setPathState(9);
                     break;
                 }
-
-
-
-        }
+            case 9:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(scoreHuman);
+                    setPathState(10);
+                    break;
+                }
+            case 10:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    follower.followPath(comeHuman);
+                    setPathState(11);
+                    break;
+                }
     }
+        }
     @Override
-    public void loop() {
+    public void loop(){
 
         // These loop the actions and movement of the robot
         follower.update();
