@@ -43,7 +43,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.NanoTimer;
  * @version 1.0, 4/2/2024
  */
 @Config
-public class TwoWheelLocalizer extends Localizer { // todo: make two wheel odo work
+public class    TwoWheelLocalizer extends Localizer { // todo: make two wheel odo work
     private HardwareMap hardwareMap;
     private IMU imu;
     private Pose startPose;
