@@ -52,7 +52,7 @@ public class AutoLeftRed extends LinearOpMode {
 
         telemetry.addLine("Initializing slide");
         telemetry.update();
-        Slide slide = new Slide(hardwareMap, this, arm);
+        Slide slide = new Slide(hardwareMap, this);
         slide.runWithEncoder();
         Slide.SlideTargetPosition slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
 

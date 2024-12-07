@@ -40,6 +40,8 @@ public class Claw {
         this.mode = mode;
         claw = hardwareMap.get(Servo.class, "claw");
 
+//        claw.setDirection(Servo.Direction.REVERSE);
+
         state = ClawState.NONE;
     }
 
@@ -63,7 +65,7 @@ public class Claw {
     public void open(){
 
         if(state != ClawState.OPENED) {
-            setPosition(0.2);
+            setPosition(0.4);
             state = ClawState.OPENED;
         }
 
@@ -75,7 +77,7 @@ public class Claw {
     public void close(){
 
         if(state != ClawState.CLOSED) {
-            setPosition(1);
+            setPosition(0);
             state = ClawState.CLOSED;
         }
     }
