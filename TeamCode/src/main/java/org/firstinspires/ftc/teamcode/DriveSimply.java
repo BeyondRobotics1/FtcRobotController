@@ -1,20 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 @TeleOp(name = "DriveSimply", group = "TeleOp")
 
 public class DriveSimply extends LinearOpMode {
+    private Timer timer = new Timer();
     @Override
     public void runOpMode() throws InterruptedException {
-
-        Follower follower = new Follower(hardwareMap);
+        boolean fieldcentric = false;
+        boolean swap = false;
+        double head = 0;
+        GoBildaPinpointDriverRR pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,"pinpoint");
 
         // per Q & A 191,
         //REV Digital LED Indicator (https://www.revrobotics.com/rev-31-2010/) is NOT legal :(
@@ -33,13 +39,13 @@ public class DriveSimply extends LinearOpMode {
         SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap, this, false);
 
         //We use this timer to check the game time that has elapsed
-        ElapsedTime timer = new ElapsedTime();
 
         //
         telemetry.addLine("Initialization done, wait for start");
         telemetry.update();
 
         waitForStart();
+        timer.resetTimer();
         if (isStopRequested()) return;
 
 
@@ -47,17 +53,23 @@ public class DriveSimply extends LinearOpMode {
         telemetry.update();
 
         //restart the timer
-        timer.reset();
         while (opModeIsActive()) {
-            follower.update();
-            if (gamepad1.left_bumper)
-                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, follower.getPose().getHeading());
+            telemetry.addData("heading", Math.toDegrees(pinpoint.getPosition().getHeading(AngleUnit.RADIANS))-head);
+            telemetry.addData("fieldcentric:", fieldcentric);
+            telemetry.update();
+            pinpoint.update();
+            if (gamepad1.left_bumper && timer.getElapsedTimeSeconds() > 1){
+                fieldcentric = !fieldcentric;
+                timer.resetTimer();
+            }
+
+            if (fieldcentric)
+                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, pinpoint.getPosition().getHeading(AngleUnit.RADIANS) - head);
             else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-            telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.update();
             if (gamepad1.back){
-                follower.setCurrentPoseWithOffset(new Pose(0,0,0));
+                head = pinpoint.getPosition().getHeading(AngleUnit.RADIANS);
             }
         }
 
