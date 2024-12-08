@@ -50,4 +50,16 @@ public class Helper {
         return modifiedAngleDelta;
     }
 
+    /**
+     * scale a value from [oldMin oldMax] to [newMin newMax]
+     * @param value
+     * @param oldMin
+     * @param oldMax
+     * @param newMin
+     * @param newMax
+     * @return
+     */
+    public static double Scale(double value, double oldMin, double oldMax, double newMin, double newMax) {
+        return (value - oldMin) * (newMax - newMin) / (oldMax - oldMin) + newMin;
+    }
 }

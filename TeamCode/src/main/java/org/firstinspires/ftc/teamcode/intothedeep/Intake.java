@@ -22,16 +22,14 @@ public class Intake {
     }
 
     //pivot servo predefined positions
-    //private final double pivotServoStartPosition = 0.2;//leveled
-    private final double pivotServoIntakePosition = 0.18;//0.85
-    private final double pivotServoOuttakePosition = 0.1;//0.5
-    private final double pivotServoHeadDownPosition = 0.5;//leveled
+    private final double pivotServoIntakePosition = 0.55;//
+    private final double pivotServoOuttakePosition = 0.45;//
+    private final double pivotServoHeadDownPosition = 0.85;//leveled
 
     //4bar servo predefined positions
-    //private final double fourBarServoStartPosition = 0.6;//0.2;//
-    private final double fourBarServoIntakePosition =0.92;//77
-    private final double fourBarServoOuttakePosition = 0.485;
-    private final double fourBarServoHeadDownPosition = 0.8;
+    private final double fourBarServoIntakePosition =0.82;//0.92
+    private final double fourBarServoOuttakePosition = 0.41;
+    private final double fourBarServoHeadDownPosition = 0.55;
 
     private IntakePosition currentPosition;
 
@@ -57,13 +55,6 @@ public class Intake {
         fourBarServo.setDirection(Servo.Direction.REVERSE);
 
         currentPosition = IntakePosition.NONE;
-
-        //pivotServo.setPosition(pivotServoStartPosition);
-        //fourBarServo.setPosition(fourBarServoStartPosition);
-
-//        mode.telemetry.addLine().addData("intake4bar", "%.3f", fourBarServo.getPosition())
-//                .addData("intakerotate", "%.3f", pivotServo.getPosition())
-//                .addData("intakepivot", "%.3f", rotateServo.getPosition());
     }
 
 
@@ -80,8 +71,8 @@ public class Intake {
     {
         if(currentPosition != IntakePosition.INTAKE) {
 
-            pivotServo.setPosition(pivotServoIntakePosition);
             fourBarServo.setPosition(fourBarServoIntakePosition);
+            pivotServo.setPosition(pivotServoIntakePosition);
 
             currentPosition = IntakePosition.INTAKE;
         }

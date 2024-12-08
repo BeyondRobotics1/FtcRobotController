@@ -8,12 +8,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
-import org.firstinspires.ftc.teamcode.powerplay.TeleOp1;
+import org.firstinspires.ftc.teamcode.common.Helper;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Into the Deep", group = "Into the Deep")
 
-public class TeleOp extends LinearOpMode {
+public class IntoTheDeepTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -50,30 +50,56 @@ public class TeleOp extends LinearOpMode {
         //slide is manually controlled
         Slide.SlideTargetPosition slideOp = Slide.SlideTargetPosition.MANUAL;
 
-
-        //arm is manually controlled
-
         boolean robotCentric = true;
 
         if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
 
-            //intake slide control
-            if(gamepad1.dpad_up){
-                intakeSlide.MoveOut();
-            } else if (gamepad1.dpad_down){
-                intakeSlide.MoveIn();
-            } else {
-                intakeSlide.Hold();
+            //double newValue = (value - oldMin) * (newMax - newMin) / (oldMax - oldMin) + newMin;
+            double slideOutSpeed = gamepad1.left_trigger;
+            double slideInSpeed = gamepad1.right_trigger;
+            if(slideOutSpeed >= 0.1) {
+
+                telemetry.addData("left_trigger", slideOutSpeed);
+
+                //scale from [0 1] to [0.5 1], move out, (slideOutSpeed + 1) * 0.5
+
+                //now since squared, the number could be less than 0.5, which will
+                //pull the slide back
+                slideOutSpeed = Helper.squareWithSign((slideOutSpeed + 1) * 0.5);
+
+                //cap the retraction and push power into the desired range
+                if(slideOutSpeed < 0.43)
+                    slideOutSpeed = 0.43;
+
+                if(slideOutSpeed > 0.7)
+                    slideOutSpeed = 0.7;
+
+                intakeSlide.Move(slideOutSpeed);
+
+                telemetry.addData("slideOutSpeed", slideOutSpeed);
             }
+            else if(slideInSpeed > 0.1) {
+
+                //when retracting back, move the intake to the outtake position
+                //for the claw to pick the sample up
+                intake.MoveToOuttakePosition();
+
+                //scale from [0 1] to [0 0.5], move in
+                intakeSlide.Move(0.5-slideInSpeed*0.5);
+
+                telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
+            }
+            //else
+            //    intakeSlide.Move(0.498);
 
             //intake control
-            //right bumper spit out
+            //left bumper spit out
             if(gamepad1.right_bumper)
-                intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
-            else if (gamepad1.left_bumper) //left bumper take in
                 intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+            else if (gamepad1.left_bumper) //right bumper take in
+                intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
             else //otherwise, idle to save energy
                 intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
 
@@ -84,16 +110,6 @@ public class TeleOp extends LinearOpMode {
                 intake.MoveToIntakePosition();
             else if (gamepad1.x)
                 intake.MoveToHeadDownPosition();
-
-//            //test the fourbar servo, DON"T test together with pivot servo
-//            double fourBarPosition = gamepad1.left_trigger;
-//            telemetry.addData("FourBar Servo position", Math.abs(fourBarPosition));
-//            intake.TestFourBarServo(fourBarPosition);
-
-//            //test the pivot servo, DON"T test together with fourbar servo
-//            double pivotPosition = gamepad1.right_trigger*0.5;
-//            telemetry.addData("Pivot Servo position", Math.abs(pivotPosition));
-//            intake.TestPivotServo(pivotPosition);
 
             //slide operation
             //By holding the left bumper, manual operation

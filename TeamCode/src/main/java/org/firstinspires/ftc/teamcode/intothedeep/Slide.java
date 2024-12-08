@@ -37,7 +37,7 @@ public class                                                                    
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0, 2.5, 27, 0};//28
+    double[] slidePositionInches = {0, 2.5, 16.5, 0};//26
 
     enum SlideMode
     {
@@ -270,7 +270,7 @@ public class                                                                    
         if(localPower < -0.01) {
             //mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
 
-            //low limit touch sensor is
+            //low limit touch sensor is pressed
             if (!touchSensorLowLimit.getState()) {
 
 //                mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
@@ -280,7 +280,7 @@ public class                                                                    
 
                 //reset the slide 0 position
                 //we want to do this only once
-                if(!resetSlideDone)
+                //if(!resetSlideDone)
                 {
                     runWithEncoder();
                     resetSlideDone = true;
