@@ -3,18 +3,11 @@ package org.firstinspires.ftc.teamcode.intothedeep;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.PinpointDrive;
-import org.firstinspires.ftc.teamcode.SimpleDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.*;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * This is an example auto that showcases movement and control of three servos autonomously.
@@ -26,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @version 2.0, 9/8/2024
  */
 
-@Autonomous(name = "PedroCurving", group = "Examples")
+@Autonomous(name = "PedroCurving", group = "Pedro Examples")
 public class PedroOfCurving extends OpMode {
 
 

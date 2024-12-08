@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 
-@Autonomous(name = "AutoLeftBlue (IntoTheDeep)", group = "Linear Opmode")
+@Autonomous(name = "RoadrunnerSample (IntoTheDeep)", group = "Linear Opmode")
 //@Disabled
 public class RoadrunnerSample extends LinearOpMode {
 

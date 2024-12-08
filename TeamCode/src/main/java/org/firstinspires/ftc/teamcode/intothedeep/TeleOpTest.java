@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
  * @version 2.0, 11/28/2024
  */
 
-@TeleOp(name = "TeleOpTest", group = "Examples")
+@TeleOp(name = "TeleOpTest", group = "Into the Deep")
 public class TeleOpTest extends OpMode {
     private Follower follower;
     private final Pose startPose = new Pose(0,0,0);

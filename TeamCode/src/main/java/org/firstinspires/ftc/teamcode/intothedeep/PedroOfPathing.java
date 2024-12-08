@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @version 2.0, 9/8/2024
  */
 
-@Autonomous(name = "PedroPathing", group = "Examples")
+@Autonomous(name = "PedroPathing", group = "Pedro Examples")
 public class PedroOfPathing extends OpMode {
 
     private Follower follower;

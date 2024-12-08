@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "PedroSpecimen", group = "Examples")
+@Autonomous(name = "PedroSpecimen", group = "Pedro Examples")
 public class PedroOfSpecimen extends OpMode {
         private Timer pathTimer, actionTimer, opmodeTimer;
         private Follower follower;

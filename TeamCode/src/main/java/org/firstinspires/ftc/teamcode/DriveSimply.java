@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@TeleOp(name = "DriveSimply", group = "TeleOp")
+@TeleOp(name = "DriveSimply", group = "Into the Deep")
 
 public class DriveSimply extends LinearOpMode {
     private Timer timer = new Timer();

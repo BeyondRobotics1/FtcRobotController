@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
  * @version 2.0, 9/8/2024
  */
 
-@Autonomous(name = "PedroScoring", group = "Examples")
+@Autonomous(name = "PedroScoring", group = "Pedro Examples")
 public class PedroOfScoring extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private Follower follower;
