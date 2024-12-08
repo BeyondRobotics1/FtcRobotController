@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.common.Helper;
@@ -21,14 +22,9 @@ public class                                                                    
     enum SlideTargetPosition
     {
         DOWN(0),
-        INTAKE(1),//max extention during intake
-        INTAKE1(2),
-        INTAKE2(3),
-        LOW_BASKET(4),
-        HIGH_BASkET(5),
-        SPECIMEN_PICKUP(6),
-        SPECIMEN_DELIVERY(7),
-        MANUAL(8);
+        SPECIMEN_DELIVERY(1),
+        HIGH_BASkET(2),
+        MANUAL(3);
 
         private final int value;
         private SlideTargetPosition(int value) {
@@ -39,10 +35,9 @@ public class                                                                    
             return value;
         }
     }
+
     //the slide extension length in inches corresponding to the above
-    //predefined position
-    //we can extend 16 inches to keep in 42 size limit
-    double[] slidePositionInches = {0, 12, 4, 8, 5.0, 21.0, 0, 8.0, 0};//28
+    double[] slidePositionInches = {0, 2.5, 27, 0};//28
 
     enum SlideMode
     {
@@ -57,15 +52,22 @@ public class                                                                    
     DcMotorEx slideMotor1;
     DcMotorEx slideMotor2;
 
+    DigitalChannel touchSensorLowLimit;
     LinearOpMode mode;
+
+    boolean resetSlideDone = false;
 
     public Slide(HardwareMap hardwareMap, LinearOpMode mode) {
         this.mode = mode;
+
+        touchSensorLowLimit =  hardwareMap.get(DigitalChannel.class, "slideLow");
+        touchSensorLowLimit.setMode(DigitalChannel.Mode.INPUT);
 
         slideMotor1 = hardwareMap.get(DcMotorEx.class, "slide1");
         slideMotor2 = hardwareMap.get(DcMotorEx.class, "slide2");
 
         slideMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //When there is no power, we want the motor to hold the position
         slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -217,7 +219,7 @@ public class                                                                    
             //slide is moving down
             //reached the target position or
             //pressed down the low limit touch sensor
-            else if (currentPosition <= autoTargetPosition){// || !touchSensorLowLimit.getState()) {
+            else if (currentPosition <= autoTargetPosition || !touchSensorLowLimit.getState()) {
                 targetPositionReached = true;
             }
 
@@ -262,21 +264,29 @@ public class                                                                    
 
         double localPower = Helper.squareWithSign(power);//Helper.cubicWithSign(power);//
 
-//        //slide move down
-//        if(localPower < -0.01) {
-//            //low limit touch sensor is
-//            if (!touchSensorLowLimit.getState()) {
-//                localPower = 0;
-//
-//                //reset the slide 0 position
-//                //we want to do this only once
-//                if(!resetSlideDone)
-//                {
-//                    runWithEncoder();
-//                    resetSlideDone = true;
-//                }
-//            }
-//        }
+        mode.telemetry.addData("power", localPower);
+
+        //slide move down
+        if(localPower < -0.01) {
+            //mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+
+            //low limit touch sensor is
+            if (!touchSensorLowLimit.getState()) {
+
+//                mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+//                mode.telemetry.update();
+
+                localPower = 0;
+
+                //reset the slide 0 position
+                //we want to do this only once
+                if(!resetSlideDone)
+                {
+                    runWithEncoder();
+                    resetSlideDone = true;
+                }
+            }
+        }
 //        else if(localPower > 0.01) { //slide move up
 //            //high limit touch sensor is pushed
 //            if (!touchSensorHighLimit.getState())
@@ -286,6 +296,11 @@ public class                                                                    
         slideMotor1.setPower(localPower);
         slideMotor2.setPower(localPower);
 
+    }
+
+    public boolean isLowTouchSensorPressed()
+    {
+        return !touchSensorLowLimit.getState();
     }
 
     /**

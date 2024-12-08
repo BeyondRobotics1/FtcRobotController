@@ -6,40 +6,40 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
 
+    enum IntakeMode
+    {
+        IN,
+        OUT,
+        IDLE
+    }
+
     enum IntakePosition
     {
-        START,
-        AIM,
+        HEAD_DOWN,
         INTAKE,
         OUTTAKE,
         NONE,
     }
 
-    boolean isRotationServoRotated;
-
-    //rotation servo predefined positions
-    final double rotationServoCenterPosition = 0.36;
-    final double rotationServo90DegreePosition = 0.8;
-
     //pivot servo predefined positions
-    final double pivotServoStartPosition = 0.9;//0.5
-    final double pivotServoAimingPosition = 0.2;//0.2
-    final double pivotServoIntakePosition = 0.2;//0.2
-    final double pivotServoOuttakePosition = 0.68;//0.68
+    //private final double pivotServoStartPosition = 0.2;//leveled
+    private final double pivotServoIntakePosition = 0.18;//0.85
+    private final double pivotServoOuttakePosition = 0.1;//0.5
+    private final double pivotServoHeadDownPosition = 0.5;//leveled
 
     //4bar servo predefined positions
-    final double fourBarServoStartPosition = 0.3;//0.2;//
-    final double fourBarServoAimingPosition =0.65;//
-    final double fourBarServoIntakePosition =0.75;//77
-    final double fourBarServoOuttakePosition = 0.58;
+    //private final double fourBarServoStartPosition = 0.6;//0.2;//
+    private final double fourBarServoIntakePosition =0.92;//77
+    private final double fourBarServoOuttakePosition = 0.485;
+    private final double fourBarServoHeadDownPosition = 0.8;
 
-    IntakePosition currentPosition;
+    private IntakePosition currentPosition;
 
-    Servo fourBarServo;
-    Servo pivotServo;
-    Servo rotateServo;
+    private Servo fourBarServo;
+    private Servo pivotServo;
+    private Servo intakeServo;
 
-    LinearOpMode mode;
+    private LinearOpMode mode;
 
     /**
      * Constructor
@@ -50,20 +50,14 @@ public class Intake {
 
         this.mode = mode;
 
-        fourBarServo = hardwareMap.get(Servo.class, "intake4bar");
-        pivotServo = hardwareMap.get(Servo.class, "intakerotate");
-        rotateServo = hardwareMap.get(Servo.class, "intakepivot");
+        fourBarServo = hardwareMap.get(Servo.class, "intakeFourBar");
+        pivotServo = hardwareMap.get(Servo.class, "intakePivot");
+        intakeServo = hardwareMap.get(Servo.class, "intakeSpinner");
 
-        fourBarServo.setDirection(Servo.Direction.FORWARD);
-        rotateServo.setDirection(Servo.Direction.FORWARD);
-        pivotServo.setDirection(Servo.Direction.FORWARD);
+        fourBarServo.setDirection(Servo.Direction.REVERSE);
 
         currentPosition = IntakePosition.NONE;
 
-        //fourBarServo.setPosition(0.5);
-        //pivotServo.setPosition(0.5);
-        rotateServo.setPosition(rotationServoCenterPosition);
-        isRotationServoRotated = false;
         //pivotServo.setPosition(pivotServoStartPosition);
         //fourBarServo.setPosition(fourBarServoStartPosition);
 
@@ -72,55 +66,13 @@ public class Intake {
 //                .addData("intakepivot", "%.3f", rotateServo.getPosition());
     }
 
-    public void ChangeClawDirection(boolean to90Degree)
+
+    public void MoveToHeadDownPosition()
     {
-        if(to90Degree) {
-            if(!isRotationServoRotated) {
-                rotateServo.setPosition(rotationServo90DegreePosition);
-                isRotationServoRotated = true;
-            }
-        }
-        else {
-            if( isRotationServoRotated) {
-                rotateServo.setPosition(rotationServoCenterPosition);
-                isRotationServoRotated = false;
-            }
-        }
-    }
-
-    public void MoveToStartPosition()
-    {
-        if(currentPosition != IntakePosition.START) {
-
-//            if(currentPosition == IntakePosition.AIM ||
-//                    currentPosition == IntakePosition.INTAKE) {
-//                pivotServo.setPosition(pivotServoStartPosition);
-//                //mode.sleep(50);
-//            }
-
-            pivotServo.setPosition(pivotServoStartPosition);
-            fourBarServo.setPosition(fourBarServoStartPosition);
-
-            currentPosition = IntakePosition.START;
-        }
-    }
-
-    public void MoveToAimingPosition()
-    {
-
-        if(currentPosition != IntakePosition.AIM) {
-
-            //need to adjust the pivot if current position is START
-            //otherwise, the pivot servo may block the four-bar servo
-            if(currentPosition == IntakePosition.START) {
-                pivotServo.setPosition(pivotServoStartPosition);
-                //mode.sleep(50);
-            }
-
-            pivotServo.setPosition(pivotServoAimingPosition);
-            fourBarServo.setPosition(fourBarServoAimingPosition);
-
-            currentPosition = IntakePosition.AIM;
+        if(currentPosition != IntakePosition.HEAD_DOWN) {
+            pivotServo.setPosition(pivotServoHeadDownPosition);
+            fourBarServo.setPosition(fourBarServoHeadDownPosition);
+            currentPosition = IntakePosition.HEAD_DOWN;
         }
     }
 
@@ -128,15 +80,8 @@ public class Intake {
     {
         if(currentPosition != IntakePosition.INTAKE) {
 
-            //need to adjust the pivot if current position is START
-            //otherwise, the pivot servo may block the four-bar servo
-            if(currentPosition == IntakePosition.START) {
-                pivotServo.setPosition(pivotServoStartPosition);
-                //mode.sleep(50);
-            }
-
-            fourBarServo.setPosition(fourBarServoIntakePosition);
             pivotServo.setPosition(pivotServoIntakePosition);
+            fourBarServo.setPosition(fourBarServoIntakePosition);
 
             currentPosition = IntakePosition.INTAKE;
         }
@@ -146,22 +91,12 @@ public class Intake {
     {
         if(currentPosition != IntakePosition.OUTTAKE)
         {
-            //need to adjust the pivot if current position is START
-            //otherwise, the pivot servo may block the four-bar servo
-            //if(currentPosition == IntakePosition.START ||
-             //   currentPosition == IntakePosition.INTAKE) {
-                pivotServo.setPosition(pivotServoOuttakePosition);
-             //   mode.sleep(50);
-            //}
-
+            pivotServo.setPosition(pivotServoOuttakePosition);
             fourBarServo.setPosition(fourBarServoOuttakePosition);
 
             currentPosition = IntakePosition.OUTTAKE;
         }
     }
-
-
-
 
     public double GetFourBarServoPosition()
     {
@@ -173,9 +108,33 @@ public class Intake {
         return pivotServo.getPosition();
     }
 
-    public double GetRotateServoPosition()
+    /**
+     * Set the spinner to intake or outtake mode
+     * @param intakeMode
+     */
+    public void SetIntakeSpinner(IntakeMode intakeMode)
     {
-        return rotateServo.getPosition();
+        if(intakeMode == IntakeMode.IN)
+        {
+            intakeServo.setPosition(1);
+        }
+        else if (intakeMode == IntakeMode.OUT) {
+            intakeServo.setPosition(0);
+        }
+        else {
+            intakeServo.setPosition(0.5);
+        }
+    }
+
+    public void TestFourBarServo(double position)
+    {
+        fourBarServo.setPosition(position);
+    }
+
+
+    public void TestPivotServo(double position)
+    {
+        pivotServo.setPosition(position);
     }
 
 }
