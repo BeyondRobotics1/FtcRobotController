@@ -41,6 +41,10 @@ public class TeleOp extends LinearOpMode {
         telemetry.update();
         Intake intake = new Intake(hardwareMap, this);
 
+        telemetry.addLine("Initializing intake slide");
+        telemetry.update();
+        IntakeSlide intakeSlide = new IntakeSlide(hardwareMap);
+
         waitForStart();
 
         //slide is manually controlled
@@ -54,6 +58,15 @@ public class TeleOp extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
+
+            //intake slide control
+            if(gamepad1.dpad_up){
+                intakeSlide.MoveOut();
+            } else if (gamepad1.dpad_down){
+                intakeSlide.MoveIn();
+            } else {
+                intakeSlide.Hold();
+            }
 
             //intake control
             //right bumper spit out
