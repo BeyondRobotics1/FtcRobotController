@@ -96,7 +96,6 @@ public class AutoLeftBlue extends LinearOpMode {
                 )
         );
         //slide, arm, claw action here
-        intake.MoveToAimingPosition();
         arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1);
         sleep(500);
 
@@ -113,7 +112,6 @@ public class AutoLeftBlue extends LinearOpMode {
         //////////////////////////////////////
         //right sample
         //go to pickup position
-        intake.MoveToAimingPosition();
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
         sleep(800);
         arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
@@ -128,7 +126,6 @@ public class AutoLeftBlue extends LinearOpMode {
         //reach out and grab
         slide.moveToWithoutWaiting(12, 1);//
         sleep(400);
-        intake.MoveToAimingPosition();
         sleep(300);
         intake.MoveToIntakePosition();
         sleep(100);
@@ -136,7 +133,6 @@ public class AutoLeftBlue extends LinearOpMode {
         sleep(300);
 
         //track back
-        intake.MoveToAimingPosition();
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
 
 
@@ -163,7 +159,6 @@ public class AutoLeftBlue extends LinearOpMode {
         /////////////////////////////////////////////
         //canter sample
         //move to pickup position
-        intake.MoveToAimingPosition();
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
         sleep(800);
         arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
@@ -180,7 +175,6 @@ public class AutoLeftBlue extends LinearOpMode {
         //reach out and glab
         slide.moveToWithoutWaiting(12, 1);//
         sleep(400);
-        intake.MoveToAimingPosition();
         sleep(300);
         intake.MoveToIntakePosition();
         sleep(100);
@@ -188,7 +182,6 @@ public class AutoLeftBlue extends LinearOpMode {
         sleep(300);
 
         //track back
-        intake.MoveToAimingPosition();
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
 
         Actions.runBlocking(
@@ -210,12 +203,11 @@ public class AutoLeftBlue extends LinearOpMode {
         sleep(400);
         claw.open();
         sleep(500);
-        intake.MoveToAimingPosition();
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
         sleep(800);
         arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
         sleep(400);
-        intake.MoveToStartPosition();
+
 
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
