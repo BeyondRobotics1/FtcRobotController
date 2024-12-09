@@ -57,8 +57,8 @@ public class RoadrunnerSpecimen extends LinearOpMode {
 
         telemetry.addLine("Initializing slide arm");
         telemetry.update();
-        Arm arm = new Arm(hardwareMap, this);
-        arm.runWithEncoder();
+
+
 
         telemetry.addLine("Initializing slide");
         telemetry.update();
@@ -90,18 +90,9 @@ public class RoadrunnerSpecimen extends LinearOpMode {
 
         //goes to score first specimen
         Actions.runBlocking(
-                driveTrain.actionBuilder(startPose)//use trajectoryactionbuilder to make your trajectories
-                        //.strafeTo(new Vector2d(36, 4)) //this is used for heading setting and reaching x position
-
-                        .splineToLinearHeading(scorePose, Math.toRadians(180))
-
-                        //.waitSeconds(0.25)
-                        //.turn(45)
-                        .waitSeconds(0.25)
-                        .build()
-        );
-        //goes to push samples ot
-
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .splineToLinearHeading(scorePose, Math.toRadians(180)) //-55, 48
+                        .waitSeconds(0.25).build());
 
 //        //slide, arm, claw action here
 //        intake.MoveToStartPosition();
