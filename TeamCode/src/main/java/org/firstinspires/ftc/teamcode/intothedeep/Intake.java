@@ -27,8 +27,8 @@ public class Intake {
     private final double pivotServoHeadDownPosition = 0.85;//leveled
 
     //4bar servo predefined positions
-    private final double fourBarServoIntakePosition =0.82;//0.92
-    private final double fourBarServoOuttakePosition = 0.41;
+    private final double fourBarServoIntakePosition = 0.82;//0.92
+    private final double fourBarServoOuttakePosition = 0.39;
     private final double fourBarServoHeadDownPosition = 0.55;
 
     private IntakePosition currentPosition;

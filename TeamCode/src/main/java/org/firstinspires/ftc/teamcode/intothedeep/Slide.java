@@ -37,7 +37,7 @@ public class                                                                    
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0, 2.5, 16.5, 0};//26
+    double[] slidePositionInches = {0, 5, 16.5, 0};//26
 
     enum SlideMode
     {

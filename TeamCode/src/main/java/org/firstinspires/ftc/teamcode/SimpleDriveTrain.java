@@ -197,7 +197,8 @@ public class SimpleDriveTrain {
         double y = left_stick_y;
         double x = left_stick_x;
         double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
-
+        x = Helper.cubicWithSign(x);//squareWithSign(x);
+        y = Helper.cubicWithSign(y);//squareWithSign(y);
         if(x != 0.0 && Math.abs(y/x) >= 1.2)
             x = 0.0;
 

@@ -91,14 +91,14 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
                 telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
             }
-            //else
-            //    intakeSlide.Move(0.498);
+            else
+                intakeSlide.Move(0.498);
 
             //intake control
             //left bumper spit out
-            if(gamepad1.right_bumper)
+            if(gamepad1.left_bumper)
                 intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-            else if (gamepad1.left_bumper) //right bumper take in
+            else if (gamepad1.right_bumper) //right bumper take in
                 intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
             else //otherwise, idle to save energy
                 intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
