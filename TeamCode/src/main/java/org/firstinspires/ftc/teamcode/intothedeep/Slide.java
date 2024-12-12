@@ -21,8 +21,6 @@ public class Slide{
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
     public class autoToSpecimen implements Action {
-        private boolean one = false;
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             boolean finished = false;
@@ -35,9 +33,20 @@ public class Slide{
     public Action autoToSpecimen(){
         return new autoToSpecimen();
     }
+    public class autoToSpecimenOne implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            boolean finished = false;
+            if(!finished){
+                moveToPredefinedPositionWithoutWaiting(SlideTargetPosition.AUTO_SPECIMEN, 1.0);
+            }
+            return finished;
+        }
+    }
+    public Action autoToSpecimenOne(){
+        return new autoToSpecimen();
+    }
     public class autoToFloor implements Action {
-        private boolean one = false;
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             boolean finished = false;
@@ -50,6 +59,33 @@ public class Slide{
     public Action autoToFloor(){
         return new autoToFloor();
     }
+    public class slideUp implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            boolean finished = false;
+            if(!finished){
+                moveToWithoutWaiting(getSlideHeightInches()+4, 1.0);
+            }
+            return finished;
+        }
+    }
+    public Action slideUp(){
+        return new slideUp();
+    }
+    public class slideDown implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            boolean finished = false;
+            if(!finished){
+                moveToWithoutWaiting(getSlideHeightInches()-5, 1.0);
+            }
+            return finished;
+        }
+    }
+    public Action slideDown(){
+        return new slideDown();
+    }
+
     //predefined position
     //slide can move to
     enum SlideTargetPosition
@@ -57,7 +93,8 @@ public class Slide{
         DOWN(0),
         SPECIMEN_DELIVERY(1),
         HIGH_BASkET(2),
-        MANUAL(3);
+        MANUAL(3),
+        AUTO_SPECIMEN(4);
 
         private final int value;
         private SlideTargetPosition(int value) {
@@ -70,7 +107,7 @@ public class Slide{
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0, 5, 16.5, 0};//26
+    double[] slidePositionInches = {0, 5, 16.5, 0, 16};//26
 
     enum SlideMode
     {

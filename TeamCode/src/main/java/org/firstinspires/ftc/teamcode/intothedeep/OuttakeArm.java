@@ -25,8 +25,6 @@ public class OuttakeArm {
     private  LinearOpMode mode;//set the telemetry
 
     public class autoToSpecimenScore implements Action {
-        private boolean one = false;
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             boolean finished = false;
@@ -40,8 +38,6 @@ public class OuttakeArm {
         return new OuttakeArm.autoToSpecimenScore();
     }
     public class autoToSpecimenPick implements Action {
-        private boolean one = false;
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             boolean finished = false;
@@ -51,7 +47,7 @@ public class OuttakeArm {
             return finished;
         }
     }
-    public Action autoToSpecimen(){
+    public Action autoToSpecimenPick(){
         return new OuttakeArm.autoToSpecimenPick();
     }
 

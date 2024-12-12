@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PosePath;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 
+import java.io.SequenceInputStream;
 import java.util.Arrays;
 
 @Autonomous(name = "RoadrunnerSpecimen", group = "Linear Opmode")
@@ -51,15 +53,15 @@ public class RoadrunnerSpecimen extends LinearOpMode {
 
         ////our robot hardware
         VelConstraint twentyVel = (robotPose, _path, _disp) -> {
-            if (robotPose.position.x.value() > -38.5) {
+            if (robotPose.position.x.value() > -36.5) {
                 return 20.0;
             } else {
-                return 40.0;
+                return 50.0;
             }
         };
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        Pose2d startPose = new Pose2d(-64.5, -7.75, Math.toRadians(180));
-        Pose2d scorePose = new Pose2d(-36.5, 0, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-64.5, -7.75, Math.toRadians(0));
+        Pose2d scorePose = new Pose2d(-32.5, 0, Math.toRadians(0));
         Pose2d curvePoint = new Pose2d(-44, -3, Math.toRadians(180));
         Pose2d sampleOne = new Pose2d(-42.5, -31, Math.toRadians(-55));
         Pose2d sampleTwo = new Pose2d(-42.5, -43, Math.toRadians(-50));
@@ -94,8 +96,9 @@ public class RoadrunnerSpecimen extends LinearOpMode {
         telemetry.update();
         Claw claw = new Claw(hardwareMap, this);
         claw.close();
-
-
+        TrajectoryActionBuilder score = driveTrain.actionBuilder(driveTrain.pose) //use trajectoryactionbuilder to make your trajectories
+                .splineToLinearHeading(scorePose, Math.toRadians(180), twentyVel);
+        Action scoreFirst = score.build();
         waitForStart();
         //restart the timer
         timer.reset();
@@ -107,15 +110,20 @@ public class RoadrunnerSpecimen extends LinearOpMode {
 
         //goes to score first specimen
 //        //slide, arm, claw action here
-        TrajectoryActionBuilder score1 = driveTrain.actionBuilder(startPose) //use trajectoryactionbuilder to make your trajectories
-                .splineToLinearHeading(scorePose, Math.toRadians(180), twentyVel);
-        Action scoreFirst = score1.build();
-        Actions.runBlocking(new ParallelAction(
-                scoreFirst,
-                slide.autoToSpecimen(),
-                outtake.autoToSpecimen()
-                )
 
+        Actions.runBlocking(new SequentialAction(
+                slide.autoToSpecimen(),
+                new SleepAction(0.5),
+                new ParallelAction(
+                outtake.autoToSpecimenScore(),
+                scoreFirst,
+                slide.autoToSpecimenOne()
+                ),
+                new SleepAction(2),
+                slide.slideDown(),
+                new SleepAction(0.5),
+                claw.openClaw()
+                )
         );
 
 
