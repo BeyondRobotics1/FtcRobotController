@@ -501,7 +501,7 @@ public class MecanumDrive {
         //
         double y = left_stick_y;
         double x = left_stick_x;
-        double rx = right_stick_x * 0.5; //Helper.squareWithSign(right_stick_x);
+        double rx = right_stick_x * 0.8; //Helper.squareWithSign(right_stick_x);
 
         if(x != 0.0 && Math.abs(y/x) >= 1.2)
             x = 0.0;
@@ -509,8 +509,8 @@ public class MecanumDrive {
         if(y != 0.0 && Math.abs(x/y) >= 1.2)
             y = 0.0;
 
-        y *= 0.8;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
-        x *= 0.8;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
+        //y *= 0.9;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
+        //x *= 0.9;//Helper.squareWithSign(left_stick_x * 1.1); // Counteract imperfect strafing
 
         x = Helper.cubicWithSign(x);//squareWithSign(x);
         y = Helper.cubicWithSign(y);//squareWithSign(y);

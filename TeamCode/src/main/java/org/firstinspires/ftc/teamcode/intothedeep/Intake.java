@@ -21,14 +21,14 @@ public class Intake {
         NONE,
     }
 
-    //pivot servo predefined positions
+    //pivot servo predefined positions, adjust as needed
     private final double pivotServoIntakePosition = 0.55;//
-    private final double pivotServoOuttakePosition = 0.45;//
+    private final double pivotServoOuttakePosition = 0.45;// 0.45
     private final double pivotServoHeadDownPosition = 0.85;//leveled
 
-    //4bar servo predefined positions
+    //4bar servo predefined positions, adjust them as needed
     private final double fourBarServoIntakePosition = 0.82;//0.92
-    private final double fourBarServoOuttakePosition = 0.39;
+    private final double fourBarServoOuttakePosition = 0.405; //0.39
     private final double fourBarServoHeadDownPosition = 0.55;
 
     private IntakePosition currentPosition;
@@ -60,33 +60,46 @@ public class Intake {
 
     public void MoveToHeadDownPosition()
     {
-        if(currentPosition != IntakePosition.HEAD_DOWN) {
+        //if(currentPosition != IntakePosition.HEAD_DOWN)
+        //{
             pivotServo.setPosition(pivotServoHeadDownPosition);
             fourBarServo.setPosition(fourBarServoHeadDownPosition);
             currentPosition = IntakePosition.HEAD_DOWN;
-        }
+        //}
     }
 
     public void MoveToIntakePosition()
     {
-        if(currentPosition != IntakePosition.INTAKE) {
+        //if(currentPosition != IntakePosition.INTAKE)
+         //{
 
             fourBarServo.setPosition(fourBarServoIntakePosition);
             pivotServo.setPosition(pivotServoIntakePosition);
 
             currentPosition = IntakePosition.INTAKE;
-        }
+        //}
     }
 
     public void MoveToOuttakePosition()
     {
-        if(currentPosition != IntakePosition.OUTTAKE)
-        {
+        //if(currentPosition != IntakePosition.OUTTAKE)
+        //{
             pivotServo.setPosition(pivotServoOuttakePosition);
             fourBarServo.setPosition(fourBarServoOuttakePosition);
 
             currentPosition = IntakePosition.OUTTAKE;
-        }
+        //}
+    }
+
+    public void MoveToOuttakePositionAuto()
+    {
+        //if(currentPosition != IntakePosition.OUTTAKE)
+        //{
+        pivotServo.setPosition(pivotServoOuttakePosition);
+        fourBarServo.setPosition(0.445);
+
+        currentPosition = IntakePosition.OUTTAKE;
+        //}
     }
 
     public double GetFourBarServoPosition()

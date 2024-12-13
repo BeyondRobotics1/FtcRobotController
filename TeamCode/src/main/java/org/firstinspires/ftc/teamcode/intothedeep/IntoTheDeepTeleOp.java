@@ -92,7 +92,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
             }
             else
-                intakeSlide.Move(0.498);
+                intakeSlide.Move(0.485);
 
             //intake control
             //left bumper spit out
@@ -151,7 +151,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
                 else if(gamepad2.y) //button y, set the arm to the specimen score position
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
-                else if(gamepad2.b) //button b, set the arm to score samples into baskets
+                else if(gamepad2.b) //button b, set the arm to score samples into high basket
                     outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
             }
 
