@@ -87,95 +87,93 @@ public class AutoLeftBlue extends LinearOpMode {
                         .splineToLinearHeading(new Pose2d(-49.25, 46.2, 0), Math.toRadians(0)) //-55, 48
                         .waitSeconds(0.1).build()
         );
-        intake.MoveToIntakePosition();
-        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-        intakeSlide.Move(0.6);
-        sleep(1500);
+        GetSampleBack(intake, intakeSlide);
 
-        intake.MoveToOuttakePositionAuto();
-        intakeSlide.Move(0.35);
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
                         .strafeTo(new Vector2d(-50,57.5)) //-51.3,58.7 //this is used for moving to the correct y position (does not change heading)
                         .waitSeconds(0.1).build()
         );
-        sleep(500);
-        claw.close();
-        sleep(200);
-        PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
+        Score(driveTrain, intake, slide, outtakeArm, claw);;
 
         //second sample score
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                                .splineToLinearHeading(new Pose2d(-48.25, 53.3, Math.toRadians(4.25)), Math.toRadians(0))
-                        //.waitSeconds(0.25)
-                        //.turn(Math.toRadians(5)) //-55, 48
-                        .waitSeconds(0.25).build()
+                        .splineToLinearHeading(new Pose2d(-48.25, 53.3, Math.toRadians(4.25)), Math.toRadians(0))
+                        .waitSeconds(0.1).build()//0.25
         );
-        intake.MoveToIntakePosition();
-        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-        intakeSlide.Move(0.6);
-        sleep(1200);
-
-        intake.MoveToOuttakePositionAuto();
-        intakeSlide.Move(0.35);
+        GetSampleBack(intake, intakeSlide);
 
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        .strafeTo(new Vector2d(-49,51)) //score
+                        .strafeTo(new Vector2d(-49,51)) //-50, 57.5 score
+                        //.splineToLinearHeading(new Pose2d(-50,57.5, 0), Math.toRadians(0))
                         .waitSeconds(0.1).build()
         );
-        sleep(500);
-        claw.close();
-        sleep(200);
-        PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
+        Score(driveTrain, intake, slide, outtakeArm, claw);;
 
         //get third sample
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
                         .splineToLinearHeading(new Pose2d(-51.5, 44.5, Math.toRadians(45)), Math.toRadians(0))
-                        //.waitSeconds(0.25)
-                        //.turn(Math.toRadians(5)) //-55, 48
-                        .waitSeconds(0.25).build()
+                        .waitSeconds(0.1).build()//0.25
         );
-        intake.MoveToIntakePosition();
-        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-        intakeSlide.Move(0.6);
-        sleep(1200);
+        GetSampleBack(intake, intakeSlide);
 
-        intake.MoveToOuttakePositionAuto();
-        intakeSlide.Move(0.35);
         intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
 
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        .strafeTo(new Vector2d(-61.5,54.5))//score
-
+                        .splineToLinearHeading(new Pose2d(-50,56.5, 0), Math.toRadians(0))
                         .waitSeconds(0.1).build()
         );
-        sleep(500);
-        claw.close();
-        sleep(200);
+        Score(driveTrain, intake, slide, outtakeArm, claw);
+
+        //parking
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        .turn(Math.toRadians(-45))//score
-
-                        .waitSeconds(0.1).build()
+                        .strafeTo(new Vector2d(-4, 34))
+                        //.turn(Math.toRadians(-45))
+                        .strafeTo(new Vector2d(-4, 12)).build()
         );
-        sleep(200);
-        PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
-
-
+        intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
 
         sleep(10000);
-
-
-
 
 
         if (isStopRequested()) return;
 
 
+    }
+
+    private void GetSampleBack(Intake intake,
+                               IntakeSlide intakeSlide
+
+    )
+    {
+        intake.MoveToIntakePosition();
+        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+        intakeSlide.Move(0.6);
+        sleep(1400);//1400
+
+        intake.MoveToOuttakePositionAuto();
+        intakeSlide.Move(0.35);
+    }
+
+    private void Score(PinpointDrive driveTrain,
+                                     Intake intake,
+                                     Slide slide,
+                                     OuttakeArm outtakeArm,
+                                     Claw claw
+
+    )
+    {
+        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+        sleep(300);//
+        claw.close();
+        sleep(200);
+
+        PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
     }
 
     private void PutSampleIntoBasket(PinpointDrive driveTrain,
@@ -195,12 +193,10 @@ public class AutoLeftBlue extends LinearOpMode {
                         .waitSeconds(0.1).build()
         );
         sleep(200);
-        //claw.open();
-        claw.setPosition(0.8);
-        claw.setPosition(0.7);
-        sleep(400);
+        claw.open();
+        sleep(300);//400
         outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
-        sleep(800);
+        sleep(700);//800
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
     }
 

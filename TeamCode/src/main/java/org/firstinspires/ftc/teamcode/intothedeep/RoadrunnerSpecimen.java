@@ -20,6 +20,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -31,7 +32,7 @@ import java.io.SequenceInputStream;
 import java.util.Arrays;
 
 @Autonomous(name = "RoadrunnerSpecimen", group = "Linear Opmode")
-//@Disabled
+@Disabled
 
 public class RoadrunnerSpecimen extends LinearOpMode {
 
@@ -85,12 +86,9 @@ public class RoadrunnerSpecimen extends LinearOpMode {
         slide.runWithEncoder();
         Slide.SlideTargetPosition slideOp = Slide.SlideTargetPosition.SPECIMEN_DELIVERY;
 
-
-
         telemetry.addLine("Initializing intake arm");
         telemetry.update();
         Intake intake = new Intake(hardwareMap, this);
-
 
         telemetry.addLine("Initializing claw");
         telemetry.update();

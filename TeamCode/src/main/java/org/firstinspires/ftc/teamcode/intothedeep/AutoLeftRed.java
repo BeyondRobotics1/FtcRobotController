@@ -35,193 +35,169 @@ public class AutoLeftRed extends LinearOpMode {
         greenLED.setState(true);
         redLED.setState(false);*/
 
-        ////our robot hardware
+        ElapsedTime timer = new ElapsedTime();
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addLine("Initializing drive train");
         telemetry.update();
-        Pose2d initialPosition = new Pose2d(-64,39.5,0);
+        Pose2d initialPosition = new Pose2d(-63.3,39.2,0);
         PinpointDrive driveTrain = new PinpointDrive(hardwareMap, initialPosition);
-
-        ElapsedTime timer = new ElapsedTime();
-
-        telemetry.addLine("Initializing slide arm");
-        telemetry.update();
-        Arm arm = new Arm(hardwareMap, this);
-        arm.runWithEncoder();
 
         telemetry.addLine("Initializing slide");
         telemetry.update();
         Slide slide = new Slide(hardwareMap, this);
         slide.runWithEncoder();
-        Slide.SlideTargetPosition slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
 
 
 
-        telemetry.addLine("Initializing intake arm");
+        telemetry.addLine("Initializing outtake arm");
+        telemetry.update();
+        OuttakeArm outtakeArm = new OuttakeArm(hardwareMap, this);
+
+        telemetry.addLine("Initializing intake");
         telemetry.update();
         Intake intake = new Intake(hardwareMap, this);
+        intake.MoveToOuttakePosition();
 
+        telemetry.addLine("Initializing intake slide");
+        telemetry.update();
+        IntakeSlide intakeSlide = new IntakeSlide(hardwareMap);
+        intakeSlide.Move(0.498);
 
         telemetry.addLine("Initializing claw");
         telemetry.update();
         Claw claw = new Claw(hardwareMap, this);
         claw.close();
 
-        //create trajectories
-
-
-        //preloaded
-        TrajectoryActionBuilder score = driveTrain.actionBuilder(initialPosition) //use trajectoryactionbuilder to make your trajectories
-                .lineToXSplineHeading(-54.375, Math.toRadians(-45)) //this is used for heading setting and reaching x position
-                .waitSeconds(0.25)
-                .strafeTo(new Vector2d(-50,60)) //-54.375,61 //this is used for moving to the correct y position (does not change heading)
-                .waitSeconds(0.25);
-        Action scoringTime = score.build();
-
         waitForStart();
         //restart the timer
         timer.reset();
 
-        //sleep(100);
-
-        ///////////////////////////
-        //preloaded
-
-        //main scoring function, can be reused to score (run this after you pick up a sample)
+        //Goes to basket score preloaded sample
         Actions.runBlocking(
-                new SequentialAction(
-                        scoringTime
-                )
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .strafeTo(new Vector2d(-50,57.5)) //-51.3,58.7 //this is used for moving to the correct y position (does not change heading)
+                        .waitSeconds(0.1).build()
         );
-        //slide, arm, claw action here
-        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1);
-        sleep(500);
+        PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
 
-        slide.moveToWithoutWaiting(25, 1);
-
-
-        sleep(2000);
-        intake.MoveToOuttakePosition();
-        sleep(300);
-        claw.open();
-        sleep(400);
-        //score function ends here
-
-        //////////////////////////////////////
-        //right sample
-        //go to pickup position
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-        sleep(800);
-        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
-        sleep(400);
+        //Goes to get first Sample
+        Actions.runBlocking(
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .splineToLinearHeading(new Pose2d(-49.25, 46.2, 0), Math.toRadians(0)) //-55, 48
+                        .waitSeconds(0.1).build()
+        );
+        GetSampleBack(intake, intakeSlide);
 
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        .splineToLinearHeading(new Pose2d(-50, 48, 0), Math.toRadians(0)) //-55, 48
-                        .waitSeconds(0.25).build()
+                        .strafeTo(new Vector2d(-50,57.5)) //-51.3,58.7 //this is used for moving to the correct y position (does not change heading)
+                        .waitSeconds(0.1).build()
         );
+        Score(driveTrain, intake, slide, outtakeArm, claw);;
 
-        //reach out and grab
-        slide.moveToWithoutWaiting(10, 1);//
-        sleep(400);
-        sleep(300);
-        intake.MoveToIntakePosition();
-        sleep(100);
-        claw.close();
-        sleep(300);
-
-        //track back
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-
+        //second sample score
+        Actions.runBlocking(
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .splineToLinearHeading(new Pose2d(-48.25, 53.3, Math.toRadians(4.25)), Math.toRadians(0))
+                        .waitSeconds(0.1).build()//0.25
+        );
+        GetSampleBack(intake, intakeSlide);
 
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        //.splineToLinearHeading(new Pose2d(-58, 55, 0), Math.toRadians(-45))
-                        .strafeTo(new Vector2d(-53, 55))//-58, 55
-                        .turn(Math.toRadians(-45))
-                        .waitSeconds(0.25).build()
+                        .strafeTo(new Vector2d(-49,51)) //-50, 57.5 score
+                        //.splineToLinearHeading(new Pose2d(-50,57.5, 0), Math.toRadians(0))
+                        .waitSeconds(0.1).build()
         );
+        Score(driveTrain, intake, slide, outtakeArm, claw);;
 
-        //slide, arm, claw action here
-        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1);
-        sleep(500);
+        //get third sample
+        Actions.runBlocking(
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .splineToLinearHeading(new Pose2d(-51.5, 44.5, Math.toRadians(45)), Math.toRadians(0))
+                        .waitSeconds(0.1).build()//0.25
+        );
+        GetSampleBack(intake, intakeSlide);
 
-        slide.moveToWithoutWaiting(25, 1);
-
-        sleep(2000);
-        intake.MoveToOuttakePosition();
-        sleep(300);
-        claw.open();
-        sleep(400);
-
-        /////////////////////////////////////////////
-        //canter sample
-        //move to pickup position
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-        sleep(800);
-        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
-        sleep(400);
+        intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
 
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        //.splineToLinearHeading(new Pose2d(-50, 61, 0), Math.toRadians(60))
-                        .strafeTo(new Vector2d(-50, 61)) //-50, 61
-                        .turn(Math.toRadians(44))
-                        .waitSeconds(0.25).build()
+                        .splineToLinearHeading(new Pose2d(-50,56.5, 0), Math.toRadians(0))
+                        .waitSeconds(0.1).build()
         );
+        Score(driveTrain, intake, slide, outtakeArm, claw);
 
-        //reach out and glab
-        slide.moveToWithoutWaiting(12, 1);//
-        sleep(400);
-        sleep(300);
-        intake.MoveToIntakePosition();
-        sleep(100);
-        claw.close();
-        sleep(300);
-
-        //track back
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-
+        //parking
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        //.splineToLinearHeading(new Pose2d(-58, 55, 0), Math.toRadians(-45))
-                        .strafeTo(new Vector2d(-54, 52)) //-57, 54
-                        .turn(Math.toRadians(-45))
-                        .waitSeconds(0.25).build()
+                        .strafeTo(new Vector2d(-4, 34))
+                        //.turn(Math.toRadians(-45))
+                        .strafeTo(new Vector2d(-4, 12)).build()
         );
+        intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
 
-        //slide, arm, claw action here
-        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.OUTTAKE, -1);
-        sleep(500);
-
-        slide.moveToWithoutWaiting(25, 1);
-
-        sleep(2000);
-        intake.MoveToOuttakePosition();
-        sleep(400);
-        claw.open();
-        sleep(500);
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1.0);
-        sleep(800);
-        arm.rotateToTargetAngleWithoutWaiting(Arm.ArmTargetAngle.INTAKE, -0.5);
-        sleep(400);
-
-
-
-        Actions.runBlocking(
-                driveTrain.actionBuilder(driveTrain.pose)
-                        .splineToLinearHeading(new Pose2d(-20, 36, 0), Math.toRadians(0)) //-55, 48
-                        .waitSeconds(0.25).build()
-        );
-
-
-        sleep(2000);
+        sleep(10000);
 
 
         if (isStopRequested()) return;
 
 
+    }
+
+    private void GetSampleBack(Intake intake,
+                               IntakeSlide intakeSlide
+
+    )
+    {
+        intake.MoveToIntakePosition();
+        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+        intakeSlide.Move(0.6);
+        sleep(1400);//1400
+
+        intake.MoveToOuttakePositionAuto();
+        intakeSlide.Move(0.35);
+    }
+
+    private void Score(PinpointDrive driveTrain,
+                       Intake intake,
+                       Slide slide,
+                       OuttakeArm outtakeArm,
+                       Claw claw
+
+    )
+    {
+        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+        sleep(300);//
+        claw.close();
+        sleep(200);
+
+        PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
+    }
+
+    private void PutSampleIntoBasket(PinpointDrive driveTrain,
+                                     Slide slide,
+                                     OuttakeArm outtakeArm,
+                                     Claw claw
+
+    )
+    {
+        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.SPECIMEN_DELIVERY, 1);
+        sleep(200);
+        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
+        outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+        Actions.runBlocking(
+                driveTrain.actionBuilder(driveTrain.pose)
+                        .turn(Math.toRadians(-45)) //
+                        .waitSeconds(0.1).build()
+        );
+        sleep(200);
+        claw.open();
+        sleep(300);//400
+        outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+        sleep(700);//800
+        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
     }
 
 
