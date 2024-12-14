@@ -94,7 +94,8 @@ public class Slide{
         SPECIMEN_DELIVERY(1),
         HIGH_BASkET(2),
         MANUAL(3),
-        AUTO_SPECIMEN(4);
+        AUTO_SPECIMEN(4),
+        DROP_SPECIMEN(5);
 
         private final int value;
         private SlideTargetPosition(int value) {
@@ -107,7 +108,7 @@ public class Slide{
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0, 5, 16.5, 0, 16};//26
+    double[] slidePositionInches = {0,7, 16.5, 0, 16, 3};//26
 
     enum SlideMode
     {

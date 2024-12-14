@@ -115,7 +115,7 @@ public class AutoLeftRed extends LinearOpMode {
         //get third sample
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                        .splineToLinearHeading(new Pose2d(-51.5, 44.5, Math.toRadians(45)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(-51.5, 44.5, Math.toRadians(44)), Math.toRadians(0))
                         .waitSeconds(0.1).build()//0.25
         );
         GetSampleBack(intake, intakeSlide);
@@ -186,6 +186,7 @@ public class AutoLeftRed extends LinearOpMode {
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.SPECIMEN_DELIVERY, 1);
         sleep(200);
         slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
+        sleep(200);
         outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)

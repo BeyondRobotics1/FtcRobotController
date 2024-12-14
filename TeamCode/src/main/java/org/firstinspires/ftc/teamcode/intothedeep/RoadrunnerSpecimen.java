@@ -31,9 +31,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import java.io.SequenceInputStream;
 import java.util.Arrays;
 
-@Autonomous(name = "RoadrunnerSpecimen", group = "Linear Opmode")
+@Autonomous(name = "RR", group = "Linear Opmode")
 @Disabled
-
 public class RoadrunnerSpecimen extends LinearOpMode {
 
     @Override
@@ -54,7 +53,7 @@ public class RoadrunnerSpecimen extends LinearOpMode {
 
         ////our robot hardware
         VelConstraint twentyVel = (robotPose, _path, _disp) -> {
-            if (robotPose.position.x.value() > -36.5) {
+            if (robotPose.position.x.value() > -40.125) {
                 return 20.0;
             } else {
                 return 50.0;
@@ -62,7 +61,7 @@ public class RoadrunnerSpecimen extends LinearOpMode {
         };
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         Pose2d startPose = new Pose2d(-64.5, -7.75, Math.toRadians(0));
-        Pose2d scorePose = new Pose2d(-32.5, 0, Math.toRadians(0));
+        Pose2d scorePose = new Pose2d(-36.125, 0, Math.toRadians(0));
         Pose2d curvePoint = new Pose2d(-44, -3, Math.toRadians(180));
         Pose2d sampleOne = new Pose2d(-42.5, -31, Math.toRadians(-55));
         Pose2d sampleTwo = new Pose2d(-42.5, -43, Math.toRadians(-50));
@@ -110,19 +109,20 @@ public class RoadrunnerSpecimen extends LinearOpMode {
 //        //slide, arm, claw action here
 
         Actions.runBlocking(new SequentialAction(
-                slide.autoToSpecimen(),
-                new SleepAction(0.5),
-                new ParallelAction(
-                outtake.autoToSpecimenScore(),
-                scoreFirst,
-                slide.autoToSpecimenOne()
-                ),
-                new SleepAction(2),
-                slide.slideDown(),
-                new SleepAction(0.5),
-                claw.openClaw()
+                        slide.autoToSpecimen(),
+                        new SleepAction(0.2),
+                        new ParallelAction(
+                                outtake.autoToSpecimenScore(),
+                                scoreFirst,
+                                slide.autoToSpecimenOne()
+                        )
                 )
         );
+        sleep(1200);
+        slide.moveTo(12,1.0);
+        outtake.Rotate(outtake.SPECIMEN_PICKUP_POSITION);
+        sleep(1200);
+        claw.open();
 
 
 

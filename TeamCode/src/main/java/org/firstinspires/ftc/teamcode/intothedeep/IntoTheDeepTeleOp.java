@@ -127,6 +127,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 } else if (gamepad2.dpad_up && slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {
                     slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
+                } else if (gamepad2.dpad_right && slideOp != Slide.SlideTargetPosition.DROP_SPECIMEN) {
+                    slideOp = Slide.SlideTargetPosition.DROP_SPECIMEN;
+                    slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DROP_SPECIMEN, 1);
                 }
             }
 
@@ -161,9 +164,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //hold right bumper to close the claw
             if (currentBumperState) {
                 claw.close();
+                telemetry.addData("claw", claw.isClosed());
             }
             else {
                 claw.open();
+                telemetry.addData("claw", claw.isClosed());
             }
 
 
