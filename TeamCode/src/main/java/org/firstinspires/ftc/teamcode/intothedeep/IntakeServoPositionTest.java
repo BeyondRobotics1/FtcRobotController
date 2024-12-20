@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "4Bar Servo Position Test", group = "Into the Deep")
-public class FourBarServoPositionTest extends LinearOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Intake Servo Test", group = "Into the Deep")
+public class IntakeServoPositionTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,10 +53,14 @@ public class FourBarServoPositionTest extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
 
-            //test the fourbar servo,
-            double fourBarPosition = gamepad1.left_trigger;
-            telemetry.addData("FourBar Servo position", Math.abs(fourBarPosition));
-            intake.TestFourBarServo(fourBarPosition);
+            //test the pivot servo, DON"T test together with fourbar servo
+            double position1 = gamepad1.left_trigger;
+            telemetry.addData("Pivot Servo position", Math.abs(position1));
+            intake.TestPivotServo(position1);
+
+            double position2 = gamepad1.left_trigger;
+            telemetry.addData("4-BAR Servo position", Math.abs(position2));
+            intake.TestFourBarServo(position2);
 
             //TODO add rotation to claw
             telemetry.update();

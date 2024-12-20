@@ -33,6 +33,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         telemetry.update();
         Claw claw = new Claw(hardwareMap, this);
 
+        telemetry.addLine("Initializing claw rotor");
+        telemetry.update();
+        ClawRotor clawRotor = new ClawRotor(hardwareMap, this);
+        clawRotor.SetClawDown();
+
         telemetry.addLine("Initializing outtake arm");
         telemetry.update();
         OuttakeArm outtakeArm = new OuttakeArm(hardwareMap, this);
@@ -56,6 +61,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
 
+            ///////////////////////////////////////////////
+            //driver
+            //horizontal slide operation
             //double newValue = (value - oldMin) * (newMax - newMin) / (oldMax - oldMin) + newMin;
             double slideOutSpeed = gamepad1.left_trigger;
             double slideInSpeed = gamepad1.right_trigger;
@@ -111,7 +119,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             else if (gamepad1.x)
                 intake.MoveToHeadDownPosition();
 
-            //slide operation
+
+
+            ///////////////////////////////////////////////////
+            //claw person
+            //vertical slide operation
             //By holding the left bumper, manual operation
             if (gamepad2.left_bumper) {
                 slide.setPower(-gamepad2.left_stick_y);
@@ -148,15 +160,29 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             else //by default, use a, x, y, b buttons to control the claw arm
             {
                 //button a, set the arm to pickup a sample from the intake
-                if(gamepad2.a)
+                if(gamepad2.a) {
                     outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+                    clawRotor.SetClawDown();
+                }
                 else if(gamepad2.x) //button x, set the arm to pickup specimen from human player
+                {
+                    clawRotor.SetClawUp();
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
-                else if(gamepad2.y) //button y, set the arm to the specimen score position
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
-                else if(gamepad2.b) //button b, set the arm to score samples into high basket
+                }
+                else if(gamepad2.y) //button y, set the arm to the specimen ready position
+                {
                     outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    clawRotor.SetClawDown();
+                }
+                else if(gamepad2.b) //button b, set the arm to score samples into high basket
+                {
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    clawRotor.SetClawDown();
+                }
+
             }
+
+
 
 
             //claw operation

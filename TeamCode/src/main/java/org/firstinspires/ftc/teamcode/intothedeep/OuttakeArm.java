@@ -18,9 +18,9 @@ public class OuttakeArm {
     //For auto and teleop, position to pickup specimen from human player
     public final double SAMPLE_PICKUP_POSITION = 1;
     public final double SPECIMEN_PICKUP_POSITION = 0;
-    public final double SPECIMEN_READY_POSITION = 0.65;
-    public final double SPECIMEN_SCORE_POSITION = 0.75;
-    public final double SAMPLE_DELIVERY_POSITION = 0.22;
+    public final double SPECIMEN_READY_POSITION = 0.4;
+    public final double SPECIMEN_SCORE_POSITION = 0.68; //0.75
+    public final double SAMPLE_DELIVERY_POSITION = 0.3; //0.22
 
     private Servo rotateServo;
     private  LinearOpMode mode;//set the telemetry
