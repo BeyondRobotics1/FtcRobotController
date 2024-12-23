@@ -133,16 +133,15 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 if (gamepad2.dpad_down && slideOp != Slide.SlideTargetPosition.DOWN) {
                     slideOp = Slide.SlideTargetPosition.DOWN;
                     slide.moveToPredefinedPositionWithoutWaiting(slideOp = Slide.SlideTargetPosition.DOWN, 1); //ground
-                } else if (gamepad2.dpad_left && slideOp != Slide.SlideTargetPosition.SPECIMEN_DELIVERY) {
-                    slideOp = Slide.SlideTargetPosition.SPECIMEN_DELIVERY;
-                    slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.SPECIMEN_DELIVERY, 1); //low
+                } else if (gamepad2.dpad_left && slideOp != Slide.SlideTargetPosition.LOW_BASKET) {
+                    slideOp = Slide.SlideTargetPosition.LOW_BASKET;
+                    slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.LOW_BASKET, 1); //low
                 } else if (gamepad2.dpad_up && slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {
                     slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
-                } else if (gamepad2.dpad_right && slideOp != Slide.SlideTargetPosition.DROP_SPECIMEN) {
-                    slideOp = Slide.SlideTargetPosition.DROP_SPECIMEN;
-                    slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DROP_SPECIMEN, 1);
                 }
+                //this is to stop motor if position reached
+                slide.autoMoveToWithoutWaitingLoop();
             }
 
             //outtake arm operation
@@ -171,7 +170,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 }
                 else if(gamepad2.y) //button y, set the arm to the specimen ready position
                 {
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
                     clawRotor.SetClawDown();
                 }
                 else if(gamepad2.b) //button b, set the arm to score samples into high basket
@@ -183,18 +182,16 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             }
 
 
-
-
             //claw operation
             boolean currentBumperState  = gamepad2.right_bumper;
             //hold right bumper to close the claw
             if (currentBumperState) {
                 claw.close();
-                telemetry.addData("claw", claw.isClosed());
+                //telemetry.addData("claw closed", claw.isClosed());
             }
             else {
                 claw.open();
-                telemetry.addData("claw", claw.isClosed());
+                //telemetry.addData("claw closed", claw.isClosed());
             }
 
 

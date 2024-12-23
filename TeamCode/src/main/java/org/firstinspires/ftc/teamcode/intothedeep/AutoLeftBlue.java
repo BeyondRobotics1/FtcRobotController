@@ -183,11 +183,7 @@ public class AutoLeftBlue extends LinearOpMode {
 
     )
     {
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.SPECIMEN_DELIVERY, 1);
-        sleep(200);
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
-        sleep(200);
-        outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
                         .turn(Math.toRadians(-45)) //
@@ -196,9 +192,8 @@ public class AutoLeftBlue extends LinearOpMode {
         sleep(200);
         claw.open();
         sleep(300);//400
-        outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
-        sleep(700);//800
-        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
+
+
     }
 
 }

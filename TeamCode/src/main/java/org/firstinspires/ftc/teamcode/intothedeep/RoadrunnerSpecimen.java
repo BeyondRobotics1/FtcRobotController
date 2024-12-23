@@ -81,9 +81,7 @@ public class RoadrunnerSpecimen extends LinearOpMode {
         OuttakeArm outtake = new OuttakeArm(hardwareMap, this);
         telemetry.addLine("Initializing slide");
         telemetry.update();
-        Slide slide = new Slide(hardwareMap, this);
-        slide.runWithEncoder();
-        Slide.SlideTargetPosition slideOp = Slide.SlideTargetPosition.SPECIMEN_DELIVERY;
+
 
         telemetry.addLine("Initializing intake arm");
         telemetry.update();
@@ -108,18 +106,7 @@ public class RoadrunnerSpecimen extends LinearOpMode {
         //goes to score first specimen
 //        //slide, arm, claw action here
 
-        Actions.runBlocking(new SequentialAction(
-                        slide.autoToSpecimen(),
-                        new SleepAction(0.2),
-                        new ParallelAction(
-                                outtake.autoToSpecimenScore(),
-                                scoreFirst,
-                                slide.autoToSpecimenOne()
-                        )
-                )
-        );
-        sleep(1200);
-        slide.moveTo(12,1.0);
+
         outtake.Rotate(outtake.SPECIMEN_PICKUP_POSITION);
         sleep(1200);
         claw.open();

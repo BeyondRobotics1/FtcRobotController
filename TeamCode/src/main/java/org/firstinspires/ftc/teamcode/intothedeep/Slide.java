@@ -20,32 +20,8 @@ public class Slide{
     static final double     PULLEY_DIAMETER_INCHES  = 1.404; // spool wheel inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
-    public class autoToSpecimen implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            boolean finished = false;
-            if(!finished){
-                moveToPredefinedPositionWithoutWaiting(SlideTargetPosition.SPECIMEN_DELIVERY, 1.0);
-            }
-            return finished;
-        }
-    }
-    public Action autoToSpecimen(){
-        return new autoToSpecimen();
-    }
-    public class autoToSpecimenOne implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            boolean finished = false;
-            if(!finished){
-                moveToPredefinedPositionWithoutWaiting(SlideTargetPosition.AUTO_SPECIMEN, 1.0);
-            }
-            return finished;
-        }
-    }
-    public Action autoToSpecimenOne(){
-        return new autoToSpecimen();
-    }
+    final int positionTolerance = 0;
+
     public class autoToFloor implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
@@ -91,11 +67,9 @@ public class Slide{
     enum SlideTargetPosition
     {
         DOWN(0),
-        SPECIMEN_DELIVERY(1),
+        LOW_BASKET(1),
         HIGH_BASkET(2),
-        MANUAL(3),
-        AUTO_SPECIMEN(4),
-        DROP_SPECIMEN(5);
+        MANUAL(3);
 
         private final int value;
         private SlideTargetPosition(int value) {
@@ -108,7 +82,7 @@ public class Slide{
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0,7, 16.5, 0, 16, 3};//26
+    double[] slidePositionInches = {0, 7, 16.5, 0};//26
 
     enum SlideMode
     {
@@ -219,9 +193,12 @@ public class Slide{
 
         int currentPosition = slideMotor1.getCurrentPosition();
 
+        int error = currentPosition - autoTargetPosition;
+
         //if the target position and current position are the same
         //Set the current state as AUTO_STAY
-        if(autoTargetPosition == currentPosition) {
+        //
+        if(Math.abs(error) <= positionTolerance) {
             activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_STAY;
             return;
         }
@@ -267,7 +244,8 @@ public class Slide{
     public void autoMoveToWithoutWaitingLoop() {
         //
         if(activeMode == org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_UP ||
-                activeMode == org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_DOWN) {
+                activeMode == org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_DOWN)
+        {
 
             int currentPosition = slideMotor1.getCurrentPosition();
             boolean targetPositionReached = false;
@@ -300,8 +278,8 @@ public class Slide{
             {
                 activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_STAY;
 
-                slideMotor1.setPower(0);
-                slideMotor2.setPower(0);
+                slideMotor1.setPower(0.005);
+                slideMotor2.setPower(0.005);
 
                 slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -324,28 +302,17 @@ public class Slide{
         mode.telemetry.addData("slide extension", "%f", getSlideHeightInches());
         //mode.telemetry.update();
 
-        //if slide is moving up and arm is angled less than 30 degrees and we are about to exceed the size constraint, stop the slide
-        //reached robot horizontal limit
-        //set the power to 0 and stop the slide
-//        if(power >= 0.05 && Math.abs(arm.getArmAngle()) <= 30 &&
-//                getSlideHeightInches() >= slidePositionInches[SlideTargetPosition.INTAKE.getValue()]-2)
-//            power = 0;
-
-
-
         double localPower = Helper.squareWithSign(power);//Helper.cubicWithSign(power);//
 
         mode.telemetry.addData("power", localPower);
 
         //slide move down
         if(localPower < -0.01) {
-            //mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
-
             //low limit touch sensor is pressed
             if (!touchSensorLowLimit.getState()) {
 
-//                mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
-//                mode.telemetry.update();
+                mode.telemetry.addData("Low sensor pressed", !touchSensorLowLimit.getState());
+                mode.telemetry.update();
 
                 localPower = 0;
 
