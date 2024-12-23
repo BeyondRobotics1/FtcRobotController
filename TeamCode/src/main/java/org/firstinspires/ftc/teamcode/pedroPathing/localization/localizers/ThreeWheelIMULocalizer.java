@@ -26,18 +26,18 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.NanoTimer;
  *
  * forward on robot is the x positive direction
  *
- *    /--------------\
- *    |     ____     |
- *    |     ----     |
- *    | ||        || |
- *    | ||        || |  ----> left (y positive)
- *    |              |
- *    |              |
- *    \--------------/
- *           |
- *           |
- *           V
- *    forward (x positive)
+ *                         forward (x positive)
+ *                                △
+ *                                |
+ *                                |
+ *                         /--------------\
+ *                         |              |
+ *                         |              |
+ *                         | ||        || |
+ *  left (y positive) <--- | ||        || |  
+ *                         |     ____     |
+ *                         |     ----     |
+ *                         \--------------/
  *
  * @author Logan Nash
  * @author Anyi Lin - 10158 Scott's Bots
@@ -219,7 +219,7 @@ public class ThreeWheelIMULocalizer extends Localizer {
         globalDeltas = Matrix.multiply(Matrix.multiply(prevRotationMatrix, transformation), robotDeltas);
 
         displacementPose.add(new Pose(globalDeltas.get(0, 0), globalDeltas.get(1, 0), globalDeltas.get(2, 0)));
-        currentVelocity = new Pose(globalDeltas.get(0, 0) / (deltaTimeNano * Math.pow(10.0, 9)), globalDeltas.get(1, 0) / (deltaTimeNano * Math.pow(10.0, 9)), globalDeltas.get(2, 0) / (deltaTimeNano * Math.pow(10.0, 9)));
+        currentVelocity = new Pose(globalDeltas.get(0, 0) / (deltaTimeNano / Math.pow(10.0, 9)), globalDeltas.get(1, 0) / (deltaTimeNano / Math.pow(10.0, 9)), globalDeltas.get(2, 0) / (deltaTimeNano / Math.pow(10.0, 9)));
 
         totalHeading += globalDeltas.get(2, 0);
     }
@@ -312,5 +312,15 @@ public class ThreeWheelIMULocalizer extends Localizer {
      */
     public void resetIMU() {
         imu.resetYaw();
+    }
+
+    /**
+     * This is returns the IMU.
+     *
+     * @return returns the IMU
+     */
+    @Override
+    public IMU getIMU() {
+        return imu;
     }
 }

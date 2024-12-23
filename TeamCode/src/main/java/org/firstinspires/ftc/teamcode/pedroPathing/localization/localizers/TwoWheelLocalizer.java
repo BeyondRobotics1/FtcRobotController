@@ -26,24 +26,24 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.NanoTimer;
  *
  * forward on robot is the x positive direction
  *
- *    /--------------\
- *    |     ____     |
- *    |     ----     |
- *    | ||        || |
- *    | ||        || |  ----> left (y positive)
- *    |              |
- *    |              |
- *    \--------------/
- *           |
- *           |
- *           V
- *    forward (x positive)
+*                         forward (x positive)
+ *                                △
+ *                                |
+ *                                |
+ *                         /--------------\
+ *                         |              |
+ *                         |              |
+ *                         |           || |
+ *  left (y positive) <--- |           || |  
+ *                         |     ____     |
+ *                         |     ----     |
+ *                         \--------------/
  *
  * @author Anyi Lin - 10158 Scott's Bots
  * @version 1.0, 4/2/2024
  */
 @Config
-public class    TwoWheelLocalizer extends Localizer { // todo: make two wheel odo work
+public class TwoWheelLocalizer extends Localizer { // todo: make two wheel odo work
     private HardwareMap hardwareMap;
     private IMU imu;
     private Pose startPose;
@@ -88,15 +88,15 @@ public class    TwoWheelLocalizer extends Localizer { // todo: make two wheel od
 
         imu = hardwareMap.get(IMU.class, "imu");
         // TODO: replace this with your IMU's orientation
-        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)));
+        imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT)));
 
         // TODO: replace these with your encoder ports
-        forwardEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "par"));
-        strafeEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "perp"));
+        forwardEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftRear"));
+        strafeEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "strafeEncoder"));
 
         // TODO: reverse any encoders necessary
-        forwardEncoder.setDirection(Encoder.FORWARD);
-        strafeEncoder.setDirection(Encoder.REVERSE);
+        forwardEncoder.setDirection(Encoder.REVERSE);
+        strafeEncoder.setDirection(Encoder.FORWARD);
 
         setStartPose(setStartPose);
         timer = new NanoTimer();
@@ -208,7 +208,7 @@ public class    TwoWheelLocalizer extends Localizer { // todo: make two wheel od
         globalDeltas = Matrix.multiply(Matrix.multiply(prevRotationMatrix, transformation), robotDeltas);
 
         displacementPose.add(new Pose(globalDeltas.get(0, 0), globalDeltas.get(1, 0), globalDeltas.get(2, 0)));
-        currentVelocity = new Pose(globalDeltas.get(0, 0) / (deltaTimeNano * Math.pow(10.0, 9)), globalDeltas.get(1, 0) / (deltaTimeNano * Math.pow(10.0, 9)), globalDeltas.get(2, 0) / (deltaTimeNano * Math.pow(10.0, 9)));
+        currentVelocity = new Pose(globalDeltas.get(0, 0) / (deltaTimeNano / Math.pow(10.0, 9)), globalDeltas.get(1, 0) / (deltaTimeNano / Math.pow(10.0, 9)), globalDeltas.get(2, 0) / (deltaTimeNano / Math.pow(10.0, 9)));
 
         totalHeading += globalDeltas.get(2, 0);
     }
@@ -295,5 +295,15 @@ public class    TwoWheelLocalizer extends Localizer { // todo: make two wheel od
      */
     public void resetIMU() {
         imu.resetYaw();
+    }
+
+    /**
+     * This is returns the IMU.
+     *
+     * @return returns the IMU
+     */
+    @Override
+    public IMU getIMU() {
+        return imu;
     }
 }
