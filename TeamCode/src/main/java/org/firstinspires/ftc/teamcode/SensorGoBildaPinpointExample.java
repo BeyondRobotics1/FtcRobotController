@@ -22,6 +22,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -59,11 +60,11 @@ For support, contact tech@gobilda.com
 -Ethan Doak
  */
 
-@TeleOp(name="goBILDA® sGIOJAJGWFOJ Example", group="Linear OpMode")
+@TeleOp(name="TIMOTHY PINPOINT EXAMPLE", group="Linear OpMode")
 
 public class SensorGoBildaPinpointExample extends LinearOpMode {
 
-    GoBildaPinpointDriverRR pinpoint; // Declare OpMode member for the Odometry Computer
+    GoBildaPinpointDriver pinpoint; // Declare OpMode member for the Odometry Computer
 
     double oldTime = 0;
 
@@ -74,7 +75,7 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,"pinpoint");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
         /*
         Set the odometry pod positions relative to the point that the odometry computer tracks around.
@@ -84,7 +85,7 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
         the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
         backwards is a negative number.
          */
-        pinpoint.setOffsets(-5.9739737392229735*25.4,-1.4984154572917487*25.4); //these are tuned for 3110-0002-0001 Product Insight #1, -157.5, -62.5
+        pinpoint.setOffsets(6.125*25.4,-1.5*25.4); //these are tuned for 3110-0002-0001 Product Insight #1, -157.5, -62.5
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -101,7 +102,7 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
         increase when you move the robot forward. And the Y (strafe) pod should increase when
         you move the robot to the left.
          */
-        pinpoint.setEncoderDirections(GoBildaPinpointDriverRR.EncoderDirection.FORWARD, GoBildaPinpointDriverRR.EncoderDirection.REVERSED);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriverRR.EncoderDirection.FORWARD, GoBildaPinpointDriverRR.EncoderDirection.FORWARD);
 
 
         /*

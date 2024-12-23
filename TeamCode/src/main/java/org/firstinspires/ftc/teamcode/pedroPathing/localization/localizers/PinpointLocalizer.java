@@ -78,7 +78,7 @@ public class PinpointLocalizer extends Localizer {
         //The default units are inches, but you can swap the units if you wish.
         //If you have already tuned the TwoWheelLocalizer, you can simply use the forwardEncoderPose's y value and strafeEncoderPose's x values.
         //TODO: SET THESE OFFSETS PROPERLY
-        setOffsets(-2.815, 0.125, DistanceUnit.INCH); //these are tuned for 3110-0002-0001 Product Insight #1
+        setOffsets(6.125,-2.25, DistanceUnit.INCH);
 
         //TODO: Tune urself if needed
 //        odo.setYawScalar(1.0);
@@ -86,7 +86,7 @@ public class PinpointLocalizer extends Localizer {
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         //odo.setEncoderResolution(13.26291192);
 
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
         resetPinpoint();
 
