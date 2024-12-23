@@ -30,8 +30,8 @@ public class FollowerConstants {
     public static String rightBackMotorName = "rightBack";
 
     public static DcMotorSimple.Direction leftFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
-    public static DcMotorSimple.Direction rightFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
-    public static DcMotorSimple.Direction leftBackMotorDirection = DcMotorSimple.Direction.FORWARD;
+    public static DcMotorSimple.Direction rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
+    public static DcMotorSimple.Direction leftBackMotorDirection = DcMotorSimple.Direction.REVERSE;
     public static DcMotorSimple.Direction rightBackMotorDirection = DcMotorSimple.Direction.FORWARD;
 
     // This section is for setting the actual drive vector for the front left wheel, if the robot
