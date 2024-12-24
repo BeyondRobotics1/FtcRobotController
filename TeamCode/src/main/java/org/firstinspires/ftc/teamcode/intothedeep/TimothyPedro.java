@@ -28,7 +28,7 @@ public class TimothyPedro extends OpMode {
     private Pose startPose = new Pose(0,5,0);
     private Pose secondPose = new Pose(7.5,5,0);
     private Pose thirdPose = new Pose(19,-16,Math.toRadians(-45));
-    private Pose fourthPose = new Pose(118, 0, 0);
+    private Pose fourthPose = new Pose(0, 0, 0);
     private Pose fifthPose = new Pose(118,-20,Math.toRadians(-90));
     private Pose sixthPose = new Pose(118,-60,Math.toRadians(-90));
     private PathChain run;

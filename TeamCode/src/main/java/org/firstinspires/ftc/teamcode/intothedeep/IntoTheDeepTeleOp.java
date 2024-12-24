@@ -95,9 +95,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 intake.MoveToOuttakePosition();
 
                 //scale from [0 1] to [0 0.5], move in
-                intakeSlide.Move(0.5-slideInSpeed*0.5);
+                intakeSlide.Move(0.5-slideInSpeed*0.4);
 
-                telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
+                telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.4);
             }
             else
                 intakeSlide.Move(0.485);

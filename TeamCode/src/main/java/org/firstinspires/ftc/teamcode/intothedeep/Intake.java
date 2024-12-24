@@ -22,14 +22,15 @@ public class Intake {
     }
 
     //pivot servo predefined positions, adjust as needed
-    private final double pivotServoIntakePosition = 0.55;//
-    private final double pivotServoOuttakePosition = 0.45;// 0.45
+    private final double pivotServoIntakePosition = 0.635;//
+    private final double pivotServoOuttakePosition = 0.55;// 0.45
     private final double pivotServoHeadDownPosition = 0.85;//leveled
 
     //4bar servo predefined positions, adjust them as needed
-    private final double fourBarServoIntakePosition = 0.82;//0.92
-    private final double fourBarServoOuttakePosition = 0.405; //0.39
-    private final double fourBarServoHeadDownPosition = 0.55;
+    private final double fourBarServoIntakePosition = 0.72;//0.92
+    private final double fourBarServoOuttakePosition = 0.3; //0.39
+    private final double fourBarServoHeadDownPosition = 0.4;
+    private final double fourBarReadyPosition = 0.55;
 
     private IntakePosition currentPosition;
 
