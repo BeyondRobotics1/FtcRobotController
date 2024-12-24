@@ -20,11 +20,14 @@ public class TimothyPedro extends OpMode {
     private Pose startPose = new Pose(0,5,0);
     private Pose controlPoint = new Pose(7.5,5,0);
     private Pose sampleOne = new Pose(19,-16, Math.toRadians(-45));
+    private Pose intermediaryOne = new Pose(19, -17.5, Math.toRadians(-90));
     private Pose hpOne = new Pose(19, -19, Math.toRadians(-135));
-    private Pose sampleTwo = new Pose(0, 0, 0);
+    private Pose sampleTwo = new Pose(19,-20, Math.toRadians(-45));
+    private Pose intermediaryTwo = new Pose(19, -21.5, Math.toRadians(-90));
+    private Pose hpTwo = new Pose(19, -23, Math.toRadians(-135));
     private Pose sampleThree = new Pose(0,0,0);
     private Pose grabPose = new Pose(0,0,0);
-    private PathChain getOne, giveOne, getTwo, giveTwo, getThree, giveThree, grabOne, scoreOne, grabTwo, scoreTwo, grabThree, scoreThree, grabFour, scoreFour, grabFive, scoreFive;
+    private PathChain getOne, giveOne, giveOneHP, getTwo, giveTwo, giveTwoHP, getThree, giveThree, giveThreeHP, grabOne, scoreOne, grabTwo, scoreTwo, grabThree, scoreThree, grabFour, scoreFour, grabFive, scoreFive;
     public void buildPaths(){
         getOne = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(startPose), new Point(controlPoint),new Point(sampleOne)))
@@ -32,8 +35,28 @@ public class TimothyPedro extends OpMode {
                 .setPathEndTimeoutConstraint(0)
                 .build();
         giveOne = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(sampleOne), new Point(hpOne)))
-                .setConstantHeadingInterpolation(Math.toRadians(-135))
+                .addPath(new BezierLine(new Point(sampleOne), new Point(intermediaryOne)))
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        giveOneHP = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(intermediaryOne), new Point(hpOne)))
+                .setConstantHeadingInterpolation(-135)
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        getTwo = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(startPose), new Point(controlPoint),new Point(sampleTwo)))
+                .setLinearHeadingInterpolation(0, Math.toRadians(-45),1)
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        giveTwo = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(sampleTwo), new Point(intermediaryTwo)))
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .setPathEndTimeoutConstraint(0)
+                .build();
+        giveTwoHP = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(intermediaryTwo), new Point(hpTwo)))
+                .setConstantHeadingInterpolation(-135)
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
