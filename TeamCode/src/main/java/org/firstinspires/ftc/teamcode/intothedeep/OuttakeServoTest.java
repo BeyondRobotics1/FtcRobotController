@@ -24,10 +24,10 @@ public class OuttakeServoTest extends LinearOpMode {
 
         // Wait for the start button
 
-        telemetry.addData("gamepad1.a", "Outtake Rotate Claw Servo." );
-        telemetry.addData("gamepad1.x", "Outtake Arm Servo 1." );
-        telemetry.addData("gamepad1.y", "Outtake Arm Servo 2." );
-        telemetry.addData("gamepad1.b", "Claw Servo." );
+        telemetry.addData("gamepad2.a", "Outtake Rotate Claw Servo." );
+        telemetry.addData("gamepad2.x", "Outtake Arm Servo 1." );
+        telemetry.addData("gamepad2.y", "Outtake Arm Servo 2." );
+        telemetry.addData("gamepad2.b", "Claw Servo." );
         telemetry.update();
 
         waitForStart();
@@ -36,19 +36,19 @@ public class OuttakeServoTest extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
             if(servo == null) {
-                if (gamepad1.a)
+                if (gamepad2.a)
                     servo = hardwareMap.get(Servo.class, "outtakeRotateClaw");
-                else if (gamepad1.x)
+                else if (gamepad2.x)
                     servo = hardwareMap.get(Servo.class, "outtakeArm");
-                else if (gamepad1.y)
+                else if (gamepad2.y)
                     servo = hardwareMap.get(Servo.class, "outtakeArm");
-                else if (gamepad1.b)
+                else if (gamepad2.b)
                     servo = hardwareMap.get(Servo.class, "claw");
             }
 
             if(servo != null) {
                 //use gamepad1 left trigger to set servo positions dynamically
-                double pivotPosition = gamepad1.left_trigger;
+                double pivotPosition = gamepad2.left_trigger;
                 telemetry.addData("Servo position", Math.abs(pivotPosition));
                 servo.setPosition(pivotPosition);
             }

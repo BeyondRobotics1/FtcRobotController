@@ -9,8 +9,11 @@ public class ClawRotor {
     Servo servo;
     LinearOpMode mode;
 
-    public final double CLAW_UP_POSITION = 0.7;
-    public final double CLAW_DOWN_POSITION = 0.02;
+    //claw is down to pickup sample from the intake
+    public final double CLAW_UP_POSITION = 0.02;
+
+    //clas is up to pick up specimen
+    public final double CLAW_DOWN_POSITION = 0.7;
 
     public ClawRotor(HardwareMap hardwareMap, LinearOpMode mode)
     {
