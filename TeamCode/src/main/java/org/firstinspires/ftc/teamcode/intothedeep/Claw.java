@@ -104,7 +104,7 @@ public class Claw {
     public void close(){
 
         //if(state != ClawState.CLOSED) {
-            setPosition(0.55);//0.5
+            setPosition(0.52);//0.5
             state = ClawState.CLOSED;
         //}
     }
