@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.intothedeep;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServoImpl;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 public class Intake {
 
@@ -21,15 +24,16 @@ public class Intake {
         NONE,
     }
 
+    //4bar servo predefined positions, adjust them as needed
+    private final double fourBarServoIntakePosition = 0.73;//0.92
+    private final double fourBarServoOuttakePosition = 0.30; //0.35
+    private final double fourBarServoHeadDownPosition = 0.55;
+
     //pivot servo predefined positions, adjust as needed
-    private final double pivotServoIntakePosition = 0.55;//
-    private final double pivotServoOuttakePosition = 0.45;// 0.45
+    private final double pivotServoIntakePosition = 0.60;//
+    private final double pivotServoOuttakePosition = 0.54;// 0.45
     private final double pivotServoHeadDownPosition = 0.85;//leveled
 
-    //4bar servo predefined positions, adjust them as needed
-    private final double fourBarServoIntakePosition = 0.82;//0.92
-    private final double fourBarServoOuttakePosition = 0.405; //0.39
-    private final double fourBarServoHeadDownPosition = 0.55;
 
     private IntakePosition currentPosition;
 
@@ -53,6 +57,11 @@ public class Intake {
         intakeServo = hardwareMap.get(Servo.class, "intakeSpinner");
 
         fourBarServo.setDirection(Servo.Direction.REVERSE);
+
+
+        //axon servo
+        //((ServoImplEx) intakeServo).setPwmRange(new PwmControl.PwmRange(500, 2500, 5000));
+        ((ServoImplEx) intakeServo).setPwmRange(new PwmControl.PwmRange(500, 2500));
 
         currentPosition = IntakePosition.NONE;
     }

@@ -6,7 +6,9 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.centerstage.picasso.Outtake;
 
@@ -53,6 +55,10 @@ public class OuttakeArm {
     {
         this.mode = mode;
         rotateServo = hardwareMap.get(Servo.class, "outtakeArm");
+
+        //axon servo, may give 30 degree more of rotation
+        //((ServoImplEx) intakeServo).setPwmRange(new PwmControl.PwmRange(500, 2500, 5000));
+        //((ServoImplEx) rotateServo).setPwmRange(new PwmControl.PwmRange(500, 2500));
     }
 
     public void Rotate(double position)

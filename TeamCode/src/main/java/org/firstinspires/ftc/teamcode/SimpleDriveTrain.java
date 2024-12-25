@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
+import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -40,9 +42,9 @@ public class SimpleDriveTrain {
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 0.9; //forward/backward power adjustment
-    private double x_power_scale = 0.9; //left/right power adjustment, make it slower
-    private double rx_power_scale = 0.65;//rotation power adjustment, make it slower
+    private double y_power_scale = 1; //forward/backward power adjustment
+    private double x_power_scale = 1; //left/right power adjustment, make it slower
+    private double rx_power_scale = 0.75;//rotation power adjustment, make it slower
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -55,7 +57,7 @@ public class SimpleDriveTrain {
     static final double     MOVE_BACKWARD_ADJUSTMENT = 0.95; //adjustment moving backward auto
     static final double     MOVE_LEFT_ADJUSTMENT = 1.1; //adjustment moving backward auto
 
-    static final double     COUNTS_PER_MOTOR_REV    = 537.7 ;    // eg: goBilda Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 384.5;// 435 rmp; 537.7, 312 rmp ;    // eg: goBilda Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 3.7795 ;     // goBilda Mecanum wheel inches
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -74,14 +76,15 @@ public class SimpleDriveTrain {
 
         this.mode = mode;
 
-        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "leftFront"); //hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.get(DcMotorEx.class, "leftBack"); //hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront"); //hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.get(DcMotorEx.class, "rightBack"); //hardwareMap.dcMotor.get("motorBackRight");
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "leftBack");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "rightBack");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         //Reverse motors
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

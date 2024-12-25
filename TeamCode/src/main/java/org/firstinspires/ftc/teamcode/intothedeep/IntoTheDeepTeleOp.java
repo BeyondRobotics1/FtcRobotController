@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
+import org.firstinspires.ftc.teamcode.SimpleDriveTrain;
 import org.firstinspires.ftc.teamcode.common.Helper;
 
 
@@ -22,7 +23,8 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         telemetry.addLine("Initializing drive train");
         telemetry.update();
-        PinpointDrive driveTrain = new PinpointDrive(hardwareMap, new Pose2d(0,0, 0));
+        //PinpointDrive driveTrain = new PinpointDrive(hardwareMap, new Pose2d(0,0, 0));
+        SimpleDriveTrain driveTrain = new SimpleDriveTrain(hardwareMap, this, false);
 
         telemetry.addLine("Initializing slide");
         telemetry.update();
