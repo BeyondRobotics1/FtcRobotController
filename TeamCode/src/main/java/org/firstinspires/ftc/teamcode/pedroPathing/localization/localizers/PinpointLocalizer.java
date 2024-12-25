@@ -78,7 +78,7 @@ public class PinpointLocalizer extends Localizer {
         //The default units are inches, but you can swap the units if you wish.
         //If you have already tuned the TwoWheelLocalizer, you can simply use the forwardEncoderPose's y value and strafeEncoderPose's x values.
         //TODO: SET THESE OFFSETS PROPERLY
-        setOffsets(6.125,-2.25, DistanceUnit.INCH);
+        setOffsets(6.181,-2.205, DistanceUnit.INCH); //6.125, -2.25
 
         //TODO: Tune urself if needed
 //        odo.setYawScalar(1.0);
