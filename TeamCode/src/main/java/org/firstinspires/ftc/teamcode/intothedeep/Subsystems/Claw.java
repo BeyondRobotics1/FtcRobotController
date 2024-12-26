@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -91,7 +92,7 @@ public class Claw {
     public void open(){
 
         //if(state != ClawState.OPENED) {
-        setPosition(0.86);//0.7
+        setPosition(0.8);//0.7
 
         state = ClawState.OPENED;
         //}

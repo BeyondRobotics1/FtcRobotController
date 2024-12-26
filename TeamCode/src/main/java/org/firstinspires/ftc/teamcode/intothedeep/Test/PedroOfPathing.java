@@ -1,11 +1,12 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.Test;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.*;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 
@@ -19,26 +20,22 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
  * @version 2.0, 9/8/2024
  */
 
-@Autonomous(name = "PedroCircle", group = "Pedro Examples")
-public class PedroOfCircle extends OpMode {
+@Autonomous(name = "PedroPathing", group = "Pedro Examples")
+@Disabled
+public class PedroOfPathing extends OpMode {
 
     private Follower follower;
     private Pose startPose = new Pose(0,0,0);
-    private Pose secondPose = new Pose(113,0,0);
-    private Pose thirdPose = new Pose(113,-89,Math.toRadians(-90));
-    private Pose fourthPose = new Pose(17, -89, Math.toRadians(180));
-    private Pose fifthPose = new Pose(18,0,0);
+    private Pose secondPose = new Pose(20,0,0);
+    private Pose thirdPose = new Pose(40,20,Math.toRadians(90));
     private PathChain cycleStackTo;
     public void buildPaths() {
         cycleStackTo = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(startPose), new Point(secondPose)))
+                .addPath(new BezierLine(new Point(startPose), new Point(secondPose)))
                 .setConstantHeadingInterpolation(0)
-                .addPath(new BezierCurve(new Point(secondPose), new Point(thirdPose)))
-                .setLinearHeadingInterpolation(0, Math.toRadians(-90))
-                .addPath(new BezierCurve(new Point(thirdPose), new Point(fourthPose)))
-                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(180))
-                .addPath(new BezierCurve(new Point(fourthPose), new Point(fifthPose)))
-                .setLinearHeadingInterpolation(Math.toRadians(180), 0)
+
+                .addPath(new BezierLine(new Point(secondPose), new Point(thirdPose)))
+                .setLinearHeadingInterpolation(0,Math.toRadians(90))
                 .setPathEndTimeoutConstraint(0)
                 .build();
     }
@@ -61,7 +58,7 @@ public class PedroOfCircle extends OpMode {
 
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
-        follower.setMaxPower(0.5);
+
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -71,9 +68,7 @@ public class PedroOfCircle extends OpMode {
      * It runs all the setup actions, including building paths and starting the path system **/
     @Override
     public void start() {
-
         buildPaths();
-
         follower.followPath(cycleStackTo);
 
     }

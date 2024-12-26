@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -64,7 +65,7 @@ public class Slide{
 
     //predefined position
     //slide can move to
-    enum SlideTargetPosition
+    public enum SlideTargetPosition
     {
         DOWN(0),
         LOW_BASKET(1),
@@ -84,7 +85,7 @@ public class Slide{
     //the slide extension length in inches corresponding to the above
     double[] slidePositionInches = {0, 7, 16.5, 0};//26
 
-    enum SlideMode
+    public enum SlideMode
     {
         AUTO_UP,
         AUTO_DOWN,
@@ -92,7 +93,7 @@ public class Slide{
         MANUAL
     }
     int autoTargetPosition = 0;
-    org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_STAY;
+    Slide.SlideMode activeMode = Slide.SlideMode.AUTO_STAY;
 
     DcMotorEx slideMotor1;
     DcMotorEx slideMotor2;
@@ -199,17 +200,17 @@ public class Slide{
         //Set the current state as AUTO_STAY
         //
         if(Math.abs(error) <= positionTolerance) {
-            activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_STAY;
+            activeMode = Slide.SlideMode.AUTO_STAY;
             return;
         }
         else if(autoTargetPosition > currentPosition) //move up
         {
             //Set the current state as AUTO_UP
-            activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_UP;
+            activeMode = Slide.SlideMode.AUTO_UP;
         }
         else { //move down
             //Set the current state as AUTO_DOWN
-            activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_DOWN;
+            activeMode = Slide.SlideMode.AUTO_DOWN;
         }
 
         //set target position
@@ -243,8 +244,8 @@ public class Slide{
      */
     public void autoMoveToWithoutWaitingLoop() {
         //
-        if(activeMode == org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_UP ||
-                activeMode == org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_DOWN)
+        if(activeMode == Slide.SlideMode.AUTO_UP ||
+                activeMode == Slide.SlideMode.AUTO_DOWN)
         {
 
             int currentPosition = slideMotor1.getCurrentPosition();
@@ -260,7 +261,7 @@ public class Slide{
             //slide is moving up
             //reached the target position or
             //pressed down the upper limit touch sensor
-            if (activeMode == org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_UP)
+            if (activeMode == Slide.SlideMode.AUTO_UP)
             {
                 if(currentPosition >= autoTargetPosition)// || !touchSensorHighLimit.getState())
                     targetPositionReached = true;
@@ -276,7 +277,7 @@ public class Slide{
             //stop motors
             if(targetPositionReached)
             {
-                activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.AUTO_STAY;
+                activeMode = Slide.SlideMode.AUTO_STAY;
 
                 slideMotor1.setPower(0.005);
                 slideMotor2.setPower(0.005);
@@ -289,7 +290,7 @@ public class Slide{
 
     public void setPower(double power)
     {
-        activeMode = org.firstinspires.ftc.teamcode.intothedeep.Slide.SlideMode.MANUAL;
+        activeMode = Slide.SlideMode.MANUAL;
 
         //set the motors to RUN_USING_ENCODER if not yet
         if(slideMotor1.getMode() != DcMotor.RunMode.RUN_USING_ENCODER ||

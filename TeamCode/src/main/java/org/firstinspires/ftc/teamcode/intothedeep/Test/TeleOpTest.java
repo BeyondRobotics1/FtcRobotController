@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.Test;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Vector;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 
 

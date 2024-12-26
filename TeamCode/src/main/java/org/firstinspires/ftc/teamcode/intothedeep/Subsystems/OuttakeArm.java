@@ -1,16 +1,13 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
-
-import org.firstinspires.ftc.teamcode.centerstage.picasso.Outtake;
 
 public class OuttakeArm {
 
@@ -22,7 +19,7 @@ public class OuttakeArm {
     //public final double SAMPLE_DELIVERY_POSITION = 0.3; //0.22
 
     private Servo rotateServo;
-    private  LinearOpMode mode;//set the telemetry
+    private LinearOpMode mode;//set the telemetry
 
     public class autoToSpecimenScore implements Action {
         @Override

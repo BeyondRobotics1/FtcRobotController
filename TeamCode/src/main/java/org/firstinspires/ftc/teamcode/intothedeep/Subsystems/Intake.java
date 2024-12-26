@@ -1,19 +1,20 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
 
-    enum IntakeMode
+    public enum IntakeMode
     {
         IN,
         OUT,
         IDLE
     }
 
-    enum IntakePosition
+    public enum IntakePosition
     {
         HEAD_DOWN,
         INTAKE,
@@ -54,6 +55,7 @@ public class Intake {
         intakeServo = hardwareMap.get(Servo.class, "intakeSpinner");
 
         fourBarServo.setDirection(Servo.Direction.REVERSE);
+        intakeServo.setDirection(Servo.Direction.REVERSE);
 
         currentPosition = IntakePosition.NONE;
     }

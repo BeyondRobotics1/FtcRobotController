@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.OpMode.RRAuto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -7,18 +7,19 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 
 @Autonomous(name = "Auto Right (IntoTheDeep)", group = "Linear Opmode")
-//@Disabled
-
-
-
-
 public class AutoRight extends LinearOpMode {
 
     @Override
@@ -41,7 +42,6 @@ public class AutoRight extends LinearOpMode {
         slide.runWithEncoder();
 
 
-
         telemetry.addLine("Initializing outtake arm");
         telemetry.update();
         OuttakeArm outtakeArm = new OuttakeArm(hardwareMap, this);
@@ -54,7 +54,7 @@ public class AutoRight extends LinearOpMode {
         telemetry.addLine("Initializing intake slide");
         telemetry.update();
         IntakeSlide intakeSlide = new IntakeSlide(hardwareMap);
-        intakeSlide.Move(0.498);
+        intakeSlide.Move(0.49);
 
         telemetry.addLine("Initializing claw");
         telemetry.update();
@@ -64,6 +64,8 @@ public class AutoRight extends LinearOpMode {
         waitForStart();
         //restart the timer
         timer.reset();
+
+
 // 1
         outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
         slide.moveToWithoutWaiting(3., 1);

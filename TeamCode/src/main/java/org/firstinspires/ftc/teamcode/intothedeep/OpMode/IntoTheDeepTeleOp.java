@@ -1,15 +1,19 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.OpMode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.PinpointDrive;
 import org.firstinspires.ftc.teamcode.SimpleDriveTrain;
 import org.firstinspires.ftc.teamcode.common.Helper;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.ClawRotor;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Into the Deep", group = "Into the Deep")

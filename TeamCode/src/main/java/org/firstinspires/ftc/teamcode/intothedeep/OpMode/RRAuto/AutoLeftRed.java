@@ -1,23 +1,26 @@
-package org.firstinspires.ftc.teamcode.intothedeep;
+package org.firstinspires.ftc.teamcode.intothedeep.OpMode.RRAuto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 
-@Autonomous(name = "AutoLeftBlue (IntoTheDeep)", group = "Linear Opmode")
-//@Disabled
-public class AutoLeftBlue extends LinearOpMode {
+@Autonomous(name = "AutoLeftRed (IntoTheDeep)", group = "Linear Opmode")
+@Disabled
+public class AutoLeftRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -76,8 +79,8 @@ public class AutoLeftBlue extends LinearOpMode {
         //Goes to basket score preloaded sample
         Actions.runBlocking(
                 driveTrain.actionBuilder(driveTrain.pose)
-                .strafeTo(new Vector2d(-50,57.5)) //-51.3,58.7 //this is used for moving to the correct y position (does not change heading)
-                .waitSeconds(0.1).build()
+                        .strafeTo(new Vector2d(-50,57.5)) //-51.3,58.7 //this is used for moving to the correct y position (does not change heading)
+                        .waitSeconds(0.1).build()
         );
         PutSampleIntoBasket(driveTrain, slide, outtakeArm, claw);
 
@@ -161,10 +164,10 @@ public class AutoLeftBlue extends LinearOpMode {
     }
 
     private void Score(PinpointDrive driveTrain,
-                                     Intake intake,
-                                     Slide slide,
-                                     OuttakeArm outtakeArm,
-                                     Claw claw
+                       Intake intake,
+                       Slide slide,
+                       OuttakeArm outtakeArm,
+                       Claw claw
 
     )
     {
@@ -189,11 +192,16 @@ public class AutoLeftBlue extends LinearOpMode {
                         .turn(Math.toRadians(-45)) //
                         .waitSeconds(0.1).build()
         );
-        sleep(200);
+
+        outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+        sleep(300);
         claw.open();
-        sleep(300);//400
+        sleep(2);//00
+        //move out robot
+        outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
 
 
     }
+
 
 }
