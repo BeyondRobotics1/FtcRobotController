@@ -92,7 +92,7 @@ public class Claw {
     public void open(){
 
         //if(state != ClawState.OPENED) {
-        setPosition(0.8);//0.7
+        setPosition(0.82);//0.7
 
         state = ClawState.OPENED;
         //}

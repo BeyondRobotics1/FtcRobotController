@@ -85,7 +85,7 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
         the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
         backwards is a negative number.
          */
-        pinpoint.setOffsets(6.125*25.4,-1.5*25.4); //these are tuned for 3110-0002-0001 Product Insight #1, -157.5, -62.5
+        pinpoint.setOffsets(6.125*25.4,-2.02*25.4); //these are tuned for 3110-0002-0001 Product Insight #1, -157.5, -62.5
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 
-@Autonomous(name = "AutoLeftRed (IntoTheDeep)", group = "Linear Opmode")
+@Autonomous(name = "AutoLeftRed (IntoTheDeep)", group = "A Into the Deep")
 @Disabled
 public class AutoLeftRed extends LinearOpMode {
 

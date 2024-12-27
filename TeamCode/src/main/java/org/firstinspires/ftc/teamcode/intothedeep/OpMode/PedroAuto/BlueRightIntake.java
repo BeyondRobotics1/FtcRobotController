@@ -14,12 +14,13 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 @Autonomous(name = "Blue Right Intake (IntoTheDeep)", group = "A Into the Deep")
-@Disabled
+
 public class BlueRightIntake extends LinearOpMode {
 
     //our robot subsystems
@@ -49,19 +50,23 @@ public class BlueRightIntake extends LinearOpMode {
     private final Pose startPose = new Pose(7.25, 62.5, Math.toRadians(0));
 
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(30, 38, Math.toRadians(-45));
-    private final Pose drop1Pose = new Pose(26.25, 36.75, Math.toRadians(-107));
+    private final Pose pickup1Pose = new Pose(30, 37, Math.toRadians(-45));
+    private final Pose drop1Pose = new Pose(26.25, 36.75, Math.toRadians(-109));
 
     /** Middle (Second) Sample from the Spike Mark */
     private final Pose pickup2Pose = new Pose(29.25, 26.75, Math.toRadians(-45));
-    private final Pose drop2Pose = new Pose(27.25, 24.75, Math.toRadians(-107));
+    private final Pose drop2Pose = new Pose(27.25, 24.75, Math.toRadians(-109));
 
     /** Highest (Third) Sample from the Spike Mark */
     private final Pose pickup3Pose = new Pose(49, 135, Math.toRadians(0));
     private final Pose drop3Pose = new Pose(37, 121, Math.toRadians(0));
 
+    /** Specimen pickup position from wall */
+    private final Pose specimenPickupPos = new Pose(12, 36, Math.toRadians(0));
 
     private PathChain pickUp1, drop1, pickUp2, drop2, pickUp3, Drop3;
+    private Path specimenPickup;
+
 
     Log log;
     @Override
@@ -76,6 +81,7 @@ public class BlueRightIntake extends LinearOpMode {
         outtakeArm = new OuttakeArm(hardwareMap, this);
         intake = new Intake(hardwareMap, this);
         intakeSlide = new IntakeSlide(hardwareMap);
+        intakeSlide.Move(0.49);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -135,62 +141,54 @@ public class BlueRightIntake extends LinearOpMode {
                 intake.MoveToIntakePosition();
                 setPathState(1);
                 break;
-            case 1:
-                headingDelta = follower.getPose().getHeading() - pickup1Pose.getHeading();
-                headingDelta = Math.toDegrees(Helper.normDelta(headingDelta));
-                //String msg = "C: " + Math.toDegrees(follower.getPose().getHeading()) +", T: " +
-                //        Math.toDegrees(pickup1Pose.getHeading()) + ", Delat: " + headingDelta;
-
-                //log.addData(msg);
-                //log.update();
+            case 1: //move to #1 pickup position & pickup it up
+                headingDelta = calculateHeadingDelta(follower.getPose(), pickup1Pose);
 
                 //if the angle is aligned, less than 2 degrees
                 if(Math.abs(headingDelta) <= 2)
                 {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    intakeSlide.Move(0.6);
-                    sleep(1000);
-                    intake.MoveToOuttakePosition();
-
-                    follower.followPath(drop1, true);
+                    intakeSlide.Move(0.65);
+                    actionTimer.resetTimer();
 
                     setPathState(2);
                 }
                 break;
-            case 2:
-                headingDelta = follower.getPose().getHeading() - drop1Pose.getHeading();
-                headingDelta = Math.toDegrees(Helper.normDelta(headingDelta));
+            case 2: //move to #1 drop position
+                if(actionTimer.getElapsedTime() >= 800) {
 
-                //String msg = "C: " + Math.toDegrees(follower.getPose().getHeading()) +", T: " +
-                //        Math.toDegrees(drop1Pose.getHeading()) + ", Delat: " + headingDelta;
+                    intake.MoveToOuttakePosition();
 
-                //log.addData(msg);
-                //log.update();
-
-                if(Math.abs(headingDelta) <= 2)
-                {
-                    //head down and drop out the sample
-                    intake.MoveToHeadDownPosition();
-                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
-
-                    sleep(400);
-
-                    //pull back slide
-                    intakeSlide.Move(0.45);
-
-                    follower.followPath(pickUp2, true);
+                    follower.followPath(drop1, true);
 
                     setPathState(3);
                 }
                 break;
-            case 3:
-                headingDelta = follower.getPose().getHeading() - pickup2Pose.getHeading();
-                headingDelta = Math.toDegrees(Helper.normDelta(headingDelta));
-                //String msg = "C: " + Math.toDegrees(follower.getPose().getHeading()) +", T: " +
-                //        Math.toDegrees(pickup1Pose.getHeading()) + ", Delat: " + headingDelta;
+            case 3://drop the #1
+                headingDelta = calculateHeadingDelta(follower.getPose(), drop1Pose);
 
-                //log.addData(msg);
-                //log.update();
+                if(Math.abs(headingDelta) <= 2)
+                {
+                    //head down and drop out the sample
+                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
+                    intake.MoveToHeadDownPosition();
+
+                    actionTimer.resetTimer();
+
+                    setPathState(8);
+                }
+                break;
+            case 4://slide back and move to #2 pickup position
+                if(actionTimer.getElapsedTime() >= 400) {
+                    //pull back slide
+                    intakeSlide.Move(0.45);
+
+                    follower.followPath(pickUp2, true);
+                    setPathState(5);
+                }
+                break;
+            case 5: //pickup #2
+                headingDelta = calculateHeadingDelta(follower.getPose(), pickup2Pose);
 
                 //poseDeltaX = Math.abs(follower.getPose().getX() - pickup2Pose.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - pickup2Pose.getY());
@@ -201,43 +199,40 @@ public class BlueRightIntake extends LinearOpMode {
                     intake.MoveToIntakePosition();
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
 
-                    intakeSlide.Move(0.6);
-                    sleep(1000);
-                    intake.MoveToOuttakePosition();
-                    //sleep(200);
-
-                    follower.followPath(drop2, true);
-
-                    setPathState(4);
+                    intakeSlide.Move(0.65);
+                    actionTimer.resetTimer();
+                    setPathState(6);
                 }
                 break;
-            case 4:
-                headingDelta = follower.getPose().getHeading() - drop2Pose.getHeading();
-                headingDelta = Math.toDegrees(Helper.normDelta(headingDelta));
+            case 6: //move to #2 drop postion
+                if(actionTimer.getElapsedTime() >= 800) {
 
-                //String msg = "C: " + Math.toDegrees(follower.getPose().getHeading()) +", T: " +
-                //        Math.toDegrees(drop1Pose.getHeading()) + ", Delat: " + headingDelta;
+                    intake.MoveToOuttakePosition();
+                    follower.followPath(drop2, true);
 
-                //log.addData(msg);
-                //log.update();
+                    setPathState(7);
+                }
+                break;
+            case 7: //drop #2
+                headingDelta = calculateHeadingDelta(follower.getPose(), drop2Pose);
 
                 if(Math.abs(headingDelta) <= 2)
                 {
-                    //head down and drop out the sample
-                    intake.MoveToHeadDownPosition();
-                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
-
-                    sleep(400);
-
-                    //pull back slide
-                    intakeSlide.Move(0.35);
+//                    //head down and drop out the sample
+//                    intake.MoveToHeadDownPosition();
+//                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
+//
+//                    sleep(400);
+//
+//                    //pull back slide
+//                    intakeSlide.Move(0.35);
 
                     follower.followPath(pickUp2, true);
 
-                    setPathState(5);
+                    setPathState(8);
                 }
                 break;
-            case 5:
+            case 8:
                 break;
         }
     }
@@ -262,6 +257,9 @@ public class BlueRightIntake extends LinearOpMode {
                 .addPath(new BezierLine(new Point(pickup2Pose), new Point(drop2Pose)))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), drop2Pose.getHeading())
                 .build();
+
+
+
     }
 
     /** These change the states of the paths and actions
@@ -272,6 +270,19 @@ public class BlueRightIntake extends LinearOpMode {
         //actionTimer.resetTimer();
     }
 
+    private double calculateHeadingDelta(Pose currentPose, Pose targetPose)
+    {
+        double headingDelta = currentPose.getHeading() - targetPose.getHeading();
+        headingDelta = Math.toDegrees(Helper.normDelta(headingDelta));
+
+//        String msg = "C: " + Math.toDegrees(follower.getPose().getHeading()) +", T: " +
+//                Math.toDegrees(pickup1Pose.getHeading()) + ", Delat: " + headingDelta;
+//
+//        log.addData(msg);
+//        log.update();
+
+        return headingDelta;
+    }
 }
 
 

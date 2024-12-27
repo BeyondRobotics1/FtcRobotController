@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.TankDrive;
 import org.firstinspires.ftc.teamcode.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.TwoDeadWheelLocalizer;
 
-@Config
-@TeleOp(name = "Road Runner ManualFeedbackTuner", group = "Tuning Road Runner")
+//@Config
+//@TeleOp(name = "Road Runner ManualFeedbackTuner", group = "Tuning Road Runner")
 @Disabled
 public final class ManualFeedbackTuner extends LinearOpMode {
     public static double DISTANCE = 64;

@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.TankDrive;
 
-@Config
-@TeleOp(name = "Road Runner LocalizationTest", group = "Tuning Road Runner")
+//@Config
+//@TeleOp(name = "Road Runner LocalizationTest", group = "Tuning Road Runner")
 @Disabled
 public class LocalizationTest extends LinearOpMode {
     @Override
