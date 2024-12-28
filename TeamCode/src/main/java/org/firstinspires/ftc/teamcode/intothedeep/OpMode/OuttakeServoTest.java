@@ -38,8 +38,10 @@ public class OuttakeServoTest extends LinearOpMode {
             if(servo == null) {
                 if (gamepad2.a)
                     servo = hardwareMap.get(Servo.class, "outtakeRotateClaw");
-                else if (gamepad2.x)
+                else if (gamepad2.x) {
                     servo = hardwareMap.get(Servo.class, "outtakeArm");
+                    servo.setDirection(Servo.Direction.REVERSE);
+                }
                 else if (gamepad2.y)
                     servo = hardwareMap.get(Servo.class, "outtakeArm");
                 else if (gamepad2.b)

@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
 import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,46 +18,6 @@ public class Slide{
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (PULLEY_DIAMETER_INCHES * 3.1415);
     final int positionTolerance = 0;
-
-    public class autoToFloor implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            boolean finished = false;
-            if(!finished){
-                moveToPredefinedPositionWithoutWaiting(SlideTargetPosition.DOWN, 1.0);
-            }
-            return finished;
-        }
-    }
-    public Action autoToFloor(){
-        return new autoToFloor();
-    }
-    public class slideUp implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            boolean finished = false;
-            if(!finished){
-                moveToWithoutWaiting(getSlideHeightInches()+4, 1.0);
-            }
-            return finished;
-        }
-    }
-    public Action slideUp(){
-        return new slideUp();
-    }
-    public class slideDown implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            boolean finished = false;
-            if(!finished){
-                moveToWithoutWaiting(getSlideHeightInches()-5, 1.0);
-            }
-            return finished;
-        }
-    }
-    public Action slideDown(){
-        return new slideDown();
-    }
 
     //predefined position
     //slide can move to
@@ -83,7 +39,7 @@ public class Slide{
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0, 7, 16.5, 0};//26
+    double[] slidePositionInches = {0, 6, 16, 0};//16
 
     public enum SlideMode
     {
@@ -134,52 +90,52 @@ public class Slide{
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Move slide up/down using RUN_TO_POSITION mode,
-     * This method will wait for target position is reached
-     * @param inches: inches to move up
-     * @param speed: power for motors
-     */
-    public void moveTo(double inches, double speed)
-    {
-        // Determine new target position, and pass to motor controller
-        int newPosition = (int)(inches * COUNTS_PER_INCH);
-        slideMotor1.setTargetPosition(newPosition);
-        slideMotor2.setTargetPosition(newPosition);
-
-        // Turn On RUN_TO_POSITION
-        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        slideMotor1.setPower(speed);
-        slideMotor2.setPower(speed);
-
-        // keep looping while we are still active and both motors are running.
-        while (slideMotor1.isBusy()){
-            //if(touchSensorHighLimit.getState() == false) {
-            //   break;
-            //}
-        }
-
-        // Stop all motion
-        slideMotor1.setPower(0);
-        slideMotor2.setPower(0);
-
-        // Turn off RUN_TO_POSITION
-        slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    /**
-     * Move to specific junction position
-     * @param position: predefined position
-     * @param speed: motor power
-     */
-    public void moveToPredefinedPosition(SlideTargetPosition position, double speed)
-    {
-
-        moveTo(slidePositionInches[position.getValue()], speed);
-    }
+//    /**
+//     * Move slide up/down using RUN_TO_POSITION mode,
+//     * This method will wait for target position is reached
+//     * @param inches: inches to move up
+//     * @param speed: power for motors
+//     */
+//    public void moveTo(double inches, double speed)
+//    {
+//        // Determine new target position, and pass to motor controller
+//        int newPosition = (int)(inches * COUNTS_PER_INCH);
+//        slideMotor1.setTargetPosition(newPosition);
+//        slideMotor2.setTargetPosition(newPosition);
+//
+//        // Turn On RUN_TO_POSITION
+//        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        slideMotor1.setPower(speed);
+//        slideMotor2.setPower(speed);
+//
+//        // keep looping while we are still active and both motors are running.
+//        while (slideMotor1.isBusy()){
+//            //if(touchSensorHighLimit.getState() == false) {
+//            //   break;
+//            //}
+//        }
+//
+//        // Stop all motion
+//        slideMotor1.setPower(0);
+//        slideMotor2.setPower(0);
+//
+//        // Turn off RUN_TO_POSITION
+//        slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    }
+//
+//    /**
+//     * Move to specific junction position
+//     * @param position: predefined position
+//     * @param speed: motor power
+//     */
+//    public void moveToPredefinedPosition(SlideTargetPosition position, double speed)
+//    {
+//
+//        moveTo(slidePositionInches[position.getValue()], speed);
+//    }
 
 
     /**

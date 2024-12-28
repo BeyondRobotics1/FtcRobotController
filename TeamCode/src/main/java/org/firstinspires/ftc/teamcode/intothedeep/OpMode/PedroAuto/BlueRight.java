@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.Log;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.ClawRotor;
@@ -13,15 +11,14 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "Blue Right Push (IntoTheDeep)", group = "A Into the Deep")
+@Autonomous(name = "Blue Right (IntoTheDeep)", group = "A Into the Deep")
 
-public class BlueRightPush extends LinearOpMode {
+public class BlueRight extends LinearOpMode {
 
     //log for debugging purpose
     Log log;
@@ -43,10 +40,8 @@ public class BlueRightPush extends LinearOpMode {
 
     /** Create and Define Poses + Paths
      * Poses are built with three constructors: x, y, and heading (in Radians).
-     * Pedro uses 0 - 144 for x and y, with 0, 0 being on the bottom left.
+     * Pedro uses 0 - 144 for x and y, with 0, 0 being on the bottom right.
      * (For Into the Deep, this would be Blue Observation Zone (0,0) to Red Observation Zone (144,144).)
-     * Even though Pedro uses a different coordinate system than RR, you can convert any roadrunner pose by adding +72 both the x and y.
-     * This visualizer is very easy to use to find and create paths/pathchains/poses: <https://pedro-path-generator.vercel.app/>
      */
 
     /** Start Pose of our robot */
@@ -73,13 +68,13 @@ public class BlueRightPush extends LinearOpMode {
     private final Pose specimenPickupFinalPos = new Pose(9, 36, Math.toRadians(0));
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos5 = new Pose(41, 75);
-    private final Pose specimenScorePos4 = new Pose(41, 73.5);
-    private final Pose specimenScorePos3 = new Pose(41, 72);
-    private final Pose specimenScorePos2 = new Pose(41, 70.5);
+    private final Pose specimenScorePos5 = new Pose(41, 77);
+    private final Pose specimenScorePos4 = new Pose(41, 75);
+    private final Pose specimenScorePos3 = new Pose(41, 73);
+    private final Pose specimenScorePos2 = new Pose(41, 71);
     private final Pose specimenScorePos1 = new Pose(41, 69);
 
-    //back position for specimen pickup
+    /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(12, 38, Math.toRadians(0));
     private final Pose specimenPickupFinalPos2 = new Pose(9, 38, Math.toRadians(0));
 
@@ -87,7 +82,10 @@ public class BlueRightPush extends LinearOpMode {
     /** Park position */
     private final Pose parkPos = new Pose(15, 24);
 
+    /** Paths for pushing and move to pickup position */
     private PathChain push, toSpecimenPickupPosition, toSpecimenPickupFinalPosition;
+
+    /** Paths for scoring */
     private PathChain scoreSpecimen1, backToSpecimenPickupPosition1;
     private PathChain scoreSpecimen2, backToSpecimenPickupPosition2;
     private PathChain scoreSpecimen3, backToSpecimenPickupPosition3;
@@ -96,33 +94,39 @@ public class BlueRightPush extends LinearOpMode {
 
     //shared by scoring to specimen pickup
     private PathChain backToSpecimenPickupFinalPosition;
+
+    /** Path for moving to observation zone for parking */
     private PathChain parking;
 
+    /** Outtake arm takes time to swing down, need to wait this timeout in ms to finish*/
     private final int scoreTimeout = 300;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        log = new Log("IntoTheDeep", true);
+        /** Create the log instance with log text file name as IntoTheDeep
+         * It should be commented out for competition
+         */
+        //log = new Log("IntoTheDeep", true);
 
+        /** Create instances of robot subassemblies */
         claw = new Claw(hardwareMap, this);
         clawRotor = new ClawRotor(hardwareMap, this);
-        //clawRotor.SetClawDown();
-
         outtakeArm = new OuttakeArm(hardwareMap, this);
         intake = new Intake(hardwareMap, this);
         intakeSlide = new IntakeSlide(hardwareMap);
 
+        /** Create Timer instances */
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         actionTimer = new Timer();
 
         opmodeTimer.resetTimer();
 
+        /**Create the Pedro Pathing Follower instance*/
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
-
 
         setPathState(0);
 
@@ -135,10 +139,12 @@ public class BlueRightPush extends LinearOpMode {
         telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
         telemetry.update();
 
+        /** Waiting for Play button being touched */
         waitForStart();
 
         if (isStopRequested()) return;
 
+        /** Play button is touched, Auto starts */
         intakeSlide.Move(0.48);
 
         outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
@@ -158,7 +164,7 @@ public class BlueRightPush extends LinearOpMode {
             telemetry.update();
         }
 
-        log.close();
+        //log.close();
     }
 
     private void autonomousPathUpdate()
@@ -446,7 +452,8 @@ public class BlueRightPush extends LinearOpMode {
             case 26: //score 4 - open claw
                 if(actionTimer.getElapsedTime() >= scoreTimeout) {
 
-                    releaseSpecimen();
+                    claw.open();
+                    sleep(100);
 
                     follower.followPath(parking, true);
 
@@ -579,7 +586,6 @@ public class BlueRightPush extends LinearOpMode {
     private void setPathState(int pState){
         pathState = pState;
         pathTimer.resetTimer();
-        //actionTimer.resetTimer();
     }
 
     private void pickupSpecimen()
