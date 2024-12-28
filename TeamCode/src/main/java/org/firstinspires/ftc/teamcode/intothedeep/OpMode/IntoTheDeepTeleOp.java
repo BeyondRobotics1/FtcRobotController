@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode.intothedeep.OpMode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.button.GamepadButton;
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -56,12 +61,18 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         telemetry.update();
         IntakeSlide intakeSlide = new IntakeSlide(hardwareMap);
 
+        GamepadEx gamepad1Ex = new GamepadEx(gamepad1);
+        ToggleButtonReader leftBumper1 = new ToggleButtonReader(
+                gamepad1Ex, GamepadKeys.Button.LEFT_BUMPER
+        );
+
         waitForStart();
 
         //slide is manually controlled
         Slide.SlideTargetPosition slideOp = Slide.SlideTargetPosition.MANUAL;
 
         boolean robotCentric = true;
+        boolean leftBumperToggled = false;
 
         if (isStopRequested()) return;
 
@@ -110,14 +121,23 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             else
                 intakeSlide.Move(0.485);
 
+            //
+            leftBumper1.readValue();
+            if(leftBumper1.getState())
+                leftBumperToggled = true;
+            else
+                leftBumperToggled = false;
+
             //intake control
-            //left bumper spit out
-            if(gamepad1.left_bumper)
-                intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
-            else if (gamepad1.right_bumper) //right bumper take in
+            if (gamepad1.right_bumper) //right bumper take in
                 intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
-            else //otherwise, idle to save energy
-                intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+            else {
+                if (leftBumperToggled)
+                    intake.SetIntakeSpinner(Intake.IntakeMode.IN);
+                else
+                    intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
+            }
+
 
             //intake sample container
             if(gamepad1.a)

@@ -29,7 +29,7 @@ public class Intake {
     //4bar servo predefined positions, adjust them as needed
     private final double fourBarServoIntakePosition = 0.72;//0.92
     private final double fourBarServoOuttakePosition = 0.3; //0.39
-    private final double fourBarServoHeadDownPosition = 0.4;
+    private final double fourBarServoHeadDownPosition = 0.6;//0.4;
     private final double fourBarReadyPosition = 0.55;
 
     private IntakePosition currentPosition;
