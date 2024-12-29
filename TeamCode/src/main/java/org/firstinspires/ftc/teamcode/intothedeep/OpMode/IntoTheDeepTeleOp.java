@@ -107,8 +107,6 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             }
             else if(slideInSpeed > 0.1) {
 
-                intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-
                 //when retracting back, move the intake to the outtake position
                 //for the claw to pick the sample up
                 intake.MoveToOuttakePosition();
@@ -142,9 +140,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //intake sample container
             if(gamepad1.a)
                 intake.MoveToOuttakePosition();
+            else if (gamepad1.x)
+                intake.MoveToReadyPosition();
             else if (gamepad1.y)
                 intake.MoveToIntakePosition();
-            else if (gamepad1.x)
+            else if (gamepad1.b)
                 intake.MoveToHeadDownPosition();
 
 

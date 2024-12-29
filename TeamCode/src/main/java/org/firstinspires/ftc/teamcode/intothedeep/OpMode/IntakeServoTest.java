@@ -48,10 +48,12 @@ public class IntakeServoTest extends LinearOpMode {
             if(servo == null) {
                 if (gamepad1.x) {
                     servo = hardwareMap.get(Servo.class, "intakeFourBar");
+
+                }
+                else if (gamepad1.y) {
+                    servo = hardwareMap.get(Servo.class, "intakePivot");
                     servo.setDirection(Servo.Direction.REVERSE);
                 }
-                else if (gamepad1.y)
-                    servo = hardwareMap.get(Servo.class, "intakePivot");
             }
 
             if(servo != null) {

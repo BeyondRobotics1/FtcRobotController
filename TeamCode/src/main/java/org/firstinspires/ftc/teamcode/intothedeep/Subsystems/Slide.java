@@ -235,8 +235,8 @@ public class Slide{
             {
                 activeMode = Slide.SlideMode.AUTO_STAY;
 
-                slideMotor1.setPower(0.005);
-                slideMotor2.setPower(0.005);
+                slideMotor1.setPower(0.002);
+                slideMotor2.setPower(0.002);
 
                 slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

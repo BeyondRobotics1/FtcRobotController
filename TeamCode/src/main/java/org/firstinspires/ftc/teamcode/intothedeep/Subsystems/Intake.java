@@ -22,15 +22,19 @@ public class Intake {
     }
 
     //pivot servo predefined positions, adjust as needed
-    private final double pivotServoIntakePosition = 0.635;//
-    private final double pivotServoOuttakePosition = 0.55;// 0.45
-    private final double pivotServoHeadDownPosition = 0.85;//leveled
+    private final double pivotServoHeadDownPosition = 0; //
+    private final double pivotServoReadyPosition = 0.25; //
+    private final double pivotServoIntakePosition = 0.68; //
+    private final double pivotServoOuttakePosition = 0.8; //
+
 
     //4bar servo predefined positions, adjust them as needed
-    private final double fourBarServoIntakePosition = 0.72;//0.92
-    private final double fourBarServoOuttakePosition = 0.3; //0.39
-    private final double fourBarServoHeadDownPosition = 0.6;//0.4;
-    private final double fourBarReadyPosition = 0.55;
+    private final double fourBarServoIntakePosition = 0.11;//
+    private final double fourBarServoReadyPosition = 0.3;
+    private final double fourBarServoHeadDownPosition = 0.4;//
+    private final double fourBarServoOuttakePosition = 0.85;//
+
+
 
     private IntakePosition currentPosition;
 
@@ -53,22 +57,13 @@ public class Intake {
         pivotServo = hardwareMap.get(Servo.class, "intakePivot");
         intakeServo = hardwareMap.get(Servo.class, "intakeSpinner");
 
-        fourBarServo.setDirection(Servo.Direction.REVERSE);
+        pivotServo.setDirection(Servo.Direction.REVERSE);
         intakeServo.setDirection(Servo.Direction.REVERSE);
 
         currentPosition = IntakePosition.NONE;
     }
 
 
-    public void MoveToHeadDownPosition()
-    {
-        //if(currentPosition != IntakePosition.HEAD_DOWN)
-        //{
-            pivotServo.setPosition(pivotServoHeadDownPosition);
-            fourBarServo.setPosition(fourBarServoHeadDownPosition);
-            currentPosition = IntakePosition.HEAD_DOWN;
-        //}
-    }
 
     public void MoveToIntakePosition()
     {
@@ -82,6 +77,18 @@ public class Intake {
         //}
     }
 
+
+    public void MoveToReadyPosition()
+    {
+        //if(currentPosition != IntakePosition.HEAD_DOWN)
+        //{
+        fourBarServo.setPosition(fourBarServoReadyPosition);
+        pivotServo.setPosition(pivotServoReadyPosition);
+
+        currentPosition = IntakePosition.HEAD_DOWN;
+        //}
+    }
+
     public void MoveToOuttakePosition()
     {
         //if(currentPosition != IntakePosition.OUTTAKE)
@@ -90,6 +97,17 @@ public class Intake {
             fourBarServo.setPosition(fourBarServoOuttakePosition);
 
             currentPosition = IntakePosition.OUTTAKE;
+        //}
+    }
+
+
+    public void MoveToHeadDownPosition()
+    {
+        //if(currentPosition != IntakePosition.HEAD_DOWN)
+        //{
+        pivotServo.setPosition(pivotServoHeadDownPosition);
+        fourBarServo.setPosition(fourBarServoHeadDownPosition);
+        currentPosition = IntakePosition.HEAD_DOWN;
         //}
     }
 
