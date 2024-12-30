@@ -59,13 +59,13 @@ public class RedRight extends LinearOpMode {
     private final Pose pos23 = new Pose(30, 17, Math.toRadians(0));
 
     private final Pose pos31 = new Pose(50, 17, Math.toRadians(0));
-    private final Pose pos32 = new Pose(56, 12, Math.toRadians(0));
-    private final Pose pos33 = new Pose(30, 12, Math.toRadians(0));//20, 9
-    private final Pose afterPushingPos = new Pose(31, 9, Math.toRadians(0));
+    private final Pose pos32 = new Pose(56, 11.5, Math.toRadians(0));
+    private final Pose pos33 = new Pose(30, 11.5, Math.toRadians(0));//20, 9
+    private final Pose afterPushingPos = new Pose(31, 20, Math.toRadians(0));
 
     /** Specimen pickup position from wall */
-    private final Pose specimenPickupPos = new Pose(12, 36, Math.toRadians(0));
-    private final Pose specimenPickupFinalPos = new Pose(9, 36, Math.toRadians(0));
+    private final Pose specimenPickupPos = new Pose(16, 36, Math.toRadians(0));
+    private final Pose specimenPickupFinalPos = new Pose(12, 36, Math.toRadians(0));
 
     /** Specimen scoring cycles */
     private final Pose specimenScorePos5 = new Pose(41, 77);
@@ -75,8 +75,8 @@ public class RedRight extends LinearOpMode {
     private final Pose specimenScorePos1 = new Pose(41, 69);
 
     /** back position for specimen pickup */
-    private final Pose specimenPickupPos2 = new Pose(12, 38, Math.toRadians(0));
-    private final Pose specimenPickupFinalPos2 = new Pose(9, 38, Math.toRadians(0));
+    private final Pose specimenPickupPos2 = new Pose(16, 38, Math.toRadians(0));
+    private final Pose specimenPickupFinalPos2 = new Pose(12, 38, Math.toRadians(0));
 
 
     /** Park position */
@@ -184,7 +184,7 @@ public class RedRight extends LinearOpMode {
                 poseDeltaX = Math.abs(follower.getPose().getX() - afterPushingPos.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - afterPushingPos.getY());
 
-                if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                if (poseDeltaX <= 1 && poseDeltaY <= 2) {
                     follower.followPath(toSpecimenPickupPosition, true);
                     setPathState(2);
                 }
