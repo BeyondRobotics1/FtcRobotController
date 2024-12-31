@@ -59,20 +59,20 @@ public class RedRight extends LinearOpMode {
     private final Pose pos23 = new Pose(30, 17, Math.toRadians(0));
 
     private final Pose pos31 = new Pose(50, 17, Math.toRadians(0));
-    private final Pose pos32 = new Pose(56, 11.5, Math.toRadians(0));
-    private final Pose pos33 = new Pose(30, 11.5, Math.toRadians(0));//20, 9
+    private final Pose pos32 = new Pose(56, 10, Math.toRadians(0));
+    private final Pose pos33 = new Pose(30, 10, Math.toRadians(0));//20, 9
     private final Pose afterPushingPos = new Pose(31, 20, Math.toRadians(0));
 
     /** Specimen pickup position from wall */
-    private final Pose specimenPickupPos = new Pose(16, 36, Math.toRadians(0));
-    private final Pose specimenPickupFinalPos = new Pose(12, 36, Math.toRadians(0));
+    private final Pose specimenPickupPos = new Pose(15, 36, Math.toRadians(0));
+    private final Pose specimenPickupFinalPos = new Pose(11, 36, Math.toRadians(0));
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos5 = new Pose(39, 77);
-    private final Pose specimenScorePos4 = new Pose(39, 75);
-    private final Pose specimenScorePos3 = new Pose(39, 73);
-    private final Pose specimenScorePos2 = new Pose(39, 71);
-    private final Pose specimenScorePos1 = new Pose(39, 69);
+    private final Pose specimenScorePos5 = new Pose(41.5, 79);
+    private final Pose specimenScorePos4 = new Pose(41.5, 76.5);
+    private final Pose specimenScorePos3 = new Pose(41.5, 74);
+    private final Pose specimenScorePos2 = new Pose(41.5, 71.5);
+    private final Pose specimenScorePos1 = new Pose(41.5, 69);
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(16, 38, Math.toRadians(0));
@@ -99,7 +99,7 @@ public class RedRight extends LinearOpMode {
     private PathChain parking;
 
     /** Outtake arm takes time to swing down, need to wait this timeout in ms to finish*/
-    private final int scoreTimeout = 300;
+    private final int scoreTimeout = 500;
 
 
     @Override
