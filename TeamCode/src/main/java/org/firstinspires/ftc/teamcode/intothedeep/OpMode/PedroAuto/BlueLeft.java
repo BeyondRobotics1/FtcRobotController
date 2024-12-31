@@ -94,7 +94,7 @@ public class BlueLeft extends LinearOpMode {
         //clawRotor.SetClawDown();
 
         outtakeArm = new OuttakeArm(hardwareMap, this);
-
+        outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
         intake = new Intake(hardwareMap, this);
         //intake.MoveToOuttakePosition();
 
