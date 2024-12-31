@@ -66,11 +66,11 @@ public class BlueLeft extends LinearOpMode {
     private final Pose pickup4Pose = new Pose(18, 90, Math.toRadians(-135));
 
     /** Park Pose for our robot, after we do all of the scoring. */
-    private final Pose parkPose = new Pose(60, 98, Math.toRadians(90));
+    private final Pose parkPose = new Pose(60, 92, Math.toRadians(90));
 
     /** Park Control Pose for our robot, this is used to manipulate the bezier curve that we will create for the parking.
      * The Robot will not go to this pose, it is used a control point for our bezier curve. */
-    private final Pose parkControlPose = new Pose(60, 98, Math.toRadians(90));
+    private final Pose parkControlPose = new Pose(75, 110, Math.toRadians(90));
 
     private Path scorePreload, park;
     private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
@@ -417,8 +417,10 @@ public class BlueLeft extends LinearOpMode {
             case 29:
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
-
-                    follower.followPath(grabPickup4, true);
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+                    intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
+                    intake.MoveToOuttakePosition();
+                    follower.followPath(park, true);
                     setPathState(30);
                 }
                 break;
@@ -426,8 +428,8 @@ public class BlueLeft extends LinearOpMode {
             case 30:
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup4Pose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - pickup4Pose.getY());
-
-                if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                if (poseDeltaX <= 1 && poseDeltaY <= 1 || actionTimer.getElapsedTime() >= 4000) {
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
                     setPathState(31);
                 }
                 break;

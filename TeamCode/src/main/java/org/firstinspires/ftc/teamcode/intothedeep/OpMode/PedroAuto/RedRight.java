@@ -51,7 +51,7 @@ public class RedRight extends LinearOpMode {
 
     private final Pose pos11 = new Pose(56, 36, Math.toRadians(0));
     private final Pose pos12 = new Pose(56, 28, Math.toRadians(0));
-    private final Pose pos13 = new Pose(30, 28, Math.toRadians(0));
+    private final Pose pos13 = new Pose(23, 28, Math.toRadians(0));
 
 
     private final Pose pos21 = new Pose(50, 28, Math.toRadians(0));
@@ -68,11 +68,11 @@ public class RedRight extends LinearOpMode {
     private final Pose specimenPickupFinalPos = new Pose(12, 36, Math.toRadians(0));
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos5 = new Pose(41, 77);
-    private final Pose specimenScorePos4 = new Pose(41, 75);
-    private final Pose specimenScorePos3 = new Pose(41, 73);
-    private final Pose specimenScorePos2 = new Pose(41, 71);
-    private final Pose specimenScorePos1 = new Pose(41, 69);
+    private final Pose specimenScorePos5 = new Pose(39, 77);
+    private final Pose specimenScorePos4 = new Pose(39, 75);
+    private final Pose specimenScorePos3 = new Pose(39, 73);
+    private final Pose specimenScorePos2 = new Pose(39, 71);
+    private final Pose specimenScorePos1 = new Pose(39, 69);
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(16, 38, Math.toRadians(0));
