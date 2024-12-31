@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
-import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -24,9 +23,10 @@ public class Slide{
     public enum SlideTargetPosition
     {
         DOWN(0),
-        LOW_BASKET(1),
-        HIGH_BASkET(2),
-        MANUAL(3);
+        DROP_SAMPLE(1),
+        LOW_BASKET(2),
+        HIGH_BASkET(3),
+        MANUAL(4);
 
         private final int value;
         private SlideTargetPosition(int value) {
@@ -39,7 +39,7 @@ public class Slide{
     }
 
     //the slide extension length in inches corresponding to the above
-    double[] slidePositionInches = {0, 6, 16, 0};//16
+    double[] slidePositionInches = {0, 2, 6, 16, 0};//16
 
     public enum SlideMode
     {
@@ -89,54 +89,6 @@ public class Slide{
         slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-//    /**
-//     * Move slide up/down using RUN_TO_POSITION mode,
-//     * This method will wait for target position is reached
-//     * @param inches: inches to move up
-//     * @param speed: power for motors
-//     */
-//    public void moveTo(double inches, double speed)
-//    {
-//        // Determine new target position, and pass to motor controller
-//        int newPosition = (int)(inches * COUNTS_PER_INCH);
-//        slideMotor1.setTargetPosition(newPosition);
-//        slideMotor2.setTargetPosition(newPosition);
-//
-//        // Turn On RUN_TO_POSITION
-//        slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//        slideMotor1.setPower(speed);
-//        slideMotor2.setPower(speed);
-//
-//        // keep looping while we are still active and both motors are running.
-//        while (slideMotor1.isBusy()){
-//            //if(touchSensorHighLimit.getState() == false) {
-//            //   break;
-//            //}
-//        }
-//
-//        // Stop all motion
-//        slideMotor1.setPower(0);
-//        slideMotor2.setPower(0);
-//
-//        // Turn off RUN_TO_POSITION
-//        slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//    }
-//
-//    /**
-//     * Move to specific junction position
-//     * @param position: predefined position
-//     * @param speed: motor power
-//     */
-//    public void moveToPredefinedPosition(SlideTargetPosition position, double speed)
-//    {
-//
-//        moveTo(slidePositionInches[position.getValue()], speed);
-//    }
-
 
     /**
      * Move to specific position without waiting for motor to finish
@@ -235,8 +187,10 @@ public class Slide{
             {
                 activeMode = Slide.SlideMode.AUTO_STAY;
 
-                slideMotor1.setPower(0.002);
-                slideMotor2.setPower(0.002);
+                //this is to compensate the weight
+                //so slide is able to stay at the target position
+                slideMotor1.setPower(0.001);
+                slideMotor2.setPower(0.001);
 
                 slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 slideMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
