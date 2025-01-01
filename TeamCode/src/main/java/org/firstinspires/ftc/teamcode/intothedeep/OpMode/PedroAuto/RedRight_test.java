@@ -16,9 +16,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "Blue Right (IntoTheDeep)", group = "A Into the Deep")
+@Autonomous(name = "Red Right Test (IntoTheDeep)", group = "A Into the Deep")
 
-public class BlueRight extends LinearOpMode {
+public class RedRight_test extends LinearOpMode {
 
     //log for debugging purpose
     Log log;
@@ -51,36 +51,36 @@ public class BlueRight extends LinearOpMode {
 
     private final Pose pos11 = new Pose(56, 36, Math.toRadians(0));
     private final Pose pos12 = new Pose(56, 28, Math.toRadians(0));
-    private final Pose pos13 = new Pose(23, 28, Math.toRadians(0));//24,28
+    private final Pose pos13 = new Pose(23, 28, Math.toRadians(0));
 
 
     private final Pose pos21 = new Pose(50, 28, Math.toRadians(0));
     private final Pose pos22 = new Pose(56, 17, Math.toRadians(0));
-    private final Pose pos23 = new Pose(23, 17, Math.toRadians(0));//24, 17
+    private final Pose pos23 = new Pose(30, 17, Math.toRadians(0));
 
     private final Pose pos31 = new Pose(50, 17, Math.toRadians(0));
-    private final Pose pos32 = new Pose(56, 9, Math.toRadians(0));
-    private final Pose pos33 = new Pose(30, 9, Math.toRadians(0));//20, 9
-    private final Pose afterPushingPos = new Pose(31, 9, Math.toRadians(0));
+    private final Pose pos32 = new Pose(56, 10, Math.toRadians(0));
+    private final Pose pos33 = new Pose(30, 10, Math.toRadians(0));//20, 9
+    private final Pose afterPushingPos = new Pose(31, 20, Math.toRadians(0));
 
     /** Specimen pickup position from wall */
-    private final Pose specimenPickupPos = new Pose(14, 37, Math.toRadians(0)); //12, 36
-    private final Pose specimenPickupFinalPos = new Pose(9.5, 37, Math.toRadians(0)); //9, 36
+    private final Pose specimenPickupPos = new Pose(15, 36, Math.toRadians(0));
+    private final Pose specimenPickupFinalPos = new Pose(11, 36, Math.toRadians(0));
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos5 = new Pose(41, 77);
-    private final Pose specimenScorePos4 = new Pose(41, 75);
-    private final Pose specimenScorePos3 = new Pose(41, 73);
-    private final Pose specimenScorePos2 = new Pose(41, 71);
-    private final Pose specimenScorePos1 = new Pose(41, 69);
+    private final Pose specimenScorePos5 = new Pose(41.5, 79);
+    private final Pose specimenScorePos4 = new Pose(41.5, 76.5);
+    private final Pose specimenScorePos3 = new Pose(41.5, 74);
+    private final Pose specimenScorePos2 = new Pose(41.5, 71.5);
+    private final Pose specimenScorePos1 = new Pose(41.5, 69);
 
     /** back position for specimen pickup */
-    private final Pose specimenPickupPos2 = new Pose(14, 37.5, Math.toRadians(0)); //12, 38
-    private final Pose specimenPickupFinalPos2 = new Pose(9.5, 37.5, Math.toRadians(0)); //9, 38
+    private final Pose specimenPickupPos2 = new Pose(16, 38, Math.toRadians(0));
+    private final Pose specimenPickupFinalPos2 = new Pose(12, 38, Math.toRadians(0));
 
 
     /** Park position */
-    private final Pose parkPos = new Pose(16, 24);//15, 24
+    private final Pose parkPos = new Pose(15, 24);
 
     /** Paths for pushing and move to pickup position */
     private PathChain push, toSpecimenPickupPosition, toSpecimenPickupFinalPosition;
@@ -99,11 +99,8 @@ public class BlueRight extends LinearOpMode {
     private PathChain parking;
 
     /** Outtake arm takes time to swing down, need to wait this timeout in ms to finish*/
-    private final int scoreTimeout = 300;
-    /** Wait this amount of ms second before moving to the final pickup postion*/
-    private final int pickupWaitTime = 100;
-    /** Pickup position tolerance in inches*/
-    private final double pickupPositionToleranceX = 0.75;
+    private final int scoreTimeout = 500;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -182,12 +179,12 @@ public class BlueRight extends LinearOpMode {
 
                 setPathState(1);
                 break;
-                /** #1 */
+            /** #1 */
             case 1: //move to specimen pickup zone
                 poseDeltaX = Math.abs(follower.getPose().getX() - afterPushingPos.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - afterPushingPos.getY());
 
-                if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                if (poseDeltaX <= 1 && poseDeltaY <= 2) {
                     follower.followPath(toSpecimenPickupPosition, true);
                     setPathState(2);
                 }
@@ -205,7 +202,7 @@ public class BlueRight extends LinearOpMode {
                 }
                 break;
             case 3: //time out, move to the final specimen pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+                if (actionTimer.getElapsedTime() >= 50) {
 
                     follower.followPath(toSpecimenPickupFinalPosition, true);
                     setPathState(4);
@@ -216,7 +213,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     pickupSpecimen();
 
@@ -230,7 +227,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos1.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -248,7 +245,7 @@ public class BlueRight extends LinearOpMode {
                     setPathState(7);
                 }
                 break;
-                /** #2 */
+            /** #2 */
             case 7: //move to pickup pos
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
@@ -259,7 +256,7 @@ public class BlueRight extends LinearOpMode {
                 }
                 break;
             case 8: //time out, move to the final specimen pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+                if (actionTimer.getElapsedTime() >= 50) {
 
                     follower.followPath(backToSpecimenPickupFinalPosition, true);
                     setPathState(9);
@@ -270,7 +267,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     pickupSpecimen();
 
@@ -283,7 +280,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos2.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -301,7 +298,7 @@ public class BlueRight extends LinearOpMode {
                     setPathState(12);
                 }
                 break;
-                /** #3 */
+            /** #3 */
             case 12: //Reached the pickup position
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
@@ -312,7 +309,7 @@ public class BlueRight extends LinearOpMode {
                 }
                 break;
             case 13: //move to final pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+                if (actionTimer.getElapsedTime() >= 50) {
 
                     follower.followPath(backToSpecimenPickupFinalPosition, true);
                     setPathState(14);
@@ -323,7 +320,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     pickupSpecimen();
 
@@ -336,7 +333,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos3.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -366,7 +363,7 @@ public class BlueRight extends LinearOpMode {
                 }
                 break;
             case 18: //move to final pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+                if (actionTimer.getElapsedTime() >= 50) {
 
                     follower.followPath(backToSpecimenPickupFinalPosition, true);
                     setPathState(19);
@@ -377,7 +374,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     pickupSpecimen();
 
@@ -390,7 +387,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -420,7 +417,7 @@ public class BlueRight extends LinearOpMode {
                 }
                 break;
             case 23: //move to final pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+                if (actionTimer.getElapsedTime() >= 50) {
 
                     follower.followPath(backToSpecimenPickupFinalPosition, true);
                     setPathState(24);
@@ -431,7 +428,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     pickupSpecimen();
 
@@ -444,7 +441,7 @@ public class BlueRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();

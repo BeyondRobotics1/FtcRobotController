@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "Blue Left (IntoTheDeep)", group = "A Into the Deep")
+@Autonomous(name = "Auto Left Sample (IntoTheDeep)", group = "A Into the Deep")
 
-public class BlueLeft extends LinearOpMode {
+public class AutoLeft extends LinearOpMode {
 
     //our robot subsystems
     Slide slide;
@@ -50,7 +50,7 @@ public class BlueLeft extends LinearOpMode {
     /** Start Pose of our robot */
     private final Pose startPose = new Pose(7.25, 109.75, Math.toRadians(0));
 
-    private final Pose scorePose = new Pose(11, 124, Math.toRadians(-45));
+    private final Pose scorePose = new Pose(11, 124.5, Math.toRadians(-45));//11,124
     private final Pose scorePose2 = new Pose(15, 127, Math.toRadians(-45));
 
     /** Lowest (First) Sample from the Spike Mark */
@@ -60,23 +60,26 @@ public class BlueLeft extends LinearOpMode {
     private final Pose pickup2Pose = new Pose(23, 128, Math.toRadians(0));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(25, 123, Math.toRadians(45));
+    private final Pose pickup3Pose = new Pose(26.5, 123, Math.toRadians(45));//25
 
     /** Alliance's preloaded sample */
     private final Pose pickup4Pose = new Pose(18, 90, Math.toRadians(-135));
 
     /** Park Pose for our robot, after we do all of the scoring. */
-    private final Pose parkPose = new Pose(60, 92, Math.toRadians(90));
+    private final Pose parkPose = new Pose(62, 100, Math.toRadians(-90));//60, 92
 
     /** Park Control Pose for our robot, this is used to manipulate the bezier curve that we will create for the parking.
      * The Robot will not go to this pose, it is used a control point for our bezier curve. */
-    private final Pose parkControlPose = new Pose(75, 110, Math.toRadians(90));
+    private final Pose parkControlPose = new Pose(75, 110, Math.toRadians(-90));
 
     private Path scorePreload, park;
     private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
 
     private PathChain grabPickup4, scorePickup4;
 
+
+    private final double intakeOutSpeed = 0.65;
+    private final double intakeInSpeed = 0.4;
 
     Log log;
     @Override
@@ -161,7 +164,7 @@ public class BlueLeft extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if(actionTimer.getElapsedTime() >= 200) {
+                if(actionTimer.getElapsedTime() >= 330) {
                     outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePreload);
                     setPathState(2);
@@ -207,7 +210,7 @@ public class BlueLeft extends LinearOpMode {
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    intakeSlide.Move(0.65);
+                    intakeSlide.Move(intakeOutSpeed);
 
                     actionTimer.resetTimer();
                     setPathState(7);
@@ -217,7 +220,7 @@ public class BlueLeft extends LinearOpMode {
                 if(actionTimer.getElapsedTime() > 900)
                 {
                     intake.MoveToOuttakePosition();
-                    intakeSlide.Move(0.42);
+                    intakeSlide.Move(intakeInSpeed);
                     actionTimer.resetTimer();
 
                     setPathState(8);
@@ -228,6 +231,7 @@ public class BlueLeft extends LinearOpMode {
                 {
                     claw.close();
                     sleep(100);
+                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
                     actionTimer.resetTimer();
 
@@ -236,6 +240,7 @@ public class BlueLeft extends LinearOpMode {
                 break;
             case 9:
                 if(actionTimer.getElapsedTime() >= 500) {
+                    intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup1, true);
                     setPathState(10);
@@ -281,7 +286,7 @@ public class BlueLeft extends LinearOpMode {
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    intakeSlide.Move(0.65);
+                    intakeSlide.Move(intakeOutSpeed);
 
                     actionTimer.resetTimer();
                     setPathState(15);
@@ -291,7 +296,7 @@ public class BlueLeft extends LinearOpMode {
                 if(actionTimer.getElapsedTime() > 900)
                 {
                     intake.MoveToOuttakePosition();
-                    intakeSlide.Move(0.42);
+                    intakeSlide.Move(intakeInSpeed);
                     actionTimer.resetTimer();
 
                     setPathState(16);
@@ -302,6 +307,7 @@ public class BlueLeft extends LinearOpMode {
                 {
                     claw.close();
                     sleep(100);
+                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
                     actionTimer.resetTimer();
 
@@ -310,6 +316,7 @@ public class BlueLeft extends LinearOpMode {
                 break;
             case 17:
                 if(actionTimer.getElapsedTime() >= 500) {
+                    intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup2, true);
                     setPathState(18);
@@ -355,7 +362,7 @@ public class BlueLeft extends LinearOpMode {
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    intakeSlide.Move(0.65);
+                    intakeSlide.Move(intakeOutSpeed);
 
                     actionTimer.resetTimer();
                     setPathState(23);
@@ -365,7 +372,7 @@ public class BlueLeft extends LinearOpMode {
                 if(actionTimer.getElapsedTime() > 900)
                 {
                     intake.MoveToOuttakePosition();
-                    intakeSlide.Move(0.42);
+                    intakeSlide.Move(intakeInSpeed);
                     actionTimer.resetTimer();
 
                     setPathState(24);
@@ -376,6 +383,7 @@ public class BlueLeft extends LinearOpMode {
                 {
                     claw.close();
                     sleep(100);
+                    intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
                     actionTimer.resetTimer();
 
@@ -384,6 +392,7 @@ public class BlueLeft extends LinearOpMode {
                 break;
             case 25:
                 if(actionTimer.getElapsedTime() >= 500) {
+                    intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup3, true);
                     setPathState(26);
@@ -417,19 +426,19 @@ public class BlueLeft extends LinearOpMode {
             case 29:
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
                     intake.MoveToOuttakePosition();
                     follower.followPath(park, true);
                     setPathState(30);
                 }
                 break;
-                /** #4 */
+            /** Park */
             case 30:
+
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup4Pose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - pickup4Pose.getY());
                 if (poseDeltaX <= 1 && poseDeltaY <= 1 || actionTimer.getElapsedTime() >= 4000) {
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
                     setPathState(31);
                 }
                 break;

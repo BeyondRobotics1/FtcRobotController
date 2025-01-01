@@ -157,11 +157,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             slideOutSpeed = Helper.squareWithSign((slideOutSpeed + 1) * 0.5);
 
             //cap the retraction and push power into the desired range
-            if(slideOutSpeed < 0.43)
-                slideOutSpeed = 0.43;
+            if(slideOutSpeed < 0.5)//0.43
+                slideOutSpeed = 0.5;
 
-            if(slideOutSpeed > 0.7)
-                slideOutSpeed = 0.7;
+            //if(slideOutSpeed > 0.9)//0.7
+            //    slideOutSpeed = 0.9;
 
             intakeSlide.Move(slideOutSpeed);
 
@@ -174,9 +174,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             intake.MoveToOuttakePosition();
 
             //scale from [0 1] to [0 0.5], move in
-            intakeSlide.Move(0.5-slideInSpeed*0.4);
+            intakeSlide.Move(0.5-slideInSpeed*0.5);
 
-            telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.4);
+            telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
         }
         else
             intakeSlide.Move(0.485);
