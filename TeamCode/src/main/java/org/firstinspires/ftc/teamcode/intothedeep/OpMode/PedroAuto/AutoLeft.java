@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.Log;
@@ -31,6 +32,7 @@ public class AutoLeft extends LinearOpMode {
     OuttakeArm outtakeArm;
     Intake intake;
     IntakeSlide intakeSlide;
+    private DigitalChannel touchSensorFrontLimit;
 
     //Pedro pathing
     private Follower follower;
@@ -66,7 +68,7 @@ public class AutoLeft extends LinearOpMode {
     private final Pose pickup4Pose = new Pose(18, 90, Math.toRadians(-135));
 
     /** Park Pose for our robot, after we do all of the scoring. */
-    private final Pose parkPose = new Pose(62, 100, Math.toRadians(-90));//60, 92
+    private final Pose parkPose = new Pose(60, 92, Math.toRadians(-90));//60, 92
 
     /** Park Control Pose for our robot, this is used to manipulate the bezier curve that we will create for the parking.
      * The Robot will not go to this pose, it is used a control point for our bezier curve. */
@@ -79,6 +81,8 @@ public class AutoLeft extends LinearOpMode {
 
 
     private final double intakeOutSpeed = 0.65;
+
+    //It can be faster if aiming for 1+4 or 1+5
     private final double intakeInSpeed = 0.4;
 
     Log log;
@@ -103,6 +107,9 @@ public class AutoLeft extends LinearOpMode {
 
         intakeSlide = new IntakeSlide(hardwareMap);
         intakeSlide.Move(0.49);
+
+        touchSensorFrontLimit =  hardwareMap.get(DigitalChannel.class, "frontLimit");
+        touchSensorFrontLimit.setMode(DigitalChannel.Mode.INPUT);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -417,7 +424,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 28: //Claw fully opened, reset arm
                 if(actionTimer.getElapsedTime() >= 250) {
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_PARK_POSITION1);
                     actionTimer.resetTimer();
 
                     setPathState(29);
@@ -426,7 +433,6 @@ public class AutoLeft extends LinearOpMode {
             case 29:
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
                     intake.MoveToOuttakePosition();
                     follower.followPath(park, true);
@@ -435,10 +441,11 @@ public class AutoLeft extends LinearOpMode {
                 break;
             /** Park */
             case 30:
-
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup4Pose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - pickup4Pose.getY());
-                if (poseDeltaX <= 1 && poseDeltaY <= 1 || actionTimer.getElapsedTime() >= 4000) {
+                if (poseDeltaY <= 1 || !touchSensorFrontLimit.getState()) {
+                    //actionTimer.resetTimer();
+                    outtakeArm.Rotate(outtakeArm.SPECIMEN_PARK_POSITION2);
                     setPathState(31);
                 }
                 break;

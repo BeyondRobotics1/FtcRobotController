@@ -15,6 +15,9 @@ public class OuttakeArm {
     public final double SPECIMEN_SCORE_POSITION = 0.32; //
     public final double SAMPLE_DELIVERY_POSITION = 0.75; //0.22
 
+    public final double SPECIMEN_PARK_POSITION1 = 0.40; //
+    public final double SPECIMEN_PARK_POSITION2 = 0.36; //
+
     private Servo rotateServo;
     private LinearOpMode mode;//set the telemetry
 
