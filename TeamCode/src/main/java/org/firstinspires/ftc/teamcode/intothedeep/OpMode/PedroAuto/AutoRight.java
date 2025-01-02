@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.common.Log;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
@@ -30,6 +32,8 @@ public class AutoRight extends LinearOpMode {
     OuttakeArm outtakeArm;
     Intake intake;
     IntakeSlide intakeSlide;
+
+    private DigitalChannel touchSensorFrontLimit;
 
     //Pedro pathing
     private Follower follower;
@@ -68,11 +72,15 @@ public class AutoRight extends LinearOpMode {
     private final Pose specimenPickupFinalPos = new Pose(9.5, 37, Math.toRadians(0)); //9, 36
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos5 = new Pose(41.25, 77);//41
-    private final Pose specimenScorePos4 = new Pose(41.25, 75);
-    private final Pose specimenScorePos3 = new Pose(41.25, 73);
-    private final Pose specimenScorePos2 = new Pose(41.25, 71);
-    private final Pose specimenScorePos1 = new Pose(41.25, 69);
+    private final Pose specimenScorePos1 = new Pose(41.25, 71);//start 69
+    private final Pose specimenScorePos2 = new Pose(41.25, 73);
+    private final Pose specimenScorePos3 = new Pose(41.25, 75);
+    private final Pose specimenScorePos4 = new Pose(41.25, 77);
+    private final Pose specimenScorePos5 = new Pose(41.25, 79);//41
+
+
+
+
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(14, 38, Math.toRadians(0)); //12, 38
@@ -120,6 +128,9 @@ public class AutoRight extends LinearOpMode {
         intake = new Intake(hardwareMap, this);
         intakeSlide = new IntakeSlide(hardwareMap);
 
+        touchSensorFrontLimit =  hardwareMap.get(DigitalChannel.class, "frontLimit");
+        touchSensorFrontLimit.setMode(DigitalChannel.Mode.INPUT);
+
         /** Create Timer instances */
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -154,6 +165,7 @@ public class AutoRight extends LinearOpMode {
         claw.open();
         clawRotor.SetClawUp();
         outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+        intake.MoveToOuttakePosition();
 
         while (!isStopRequested()  && opModeIsActive()) {
             follower.update();
@@ -230,7 +242,7 @@ public class AutoRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos1.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -283,7 +295,7 @@ public class AutoRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos2.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -336,7 +348,7 @@ public class AutoRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos3.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -390,7 +402,7 @@ public class AutoRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -444,7 +456,7 @@ public class AutoRight extends LinearOpMode {
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX){// && poseDeltaY < 1) {
+                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
