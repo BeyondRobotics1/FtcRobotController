@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.common.Log;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
@@ -32,7 +33,6 @@ public class AutoRight extends LinearOpMode {
     OuttakeArm outtakeArm;
     Intake intake;
     IntakeSlide intakeSlide;
-
     private DigitalChannel touchSensorFrontLimit;
 
     //Pedro pathing
@@ -72,10 +72,10 @@ public class AutoRight extends LinearOpMode {
     private final Pose specimenPickupFinalPos = new Pose(9.5, 37, Math.toRadians(0)); //9, 36
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos1 = new Pose(41.25, 71);//start 69
-    private final Pose specimenScorePos2 = new Pose(41.25, 73);
-    private final Pose specimenScorePos3 = new Pose(41.25, 75);
-    private final Pose specimenScorePos4 = new Pose(41.25, 77);
+    private final Pose specimenScorePos1 = new Pose(41.25, 69);//start 69
+    private final Pose specimenScorePos2 = new Pose(41.25, 71.5);
+    private final Pose specimenScorePos3 = new Pose(41.25, 74);
+    private final Pose specimenScorePos4 = new Pose(41.25, 76.5);
     private final Pose specimenScorePos5 = new Pose(41.25, 79);//41
 
 
@@ -151,6 +151,7 @@ public class AutoRight extends LinearOpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("is touch sensor pressed?", !touchSensorFrontLimit.getState());
         telemetry.update();
 
         /** Waiting for Play button being touched */
@@ -176,6 +177,7 @@ public class AutoRight extends LinearOpMode {
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
+            telemetry.addData("is touch sensor pressed?", !touchSensorFrontLimit.getState());
             telemetry.update();
         }
 
