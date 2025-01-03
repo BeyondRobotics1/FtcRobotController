@@ -265,7 +265,14 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
         } else if (gamepad2Ex.isDown(GamepadKeys.Button.Y)) //button y, set the arm to the specimen ready position
         {
-            outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+            //change to SPECIMEN_READY_POSITION if it doesn't work
+            //need full battery
+            outtakeArm.Rotate(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
+
+            //old high with momentum
+            //outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+
+
             clawRotor.SetClawDown();
         } else if (gamepad2Ex.isDown(GamepadKeys.Button.B)) //button b, set the arm to score samples into high basket
         {
