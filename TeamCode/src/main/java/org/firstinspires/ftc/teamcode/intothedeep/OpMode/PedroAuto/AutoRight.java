@@ -80,7 +80,12 @@ public class AutoRight extends LinearOpMode {
 
 
 
-
+    private final Pose specimenScorePos11 = new Pose(36, 69);//stage to score pose 1
+    private final Pose specimenScorePos1 = new Pose(43, 69);//start 69
+    private final Pose specimenScorePos2 = new Pose(41.5, 71);
+    private final Pose specimenScorePos3 = new Pose(41.5, 73.5);
+    private final Pose specimenScorePos4 = new Pose(41.5, 76);
+    private final Pose specimenScorePos5 = new Pose(41.5, 78.5);//41
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(14, 38, Math.toRadians(0)); //12, 38
@@ -94,7 +99,7 @@ public class AutoRight extends LinearOpMode {
     private PathChain push, toSpecimenPickupPosition, toSpecimenPickupFinalPosition;
 
     /** Paths for scoring */
-    private PathChain scoreSpecimen1, backToSpecimenPickupPosition1;
+    private PathChain scoreSpecimen11, scoreSpecimen1, backToSpecimenPickupPosition1;
     private PathChain scoreSpecimen2, backToSpecimenPickupPosition2;
     private PathChain scoreSpecimen3, backToSpecimenPickupPosition3;
     private PathChain scoreSpecimen4, backToSpecimenPickupPosition4;
@@ -186,7 +191,7 @@ public class AutoRight extends LinearOpMode {
 
     private void autonomousPathUpdate()
     {
-        double headingDelta = 0;
+        //double headingDelta = 0;
         double poseDeltaX = 0;
         double poseDeltaY = 0;
 
@@ -207,7 +212,7 @@ public class AutoRight extends LinearOpMode {
                 }
                 break;
             case 2: //reached the ready position, wait for some time
-                poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos.getX());
+                //poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos.getY());
 
                 //if the position is reached
@@ -234,14 +239,30 @@ public class AutoRight extends LinearOpMode {
 
                     pickupSpecimen();
 
-                    follower.followPath(scoreSpecimen1, true);
-                    setPathState(5);
+                    follower.followPath(scoreSpecimen11, true);
+                    setPathState(5);//stage position
                 }
                 break;
-
-            case 5: //score 1 - arm down
+            case 5:
+                poseDeltaX = Math.abs(follower.getPose().getX() - specimenScorePos11.getX());
+                if(poseDeltaX < 1.2)
+                {
+                    actionTimer.resetTimer();
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if(actionTimer.getElapsedTime() >= 50)
+                {
+                    follower.followPath(scoreSpecimen1, true);
+                    setPathState(7);
+                }
+                break;
+            case 7: //score 1 - arm down
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenScorePos1.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos1.getY());
+
+                //logTouchSensor(8);
 
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
@@ -249,37 +270,37 @@ public class AutoRight extends LinearOpMode {
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
-                    setPathState(6);
+                    setPathState(8);
                 }
                 break;
-            case 6: //score 1 - open claw
+            case 8: //score 1 - open claw
                 if(actionTimer.getElapsedTime() >= scoreTimeout) {//300
 
                     releaseSpecimen();
 
                     follower.followPath(backToSpecimenPickupPosition1, true);
 
-                    setPathState(7);
-                }
-                break;
-                /** #2 */
-            case 7: //move to pickup pos
-                poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
-                //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
-
-                if(poseDeltaX <1.2) {// && poseDeltaY < 1) {
-                    actionTimer.resetTimer();
-                    setPathState(8);
-                }
-                break;
-            case 8: //time out, move to the final specimen pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
-
-                    follower.followPath(backToSpecimenPickupFinalPosition, true);
                     setPathState(9);
                 }
                 break;
-            case 9://final pickup pos reached, pickup #2
+                /** #2 */
+            case 9: //move to pickup pos
+                poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
+                //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
+
+                if(poseDeltaX < 1.2) {// && poseDeltaY < 1) {
+                    actionTimer.resetTimer();
+                    setPathState(10);
+                }
+                break;
+            case 10: //time out, move to the final specimen pickup position
+                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+
+                    follower.followPath(backToSpecimenPickupFinalPosition, true);
+                    setPathState(11);
+                }
+                break;
+            case 11://final pickup pos reached, pickup #2
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupFinalPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
@@ -289,12 +310,14 @@ public class AutoRight extends LinearOpMode {
                     pickupSpecimen();
 
                     follower.followPath(scoreSpecimen2, true);
-                    setPathState(10);
+                    setPathState(12);
                 }
                 break;
-            case 10: //score 2 - arm down
+            case 12: //score 2 - arm down
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenScorePos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos2.getY());
+
+                //logTouchSensor(13);
 
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
@@ -302,37 +325,37 @@ public class AutoRight extends LinearOpMode {
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
-                    setPathState(11);
+                    setPathState(13);
                 }
                 break;
-            case 11: //score 2 - open claw & move back from specimenScorePos2 to pickup position
+            case 13: //score 2 - open claw & move back from specimenScorePos2 to pickup position
                 if(actionTimer.getElapsedTime() >= scoreTimeout) {
 
                     releaseSpecimen();
 
                     follower.followPath(backToSpecimenPickupPosition2, true);
 
-                    setPathState(12);
-                }
-                break;
-                /** #3 */
-            case 12: //Reached the pickup position
-                poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
-                //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
-
-                if(poseDeltaX <1.2) {// && poseDeltaY < 1) {
-                    actionTimer.resetTimer();
-                    setPathState(13);
-                }
-                break;
-            case 13: //move to final pickup position
-                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
-
-                    follower.followPath(backToSpecimenPickupFinalPosition, true);
                     setPathState(14);
                 }
                 break;
-            case 14://final pickup pos reached, pickup #3
+                /** #3 */
+            case 14: //Reached the pickup position
+                poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
+                //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
+
+                if(poseDeltaX < 1.2) {// && poseDeltaY < 1) {
+                    actionTimer.resetTimer();
+                    setPathState(15);
+                }
+                break;
+            case 15: //move to final pickup position
+                if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
+
+                    follower.followPath(backToSpecimenPickupFinalPosition, true);
+                    setPathState(16);
+                }
+                break;
+            case 16://final pickup pos reached, pickup #3
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupFinalPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
@@ -342,12 +365,14 @@ public class AutoRight extends LinearOpMode {
                     pickupSpecimen();
 
                     follower.followPath(scoreSpecimen3, true);
-                    setPathState(15);
+                    setPathState(17);
                 }
                 break;
-            case 15: //score 3 - arm down
+            case 17: //score 3 - arm down
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenScorePos3.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos3.getY());
+
+                //logTouchSensor(18);
 
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
@@ -355,38 +380,38 @@ public class AutoRight extends LinearOpMode {
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
-                    setPathState(16);
+                    setPathState(18);
                 }
                 break;
-            case 16: //score 3 - open claw
+            case 18: //score 3 - open claw
                 if(actionTimer.getElapsedTime() >= scoreTimeout) {
 
                     releaseSpecimen();
 
                     follower.followPath(backToSpecimenPickupPosition3, true);
 
-                    setPathState(17);
+                    setPathState(19);
                 }
                 break;
 
             /** #4 */
-            case 17: //Reached the pickup position
+            case 19: //Reached the pickup position
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
 
-                if(poseDeltaX <1.2) {// && poseDeltaY < 1) {
+                if(poseDeltaX < 1.2) {// && poseDeltaY < 1) {
                     actionTimer.resetTimer();
-                    setPathState(18);
+                    setPathState(20);
                 }
                 break;
-            case 18: //move to final pickup position
+            case 20: //move to final pickup position
                 if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
 
                     follower.followPath(backToSpecimenPickupFinalPosition, true);
-                    setPathState(19);
+                    setPathState(21);
                 }
                 break;
-            case 19://final pickup pos reached, pickup #3
+            case 21://final pickup pos reached, pickup #3
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupFinalPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
@@ -396,12 +421,14 @@ public class AutoRight extends LinearOpMode {
                     pickupSpecimen();
 
                     follower.followPath(scoreSpecimen4, true);
-                    setPathState(20);
+                    setPathState(22);
                 }
                 break;
-            case 20: //score 4 - arm down
+            case 22: //score 4 - arm down
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenScorePos4.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
+
+                //logTouchSensor(23);
 
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
@@ -409,38 +436,38 @@ public class AutoRight extends LinearOpMode {
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
-                    setPathState(21);
+                    setPathState(23);
                 }
                 break;
-            case 21: //score 4 - open claw
+            case 23: //score 4 - open claw
                 if(actionTimer.getElapsedTime() >= scoreTimeout) {
 
                     releaseSpecimen();
 
                     follower.followPath(backToSpecimenPickupPosition4, true);
 
-                    setPathState(22);
+                    setPathState(24);
                 }
                 break;
 
             /** #5 */
-            case 22: //Reached the pickup position
+            case 24: //Reached the pickup position
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupPos2.getY());
 
-                if(poseDeltaX <1.2) {// && poseDeltaY < 1) {
+                if(poseDeltaX < 1.2) {// && poseDeltaY < 1) {
                     actionTimer.resetTimer();
-                    setPathState(23);
+                    setPathState(25);
                 }
                 break;
-            case 23: //move to final pickup position
+            case 25: //move to final pickup position
                 if (actionTimer.getElapsedTime() >= pickupWaitTime) {//50
 
                     follower.followPath(backToSpecimenPickupFinalPosition, true);
-                    setPathState(24);
+                    setPathState(26);
                 }
                 break;
-            case 24://final pickup pos reached, pickup #3
+            case 26://final pickup pos reached, pickup #3
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupFinalPos2.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenPickupFinalPos2.getY());
 
@@ -450,12 +477,14 @@ public class AutoRight extends LinearOpMode {
                     pickupSpecimen();
 
                     follower.followPath(scoreSpecimen5, true);
-                    setPathState(25);
+                    setPathState(27);
                 }
                 break;
-            case 25: //score 4 - arm down
+            case 27: //score 4 - arm down
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenScorePos5.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
+
+                //logTouchSensor(28);
 
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
@@ -463,10 +492,10 @@ public class AutoRight extends LinearOpMode {
                     outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
-                    setPathState(26);
+                    setPathState(28);
                 }
                 break;
-            case 26: //score 4 - open claw
+            case 28: //score 4 - open claw
                 if(actionTimer.getElapsedTime() >= scoreTimeout) {
 
                     claw.open();
@@ -474,16 +503,16 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(parking, true);
 
-                    setPathState(27);
+                    setPathState(29);
                 }
                 break;
-            case 27:
+            case 29:
                 poseDeltaX = Math.abs(follower.getPose().getX() - parkPos.getX());
                 //poseDeltaY = Math.abs(follower.getPose().getY() - specimenScorePos4.getY());
 
                 //if the position is reached
-                if(poseDeltaX < 1.2) {// && poseDeltaY < 1) {
-                    setPathState(28);
+                if(poseDeltaX <= 1.2) {// && poseDeltaY < 1) {
+                    setPathState(30);
                 }
                 break;
         }
@@ -547,9 +576,14 @@ public class AutoRight extends LinearOpMode {
 
 
         //#1, start with last first pickup position as done after pushing
+        scoreSpecimen11 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(specimenPickupFinalPos), new Point(specimenScorePos11)))
+                .setLinearHeadingInterpolation(specimenPickupFinalPos.getHeading(), specimenScorePos11.getHeading())
+                .build();
+
         scoreSpecimen1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupFinalPos), new Point(specimenScorePos1)))
-                .setLinearHeadingInterpolation(specimenPickupFinalPos.getHeading(), specimenScorePos1.getHeading())
+                .addPath(new BezierLine(new Point(specimenScorePos11), new Point(specimenScorePos1)))
+                .setLinearHeadingInterpolation(specimenScorePos11.getHeading(), specimenScorePos1.getHeading())
                 .build();
 
         backToSpecimenPickupPosition1 = follower.pathBuilder()
@@ -623,14 +657,26 @@ public class AutoRight extends LinearOpMode {
 
     private void logXYDelta(Pose currentPose, Pose targetPose)
     {
-        double poseDeltaX = currentPose.getX() - targetPose.getX();
-        double poseDeltaY = currentPose.getY() - targetPose.getY();
+        if(log != null) {
+            double poseDeltaX = currentPose.getX() - targetPose.getX();
+            double poseDeltaY = currentPose.getY() - targetPose.getY();
 
-        String msg = "C: (" + currentPose.getX() + ", " +  currentPose.getY() +
-                "), T: (" + targetPose.getX() + ", " +  targetPose.getY() +
-                ")" + "Delat : (" + poseDeltaX + ", " +  poseDeltaY + ")";
+            String msg = "C: (" + currentPose.getX() + ", " + currentPose.getY() +
+                    "), T: (" + targetPose.getX() + ", " + targetPose.getY() +
+                    ")" + "Delat : (" + poseDeltaX + ", " + poseDeltaY + ")";
 
-        log.addData(msg);
-        log.update();
+            log.addData(msg);
+            log.update();
+        }
+    }
+
+    private void logTouchSensor(int step)
+    {
+        if(log != null) {
+            String msg = "Step: " + step + ", Pressed " + !touchSensorFrontLimit.getState();
+
+            log.addData(msg);
+            log.update();
+        }
     }
 }
