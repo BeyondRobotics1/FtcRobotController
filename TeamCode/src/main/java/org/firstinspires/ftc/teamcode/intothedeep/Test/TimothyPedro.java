@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.intothedeep.Test;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 @Autonomous(name = "Timothy Pedro", group = "A")
+@Disabled
 public class TimothyPedro extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private Follower follower;
