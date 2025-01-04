@@ -14,7 +14,7 @@ public class OuttakeArm {
     public final double SPECIMEN_READY_POSITION = 0.7;
 
     //this position to align with high chamber
-    public final double SPECIMEN_SHUFFLE_POSITION = 0.46; //
+    public final double SPECIMEN_SHUFFLE_POSITION = 0.54; //
 
     //this position to score a specimen
     public final double SPECIMEN_SCORE_POSITION = 0.32; //

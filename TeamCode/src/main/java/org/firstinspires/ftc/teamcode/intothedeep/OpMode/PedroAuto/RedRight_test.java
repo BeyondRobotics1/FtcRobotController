@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.common.Log;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 @Autonomous(name = "Red Right Test (IntoTheDeep)", group = "A Into the Deep")
-
+@Disabled
 public class RedRight_test extends LinearOpMode {
 
     //log for debugging purpose

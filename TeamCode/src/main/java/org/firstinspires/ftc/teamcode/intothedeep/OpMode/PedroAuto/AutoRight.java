@@ -72,14 +72,6 @@ public class AutoRight extends LinearOpMode {
     private final Pose specimenPickupFinalPos = new Pose(9.5, 37, Math.toRadians(0)); //9, 36
 
     /** Specimen scoring cycles */
-    private final Pose specimenScorePos1 = new Pose(41.25, 69);//start 69
-    private final Pose specimenScorePos2 = new Pose(41.25, 71.5);
-    private final Pose specimenScorePos3 = new Pose(41.25, 74);
-    private final Pose specimenScorePos4 = new Pose(41.25, 76.5);
-    private final Pose specimenScorePos5 = new Pose(41.25, 79);//41
-
-
-
     private final Pose specimenScorePos11 = new Pose(36, 69);//stage to score pose 1
     private final Pose specimenScorePos1 = new Pose(43, 69);//start 69
     private final Pose specimenScorePos2 = new Pose(41.5, 71);
