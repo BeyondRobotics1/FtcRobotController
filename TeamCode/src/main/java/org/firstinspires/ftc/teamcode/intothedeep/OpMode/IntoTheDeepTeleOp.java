@@ -116,6 +116,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         slideOp = Slide.SlideTargetPosition.MANUAL;
         autoCompleteMode = AutoCompleteMode.MANUAL;
         clawRotor.SetClawDown();
+        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
         boolean robotCentric = true;
         boolean leftBumperToggled = false;
 

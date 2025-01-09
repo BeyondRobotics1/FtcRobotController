@@ -85,7 +85,6 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         telemetry.addLine("Initializing claw rotor");
         telemetry.update();
         clawRotor = new ClawRotor(hardwareMap, this);
-        clawRotor.SetClawDown();
 
         telemetry.addLine("Initializing outtake arm");
         telemetry.update();
@@ -121,6 +120,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         slideOp = Slide.SlideTargetPosition.MANUAL;
         autoCompleteMode = AutoCompleteMode.MANUAL;
         clawRotor.SetClawDown();
+        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
         boolean robotCentric = true;
         boolean leftBumperToggled = false;
         boolean specMode = false;
