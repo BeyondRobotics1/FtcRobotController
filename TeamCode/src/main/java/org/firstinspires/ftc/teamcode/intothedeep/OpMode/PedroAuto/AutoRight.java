@@ -104,7 +104,7 @@ public class AutoRight extends LinearOpMode {
     private PathChain parking;
 
     /** Outtake arm takes time to swing down, need to wait this timeout in ms to finish*/
-    private final int scoreTimeout = 400;//300
+    private final int scoreTimeout = 300;//300
     /** Wait this amount of ms second before moving to the final pickup postion*/
     private final int pickupWaitTime = 100;
     /** Pickup position tolerance in inches*/

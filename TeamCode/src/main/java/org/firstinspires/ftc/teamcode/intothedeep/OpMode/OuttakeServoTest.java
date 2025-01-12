@@ -34,24 +34,32 @@ public class OuttakeServoTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+        String servoName = "";
         while (!isStopRequested() && opModeIsActive()) {
             if(servo == null) {
-                if (gamepad2.a)
+                if (gamepad2.a) {
                     servo = hardwareMap.get(Servo.class, "outtakeRotateClaw");
+                    servoName = "ClawRotor";
+                }
                 else if (gamepad2.x) {
                     servo = hardwareMap.get(Servo.class, "outtakeArm");
                     servo.setDirection(Servo.Direction.REVERSE);
+                    servoName = "OuttakeArm";
                 }
-                else if (gamepad2.y)
-                    servo = hardwareMap.get(Servo.class, "outtakeArm");
-                else if (gamepad2.b)
+                else if (gamepad2.y) {
+                    servo = hardwareMap.get(Servo.class, "outtakeArm2");
+                    servoName = "OuttakeArm2";
+                }
+                else if (gamepad2.b) {
                     servo = hardwareMap.get(Servo.class, "claw");
+                    servoName = "Claw";
+                }
             }
 
             if(servo != null) {
                 //use gamepad1 left trigger to set servo positions dynamically
                 double pivotPosition = gamepad2.left_trigger;
-                telemetry.addData("Servo position", Math.abs(pivotPosition));
+                telemetry.addData(servoName+ " position", Math.abs(pivotPosition));
                 servo.setPosition(pivotPosition);
             }
 
