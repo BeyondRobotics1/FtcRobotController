@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.common.Log;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
@@ -13,7 +12,6 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
@@ -159,10 +157,10 @@ public class AutoRight extends LinearOpMode {
         /** Play button is touched, Auto starts */
         intakeSlide.Move(0.48);
 
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_READY_POSITION);
         claw.open();
-        clawRotor.SetClawUp();
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+        clawRotor.MoveToSpecimenIntakePosition();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
         intake.MoveToOuttakePosition();
 
         while (!isStopRequested()  && opModeIsActive()) {
@@ -259,7 +257,7 @@ public class AutoRight extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(8);
@@ -314,7 +312,7 @@ public class AutoRight extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(13);
@@ -369,7 +367,7 @@ public class AutoRight extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(18);
@@ -425,7 +423,7 @@ public class AutoRight extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(23);
@@ -481,7 +479,7 @@ public class AutoRight extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(28);
@@ -635,16 +633,16 @@ public class AutoRight extends LinearOpMode {
     {
         claw.close();
         sleep(100);
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
-        clawRotor.SetClawDown();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_READY_POSITION);
+        clawRotor.MoveToSampleIntakePosition();
     }
 
     private void releaseSpecimen()
     {
         claw.open();
         sleep(100);
-        clawRotor.SetClawUp();
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+        clawRotor.MoveToSpecimenIntakePosition();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
     }
 
     private void logXYDelta(Pose currentPose, Pose targetPose)

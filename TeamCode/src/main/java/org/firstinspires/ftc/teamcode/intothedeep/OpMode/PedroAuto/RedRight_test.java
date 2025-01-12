@@ -148,10 +148,10 @@ public class RedRight_test extends LinearOpMode {
         /** Play button is touched, Auto starts */
         intakeSlide.Move(0.48);
 
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_READY_POSITION);
         claw.open();
-        clawRotor.SetClawUp();
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+        clawRotor.MoveToSpecimenIntakePosition();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
 
         while (!isStopRequested()  && opModeIsActive()) {
             follower.update();
@@ -230,7 +230,7 @@ public class RedRight_test extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(6);
@@ -283,7 +283,7 @@ public class RedRight_test extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(11);
@@ -336,7 +336,7 @@ public class RedRight_test extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(16);
@@ -390,7 +390,7 @@ public class RedRight_test extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(21);
@@ -444,7 +444,7 @@ public class RedRight_test extends LinearOpMode {
                 //if the position is reached
                 if(poseDeltaX < 0.75){// && poseDeltaY < 1) {
 
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(26);
@@ -593,16 +593,16 @@ public class RedRight_test extends LinearOpMode {
     {
         claw.close();
         sleep(100);
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
-        clawRotor.SetClawDown();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_READY_POSITION);
+        clawRotor.MoveToSampleIntakePosition();
     }
 
     private void releaseSpecimen()
     {
         claw.open();
         sleep(100);
-        clawRotor.SetClawUp();
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+        clawRotor.MoveToSpecimenIntakePosition();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
     }
 
     private void logXYDelta(Pose currentPose, Pose targetPose)

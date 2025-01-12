@@ -119,8 +119,8 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         //slide is manually controlled
         slideOp = Slide.SlideTargetPosition.MANUAL;
         autoCompleteMode = AutoCompleteMode.MANUAL;
-        clawRotor.SetClawDown();
-        outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
+        clawRotor.MoveToSampleIntakePosition();
+        outtakeArm.RotateTo(outtakeArm.SPECIMEN_READY_POSITION);
         boolean robotCentric = true;
         boolean leftBumperToggled = false;
         boolean specMode = false;
@@ -245,17 +245,17 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
             //sample to high basket
             case 1:
                 if (actionTimer.getElapsedTime() >= 100){
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
-                    clawRotor.SetClawDown();
+                    clawRotor.MoveToSampleIntakePosition();
                     setState(outtakeState, 3);
                     break;
                 }
             //specimen ready
             case 2:
                 if (actionTimer.getElapsedTime() >= 100) {
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
-                    clawRotor.SetClawDown();
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
+                    clawRotor.MoveToSampleIntakePosition();
                     setState(outtakeState, 3);
                     break;
                 }
@@ -268,7 +268,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         if(specMode)
         {
             if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_DOWN)){
-                outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+                outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
             }
             else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_UP)) {//gamepad2.dpad_up
                 claw.close();
@@ -276,15 +276,15 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                 setState(outtakeState,2);
             }
             else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_RIGHT)) { //gamepad2.dpad_left
-                outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
-                clawRotor.SetClawDown();
+                outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
+                clawRotor.MoveToSampleIntakePosition();
             }
             //this is to stop motor if position reached
             slide.autoMoveToWithoutWaitingLoop();
         }
         else {
             if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_DOWN) && slideOp != Slide.SlideTargetPosition.DOWN){
-                outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+                outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                 slideOp = Slide.SlideTargetPosition.DOWN;
             }
             else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_UP)) {//gamepad2.dpad_up
@@ -302,28 +302,28 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         //outtake arm operation
         //button a, set the arm to pickup a sample from the intake
         if (gamepad2Ex.isDown(GamepadKeys.Button.A)) {
-            outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
-            clawRotor.SetClawDown();
+            outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
+            clawRotor.MoveToSampleIntakePosition();
         } else if (gamepad2Ex.isDown(GamepadKeys.Button.X)) //button x, set the arm to pickup specimen from human player
         {
-            clawRotor.SetClawUp();
-            outtakeArm.Rotate(outtakeArm.SPECIMEN_PICKUP_POSITION);
+            clawRotor.MoveToSpecimenIntakePosition();
+            outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
         } else if (gamepad2Ex.isDown(GamepadKeys.Button.Y)) //button y, set the arm to the specimen ready position
         {
             //change to SPECIMEN_READY_POSITION if it doesn't work
             //need full battery
-            outtakeArm.Rotate(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
+            outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
 
             //old high with momentum
             //outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
 
 
-            clawRotor.SetClawDown();
+            clawRotor.MoveToSampleIntakePosition();
         }
         else if (gamepad2Ex.isDown(GamepadKeys.Button.B)) //button b, set the arm to score samples into high basket
         {
-            outtakeArm.Rotate(outtakeArm.SPECIMEN_SCORE_POSITION);
-            clawRotor.SetClawDown();
+            outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
+            clawRotor.MoveToSampleIntakePosition();
         }
 
         //claw operation

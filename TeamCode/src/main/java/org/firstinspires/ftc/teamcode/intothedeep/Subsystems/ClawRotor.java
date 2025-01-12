@@ -22,11 +22,11 @@ public class    ClawRotor {
         servo = hardwareMap.get(Servo.class, "outtakeRotateClaw");;;
     }
 
-    public void SetClawUp() {
+    public void MoveToSpecimenIntakePosition() {
         servo.setPosition(CLAW_UP_POSITION);
     }
 
-    public void SetClawDown()
+    public void MoveToSampleIntakePosition()
     {
         servo.setPosition(CLAW_DOWN_POSITION);
     }

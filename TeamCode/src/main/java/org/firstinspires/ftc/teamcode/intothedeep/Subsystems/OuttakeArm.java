@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -42,7 +40,7 @@ public class OuttakeArm {
         //((ServoImplEx) rotateServo).setPwmRange(new PwmControl.PwmRange(500, 2500));
     }
 
-    public void Rotate(double position)
+    public void RotateTo(double position)
     {
         rotateServo.setPosition(position);
         rotateServo2.setPosition(position);

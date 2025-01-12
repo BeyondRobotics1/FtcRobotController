@@ -101,7 +101,7 @@ public class AutoLeft extends LinearOpMode {
         //clawRotor.SetClawDown();
 
         outtakeArm = new OuttakeArm(hardwareMap, this);
-        outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+        outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
         intake = new Intake(hardwareMap, this);
         //intake.MoveToOuttakePosition();
 
@@ -172,7 +172,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 1:
                 if(actionTimer.getElapsedTime() >= 330) {
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePreload);
                     setPathState(2);
                 }
@@ -196,7 +196,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 4: //Claw fully opened, reset arm
                 if(actionTimer.getElapsedTime() >= 250) {
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(5);
@@ -248,7 +248,7 @@ public class AutoLeft extends LinearOpMode {
             case 9:
                 if(actionTimer.getElapsedTime() >= 500) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup1, true);
                     setPathState(10);
                 }
@@ -272,7 +272,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 12: //Claw fully opened, reset arm
                 if(actionTimer.getElapsedTime() >= 250) {
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(13);
@@ -324,7 +324,7 @@ public class AutoLeft extends LinearOpMode {
             case 17:
                 if(actionTimer.getElapsedTime() >= 500) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup2, true);
                     setPathState(18);
                 }
@@ -348,7 +348,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 20: //Claw fully opened, reset arm
                 if(actionTimer.getElapsedTime() >= 250) {
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_PICKUP_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(21);
@@ -400,7 +400,7 @@ public class AutoLeft extends LinearOpMode {
             case 25:
                 if(actionTimer.getElapsedTime() >= 500) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-                    outtakeArm.Rotate(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                    outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup3, true);
                     setPathState(26);
                 }
@@ -424,7 +424,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 28: //Claw fully opened, reset arm
                 if(actionTimer.getElapsedTime() >= 250) {
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_PARK_POSITION1);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_PARK_POSITION1);
                     actionTimer.resetTimer();
 
                     setPathState(29);
@@ -445,7 +445,7 @@ public class AutoLeft extends LinearOpMode {
                 poseDeltaY = Math.abs(follower.getPose().getY() - pickup4Pose.getY());
                 if (poseDeltaY <= 1 || !touchSensorFrontLimit.getState()) {
                     //actionTimer.resetTimer();
-                    outtakeArm.Rotate(outtakeArm.SPECIMEN_PARK_POSITION2);
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_PARK_POSITION2);
                     setPathState(31);
                 }
                 break;
