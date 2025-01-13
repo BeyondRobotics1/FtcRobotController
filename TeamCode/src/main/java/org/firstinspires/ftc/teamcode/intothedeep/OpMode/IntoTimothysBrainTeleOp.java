@@ -244,7 +244,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         switch (outtakeState){
             //sample to high basket
             case 1:
-                if (actionTimer.getElapsedTime() >= 100){
+                if (actionTimer.getElapsedTime() >= 200){
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
                     clawRotor.MoveToSampleIntakePosition();
@@ -253,7 +253,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                 }
             //specimen ready
             case 2:
-                if (actionTimer.getElapsedTime() >= 100) {
+                if (actionTimer.getElapsedTime() >= 200) {
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
                     clawRotor.MoveToSampleIntakePosition();
                     setState(outtakeState, 3);
@@ -270,10 +270,15 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
             if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_DOWN)){
                 outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
             }
+            if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_LEFT)){
+                claw.open();
+            }
             else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_UP)) {//gamepad2.dpad_up
                 claw.close();
-                actionTimer.resetTimer();
-                setState(outtakeState,2);
+                if (actionTimer.getElapsedTime() > 200){
+                    actionTimer.resetTimer();
+                    setState(outtakeState,2);
+                }
             }
             else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_RIGHT)) { //gamepad2.dpad_left
                 outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
@@ -289,49 +294,21 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
             }
             else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_UP)) {//gamepad2.dpad_up
                 claw.close();
-                actionTimer.resetTimer();
-                setState(outtakeState, 1);
+                if (actionTimer.getElapsedTime() > 200) {
+                    actionTimer.resetTimer();
+                    setState(outtakeState, 1);
+                }
+            }
+            else{
+                claw.open();
             }
             //this is to stop motor if position reached
             slide.autoMoveToWithoutWaitingLoop();
         }
 
-
-
-
-        //outtake arm operation
-        //button a, set the arm to pickup a sample from the intake
-        if (gamepad2Ex.isDown(GamepadKeys.Button.A)) {
-            outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
-            clawRotor.MoveToSampleIntakePosition();
-        } else if (gamepad2Ex.isDown(GamepadKeys.Button.X)) //button x, set the arm to pickup specimen from human player
-        {
-            clawRotor.MoveToSpecimenIntakePosition();
-            outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
-        } else if (gamepad2Ex.isDown(GamepadKeys.Button.Y)) //button y, set the arm to the specimen ready position
-        {
-            //change to SPECIMEN_READY_POSITION if it doesn't work
-            //need full battery
-            outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
-
-            //old high with momentum
-            //outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
-
-
-            clawRotor.MoveToSampleIntakePosition();
-        }
-        else if (gamepad2Ex.isDown(GamepadKeys.Button.B)) //button b, set the arm to score samples into high basket
-        {
-            outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
-            clawRotor.MoveToSampleIntakePosition();
-        }
-
         //claw operation
         //boolean currentBumperState  = gamepad2.right_bumper;
         //hold right bumper to close the claw
-        if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_LEFT)) {
-            claw.open();
-        }
 
 
         //only when in auto complete mode
