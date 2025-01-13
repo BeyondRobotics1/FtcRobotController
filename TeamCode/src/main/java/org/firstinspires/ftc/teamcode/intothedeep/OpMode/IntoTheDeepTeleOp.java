@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.SimpleDriveTrain;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 public class IntoTheDeepTeleOp extends LinearOpMode {
 
     private Timer actionTimer;
+    private Timer gameTimer;
     private SimpleDriveTrain driveTrain;
     private Slide slide;
     private Claw claw;
@@ -43,6 +45,8 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     private Slide.SlideTargetPosition slideOp;
     private boolean robotCentric;
     private boolean leftBumperToggled;
+    private boolean rumble;
+    Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence
 
     //TODO
     enum AutoCompleteMode
@@ -112,6 +116,14 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         actionTimer = new Timer();
 
+        gameTimer = new Timer();
+
+        rumble = false;
+
+        customRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(1.0, 1.0, 1000)  //
+                .build();
+
         //wait for play button clicked
         waitForStart();
 
@@ -157,6 +169,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //    driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             telemetry.update();
+            if ((gameTimer.getElapsedTimeSeconds() >= 70) && !rumble)  {
+                gamepad1.runRumbleEffect(customRumbleEffect);
+                gamepad2.runRumbleEffect(customRumbleEffect);
+                rumble = true;
+            }
         }
     }
 
