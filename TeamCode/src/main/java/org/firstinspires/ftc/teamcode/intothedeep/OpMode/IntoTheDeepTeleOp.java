@@ -59,6 +59,10 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         SAMPLE_DROP_CLAW_CLOSE,
         SAMPLE_DROP_SLIDE_UP,
         SAMPLE_DROP_SLIDE_DOWN,
+        SPECIMEN_RESET_START,
+        SPECIMEN_RESET_SLIDE_UP,
+        SPECIMEN_RESET_ARM_DOWN,
+        SPECIMEN_RESET_SLIDE_DOWN,
         RESET_START,
         RESET_ARM_DOWN
     }
@@ -126,6 +130,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         //wait for play button clicked
         waitForStart();
+        gameTimer.resetTimer();
 
 
         //slide is manually controlled
@@ -185,7 +190,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         double slideInSpeed = gamepad1Ex.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);//gamepad1.right_trigger;
         if(slideOutSpeed >= 0.05) {
 
-            telemetry.addData("left_trigger", slideOutSpeed);
+            //telemetry.addData("left_trigger", slideOutSpeed);
 
             //scale from [0 1] to [0.5 1], move out, (slideOutSpeed + 1) * 0.5
 
@@ -202,7 +207,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             intakeSlide.Move(slideOutSpeed);
 
-            telemetry.addData("slideOutSpeed", slideOutSpeed);
+            //telemetry.addData("slideOutSpeed", slideOutSpeed);
         }
         else if(slideInSpeed >= 0.05) {
 
@@ -213,7 +218,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //scale from [0 1] to [0 0.5], move in
             intakeSlide.Move(0.5-slideInSpeed*0.5);
 
-            telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
+            //telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
         }
         else
             intakeSlide.Move(0.485);
@@ -249,14 +254,14 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     private void outtakeOp()
     {
         /** vertical slide operation */
-        //By [pushing] the right joystick, manual operation
-        if(Math.abs(gamepad2Ex.getRightY()) >= 0.5)
+        //By [pressing] the left bumper, manual operation
+        if(gamepad2Ex.isDown(GamepadKeys.Button.LEFT_BUMPER))
         {
             slide.setPower(-gamepad2.left_stick_y);
             slideOp = Slide.SlideTargetPosition.MANUAL;
         }
         else { //by default, using dpad to move the slide to the predefined positions
-            if (gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN) && slideOp != Slide.SlideTargetPosition.DOWN) { //gamepad2.dpad_down
+            /*if (gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN) && slideOp != Slide.SlideTargetPosition.DOWN) { //gamepad2.dpad_down
                 slideOp = Slide.SlideTargetPosition.DOWN;
                 slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1); //ground
             }else if (gamepad2Ex.isDown(GamepadKeys.Button.DPAD_LEFT) && slideOp != Slide.SlideTargetPosition.DROP_SAMPLE) { //gamepad2.dpad_left
@@ -273,7 +278,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             }
 
             //this is to stop motor if position reached
-            slide.autoMoveToWithoutWaitingLoop();
+            slide.autoMoveToWithoutWaitingLoop(); */
         }
 
 
@@ -289,7 +294,6 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         } else if (gamepad2Ex.isDown(GamepadKeys.Button.Y)) //button y, set the arm to the specimen ready position
         {
             //change to SPECIMEN_READY_POSITION if it doesn't work
-            //need full battery
             outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
 
             //old high with momentum
@@ -318,11 +322,12 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         {
             autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.RESET_START;
         }
-        else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))
+        else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_UP))
         {
             autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DROP_START;
-        }
-        else if(leftTrigger2Reader.wasJustReleased())
+        } else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+            autoCompleteMode = AutoCompleteMode.SPECIMEN_RESET_START;
+        } else if(leftTrigger2Reader.wasJustReleased())
         {
             claw.open();
         }
@@ -335,10 +340,13 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         if(leftTrigger2Reader.isDown() ||
                 rightTrigger2Reader.isDown() ||
-                gamepad2Ex.isDown(GamepadKeys.Button.LEFT_BUMPER)) {
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_UP)
+                || gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN)
+        ) {
 
             switch (autoCompleteMode) {
                 ////only when in auto complete mode
+                ////For sample delivery auto complete
                 case SAMPLE_DELIVERY_START:
                     actionTimer.resetTimer();
                     autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVERY_CLAW_CLOSE;
@@ -395,6 +403,38 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                         }
                     }
                     break;
+                ////reset specimen position to intake position
+
+                case SPECIMEN_RESET_START:
+                    actionTimer.resetTimer();
+                    autoCompleteMode = AutoCompleteMode.SPECIMEN_RESET_SLIDE_UP;
+                    if (slideOp != Slide.SlideTargetPosition.DROP_SAMPLE) {
+                        slideOp = Slide.SlideTargetPosition.DROP_SAMPLE;
+                        slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DROP_SAMPLE, 1);
+                    }
+
+                    break;
+
+                case SPECIMEN_RESET_SLIDE_UP:
+                    if (actionTimer.getElapsedTime() > 200){
+                        actionTimer.resetTimer();
+                        claw.open();
+                        autoCompleteMode = AutoCompleteMode.SPECIMEN_RESET_SLIDE_DOWN;
+                        outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
+                        clawRotor.MoveToSampleIntakePosition();
+                    }
+                    break;
+
+                case SPECIMEN_RESET_SLIDE_DOWN:
+                    if (actionTimer.getElapsedTime() >= 500){
+                        autoCompleteMode = AutoCompleteMode.MANUAL;
+                        if(slideOp != Slide.SlideTargetPosition.DOWN) {
+                            slideOp = Slide.SlideTargetPosition.DOWN;
+                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1); //ground
+                        }
+                    }
+                    break;
+
                 ////reset slide and claw auto complete
                 case RESET_START:
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
