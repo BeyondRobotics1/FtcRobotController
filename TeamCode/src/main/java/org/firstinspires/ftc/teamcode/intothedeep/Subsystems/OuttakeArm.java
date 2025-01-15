@@ -15,10 +15,10 @@ public class OuttakeArm {
     public final double SPECIMEN_SHUFFLE_POSITION = 0.38; //
 
     //this position to score a specimen
-    public final double SPECIMEN_SCORE_POSITION = 0.25; //
+    public final double SPECIMEN_SCORE_POSITION = 0.26; //0.25
 
 
-    public final double SAMPLE_DELIVERY_POSITION = 0.625; //0.75
+    public final double SAMPLE_DELIVERY_POSITION = 0.63; //0.625//0.75
 
     public final double SPECIMEN_PARK_POSITION1 = 0.33; //0.40
     public final double SPECIMEN_PARK_POSITION2 = 0.3; //0.36

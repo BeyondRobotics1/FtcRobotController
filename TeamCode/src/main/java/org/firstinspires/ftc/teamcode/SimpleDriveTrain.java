@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.PID;
@@ -39,6 +40,13 @@ public class SimpleDriveTrain {
     private int rfPos;
     private int lrPos;
     private int rrPos;
+
+
+    double motorFrontLeftMaxCurrent = 0;
+    double motorBackLeftMaxCurrent = 0;
+    double motorFrontRightMaxCurrent = 0;
+    double motorBackRightMaxCurrent = 0;
+    double motorTotalMaxCurrent = 0;
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
@@ -763,5 +771,46 @@ public class SimpleDriveTrain {
         rx_power_scale = Range.clip(rx_power_scale, 0, 1);
 
         //mode.telemetry.addData("RX Power Scale", "%.2f", rx_power_scale);
+    }
+
+    public void printMotorCurrents()
+    {
+        double motorFrontLeftCurrent = motorFrontLeft.getCurrent(CurrentUnit.AMPS);
+        double motorBackLeftCurrent = motorBackLeft.getCurrent(CurrentUnit.AMPS);
+        double motorFrontRightCurrent = motorFrontRight.getCurrent(CurrentUnit.AMPS);
+        double motorBackRightCurrent = motorBackRight.getCurrent(CurrentUnit.AMPS);
+
+        if (motorFrontLeftCurrent > motorFrontLeftMaxCurrent)
+            motorFrontLeftMaxCurrent = motorFrontLeftCurrent;
+
+        if (motorBackLeftCurrent > motorBackLeftMaxCurrent)
+            motorBackLeftMaxCurrent = motorBackLeftCurrent;
+
+        if (motorFrontRightCurrent > motorFrontRightMaxCurrent)
+            motorFrontRightMaxCurrent = motorFrontRightCurrent;
+
+        if (motorBackRightCurrent > motorBackRightMaxCurrent)
+            motorBackRightMaxCurrent = motorBackRightCurrent;
+
+
+        double total = motorFrontLeftCurrent + motorBackLeftCurrent +
+                motorFrontRightCurrent + motorBackRightCurrent;
+
+        if(total > motorTotalMaxCurrent)
+            motorTotalMaxCurrent = total;
+
+        mode.telemetry.addData("motorFrontLeft", "%.2f", motorFrontLeftCurrent);
+        mode.telemetry.addData("motorBackLeft", "%.2f", motorBackLeftCurrent);
+        mode.telemetry.addData("motorFrontRight", "%.2f", motorFrontRightCurrent);
+        mode.telemetry.addData("motorBackRight", "%.2f", motorBackRightCurrent);
+
+        mode.telemetry.addData("motorFrontLeftMax", "%.2f", motorFrontLeftMaxCurrent);
+        mode.telemetry.addData("motorBackLeftMax", "%.2f", motorBackLeftMaxCurrent);
+        mode.telemetry.addData("motorFrontRightMax", "%.2f", motorFrontRightMaxCurrent);
+        mode.telemetry.addData("motorBackRightMax", "%.2f", motorBackRightMaxCurrent);
+
+        mode.telemetry.addData("total", "%.2f", total);
+        mode.telemetry.addData("totalMax", "%.2f", motorTotalMaxCurrent);
+
     }
 }

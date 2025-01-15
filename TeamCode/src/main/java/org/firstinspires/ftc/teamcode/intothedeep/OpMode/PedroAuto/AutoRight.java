@@ -106,7 +106,7 @@ public class AutoRight extends LinearOpMode {
     /** Wait this amount of ms second before moving to the final pickup postion*/
     private final int pickupWaitTime = 100;
     /** Pickup position tolerance in inches*/
-    private final double pickupPositionToleranceX = 0.75;
+    private final double pickupPositionToleranceX = 1.25;//0.75;
 
     @Override
     public void runOpMode() throws InterruptedException {
