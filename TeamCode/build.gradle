@@ -23,13 +23,25 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url = 'https://maven.brott.dev/'
+    }
+    maven {
+        url = 'https://jitpack.io'
+    }
+}
+
+
 dependencies {
     implementation project(':FtcRobotController')
-    annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
-    implementation 'org.openftc:easyopencv:1.6.2'
-    implementation 'org.openftc:apriltag:1.1.1'
 
-    implementation 'org.apache.commons:commons-math3:3.6.1'
-    implementation 'com.acmerobotics.roadrunner:core:0.5.6'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
+    //implementation "com.acmerobotics.roadrunner:ftc:0.1.14"
+    implementation "com.acmerobotics.roadrunner:core:1.0.0"
+    implementation "com.acmerobotics.roadrunner:actions:1.0.0"
+    implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
+
+    implementation "com.github.jdhs-ftc:road-runner-ftc-otos:8e83c17ff7"
+
+    implementation 'org.ftclib.ftclib:core:2.1.1' // core
 }

@@ -21,7 +21,7 @@ public class Log {
     private long startTime;
     private boolean disabled = false;
 
-    Log(String filename, boolean logTime) {
+   public Log(String filename, boolean logTime) {
         line = "";
 
         if (logTime) startTime = System.nanoTime();

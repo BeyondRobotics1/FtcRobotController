@@ -82,13 +82,13 @@ public class DriveTrain {
 
         this.mode = mode;
 
-        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "motorFrontLeft"); //hardwareMap.dcMotor.get("motorFrontLeft");
-        motorBackLeft = hardwareMap.get(DcMotorEx.class, "motorBackLeft"); //hardwareMap.dcMotor.get("motorBackLeft");
-        motorFrontRight = hardwareMap.get(DcMotorEx.class, "motorFrontRight"); //hardwareMap.dcMotor.get("motorFrontRight");
-        motorBackRight = hardwareMap.get(DcMotorEx.class, "motorBackRight"); //hardwareMap.dcMotor.get("motorBackRight");
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "leftFront"); //hardwareMap.dcMotor.get("motorFrontLeft");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "leftBack"); //hardwareMap.dcMotor.get("motorBackLeft");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront"); //hardwareMap.dcMotor.get("motorFrontRight");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "rightBack"); //hardwareMap.dcMotor.get("motorBackRight");
 
         //Reverse motors
-        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -97,8 +97,8 @@ public class DriveTrain {
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //distance sensor
-        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
-        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
+//        distanceSensorSideLeft = hardwareMap.get(DistanceSensor.class, "dsLeftLeft");
+//        distanceSensorSideRight = hardwareMap.get(DistanceSensor.class, "dsRightRight");
         //distanceSensorFrontLeft = hardwareMap.get(DistanceSensor.class, "dsRightForward");
         //distanceSensorFrontRight = hardwareMap.get(DistanceSensor.class, "dsLeftForward");
 
@@ -184,10 +184,10 @@ public class DriveTrain {
         // This ensures all the powers maintain the same ratio, but only when
         // at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = (y + x - rx) / denominator;
+        double frontLeftPower = (y - x - rx) / denominator;
+        double backLeftPower = (y + x - rx) / denominator;
+        double frontRightPower = (y + x + rx) / denominator;
+        double backRightPower = (y - x + rx) / denominator;
 
         setMotorPower(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
     }

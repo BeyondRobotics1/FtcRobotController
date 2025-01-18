@@ -47,16 +47,13 @@ android {
         }
     }
 
-    aaptOptions {
-        noCompress "tflite"
-    }
-
     defaultConfig {
         signingConfig signingConfigs.debug
         applicationId 'com.qualcomm.ftcrobotcontroller'
         minSdkVersion 24
         //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 28
+        multiDexEnabled true
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
@@ -87,7 +84,6 @@ android {
         versionName vName
     }
 
-    // Advanced user code might just want to use Vuforia directly, so we set up the libs as needed
     // http://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.BuildType.html
     buildTypes {
         release {
