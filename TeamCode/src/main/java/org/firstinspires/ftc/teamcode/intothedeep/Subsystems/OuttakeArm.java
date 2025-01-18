@@ -9,16 +9,16 @@ public class OuttakeArm {
     //For auto and teleop, position to pickup specimen from human player
     public final double SAMPLE_PICKUP_POSITION = 0;//1;
     public final double SPECIMEN_PICKUP_POSITION = 0.85;//0.82;
-    public final double SPECIMEN_READY_POSITION = 0.59;//0.7
+    public final double SPECIMEN_READY_POSITION = 0.55;//0.59
 
     //this position to align with high chamber
     public final double SPECIMEN_SHUFFLE_POSITION = 0.38; //
 
     //this position to score a specimen
-    public final double SPECIMEN_SCORE_POSITION = 0.26; //0.25
+    public final double SPECIMEN_SCORE_POSITION = 0.28; //0.26
 
 
-    public final double SAMPLE_DELIVERY_POSITION = 0.63; //0.625//0.75
+    public final double SAMPLE_DELIVERY_POSITION = 0.64; //0.625//0.75
 
     public final double SPECIMEN_PARK_POSITION1 = 0.33; //0.40
     public final double SPECIMEN_PARK_POSITION2 = 0.3; //0.36

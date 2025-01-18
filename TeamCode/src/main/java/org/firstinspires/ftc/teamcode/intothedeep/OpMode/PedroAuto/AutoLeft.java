@@ -80,10 +80,21 @@ public class AutoLeft extends LinearOpMode {
     private PathChain grabPickup4, scorePickup4;
 
 
+    //the speed to extend and retrack intake
     private final double intakeOutSpeed = 0.65;
-
     //It can be faster if aiming for 1+4 or 1+5
-    private final double intakeInSpeed = 0.4;
+    private final double intakeInSpeed = 0.3;//0.4
+
+    //slide up wait time, slide needs up before we
+    //can rotate the arm
+    private final double slideUpWaitTime = 300; //300
+    private final double slideFullyUpWaitTime = 1000;
+
+    private final double clawOpenWaitTime = 250;
+    //the time takes to extend intake
+    private final double extendingIntakeWaitTime = 900;
+    //the time to wait while intake is extended
+    private final double retrackingIntakeWaitTime = 1100;
 
     Log log;
     @Override
@@ -159,7 +170,7 @@ public class AutoLeft extends LinearOpMode {
 
     private void autonomousPathUpdate()
     {
-        double headingDelta = 0;
+        //double headingDelta = 0;
         double poseDeltaX = 0;
         double poseDeltaY = 0;
 
@@ -171,7 +182,7 @@ public class AutoLeft extends LinearOpMode {
                 setPathState(1);
                 break;
             case 1:
-                if(actionTimer.getElapsedTime() >= 330) {
+                if(actionTimer.getElapsedTime() >= slideUpWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePreload);
                     setPathState(2);
@@ -182,11 +193,12 @@ public class AutoLeft extends LinearOpMode {
                 poseDeltaY = Math.abs(follower.getPose().getY() - scorePose.getY());
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                    actionTimer.resetTimer();
                     setPathState(3);
                 }
                 break;
             case 3: //open claw to score
-                if(actionTimer.getElapsedTime() >= 1500)
+                if(actionTimer.getElapsedTime() >= slideFullyUpWaitTime)//1200
                 {
                     claw.open();
                     intake.MoveToIntakePosition();
@@ -195,13 +207,14 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 4: //Claw fully opened, reset arm
-                if(actionTimer.getElapsedTime() >= 250) {
+                if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                     actionTimer.resetTimer();
 
                     setPathState(5);
                 }
                 break;
+
                 /** #1 */
             case 5://move to pickup 1 position
                 if(actionTimer.getElapsedTime() >= 100) {
@@ -224,7 +237,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 7:
-                if(actionTimer.getElapsedTime() > 900)
+                if(actionTimer.getElapsedTime() > extendingIntakeWaitTime)
                 {
                     intake.MoveToOuttakePosition();
                     intakeSlide.Move(intakeInSpeed);
@@ -234,7 +247,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 8:
-                if(actionTimer.getElapsedTime() >= 1100)
+                if(actionTimer.getElapsedTime() >= retrackingIntakeWaitTime)
                 {
                     claw.close();
                     sleep(100);
@@ -246,7 +259,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 9:
-                if(actionTimer.getElapsedTime() >= 500) {
+                if(actionTimer.getElapsedTime() >= slideUpWaitTime) {//500
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup1, true);
@@ -258,11 +271,12 @@ public class AutoLeft extends LinearOpMode {
                 poseDeltaY = Math.abs(follower.getPose().getY() - scorePose2.getY());
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                    actionTimer.resetTimer();
                     setPathState(11);
                 }
                 break;
             case 11: //open claw to score
-                if(actionTimer.getElapsedTime() >= 1500)
+                if(actionTimer.getElapsedTime() >= slideFullyUpWaitTime)
                 {
                     claw.open();
                     intake.MoveToIntakePosition();
@@ -271,7 +285,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 12: //Claw fully opened, reset arm
-                if(actionTimer.getElapsedTime() >= 250) {
+                if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                     actionTimer.resetTimer();
 
@@ -286,6 +300,7 @@ public class AutoLeft extends LinearOpMode {
                     setPathState(14);
                 }
                 break;
+
                 /** #2 */
             case 14: //at score position, slide up, arm up
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup2Pose.getX());
@@ -300,7 +315,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 15:
-                if(actionTimer.getElapsedTime() > 900)
+                if(actionTimer.getElapsedTime() > extendingIntakeWaitTime)
                 {
                     intake.MoveToOuttakePosition();
                     intakeSlide.Move(intakeInSpeed);
@@ -310,7 +325,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 16:
-                if(actionTimer.getElapsedTime() >= 1100)
+                if(actionTimer.getElapsedTime() >= retrackingIntakeWaitTime)
                 {
                     claw.close();
                     sleep(100);
@@ -322,7 +337,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 17:
-                if(actionTimer.getElapsedTime() >= 500) {
+                if(actionTimer.getElapsedTime() >= slideUpWaitTime) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup2, true);
@@ -334,11 +349,12 @@ public class AutoLeft extends LinearOpMode {
                 poseDeltaY = Math.abs(follower.getPose().getY() - scorePose2.getY());
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                    actionTimer.resetTimer();
                     setPathState(19);
                 }
                 break;
             case 19: //open claw to score
-                if(actionTimer.getElapsedTime() >= 1500)
+                if(actionTimer.getElapsedTime() >= slideFullyUpWaitTime)
                 {
                     claw.open();
                     intake.MoveToIntakePosition();
@@ -347,7 +363,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 20: //Claw fully opened, reset arm
-                if(actionTimer.getElapsedTime() >= 250) {
+                if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                     actionTimer.resetTimer();
 
@@ -362,6 +378,8 @@ public class AutoLeft extends LinearOpMode {
                     setPathState(22);
                 }
                 break;
+
+
                 /** #3 */
             case 22: //at score position, slide up, arm up
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup3Pose.getX());
@@ -376,7 +394,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 23:
-                if(actionTimer.getElapsedTime() > 900)
+                if(actionTimer.getElapsedTime() > extendingIntakeWaitTime)
                 {
                     intake.MoveToOuttakePosition();
                     intakeSlide.Move(intakeInSpeed);
@@ -386,7 +404,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 24:
-                if(actionTimer.getElapsedTime() >= 1100)
+                if(actionTimer.getElapsedTime() >= retrackingIntakeWaitTime)
                 {
                     claw.close();
                     sleep(100);
@@ -398,7 +416,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 25:
-                if(actionTimer.getElapsedTime() >= 500) {
+                if(actionTimer.getElapsedTime() >= slideUpWaitTime) {
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup3, true);
@@ -410,11 +428,12 @@ public class AutoLeft extends LinearOpMode {
                 poseDeltaY = Math.abs(follower.getPose().getY() - scorePose2.getY());
 
                 if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                    actionTimer.resetTimer();
                     setPathState(27);
                 }
                 break;
             case 27: //open claw to score
-                if(actionTimer.getElapsedTime() >= 2000)//1500
+                if(actionTimer.getElapsedTime() >= slideFullyUpWaitTime)//1500
                 {
                     claw.open();
                     intake.MoveToIntakePosition();
@@ -423,7 +442,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 28: //Claw fully opened, reset arm
-                if(actionTimer.getElapsedTime() >= 250) {
+                if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_PARK_POSITION1);
                     actionTimer.resetTimer();
 
@@ -439,6 +458,7 @@ public class AutoLeft extends LinearOpMode {
                     setPathState(30);
                 }
                 break;
+
             /** Park */
             case 30:
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup4Pose.getX());

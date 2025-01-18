@@ -102,11 +102,12 @@ public class AutoRight extends LinearOpMode {
     private PathChain parking;
 
     /** Outtake arm takes time to swing down, need to wait this timeout in ms to finish*/
-    private final int scoreTimeout = 300;//300
+    private final int scoreTimeout = 350;//300
     /** Wait this amount of ms second before moving to the final pickup postion*/
     private final int pickupWaitTime = 100;
     /** Pickup position tolerance in inches*/
-    private final double pickupPositionToleranceX = 1.25;//0.75;
+    private final double pickupPositionToleranceX = 1.4;//1.25;
+    private final double scorePositionToleranceX = 0.75;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -255,7 +256,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(8);
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -310,7 +311,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(13);
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -365,7 +366,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(18);
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -421,7 +422,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(23);
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -477,7 +478,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(28);
 
                 //if the position is reached
-                if(poseDeltaX <= pickupPositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
