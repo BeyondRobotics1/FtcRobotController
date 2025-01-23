@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "Red Right Test (IntoTheDeep)", group = "A Into the Deep")
+@Autonomous(name = "Red Right Test (IntoTheDeep)", group = "B Into the Deep")
 @Disabled
 public class RedRight_test extends LinearOpMode {
 

@@ -46,7 +46,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     private Slide.SlideTargetPosition slideOp;
     private boolean robotCentric;
     private boolean leftBumperToggled;
-    //private boolean rumble;
+    private int rumble;
     Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect intakeRumbleEffect;
 
@@ -127,12 +127,12 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
         gameTimer = new Timer();
 
-        //rumble = false;
+        rumble = 0;
 
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(1.0, 1.0, 200)  //
-                .addStep(0.1, 0.1, 1000)
-                .addStep(1.0, 1.0, 200)
+                .addStep(0.1, 0.1, 200)  //
+                .addStep(1, 1, 1000)
+                .addStep(0.1, 0.1, 200)
                 .build();
 
         intakeRumbleEffect = new Gamepad.RumbleEffect.Builder()
@@ -191,14 +191,14 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //    driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
 
-            if ((gameTimer.getElapsedTimeSeconds() >= 70))  {
-                gameTimer.resetTimer();
+            if (gameTimer.getElapsedTimeSeconds() >= 70 && rumble == 0)  {
+                rumble = 1;
                 gamepad1.runRumbleEffect(customRumbleEffect);
                 gamepad2.runRumbleEffect(customRumbleEffect);
             }
 
-            if (gameTimer.getElapsedTimeSeconds() >= 40){
-                gameTimer.resetTimer();
+            if (gameTimer.getElapsedTimeSeconds() >= 110 && rumble == 1){
+                rumble = 2;
                 gamepad1.runRumbleEffect(customRumbleEffect);
                 gamepad2.runRumbleEffect(customRumbleEffect);
             }
