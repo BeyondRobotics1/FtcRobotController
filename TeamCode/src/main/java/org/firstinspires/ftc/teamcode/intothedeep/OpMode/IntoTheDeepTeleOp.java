@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Into the Deep", group = "Into the Deep")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp Into the Deep", group = "A")
 
 public class IntoTheDeepTeleOp extends LinearOpMode {
 
@@ -41,12 +41,14 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     private ToggleButtonReader leftBumper1;
     private TriggerReader leftTrigger2Reader;
     private TriggerReader rightTrigger2Reader;
+    private TriggerReader rightTrigger1Reader;
 
     private Slide.SlideTargetPosition slideOp;
     private boolean robotCentric;
     private boolean leftBumperToggled;
-    private boolean rumble;
+    //private boolean rumble;
     Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence
+    Gamepad.RumbleEffect intakeRumbleEffect;
 
     //TODO
     enum AutoCompleteMode
@@ -117,15 +119,24 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         rightTrigger2Reader = new TriggerReader(
                 gamepad2Ex, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
+        rightTrigger1Reader = new TriggerReader(
+                gamepad1Ex, GamepadKeys.Trigger.RIGHT_TRIGGER
+        );
 
         actionTimer = new Timer();
 
         gameTimer = new Timer();
 
-        rumble = false;
+        //rumble = false;
 
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(1.0, 1.0, 1000)  //
+                .addStep(1.0, 1.0, 200)  //
+                .addStep(0.1, 0.1, 1000)
+                .addStep(1.0, 1.0, 200)
+                .build();
+
+        intakeRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.2, 0.2, 100)  //
                 .build();
 
         //wait for play button clicked
@@ -154,6 +165,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             leftTrigger2Reader.readValue();
             rightTrigger2Reader.readValue();
+            rightTrigger1Reader.readValue();
 
             leftBumper1.readValue();
 
@@ -166,6 +178,11 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //claw person
             outtakeOp();
 
+            if(rightTrigger1Reader.isDown() && intakeSlide.isTouchSensorPressed())
+            {
+                gamepad1.runRumbleEffect(intakeRumbleEffect);
+                gamepad2.runRumbleEffect(intakeRumbleEffect);
+            }
 
             //drive train
             //if(gamepad1.left_bumper)
@@ -173,12 +190,20 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //else
             //    driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            telemetry.update();
-            if ((gameTimer.getElapsedTimeSeconds() >= 70) && !rumble)  {
+
+            if ((gameTimer.getElapsedTimeSeconds() >= 70))  {
+                gameTimer.resetTimer();
                 gamepad1.runRumbleEffect(customRumbleEffect);
                 gamepad2.runRumbleEffect(customRumbleEffect);
-                rumble = true;
             }
+
+            if (gameTimer.getElapsedTimeSeconds() >= 40){
+                gameTimer.resetTimer();
+                gamepad1.runRumbleEffect(customRumbleEffect);
+                gamepad2.runRumbleEffect(customRumbleEffect);
+            }
+
+            telemetry.update();
         }
     }
 

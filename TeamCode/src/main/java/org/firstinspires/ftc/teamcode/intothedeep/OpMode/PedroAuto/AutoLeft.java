@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "Auto Left Sample (IntoTheDeep)", group = "A Into the Deep")
+@Autonomous(name = "Auto Left Sample", group = "A Into the Deep")
 
 public class AutoLeft extends LinearOpMode {
 
