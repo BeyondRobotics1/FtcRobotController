@@ -64,13 +64,20 @@ public class ColorSensorTest extends LinearOpMode {
                     .addData("Value", "%.3f", hsvValues[2]);
             telemetry.addData("Alpha", "%.3f", colors.alpha);
 
-            if ( hsvValues[0] > 60 &&  hsvValues[0] < 120)
-                telemetry.addData("Color", "%s", "Yellow");
-            else if ( hsvValues[0] >= 120 &&  hsvValues[0] <= 150)
-                telemetry.addData("Color", "%s", "Green");
-            else if ( hsvValues[0] > 200 &&  hsvValues[0] < 230)
-                telemetry.addData("Color", "%s", "Purple");
-            else if ( hsvValues[0] > 10)
+            if(((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 3) { //
+                if (hsvValues[0] >= 50 && hsvValues[0] < 92)
+                    telemetry.addData("Color", "%s", "Yellow");
+                else if ((hsvValues[0] >= 0 && hsvValues[0] <= 20) ||
+                        (hsvValues[0] >= 340 && hsvValues[0] <= 360))
+                    telemetry.addData("Color", "%s", "Red");
+                else if (hsvValues[0] >= 210 && hsvValues[0] <= 270)
+                    telemetry.addData("Color", "%s", "Blue");
+                else if (hsvValues[0] >= 120 && hsvValues[0] <= 150)
+                    telemetry.addData("Color", "%s", "Green");
+                else if (hsvValues[0] > 200 && hsvValues[0] < 230)
+                    telemetry.addData("Color", "%s", "Purple");
+            }
+            else
                 telemetry.addData("Color", "%s", "White");
 
             /* If this color sensor also has a distance sensor, display the measured distance.

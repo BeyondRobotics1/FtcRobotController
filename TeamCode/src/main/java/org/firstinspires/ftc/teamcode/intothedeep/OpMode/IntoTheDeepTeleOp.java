@@ -42,10 +42,12 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     private TriggerReader leftTrigger2Reader;
     private TriggerReader rightTrigger2Reader;
     private TriggerReader rightTrigger1Reader;
+    private TriggerReader leftTrigger1Reader;
 
     private Slide.SlideTargetPosition slideOp;
     private boolean robotCentric;
     private boolean leftBumperToggled;
+    private boolean goingIn;
     private int rumble;
     Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect intakeRumbleEffect;
@@ -112,7 +114,9 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         leftBumper1 = new ToggleButtonReader(
                 gamepad1Ex, GamepadKeys.Button.LEFT_BUMPER
         );
-
+        leftTrigger1Reader = new TriggerReader(
+                gamepad1Ex, GamepadKeys.Trigger.LEFT_TRIGGER
+        );
         leftTrigger2Reader = new TriggerReader(
                 gamepad2Ex, GamepadKeys.Trigger.LEFT_TRIGGER
         );
@@ -136,7 +140,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
                 .build();
 
         intakeRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.2, 0.2, 100)  //
+                .addStep(0.3, 0.3, 500)  //
                 .build();
 
         //wait for play button clicked
@@ -166,7 +170,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             leftTrigger2Reader.readValue();
             rightTrigger2Reader.readValue();
             rightTrigger1Reader.readValue();
-
+            leftTrigger1Reader.readValue();
             leftBumper1.readValue();
 
             ///////////////////////////////////////////////
@@ -180,8 +184,12 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             if(rightTrigger1Reader.isDown() && intakeSlide.isTouchSensorPressed())
             {
-                gamepad1.runRumbleEffect(intakeRumbleEffect);
+                //gamepad1.runRumbleEffect(intakeRumbleEffect);
                 gamepad2.runRumbleEffect(intakeRumbleEffect);
+                goingIn = true;
+            }
+            else if(leftTrigger1Reader.wasJustReleased()){
+                goingIn = false;
             }
 
             //drive train
@@ -209,6 +217,8 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
     private void intakeOp()
     {
+        //intake.DetectSample();
+
         //horizontal slide operation
         //double newValue = (value - oldMin) * (newMax - newMin) / (oldMax - oldMin) + newMin;
         double slideOutSpeed = gamepad1Ex.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);//gamepad1.left_trigger;
