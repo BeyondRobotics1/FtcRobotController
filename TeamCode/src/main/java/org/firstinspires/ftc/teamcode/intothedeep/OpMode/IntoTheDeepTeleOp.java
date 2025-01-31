@@ -56,9 +56,12 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     enum AutoCompleteMode
     {
         MANUAL,
-        SAMPLE_DELIVERY_START,
-        SAMPLE_DELIVERY_CLAW_CLOSE,
-        SAMPLE_DELIVER_SLIDE_UP,
+        HIGH_BASKET_SAMPLE_DELIVERY_START,
+        HIGH_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE,
+        HIGH_BASKET_SAMPLE_DELIVER_SLIDE_UP,
+        LOW_BASKET_SAMPLE_DELIVERY_START,
+        LOW_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE,
+        LOW_BASKET_SAMPLE_DELIVER_SLIDE_UP,
         SAMPLE_DROP_START,
         SAMPLE_DROP_CLAW_CLOSE,
         SAMPLE_DROP_SLIDE_UP,
@@ -351,7 +354,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         if(leftTrigger2Reader.wasJustPressed())
         {
             //actionTimer.resetTimer();
-            autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVERY_START;
+            autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.HIGH_BASKET_SAMPLE_DELIVERY_START;
         }
         else if (rightTrigger2Reader.wasJustPressed())
         {
@@ -360,9 +363,16 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_UP))
         {
             autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DROP_START;
-        } else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+        }
+        else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
+        {
             autoCompleteMode = AutoCompleteMode.SPECIMEN_RESET_START;
-        } else if(leftTrigger2Reader.wasJustReleased())
+        }
+        else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
+        {
+            autoCompleteMode = AutoCompleteMode.LOW_BASKET_SAMPLE_DELIVERY_START;
+        }
+        else if(leftTrigger2Reader.wasJustReleased())
         {
             claw.open();
         }
@@ -372,39 +382,65 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         }
 
 
-
         if(leftTrigger2Reader.isDown() ||
                 rightTrigger2Reader.isDown() ||
-                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_UP)
-                || gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN)
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_UP) ||
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN) ||
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_RIGHT)
         ) {
 
             switch (autoCompleteMode) {
                 ////only when in auto complete mode
-                ////For sample delivery auto complete
-                case SAMPLE_DELIVERY_START:
+                ////For HIGH Basket sample delivery auto complete
+                case HIGH_BASKET_SAMPLE_DELIVERY_START:
                     actionTimer.resetTimer();
-                    autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVERY_CLAW_CLOSE;
+                    autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.HIGH_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE;
                     claw.close();
                     break;
-                case SAMPLE_DELIVERY_CLAW_CLOSE:
+                case HIGH_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE:
                     if (actionTimer.getElapsedTime() > 200)
                     {
                         actionTimer.resetTimer();
-                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVER_SLIDE_UP;
+                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.HIGH_BASKET_SAMPLE_DELIVER_SLIDE_UP;
                         if (slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {
                             slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
                             slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
                         }
                     }
                     break;
-                case SAMPLE_DELIVER_SLIDE_UP:
+                case HIGH_BASKET_SAMPLE_DELIVER_SLIDE_UP:
                     if (actionTimer.getElapsedTime() > 200) {
                         outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                         clawRotor.MoveToSampleIntakePosition();
                         autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.MANUAL;
                     }
                     break;
+
+                ////For LOW Basket sample delivery auto complete
+                case LOW_BASKET_SAMPLE_DELIVERY_START:
+                    actionTimer.resetTimer();
+                    autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.LOW_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE;
+                    claw.close();
+                    break;
+                case LOW_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE:
+                    if (actionTimer.getElapsedTime() > 200)
+                    {
+                        actionTimer.resetTimer();
+                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.LOW_BASKET_SAMPLE_DELIVER_SLIDE_UP;
+                        if (slideOp != Slide.SlideTargetPosition.LOW_BASKET) {
+                            slideOp = Slide.SlideTargetPosition.LOW_BASKET;
+                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.LOW_BASKET, 1);
+                        }
+                    }
+                    break;
+                case LOW_BASKET_SAMPLE_DELIVER_SLIDE_UP:
+                    if (actionTimer.getElapsedTime() > 200) {
+                        outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                        clawRotor.MoveToSampleIntakePosition();
+                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.MANUAL;
+                    }
+                    break;
+
                 ////Sample drop auto complete
                 case SAMPLE_DROP_START:
                     actionTimer.resetTimer();
