@@ -67,6 +67,9 @@ public class AutoLeft extends LinearOpMode {
     /** Alliance's preloaded sample */
     private final Pose pickup4Pose = new Pose(18, 90, Math.toRadians(-135));
 
+    /** Starting position to pickup a sample in the submersible*/
+    private final Pose submersiblePickupPose = new Pose(62, 106, Math.toRadians(-90));
+
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(60, 92, Math.toRadians(-90));//60, 92
 
@@ -77,7 +80,7 @@ public class AutoLeft extends LinearOpMode {
     private Path scorePreload, park;
     private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
 
-    private PathChain grabPickup4, scorePickup4;
+    private PathChain grabPickup4, scorePickup4, submersiblePath;
 
 
     //the speed to extend and retrack intake
@@ -88,11 +91,11 @@ public class AutoLeft extends LinearOpMode {
     //slide up wait time, slide needs up before we
     //can rotate the arm
     private final double slideUpWaitTime = 300; //300
-    private final double slideFullyUpWaitTime = 1000;
+    private final double slideFullyUpWaitTime = 900;//1000
 
     private final double clawOpenWaitTime = 250;
     //the time takes to extend intake
-    private final double extendingIntakeWaitTime = 900;
+    private final double extendingIntakeWaitTime = 1200;//900
     //the time to wait while intake is extended
     private final double retrackingIntakeWaitTime = 1100;
 
@@ -436,37 +439,62 @@ public class AutoLeft extends LinearOpMode {
                 if(actionTimer.getElapsedTime() >= slideFullyUpWaitTime)//1500
                 {
                     claw.open();
-                    intake.MoveToIntakePosition();
+                    //intake.MoveToIntakePosition();
                     actionTimer.resetTimer();
-                    setPathState(28);
+                    setPathState(50); //50 will do the parking only from here
                 }
                 break;
-            case 28: //Claw fully opened, reset arm
+
+//                /**Pick one from submersible*/
+//            case 28:
+//                if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
+//                    outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
+//                    actionTimer.resetTimer();
+//                    setPathState(29);
+//                }
+//                break;
+//            case 29:
+//                if(actionTimer.getElapsedTime() >= 100) {
+//                    slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
+//                    intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
+//                    //intake.MoveToOuttakePosition();
+//                    follower.followPath(submersiblePath, true);
+//                    setPathState(30);
+//                }
+//                break;
+//            case 30:
+//                //poseDeltaX = Math.abs(follower.getPose().getX() - parkPose.getX());
+//                poseDeltaY = Math.abs(follower.getPose().getY() - submersiblePickupPose.getY());
+//                if (poseDeltaY <= 1) {
+//                    setPathState(100);
+//                }
+//                break;
+
+            /** Park */
+            case 50: //Claw fully opened, reset arm
                 if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_PARK_POSITION1);
                     actionTimer.resetTimer();
 
-                    setPathState(29);
+                    setPathState(51);
                 }
                 break;
-            case 29:
+            case 51:
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
                     intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
                     intake.MoveToOuttakePosition();
                     follower.followPath(park, true);
-                    setPathState(30);
+                    setPathState(52);
                 }
                 break;
-
-            /** Park */
-            case 30:
-                poseDeltaX = Math.abs(follower.getPose().getX() - pickup4Pose.getX());
-                poseDeltaY = Math.abs(follower.getPose().getY() - pickup4Pose.getY());
+            case 52:
+                //poseDeltaX = Math.abs(follower.getPose().getX() - parkPose.getX());
+                poseDeltaY = Math.abs(follower.getPose().getY() - parkPose.getY());
                 if (poseDeltaY <= 1 || !touchSensorFrontLimit.getState()) {
                     //actionTimer.resetTimer();
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_PARK_POSITION2);
-                    setPathState(31);
+                    setPathState(53);
                 }
                 break;
         }
@@ -542,6 +570,12 @@ public class AutoLeft extends LinearOpMode {
         scorePickup4 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(pickup4Pose), new Point(scorePose2)))
                 .setLinearHeadingInterpolation(pickup4Pose.getHeading(), scorePose2.getHeading())
+                .build();
+
+
+        submersiblePath = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose2), new Point(submersiblePickupPose)))
+                .setLinearHeadingInterpolation(scorePose2.getHeading(), submersiblePickupPose.getHeading())
                 .build();
 
         /* This is our park path. We are using a BezierCurve with 3 points, which is a curved line that is curved based off of the control point */
