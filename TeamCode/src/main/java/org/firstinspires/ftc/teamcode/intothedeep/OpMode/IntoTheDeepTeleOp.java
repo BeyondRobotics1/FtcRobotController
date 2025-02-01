@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Into the Deep", group = "Into the Deep")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp Into the Deep", group = "A")
 
 public class IntoTheDeepTeleOp extends LinearOpMode {
 
@@ -41,20 +41,27 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
     private ToggleButtonReader leftBumper1;
     private TriggerReader leftTrigger2Reader;
     private TriggerReader rightTrigger2Reader;
+    private TriggerReader rightTrigger1Reader;
+    private TriggerReader leftTrigger1Reader;
 
     private Slide.SlideTargetPosition slideOp;
     private boolean robotCentric;
     private boolean leftBumperToggled;
-    private boolean rumble;
+    private boolean goingIn;
+    private int rumble;
     Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence
+    Gamepad.RumbleEffect intakeRumbleEffect;
 
     //TODO
     enum AutoCompleteMode
     {
         MANUAL,
-        SAMPLE_DELIVERY_START,
-        SAMPLE_DELIVERY_CLAW_CLOSE,
-        SAMPLE_DELIVER_SLIDE_UP,
+        HIGH_BASKET_SAMPLE_DELIVERY_START,
+        HIGH_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE,
+        HIGH_BASKET_SAMPLE_DELIVER_SLIDE_UP,
+        LOW_BASKET_SAMPLE_DELIVERY_START,
+        LOW_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE,
+        LOW_BASKET_SAMPLE_DELIVER_SLIDE_UP,
         SAMPLE_DROP_START,
         SAMPLE_DROP_CLAW_CLOSE,
         SAMPLE_DROP_SLIDE_UP,
@@ -110,22 +117,33 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         leftBumper1 = new ToggleButtonReader(
                 gamepad1Ex, GamepadKeys.Button.LEFT_BUMPER
         );
-
+        leftTrigger1Reader = new TriggerReader(
+                gamepad1Ex, GamepadKeys.Trigger.LEFT_TRIGGER
+        );
         leftTrigger2Reader = new TriggerReader(
                 gamepad2Ex, GamepadKeys.Trigger.LEFT_TRIGGER
         );
         rightTrigger2Reader = new TriggerReader(
                 gamepad2Ex, GamepadKeys.Trigger.RIGHT_TRIGGER
         );
+        rightTrigger1Reader = new TriggerReader(
+                gamepad1Ex, GamepadKeys.Trigger.RIGHT_TRIGGER
+        );
 
         actionTimer = new Timer();
 
         gameTimer = new Timer();
 
-        rumble = false;
+        rumble = 0;
 
         customRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(1.0, 1.0, 1000)  //
+                .addStep(0.1, 0.1, 200)  //
+                .addStep(1, 1, 1000)
+                .addStep(0.1, 0.1, 200)
+                .build();
+
+        intakeRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.3, 0.3, 500)  //
                 .build();
 
         //wait for play button clicked
@@ -154,7 +172,8 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
 
             leftTrigger2Reader.readValue();
             rightTrigger2Reader.readValue();
-
+            rightTrigger1Reader.readValue();
+            leftTrigger1Reader.readValue();
             leftBumper1.readValue();
 
             ///////////////////////////////////////////////
@@ -166,6 +185,15 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //claw person
             outtakeOp();
 
+            if(rightTrigger1Reader.isDown() && intakeSlide.isTouchSensorPressed())
+            {
+                //gamepad1.runRumbleEffect(intakeRumbleEffect);
+                gamepad2.runRumbleEffect(intakeRumbleEffect);
+                goingIn = true;
+            }
+            else if(leftTrigger1Reader.wasJustReleased()){
+                goingIn = false;
+            }
 
             //drive train
             //if(gamepad1.left_bumper)
@@ -173,17 +201,27 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
             //else
             //    driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-            telemetry.update();
-            if ((gameTimer.getElapsedTimeSeconds() >= 70) && !rumble)  {
+
+            if (gameTimer.getElapsedTimeSeconds() >= 70 && rumble == 0)  {
+                rumble = 1;
                 gamepad1.runRumbleEffect(customRumbleEffect);
                 gamepad2.runRumbleEffect(customRumbleEffect);
-                rumble = true;
             }
+
+            if (gameTimer.getElapsedTimeSeconds() >= 110 && rumble == 1){
+                rumble = 2;
+                gamepad1.runRumbleEffect(customRumbleEffect);
+                gamepad2.runRumbleEffect(customRumbleEffect);
+            }
+
+            telemetry.update();
         }
     }
 
     private void intakeOp()
     {
+        //intake.DetectSample();
+
         //horizontal slide operation
         //double newValue = (value - oldMin) * (newMax - newMin) / (oldMax - oldMin) + newMin;
         double slideOutSpeed = gamepad1Ex.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);//gamepad1.left_trigger;
@@ -316,7 +354,7 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         if(leftTrigger2Reader.wasJustPressed())
         {
             //actionTimer.resetTimer();
-            autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVERY_START;
+            autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.HIGH_BASKET_SAMPLE_DELIVERY_START;
         }
         else if (rightTrigger2Reader.wasJustPressed())
         {
@@ -325,9 +363,16 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_UP))
         {
             autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DROP_START;
-        } else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+        }
+        else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
+        {
             autoCompleteMode = AutoCompleteMode.SPECIMEN_RESET_START;
-        } else if(leftTrigger2Reader.wasJustReleased())
+        }
+        else if (gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
+        {
+            autoCompleteMode = AutoCompleteMode.LOW_BASKET_SAMPLE_DELIVERY_START;
+        }
+        else if(leftTrigger2Reader.wasJustReleased())
         {
             claw.open();
         }
@@ -337,39 +382,65 @@ public class IntoTheDeepTeleOp extends LinearOpMode {
         }
 
 
-
         if(leftTrigger2Reader.isDown() ||
                 rightTrigger2Reader.isDown() ||
-                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_UP)
-                || gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN)
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_UP) ||
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN) ||
+                gamepad2Ex.isDown(GamepadKeys.Button.DPAD_RIGHT)
         ) {
 
             switch (autoCompleteMode) {
                 ////only when in auto complete mode
-                ////For sample delivery auto complete
-                case SAMPLE_DELIVERY_START:
+                ////For HIGH Basket sample delivery auto complete
+                case HIGH_BASKET_SAMPLE_DELIVERY_START:
                     actionTimer.resetTimer();
-                    autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVERY_CLAW_CLOSE;
+                    autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.HIGH_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE;
                     claw.close();
                     break;
-                case SAMPLE_DELIVERY_CLAW_CLOSE:
+                case HIGH_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE:
                     if (actionTimer.getElapsedTime() > 200)
                     {
                         actionTimer.resetTimer();
-                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.SAMPLE_DELIVER_SLIDE_UP;
+                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.HIGH_BASKET_SAMPLE_DELIVER_SLIDE_UP;
                         if (slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {
                             slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
                             slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
                         }
                     }
                     break;
-                case SAMPLE_DELIVER_SLIDE_UP:
+                case HIGH_BASKET_SAMPLE_DELIVER_SLIDE_UP:
                     if (actionTimer.getElapsedTime() > 200) {
                         outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                         clawRotor.MoveToSampleIntakePosition();
                         autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.MANUAL;
                     }
                     break;
+
+                ////For LOW Basket sample delivery auto complete
+                case LOW_BASKET_SAMPLE_DELIVERY_START:
+                    actionTimer.resetTimer();
+                    autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.LOW_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE;
+                    claw.close();
+                    break;
+                case LOW_BASKET_SAMPLE_DELIVERY_CLAW_CLOSE:
+                    if (actionTimer.getElapsedTime() > 200)
+                    {
+                        actionTimer.resetTimer();
+                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.LOW_BASKET_SAMPLE_DELIVER_SLIDE_UP;
+                        if (slideOp != Slide.SlideTargetPosition.LOW_BASKET) {
+                            slideOp = Slide.SlideTargetPosition.LOW_BASKET;
+                            slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.LOW_BASKET, 1);
+                        }
+                    }
+                    break;
+                case LOW_BASKET_SAMPLE_DELIVER_SLIDE_UP:
+                    if (actionTimer.getElapsedTime() > 200) {
+                        outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
+                        clawRotor.MoveToSampleIntakePosition();
+                        autoCompleteMode = IntoTheDeepTeleOp.AutoCompleteMode.MANUAL;
+                    }
+                    break;
+
                 ////Sample drop auto complete
                 case SAMPLE_DROP_START:
                     actionTimer.resetTimer();

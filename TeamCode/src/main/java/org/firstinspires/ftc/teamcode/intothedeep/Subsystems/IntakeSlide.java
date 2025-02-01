@@ -38,4 +38,9 @@ public class IntakeSlide {
         servoRight.setPosition(speed);
     }
 
+
+    public boolean isTouchSensorPressed()
+    {
+        return !touchSensorLowLimit.getState();
+    }
 }

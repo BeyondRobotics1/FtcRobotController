@@ -1,8 +1,15 @@
 package org.firstinspires.ftc.teamcode.intothedeep.Subsystems;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Intake {
 
@@ -18,6 +25,14 @@ public class Intake {
         HEAD_DOWN,
         INTAKE,
         OUTTAKE,
+        NONE,
+    }
+
+    public enum SampleColor
+    {
+        BLUE,
+        RED,
+        YELLOW,
         NONE,
     }
 
@@ -42,8 +57,13 @@ public class Intake {
     private Servo pivotServo;
     private Servo intakeServo;
 
-    private LinearOpMode mode;
+    private Servo led;
 
+    private NormalizedColorSensor colorSensor;
+
+    private LinearOpMode mode;
+    private final float[] hsvValues = new float[3];
+    SampleColor lastSampleColor = SampleColor.NONE;
     /**
      * Constructor
      * @param hardwareMap: hardware map for finding claw servos
@@ -59,6 +79,9 @@ public class Intake {
 
         pivotServo.setDirection(Servo.Direction.REVERSE);
         intakeServo.setDirection(Servo.Direction.REVERSE);
+
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color1");
+        //led = hardwareMap.get(Servo.class, "led");
 
         currentPosition = IntakePosition.NONE;
     }
@@ -161,4 +184,74 @@ public class Intake {
         pivotServo.setPosition(position);
     }
 
+    public void ResetSampleColor()
+    {
+        lastSampleColor = SampleColor.NONE;
+    }
+
+    public SampleColor GetSampleColor()
+    {
+        if(lastSampleColor == SampleColor.NONE)
+            lastSampleColor = DetectSample();
+
+        //if(lastSampleColor != SampleColor.NONE)
+        return lastSampleColor;
+    }
+
+    public SampleColor DetectSample()
+    {
+        if(colorSensor == null)
+            return SampleColor.NONE;
+
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM);
+        mode.telemetry.addData("distance", "%.3f", distance);
+        mode.telemetry.addData("hue", "%.3f", hsvValues[0]);
+
+        if( distance < 3.5) { //
+            if (hsvValues[0] >= 50 && hsvValues[0] < 92) {
+
+                //if(led != null)
+                //    led.setPosition(0.388);
+
+                mode.telemetry.addData("Color", "%s", "Yellow");
+                return SampleColor.YELLOW;
+            }
+            else if ((hsvValues[0] >= 0 && hsvValues[0] <= 20) ||
+                    (hsvValues[0] >= 340 && hsvValues[0] <= 360)) {
+                //if(led != null)
+                //    led.setPosition(0.279);
+                mode.telemetry.addData("Color", "%s", "Red");
+                return SampleColor.RED;
+            }
+            else if (hsvValues[0] >= 210 && hsvValues[0] <= 270) {
+                //if(led != null)
+                //    led.setPosition(0.611);
+                mode.telemetry.addData("Color", "%s", "Blue");
+                return SampleColor.BLUE;
+            }
+            //else if (hsvValues[0] >= 120 && hsvValues[0] <= 150)
+            //    mode.telemetry.addData("Color", "%s", "Green");
+            //else if (hsvValues[0] > 200 && hsvValues[0] < 230)
+            //    mode.telemetry.addData("Color", "%s", "Purple");
+            else {
+                //if(led != null)
+                //    led.setPosition(0);
+
+                mode.telemetry.addData("Color", "%s", "None");
+
+                return SampleColor.NONE;
+            }
+        }
+        else {
+
+            //if(led != null)
+            //    led.setPosition(0);
+
+            mode.telemetry.addData("Color", "%s", "None");
+            return SampleColor.NONE;
+        }
+
+    }
 }

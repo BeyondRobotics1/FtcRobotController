@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
-@Autonomous(name = "Auto Right Specimen (IntoTheDeep)", group = "A Into the Deep")
+@Autonomous(name = "Auto Right Specimen", group = "A Into the Deep")
 
 public class AutoRight extends LinearOpMode {
 

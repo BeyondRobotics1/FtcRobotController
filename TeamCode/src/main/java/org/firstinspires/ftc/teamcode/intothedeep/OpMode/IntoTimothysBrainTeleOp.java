@@ -269,6 +269,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         {
             if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_DOWN)){
                 outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
+                actionTimer.resetTimer();
             }
             if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_LEFT)){
                 claw.open();
@@ -292,7 +293,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                 outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
                 slideOp = Slide.SlideTargetPosition.DOWN;
             }
-            else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_UP)) {//gamepad2.dpad_up
+            else if (gamepad1Ex.isDown(GamepadKeys.Button.DPAD_UP) && slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {//gamepad2.dpad_up
                 claw.close();
                 if (actionTimer.getElapsedTime() > 200) {
                     actionTimer.resetTimer();
