@@ -72,10 +72,10 @@ public class AutoRight extends LinearOpMode {
     /** Specimen scoring cycles */
     private final Pose specimenScorePos11 = new Pose(36, 69);//stage to score pose 1
     private final Pose specimenScorePos1 = new Pose(43, 69);//start 69
-    private final Pose specimenScorePos2 = new Pose(41.5, 71);
-    private final Pose specimenScorePos3 = new Pose(41.5, 73.5);
-    private final Pose specimenScorePos4 = new Pose(41.5, 76);
-    private final Pose specimenScorePos5 = new Pose(41.5, 78.5);//41
+    private final Pose specimenScorePos2 = new Pose(41.5, 71.5);//71
+    private final Pose specimenScorePos3 = new Pose(41.5, 74);
+    private final Pose specimenScorePos4 = new Pose(41.5, 76.5);
+    private final Pose specimenScorePos5 = new Pose(41.5, 78.5);//
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(14, 38, Math.toRadians(0)); //12, 38
@@ -105,6 +105,9 @@ public class AutoRight extends LinearOpMode {
     private final int scoreTimeout = 350;//300
     /** Wait this amount of ms second before moving to the final pickup postion*/
     private final int pickupWaitTime = 100;
+    /** wait time for rotating arm to specimen pickup position */
+    private final int armResetWaitTime = 800;
+
     /** Pickup position tolerance in inches*/
     private final double pickupPositionToleranceX = 1.4;//1.25;
     private final double scorePositionToleranceX = 0.75;
@@ -269,11 +272,22 @@ public class AutoRight extends LinearOpMode {
 
                     releaseSpecimen();
 
+                    actionTimer.resetTimer();
                     follower.followPath(backToSpecimenPickupPosition1, true);
 
+                    setPathState(81);
+                }
+                break;
+            case 81:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(9);
                 }
                 break;
+
+
                 /** #2 */
             case 9: //move to pickup pos
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
@@ -326,9 +340,18 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(backToSpecimenPickupPosition2, true);
 
+                    setPathState(141);
+                }
+                break;
+            case 141:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(14);
                 }
                 break;
+
                 /** #3 */
             case 14: //Reached the pickup position
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
@@ -381,6 +404,15 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(backToSpecimenPickupPosition3, true);
 
+                    setPathState(191);
+                }
+                break;
+
+            case 191:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(19);
                 }
                 break;
@@ -437,6 +469,15 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(backToSpecimenPickupPosition4, true);
 
+                    setPathState(241);
+                }
+                break;
+
+            case 241:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(24);
                 }
                 break;
@@ -642,6 +683,12 @@ public class AutoRight extends LinearOpMode {
     {
         claw.open();
         sleep(100);
+        //clawRotor.MoveToSpecimenIntakePosition();
+        //outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
+    }
+
+    private void restoreArm()
+    {
         clawRotor.MoveToSpecimenIntakePosition();
         outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
     }
