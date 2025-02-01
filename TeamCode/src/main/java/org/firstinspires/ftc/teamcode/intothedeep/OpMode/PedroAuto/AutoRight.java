@@ -75,7 +75,7 @@ public class AutoRight extends LinearOpMode {
     private final Pose specimenScorePos2 = new Pose(41.5, 71.5);//71
     private final Pose specimenScorePos3 = new Pose(41.5, 74);
     private final Pose specimenScorePos4 = new Pose(41.5, 76.5);
-    private final Pose specimenScorePos5 = new Pose(41.5, 78.5);//
+    private final Pose specimenScorePos5 = new Pose(41.5, 78.75);//78.5
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(14, 38, Math.toRadians(0)); //12, 38
