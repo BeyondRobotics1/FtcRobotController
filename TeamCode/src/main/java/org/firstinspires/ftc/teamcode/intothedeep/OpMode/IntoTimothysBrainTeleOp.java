@@ -31,6 +31,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
 
     private Timer actionTimer;
     private Timer gameTimer;
+    private Timer intakeTimer;
     private SimpleDriveTrain driveTrain;
     private Slide slide;
     private Claw claw;
@@ -56,12 +57,13 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
 
     private Slide.SlideTargetPosition slideOp;
     private boolean robotCentric;
-    private boolean leftBumperToggled;
     private boolean goingIn;
     private boolean running;
     private int actionsOrSomething;
     private int rumble;
     private boolean specMode;
+    private boolean speccing;
+    private boolean intakeOut;
     Gamepad.RumbleEffect customRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect intakeRumbleEffect;
 
@@ -81,7 +83,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         SPECIMEN_RESET_ARM_DOWN,
         SPECIMEN_RESET_SLIDE_DOWN,
         RESET_START,
-        RESET_ARM_DOWN
+        SAMPLE_DROP_CLAW_OPEN, RESET_ARM_DOWN
     }
 
     IntoTimothysBrainTeleOp.AutoCompleteMode autoCompleteMode;
@@ -158,11 +160,15 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                 gamepad1Ex, GamepadKeys.Button.START
         );
 
+        intakeTimer = new Timer();
+
         actionTimer = new Timer();
 
         gameTimer = new Timer();
 
         rumble = 0;
+
+        speccing = false;
 
         specMode = false;
 
@@ -182,6 +188,8 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
         waitForStart();
         gameTimer.resetTimer();
 
+
+        intake.SetIntakeSpinner(Intake.IntakeMode.IN);
 
         //slide is manually controlled
         slideOp = Slide.SlideTargetPosition.MANUAL;
@@ -217,13 +225,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
             //claw person
             outtakeOp();
 
-            if(rightTrigger1Reader.isDown() && intakeSlide.isTouchSensorPressed())
-            {
-                //gamepad1.runRumbleEffect(intakeRumbleEffect);
-                gamepad2.runRumbleEffect(intakeRumbleEffect);
-                goingIn = true;
-            }
-            else if(leftTrigger1Reader.wasJustReleased()){
+            if(leftTrigger1Reader.wasJustReleased()){
                 goingIn = false;
             }
 
@@ -290,24 +292,13 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
 
             //telemetry.addData("slideInSpeed", 0.5-slideInSpeed*0.5);
         }
+        else if(intakeOut)
+            intakeSlide.Move(0.8);
         else
             intakeSlide.Move(0.485);
-
-        //
-        if(leftBumper1.getState())
-            leftBumperToggled = true;
-        else
-            leftBumperToggled = false;
-
         //intake control
         if (gamepad1Ex.isDown(GamepadKeys.Button.RIGHT_BUMPER)) //right bumper take in
             intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
-        else {
-            if (leftBumperToggled)
-                intake.SetIntakeSpinner(Intake.IntakeMode.IN);
-            else
-                intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
-        }
 
 
         //intake sample container
@@ -323,93 +314,75 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
 
     private void outtakeOp()
     {
-        if(back.wasJustPressed()){
+        if(back.wasJustPressed())
             specMode = false;
-        }
-        else if(start.wasJustPressed()){
+        else if(start.wasJustPressed())
             specMode = true;
-        }
-
-        if(specMode)
-        {
-            if (dpad_down.wasJustPressed())
-        {
+        if(specMode){
+            if(dpad_down.wasJustPressed()){
             autoCompleteMode = AutoCompleteMode.SPECIMEN_RESET_START;
-        }
-            else if (dpad_up.wasJustPressed()) //button x, set the arm to pickup specimen from human player
-        {
-            clawRotor.MoveToSpecimenIntakePosition();
-            outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
-        }
-            else if(dpad_up.wasJustReleased())
-        {
-            //TODO: REPLACE SLEEP WITH STATE MACHINE
+            speccing = true;
+            }
+            else if (dpad_up.wasJustPressed()){//button x, set the arm to pickup specimen from human player
+                if(speccing){
+                    autoCompleteMode = AutoCompleteMode.SAMPLE_DROP_START;
+                    speccing = false;
+                }
+                else{
+                    clawRotor.MoveToSpecimenIntakePosition();
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
+                }
+            }
+            else if(dpad_up.wasJustReleased()){
             claw.close();
-            if(actionTimer.getElapsedTime() > 2000) {
-                actionTimer.resetTimer();
-                outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
-                clawRotor.MoveToSampleIntakePosition();
+            actionTimer.resetTimer();
+            actionsOrSomething = 1;
             }
-        }
-            else if(dpad_right.wasJustPressed()){
+            else if(dpad_right.wasJustPressed())
                 outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
+            else if(dpad_right.wasJustReleased()) {
+                claw.open();
+                actionTimer.resetTimer();
+                actionsOrSomething = 3;
             }
-            else if(dpad_left.wasJustPressed())
-        {
-            claw.open();
-        }
         }
         else{
 /** auto complete */
             //leftTrigger2: slide up to high basket, claw close, wait 200ms, slide up, wait 100 ms, arm up
             //rightTrigger2: arm down, wait 200 ms, slide down to the bottom
             //left bumper: claw close, wait 200ms, slide up, arm up
-            if(dpad_up.wasJustPressed())
-            {
-                //actionTimer.resetTimer();
+            if(!goingIn && intakeSlide.isTouchSensorPressed())
+            {//actionTimer.resetTimer();
                 running = true;
+                goingIn = true;
                 autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.SAMPLE_DELIVERY_START;
             }
-            else if (dpad_down.wasJustPressed())
+            else if (leftBumper1.wasJustPressed())
             {
+                claw.open();
                 running = true;
                 autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.RESET_START;
             }
-
-            else if (dpad_up.wasJustReleased())
-            {
-                claw.open();
-            }
         }
-
-
-        /** outtake arm operation */
-        //button a, set the arm to pickup a sample from the intake
-        if (gamepad2Ex.isDown(GamepadKeys.Button.A)) {
-            outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
-            clawRotor.MoveToSampleIntakePosition();
-        } else if (gamepad2Ex.isDown(GamepadKeys.Button.Y)) //button y, set the arm to the specimen ready position
-        {
-            //change to SPECIMEN_READY_POSITION if it doesn't work
-            outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
-
-            //old high with momentum
-            //outtakeArm.Rotate(outtakeArm.SPECIMEN_READY_POSITION);
-
-
-            clawRotor.MoveToSampleIntakePosition();
-        } else if (gamepad2Ex.isDown(GamepadKeys.Button.B)) //button b, set the arm to score samples into high basket
-        {
-            outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
-            clawRotor.MoveToSampleIntakePosition();
+        switch (actionsOrSomething){
+            case 1:
+                break;
+            case 2:
+                if(actionTimer.getElapsedTime() > 200) {
+                    actionTimer.resetTimer();
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_SHUFFLE_POSITION);
+                    clawRotor.MoveToSampleIntakePosition();
+                    actionsOrSomething = 1;
+                    break;
+                }
+            case 3:
+                if(actionTimer.getElapsedTime() > 200) {
+                    clawRotor.MoveToSpecimenIntakePosition();
+                    outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
+                    actionsOrSomething = 1;
+                    break;
+                }
         }
-
-
-
-
-
-
-
         if(running){
             switch (autoCompleteMode) {
                 ////only when in auto complete mode
@@ -420,10 +393,10 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                     claw.close();
                     break;
                 case SAMPLE_DELIVERY_CLAW_CLOSE:
-                    if (actionTimer.getElapsedTime() > 200)
-                    {
+                    if (actionTimer.getElapsedTime() > 200) {
                         actionTimer.resetTimer();
                         autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.SAMPLE_DELIVER_SLIDE_UP;
+                        intakeOut = true;
                         if (slideOp != Slide.SlideTargetPosition.HIGH_BASkET) {
                             slideOp = Slide.SlideTargetPosition.HIGH_BASkET;
                             slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.HIGH_BASkET, 1);
@@ -434,6 +407,7 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                     if (actionTimer.getElapsedTime() > 200) {
                         outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                         clawRotor.MoveToSampleIntakePosition();
+                        intakeOut = false;
                         autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.MANUAL;
                     }
                     running = false;
@@ -467,10 +441,19 @@ public class IntoTimothysBrainTeleOp extends LinearOpMode {
                         if (slideOp != Slide.SlideTargetPosition.DOWN) {
                             slideOp = Slide.SlideTargetPosition.DOWN;
                             slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1); //ground
-                            autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.MANUAL;
+                            autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.SAMPLE_DROP_CLAW_OPEN;
+                            actionTimer.resetTimer();
                         }
                     }
                     break;
+                case SAMPLE_DROP_CLAW_OPEN:
+                    if (actionTimer.getElapsedTime() > 200){
+                        claw.open();
+                        running = false;
+                        autoCompleteMode = IntoTimothysBrainTeleOp.AutoCompleteMode.MANUAL;
+                    }
+                    break;
+
                 ////reset specimen position to intake position
 
                 case SPECIMEN_RESET_START:
