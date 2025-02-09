@@ -200,7 +200,7 @@ public class AutoRight extends LinearOpMode {
                 poseDeltaX = Math.abs(follower.getPose().getX() - afterPushingPos.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - afterPushingPos.getY());
 
-                if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                if (poseDeltaX <= 1.2 && poseDeltaY <= 1.2) {
                     follower.followPath(toSpecimenPickupPosition, true);
                     setPathState(2);
                 }
