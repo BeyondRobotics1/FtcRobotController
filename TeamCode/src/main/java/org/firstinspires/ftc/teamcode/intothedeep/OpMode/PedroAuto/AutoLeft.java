@@ -32,7 +32,7 @@ public class AutoLeft extends LinearOpMode {
     OuttakeArm outtakeArm;
     Intake intake;
     IntakeSlide intakeSlide;
-    private DigitalChannel touchSensorFrontLimit;
+    private DigitalChannel touchSensorFrontLimitRight;
 
     //Pedro pathing
     private Follower follower;
@@ -123,8 +123,8 @@ public class AutoLeft extends LinearOpMode {
         intakeSlide = new IntakeSlide(hardwareMap);
         intakeSlide.Move(0.49);
 
-        touchSensorFrontLimit =  hardwareMap.get(DigitalChannel.class, "frontLimit");
-        touchSensorFrontLimit.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorFrontLimitRight =  hardwareMap.get(DigitalChannel.class, "frontLimitRight");
+        touchSensorFrontLimitRight.setMode(DigitalChannel.Mode.INPUT);
 
         pathTimer = new Timer();
         opmodeTimer = new Timer();
@@ -599,7 +599,7 @@ public class AutoLeft extends LinearOpMode {
             case 82:
                 //poseDeltaX = Math.abs(follower.getPose().getX() - parkPose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - parkPose.getY());
-                if (poseDeltaY <= 1 || !touchSensorFrontLimit.getState()) {
+                if (poseDeltaY <= 1 || !touchSensorFrontLimitRight.getState()) {
                     //actionTimer.resetTimer();
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_PARK_POSITION2);
                     setPathState(83);
