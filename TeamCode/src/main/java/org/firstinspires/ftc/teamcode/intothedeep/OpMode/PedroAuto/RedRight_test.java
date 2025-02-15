@@ -4,18 +4,22 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.Log;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Claw;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.ClawRotor;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Timer;
 
 @Autonomous(name = "Red Right Test (IntoTheDeep)", group = "B Into the Deep")
 @Disabled

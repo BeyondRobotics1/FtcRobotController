@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Timer;
 
 @Autonomous(name = "Auto Left Sample", group = "A Into the Deep")
 
@@ -68,6 +68,7 @@ public class AutoLeft extends LinearOpMode {
     private final Pose pickup4Pose = new Pose(18, 90, Math.toRadians(-135));
 
     /** Starting position to pickup a sample in the submersible*/
+    private final Pose submersibleCurve = new Pose(80, 115, Math.toRadians(-90));
     private final Pose submersiblePickupPose1 = new Pose(62, 106, Math.toRadians(-90));
     private final Pose submersiblePickupPose2 = new Pose(62, 98, Math.toRadians(-90));
 
@@ -79,6 +80,7 @@ public class AutoLeft extends LinearOpMode {
     private final Pose parkControlPose = new Pose(75, 110, Math.toRadians(-90));
 
     private Path scorePreload, park;
+    private Path submersibleCurvePath;
     private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3;
 
     private PathChain grabPickup4, scorePickup4, submersiblePath1, submersiblePath2, submersiblePath3, submersibleScore;
@@ -92,13 +94,14 @@ public class AutoLeft extends LinearOpMode {
     //slide up wait time, slide needs up before we
     //can rotate the arm
     private final double slideUpWaitTime = 300; //300
-    private final double slideFullyUpWaitTime = 900;//1000
+    private final double slideFullyUpWaitTime = 800;//900, 1000
 
     private final double clawOpenWaitTime = 250;
     //the time takes to extend intake
-    private final double extendingIntakeWaitTime = 1200;//900
+    private final double extendingIntakeWaitTime = 1100;//1200, 900
     //the time to wait while intake is extended
     private final double retrackingIntakeWaitTime = 1100;
+    private boolean intakeSlided = false;
 
     Log log;
     @Override
@@ -219,7 +222,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
 
-                /** #1 */
+            /** #1 */
             case 5://move to pickup 1 position
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
@@ -252,8 +255,9 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 8:
-                if(actionTimer.getElapsedTime() >= retrackingIntakeWaitTime)
+                if(intakeSlide.isTouchSensorPressed() && !intakeSlided)
                 {
+                    intakeSlided = true;
                     claw.close();
                     sleep(100);
                     intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
@@ -265,6 +269,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 9:
                 if(actionTimer.getElapsedTime() >= slideUpWaitTime) {//500
+                    intakeSlided = false;
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup1, true);
@@ -308,7 +313,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
 
-                /** #2 */
+            /** #2 */
             case 14: //at score position, slide up, arm up
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup2Pose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - pickup2Pose.getY());
@@ -332,8 +337,9 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 16:
-                if(actionTimer.getElapsedTime() >= retrackingIntakeWaitTime)
+                if(intakeSlide.isTouchSensorPressed() && !intakeSlided)
                 {
+                    intakeSlided = true;
                     claw.close();
                     sleep(100);
                     intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
@@ -345,6 +351,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 17:
                 if(actionTimer.getElapsedTime() >= slideUpWaitTime) {
+                    intakeSlided = false;
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup2, true);
@@ -388,7 +395,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
 
 
-                /** #3 */
+            /** #3 */
             case 22: //at score position, slide up, arm up
                 poseDeltaX = Math.abs(follower.getPose().getX() - pickup3Pose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - pickup3Pose.getY());
@@ -412,8 +419,9 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 24:
-                if(actionTimer.getElapsedTime() >= retrackingIntakeWaitTime)
+                if(intakeSlide.isTouchSensorPressed() && !intakeSlided)
                 {
+                    intakeSlided = true;
                     claw.close();
                     sleep(100);
                     intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
@@ -425,6 +433,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 25:
                 if(actionTimer.getElapsedTime() >= slideUpWaitTime) {
+                    intakeSlided = false;
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     follower.followPath(scorePickup3, true);
@@ -450,7 +459,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
 
-                /**Pick one from submersible*/
+            /**Pick one from submersible*/
             case 28:
                 if(actionTimer.getElapsedTime() >= clawOpenWaitTime) {
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_PICKUP_POSITION);
@@ -462,14 +471,16 @@ public class AutoLeft extends LinearOpMode {
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
                     intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
+                    intakeSlide.Move(intakeOutSpeed);
                     //intake.MoveToOuttakePosition();
-                    follower.followPath(submersiblePath1, true);
+                    follower.followPath(submersibleCurvePath, true);
                     setPathState(30);
                 }
                 break;
             case 30:
                 //poseDeltaX = Math.abs(follower.getPose().getX() - parkPose.getX());
-                poseDeltaY = Math.abs(follower.getPose().getY() - submersiblePickupPose1.getY());
+                poseDeltaY = Math.abs(follower.getPose().getY() - submersibleCurve.getY());
+                //  poseDeltaY = Math.abs(follower.getPose().getY() - submersibleCurvePath.getY());
                 if (poseDeltaY <= 1) {
                     follower.followPath(submersiblePath2, true);
                     setPathState(31);
@@ -493,7 +504,7 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 33:
-                if(actionTimer.getElapsedTime() > 1500){
+                if(actionTimer.getElapsedTime() > 1500){//1500
                     follower.followPath(submersiblePath3, true);
                     setPathState(34);
                 }
@@ -502,12 +513,17 @@ public class AutoLeft extends LinearOpMode {
                 //poseDeltaX = Math.abs(follower.getPose().getX() - parkPose.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - submersiblePickupPose1.getY());
                 if (poseDeltaY <= 1) {
+
                     intake.MoveToOuttakePosition();
                     actionTimer.resetTimer();
-                    setPathState(35);
-
+                    setPathState(100);
                 }
                 break;
+            case 100:
+                if(actionTimer.getElapsedTime()>=1000){
+                    intake.MoveToOuttakePosition();
+                    setPathState(35);
+                }
             case 35:
                 if(actionTimer.getElapsedTime() > 100){
                     intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
@@ -524,7 +540,8 @@ public class AutoLeft extends LinearOpMode {
                 }
                 break;
             case 37:
-                if(actionTimer.getElapsedTime() > retrackingIntakeWaitTime){
+                if(intakeSlide.isTouchSensorPressed() && !intakeSlided){
+                    intakeSlided = true;
                     claw.close();
                     sleep(100);
                     intake.SetIntakeSpinner(Intake.IntakeMode.OUT);
@@ -537,6 +554,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 38:
                 if(actionTimer.getElapsedTime() >= slideUpWaitTime) {
+                    intakeSlided = false;
                     intake.SetIntakeSpinner(Intake.IntakeMode.IN);
                     outtakeArm.RotateTo(outtakeArm.SAMPLE_DELIVERY_POSITION);
                     setPathState(39);
@@ -571,11 +589,26 @@ public class AutoLeft extends LinearOpMode {
                 if(actionTimer.getElapsedTime() >= 100) {
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
                     intake.MoveToIntakePosition();
+                    actionTimer.resetTimer();
                     setPathState(43);
                 }
                 break;
-
-
+            /** pick 2nd from submersible*/
+           /* case 43:
+                if(actionTimer.getElapsedTime() >retrackingIntakeWaitTime){
+                    follower.followPath(submersiblePath1);
+                    actionTimer.resetTimer();
+                    setPathState(44);
+                }
+            case 44:
+                poseDeltaY = Math.abs(follower.getPose().getY() - submersiblePickupPose1.getY());
+                poseDeltaX = Math.abs(follower.getPose().getX() - submersiblePickupPose1.getX());
+                if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                    actionTimer.resetTimer();
+                    setPathState(45);
+                }
+            case 45:
+           */
 
 
             /** Park */
@@ -681,10 +714,9 @@ public class AutoLeft extends LinearOpMode {
                 .build();
 
 
-        submersiblePath1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(scorePose2), new Point(submersiblePickupPose1)))
-                .setLinearHeadingInterpolation(scorePose2.getHeading(), submersiblePickupPose1.getHeading())
-                .build();
+        submersibleCurvePath = new Path(new BezierCurve(new Point(scorePose2), new Point(submersibleCurve), new Point(submersiblePickupPose1)));
+        submersibleCurvePath.setLinearHeadingInterpolation(scorePose2.getHeading(), submersiblePickupPose1.getHeading());
+
         submersiblePath2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(submersiblePickupPose1), new Point(submersiblePickupPose2)))
                 .setLinearHeadingInterpolation(submersiblePickupPose1.getHeading(), submersiblePickupPose2.getHeading())
@@ -724,7 +756,3 @@ public class AutoLeft extends LinearOpMode {
         return headingDelta;
     }
 }
-
-
-
-

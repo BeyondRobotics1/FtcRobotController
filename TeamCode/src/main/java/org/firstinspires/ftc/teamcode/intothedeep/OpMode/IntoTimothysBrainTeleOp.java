@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
+import com.pedropathing.util.Timer;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Into Timothy's Brain (TeleOp)", group = "Into the Deep")
