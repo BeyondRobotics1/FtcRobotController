@@ -622,6 +622,7 @@ public class AutoLeft extends LinearOpMode {
                 break;
             case 81:
                 if(actionTimer.getElapsedTime() >= 100) {
+
                     slide.moveToPredefinedPositionWithoutWaiting(Slide.SlideTargetPosition.DOWN, 1);
                     intake.SetIntakeSpinner(Intake.IntakeMode.IDLE);
                     intake.MoveToOuttakePosition();

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
+import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -20,7 +20,7 @@ public class DriveSimply extends LinearOpMode {
         boolean fieldcentric = false;
         boolean swap = false;
         double head = 0;
-        GoBildaPinpointDriverRR pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,"pinpoint");
+        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
         // per Q & A 191,
         //REV Digital LED Indicator (https://www.revrobotics.com/rev-31-2010/) is NOT legal :(

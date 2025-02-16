@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
-import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -85,8 +82,8 @@ public class SimpleDriveTrain {
         this.mode = mode;
 
         motorFrontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
-        motorBackLeft = hardwareMap.get(DcMotorEx.class, "leftBack");
-        motorBackRight = hardwareMap.get(DcMotorEx.class, "rightBack");
+        motorBackLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
+        motorBackRight = hardwareMap.get(DcMotorEx.class, "rightRear");
         motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         //Reverse motors
