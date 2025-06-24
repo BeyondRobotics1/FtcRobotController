@@ -10,10 +10,10 @@ public class    ClawRotor {
     LinearOpMode mode;
 
     //claw is down to pickup sample from the intake
-    public final double CLAW_UP_POSITION = 0.02;
+    public final double CLAW_UP_POSITION = 0.05;//0.02
 
     //clas is up to pick up specimen
-    public final double CLAW_DOWN_POSITION = 0.7;
+    public final double CLAW_DOWN_POSITION = 0.71;//0.7
 
     public ClawRotor(HardwareMap hardwareMap, LinearOpMode mode)
     {

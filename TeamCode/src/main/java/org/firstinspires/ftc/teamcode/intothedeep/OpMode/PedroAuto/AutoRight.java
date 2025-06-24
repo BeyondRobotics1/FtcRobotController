@@ -31,7 +31,8 @@ public class AutoRight extends LinearOpMode {
     OuttakeArm outtakeArm;
     Intake intake;
     IntakeSlide intakeSlide;
-    private DigitalChannel touchSensorFrontLimit;
+    private DigitalChannel touchSensorFrontLimitRight;
+    private DigitalChannel touchSensorFrontLimitLeft;
 
     //Pedro pathing
     private Follower follower;
@@ -72,10 +73,10 @@ public class AutoRight extends LinearOpMode {
     /** Specimen scoring cycles */
     private final Pose specimenScorePos11 = new Pose(36, 69);//stage to score pose 1
     private final Pose specimenScorePos1 = new Pose(43, 69);//start 69
-    private final Pose specimenScorePos2 = new Pose(41.5, 71);
-    private final Pose specimenScorePos3 = new Pose(41.5, 73.5);
-    private final Pose specimenScorePos4 = new Pose(41.5, 76);
-    private final Pose specimenScorePos5 = new Pose(41.5, 78.5);//41
+    private final Pose specimenScorePos2 = new Pose(41.5, 71);//71
+    private final Pose specimenScorePos3 = new Pose(41.5, 73);
+    private final Pose specimenScorePos4 = new Pose(41.5, 75);
+    private final Pose specimenScorePos5 = new Pose(41.5, 77);//78.5
 
     /** back position for specimen pickup */
     private final Pose specimenPickupPos2 = new Pose(14, 38, Math.toRadians(0)); //12, 38
@@ -105,6 +106,9 @@ public class AutoRight extends LinearOpMode {
     private final int scoreTimeout = 350;//300
     /** Wait this amount of ms second before moving to the final pickup postion*/
     private final int pickupWaitTime = 100;
+    /** wait time for rotating arm to specimen pickup position */
+    private final int armResetWaitTime = 800;
+
     /** Pickup position tolerance in inches*/
     private final double pickupPositionToleranceX = 1.4;//1.25;
     private final double scorePositionToleranceX = 0.75;
@@ -124,8 +128,10 @@ public class AutoRight extends LinearOpMode {
         intake = new Intake(hardwareMap, this);
         intakeSlide = new IntakeSlide(hardwareMap);
 
-        touchSensorFrontLimit =  hardwareMap.get(DigitalChannel.class, "frontLimit");
-        touchSensorFrontLimit.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorFrontLimitRight =  hardwareMap.get(DigitalChannel.class, "frontLimitRight");
+        touchSensorFrontLimitRight.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorFrontLimitLeft =  hardwareMap.get(DigitalChannel.class, "frontLimitLeft");
+        touchSensorFrontLimitLeft.setMode(DigitalChannel.Mode.INPUT);
 
         /** Create Timer instances */
         pathTimer = new Timer();
@@ -147,7 +153,7 @@ public class AutoRight extends LinearOpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
-        telemetry.addData("is touch sensor pressed?", !touchSensorFrontLimit.getState());
+        telemetry.addData("is touch sensor pressed?", isTouchSensorsPressed());
         telemetry.update();
 
         /** Waiting for Play button being touched */
@@ -173,7 +179,7 @@ public class AutoRight extends LinearOpMode {
             telemetry.addData("x", follower.getPose().getX());
             telemetry.addData("y", follower.getPose().getY());
             telemetry.addData("heading", Math.toDegrees(follower.getPose().getHeading()));
-            telemetry.addData("is touch sensor pressed?", !touchSensorFrontLimit.getState());
+            telemetry.addData("is touch sensor pressed?", isTouchSensorsPressed());
             telemetry.update();
         }
 
@@ -197,7 +203,7 @@ public class AutoRight extends LinearOpMode {
                 poseDeltaX = Math.abs(follower.getPose().getX() - afterPushingPos.getX());
                 poseDeltaY = Math.abs(follower.getPose().getY() - afterPushingPos.getY());
 
-                if (poseDeltaX <= 1 && poseDeltaY <= 1) {
+                if (poseDeltaX <= 1.2 && poseDeltaY <= 1.2) {
                     follower.followPath(toSpecimenPickupPosition, true);
                     setPathState(2);
                 }
@@ -256,7 +262,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(8);
 
                 //if the position is reached
-                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || isTouchSensorsPressed()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -269,11 +275,22 @@ public class AutoRight extends LinearOpMode {
 
                     releaseSpecimen();
 
+                    actionTimer.resetTimer();
                     follower.followPath(backToSpecimenPickupPosition1, true);
 
+                    setPathState(81);
+                }
+                break;
+            case 81:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(9);
                 }
                 break;
+
+
                 /** #2 */
             case 9: //move to pickup pos
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
@@ -311,7 +328,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(13);
 
                 //if the position is reached
-                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || isTouchSensorsPressed()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -326,9 +343,18 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(backToSpecimenPickupPosition2, true);
 
+                    setPathState(141);
+                }
+                break;
+            case 141:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(14);
                 }
                 break;
+
                 /** #3 */
             case 14: //Reached the pickup position
                 poseDeltaX = Math.abs(follower.getPose().getX() - specimenPickupPos2.getX());
@@ -366,7 +392,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(18);
 
                 //if the position is reached
-                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || isTouchSensorsPressed()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -381,6 +407,15 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(backToSpecimenPickupPosition3, true);
 
+                    setPathState(191);
+                }
+                break;
+
+            case 191:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(19);
                 }
                 break;
@@ -422,7 +457,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(23);
 
                 //if the position is reached
-                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || isTouchSensorsPressed()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -437,6 +472,15 @@ public class AutoRight extends LinearOpMode {
 
                     follower.followPath(backToSpecimenPickupPosition4, true);
 
+                    setPathState(241);
+                }
+                break;
+
+            case 241:
+                //allow robot moving away from submersible before raising
+                //the arm
+                if (actionTimer.getElapsedTime() >= armResetWaitTime) {//
+                    restoreArm();
                     setPathState(24);
                 }
                 break;
@@ -478,7 +522,7 @@ public class AutoRight extends LinearOpMode {
                 //logTouchSensor(28);
 
                 //if the position is reached
-                if(poseDeltaX <= scorePositionToleranceX || !touchSensorFrontLimit.getState()){// && poseDeltaY < 1) {
+                if(poseDeltaX <= scorePositionToleranceX || isTouchSensorsPressed()){// && poseDeltaY < 1) {
 
                     outtakeArm.RotateTo(outtakeArm.SPECIMEN_SCORE_POSITION);
                     actionTimer.resetTimer();
@@ -642,6 +686,12 @@ public class AutoRight extends LinearOpMode {
     {
         claw.open();
         sleep(100);
+        //clawRotor.MoveToSpecimenIntakePosition();
+        //outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
+    }
+
+    private void restoreArm()
+    {
         clawRotor.MoveToSpecimenIntakePosition();
         outtakeArm.RotateTo(outtakeArm.SPECIMEN_PICKUP_POSITION);
     }
@@ -661,10 +711,23 @@ public class AutoRight extends LinearOpMode {
         }
     }
 
+    private boolean isTouchSensorsPressed(){
+        boolean rightSensorPressed = !touchSensorFrontLimitRight.getState();
+        boolean leftSensorPressed = !touchSensorFrontLimitLeft.getState();
+
+        if(rightSensorPressed || leftSensorPressed){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     private void logTouchSensor(int step)
     {
         if(log != null) {
-            String msg = "Step: " + step + ", Pressed " + !touchSensorFrontLimit.getState();
+            String msg = "Step: " + step + "Left Pressed -  " + !touchSensorFrontLimitLeft.getState() +
+                    ", Right Pressed - " + !touchSensorFrontLimitRight.getState();
 
             log.addData(msg);
             log.update();
