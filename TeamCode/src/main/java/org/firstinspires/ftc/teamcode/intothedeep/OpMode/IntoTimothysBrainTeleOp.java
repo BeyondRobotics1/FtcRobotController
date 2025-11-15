@@ -6,6 +6,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
+import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,10 +20,10 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Into Timothy's Brain (TeleOp)", group = "Into the Deep")
+@Disabled
 
 public class IntoTimothysBrainTeleOp extends LinearOpMode {
 

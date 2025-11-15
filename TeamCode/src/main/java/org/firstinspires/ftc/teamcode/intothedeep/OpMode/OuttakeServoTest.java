@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.intothedeep.OpMode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Outtake Servo Test", group = "Into the Deep")
+@Disabled
 public class OuttakeServoTest extends LinearOpMode {
 
     static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
@@ -58,7 +60,7 @@ public class OuttakeServoTest extends LinearOpMode {
 
             if(servo != null) {
                 //use gamepad1 left trigger to set servo positions dynamically
-                double pivotPosition = gamepad2.left_trigger;
+                double pivotPosition = gamepad1.left_trigger;
                 telemetry.addData(servoName+ " position", Math.abs(pivotPosition));
                 servo.setPosition(pivotPosition);
             }

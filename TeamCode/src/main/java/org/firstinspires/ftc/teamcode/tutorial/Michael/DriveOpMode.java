@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.tutorial.Michael;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp (name = "Drive", group = "Michael")
+@Disabled
 public class DriveOpMode extends OpMode {
     MecanumDrive mecanumDrive;
 

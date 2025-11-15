@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.intothedeep.OpMode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,8 +12,8 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Intake Servo Test", group = "Into the Deep")
+@Disabled
 public class IntakeServoTest extends LinearOpMode {
-
     @Override
     public void runOpMode() throws InterruptedException {
         ElapsedTime timer = new ElapsedTime();

@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.common.Helper;
 import org.firstinspires.ftc.teamcode.common.PID;
 
 
-public class SimpleDriveTrain {
+public class DriveTrain {
 
 
     // The IMU sensor object
@@ -49,8 +49,8 @@ public class SimpleDriveTrain {
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 0.8; //forward/backward power adjustment
-    private double x_power_scale = 0.8; //left/right power adjustment, make it slower
+    private double y_power_scale = 1; //forward/backward power adjustment
+    private double x_power_scale = 1; //left/right power adjustment, make it slower
     private double rx_power_scale = 0.75;//rotation power adjustment, make it slower
 
 
@@ -78,7 +78,7 @@ public class SimpleDriveTrain {
      * @param hardwareMap: for hardware lookup
      * @param mode: for telemetry
      */
-    public SimpleDriveTrain(HardwareMap hardwareMap, LinearOpMode mode, boolean hasIMU)
+    public DriveTrain(HardwareMap hardwareMap, LinearOpMode mode, boolean hasIMU)
     {
 
         this.mode = mode;
@@ -89,8 +89,10 @@ public class SimpleDriveTrain {
         motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         //Reverse motors
-        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.intothedeep.OpMode.PedroAuto;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -10,12 +14,6 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.ClawRotor;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.IntakeSlide;
 import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.OuttakeArm;
-import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-import org.firstinspires.ftc.teamcode.pedroPathing.util.Timer;
 
 @Autonomous(name = "Auto Right Specimen", group = "A Into the Deep")
 
@@ -141,7 +139,7 @@ public class AutoRight extends LinearOpMode {
         opmodeTimer.resetTimer();
 
         /**Create the Pedro Pathing Follower instance*/
-        follower = new Follower(hardwareMap);
+        //follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
 
         setPathState(0);
@@ -555,31 +553,31 @@ public class AutoRight extends LinearOpMode {
 
     private void buildPaths() {
 
-        //pushing path
-        push = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(pos1)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), pos1.getHeading())
-                .addPath(new BezierLine(new Point(pos1), new Point(pos11)))
-                .setLinearHeadingInterpolation(pos1.getHeading(), pos11.getHeading())
-                .addPath(new BezierLine(new Point(pos11), new Point(pos12)))
-                .setLinearHeadingInterpolation(pos11.getHeading(), pos12.getHeading())
-                .addPath(new BezierLine(new Point(pos12), new Point(pos13)))
-                .setLinearHeadingInterpolation(pos12.getHeading(), pos13.getHeading())
-                .addPath(new BezierLine(new Point(pos13), new Point(pos21)))
-                .setLinearHeadingInterpolation(pos13.getHeading(), pos21.getHeading())
-                .addPath(new BezierLine(new Point(pos21), new Point(pos22)))
-                .setLinearHeadingInterpolation(pos21.getHeading(), pos22.getHeading())
-                .addPath(new BezierLine(new Point(pos22), new Point(pos23)))
-                .setLinearHeadingInterpolation(pos22.getHeading(), pos23.getHeading())
-                .addPath(new BezierLine(new Point(pos23), new Point(pos31)))
-                .setLinearHeadingInterpolation(pos23.getHeading(), pos31.getHeading())
-                .addPath(new BezierLine(new Point(pos31), new Point(pos32)))
-                .setLinearHeadingInterpolation(pos31.getHeading(), pos32.getHeading())
-                .addPath(new BezierLine(new Point(pos32), new Point(pos33)))
-                .setLinearHeadingInterpolation(pos32.getHeading(), pos33.getHeading())
-                .addPath(new BezierLine(new Point(pos33), new Point(afterPushingPos)))
-                .setLinearHeadingInterpolation(pos33.getHeading(), afterPushingPos.getHeading())
-                .build();
+//        //pushing path
+//        push = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(startPose), new Point(pos1)))
+//                .setLinearHeadingInterpolation(startPose.getHeading(), pos1.getHeading())
+//                .addPath(new BezierLine(new Point(pos1), new Point(pos11)))
+//                .setLinearHeadingInterpolation(pos1.getHeading(), pos11.getHeading())
+//                .addPath(new BezierLine(new Point(pos11), new Point(pos12)))
+//                .setLinearHeadingInterpolation(pos11.getHeading(), pos12.getHeading())
+//                .addPath(new BezierLine(new Point(pos12), new Point(pos13)))
+//                .setLinearHeadingInterpolation(pos12.getHeading(), pos13.getHeading())
+//                .addPath(new BezierLine(new Point(pos13), new Point(pos21)))
+//                .setLinearHeadingInterpolation(pos13.getHeading(), pos21.getHeading())
+//                .addPath(new BezierLine(new Point(pos21), new Point(pos22)))
+//                .setLinearHeadingInterpolation(pos21.getHeading(), pos22.getHeading())
+//                .addPath(new BezierLine(new Point(pos22), new Point(pos23)))
+//                .setLinearHeadingInterpolation(pos22.getHeading(), pos23.getHeading())
+//                .addPath(new BezierLine(new Point(pos23), new Point(pos31)))
+//                .setLinearHeadingInterpolation(pos23.getHeading(), pos31.getHeading())
+//                .addPath(new BezierLine(new Point(pos31), new Point(pos32)))
+//                .setLinearHeadingInterpolation(pos31.getHeading(), pos32.getHeading())
+//                .addPath(new BezierLine(new Point(pos32), new Point(pos33)))
+//                .setLinearHeadingInterpolation(pos32.getHeading(), pos33.getHeading())
+//                .addPath(new BezierLine(new Point(pos33), new Point(afterPushingPos)))
+//                .setLinearHeadingInterpolation(pos33.getHeading(), afterPushingPos.getHeading())
+//                .build();
 
         //after pushing
         //move to specimen pickup position
@@ -588,83 +586,83 @@ public class AutoRight extends LinearOpMode {
 //                .setLinearHeadingInterpolation(pos33.getHeading(), specimenPickupPos.getHeading())
 //                .build();
 
-        toSpecimenPickupPosition = follower.pathBuilder().
-                addPath(new BezierLine(new Point(afterPushingPos), new Point(specimenPickupPos)))
-                .setLinearHeadingInterpolation(afterPushingPos.getHeading(), specimenPickupPos.getHeading())
-                .build();
-
-        toSpecimenPickupFinalPosition = follower.pathBuilder().
-                addPath(new BezierLine(new Point(specimenPickupPos), new Point(specimenPickupFinalPos)))
-                .setLinearHeadingInterpolation(specimenPickupPos.getHeading(), specimenPickupFinalPos.getHeading())
-                .build();
-
-
-
-        //For the scoring cycles
-
-        //shared by all scoring cycles
-        // position specimenPickupFinalPos2-> specimen pickup position
-        backToSpecimenPickupFinalPosition = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupPos2), new Point(specimenPickupFinalPos2)))
-                .setLinearHeadingInterpolation(specimenPickupPos2.getHeading(), specimenPickupFinalPos2.getHeading())
-                .build();
-
-
-        //#1, start with last first pickup position as done after pushing
-        scoreSpecimen11 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupFinalPos), new Point(specimenScorePos11)))
-                .setLinearHeadingInterpolation(specimenPickupFinalPos.getHeading(), specimenScorePos11.getHeading())
-                .build();
-
-        scoreSpecimen1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenScorePos11), new Point(specimenScorePos1)))
-                .setLinearHeadingInterpolation(specimenScorePos11.getHeading(), specimenScorePos1.getHeading())
-                .build();
-
-        backToSpecimenPickupPosition1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenScorePos1), new Point(specimenPickupPos2)))
-                .setLinearHeadingInterpolation(specimenScorePos1.getHeading(), specimenPickupPos2.getHeading())
-                .build();
-
-
-        //#2
-        scoreSpecimen2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos2)))
-                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos2.getHeading())
-                .build();
-        backToSpecimenPickupPosition2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenScorePos2), new Point(specimenPickupPos2)))
-                .setLinearHeadingInterpolation(specimenScorePos2.getHeading(), specimenPickupPos2.getHeading())
-                .build();
-
-
-        scoreSpecimen3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos3)))
-                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos3.getHeading())
-                .build();
-        backToSpecimenPickupPosition3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenScorePos3), new Point(specimenPickupPos2)))
-                .setLinearHeadingInterpolation(specimenScorePos3.getHeading(), specimenPickupPos2.getHeading())
-                .build();
-
-
-        scoreSpecimen4 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos4)))
-                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos4.getHeading())
-                .build();
-        backToSpecimenPickupPosition4 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenScorePos4), new Point(specimenPickupPos2)))
-                .setLinearHeadingInterpolation(specimenScorePos4.getHeading(), specimenPickupPos2.getHeading())
-                .build();
-
-        scoreSpecimen5 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos5)))
-                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos5.getHeading())
-                .build();
-        parking =  follower.pathBuilder()
-                .addPath(new BezierLine(new Point(specimenScorePos5), new Point(parkPos)))
-                .setLinearHeadingInterpolation(specimenScorePos5.getHeading(), parkPos.getHeading())
-                .build();
+//        toSpecimenPickupPosition = follower.pathBuilder().
+//                addPath(new BezierLine(new Point(afterPushingPos), new Point(specimenPickupPos)))
+//                .setLinearHeadingInterpolation(afterPushingPos.getHeading(), specimenPickupPos.getHeading())
+//                .build();
+//
+//        toSpecimenPickupFinalPosition = follower.pathBuilder().
+//                addPath(new BezierLine(new Point(specimenPickupPos), new Point(specimenPickupFinalPos)))
+//                .setLinearHeadingInterpolation(specimenPickupPos.getHeading(), specimenPickupFinalPos.getHeading())
+//                .build();
+//
+//
+//
+//        //For the scoring cycles
+//
+//        //shared by all scoring cycles
+//        // position specimenPickupFinalPos2-> specimen pickup position
+//        backToSpecimenPickupFinalPosition = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenPickupPos2), new Point(specimenPickupFinalPos2)))
+//                .setLinearHeadingInterpolation(specimenPickupPos2.getHeading(), specimenPickupFinalPos2.getHeading())
+//                .build();
+//
+//
+//        //#1, start with last first pickup position as done after pushing
+//        scoreSpecimen11 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenPickupFinalPos), new Point(specimenScorePos11)))
+//                .setLinearHeadingInterpolation(specimenPickupFinalPos.getHeading(), specimenScorePos11.getHeading())
+//                .build();
+//
+//        scoreSpecimen1 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenScorePos11), new Point(specimenScorePos1)))
+//                .setLinearHeadingInterpolation(specimenScorePos11.getHeading(), specimenScorePos1.getHeading())
+//                .build();
+//
+//        backToSpecimenPickupPosition1 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenScorePos1), new Point(specimenPickupPos2)))
+//                .setLinearHeadingInterpolation(specimenScorePos1.getHeading(), specimenPickupPos2.getHeading())
+//                .build();
+//
+//
+//        //#2
+//        scoreSpecimen2 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos2)))
+//                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos2.getHeading())
+//                .build();
+//        backToSpecimenPickupPosition2 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenScorePos2), new Point(specimenPickupPos2)))
+//                .setLinearHeadingInterpolation(specimenScorePos2.getHeading(), specimenPickupPos2.getHeading())
+//                .build();
+//
+//
+//        scoreSpecimen3 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos3)))
+//                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos3.getHeading())
+//                .build();
+//        backToSpecimenPickupPosition3 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenScorePos3), new Point(specimenPickupPos2)))
+//                .setLinearHeadingInterpolation(specimenScorePos3.getHeading(), specimenPickupPos2.getHeading())
+//                .build();
+//
+//
+//        scoreSpecimen4 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos4)))
+//                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos4.getHeading())
+//                .build();
+//        backToSpecimenPickupPosition4 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenScorePos4), new Point(specimenPickupPos2)))
+//                .setLinearHeadingInterpolation(specimenScorePos4.getHeading(), specimenPickupPos2.getHeading())
+//                .build();
+//
+//        scoreSpecimen5 = follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenPickupFinalPos2), new Point(specimenScorePos5)))
+//                .setLinearHeadingInterpolation(specimenPickupFinalPos2.getHeading(), specimenScorePos5.getHeading())
+//                .build();
+//        parking =  follower.pathBuilder()
+//                .addPath(new BezierLine(new Point(specimenScorePos5), new Point(parkPos)))
+//                .setLinearHeadingInterpolation(specimenScorePos5.getHeading(), parkPos.getHeading())
+//                .build();
     }
 
     /** These change the states of the paths and actions

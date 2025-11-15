@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,7 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import java.util.List;
 
 @TeleOp(name = "Concept: Fly Wheel test", group = "Concept")
-//@Disabled
+@Disabled
 public class FlyWheelTest extends LinearOpMode {
 
     private GamepadEx gp;
@@ -30,9 +31,9 @@ public class FlyWheelTest extends LinearOpMode {
 
     private void flyWheelTest()
     {
-        Motor motor1 = new Motor(hardwareMap, "motor1", Motor.GoBILDA.BARE);
-        Motor motor2 = new Motor(hardwareMap, "motor2", Motor.GoBILDA.BARE);
-        motor2.setInverted(true);
+        Motor motor1 = new Motor(hardwareMap, "leftFlywheel", Motor.GoBILDA.BARE);
+        Motor motor2 = new Motor(hardwareMap, "rightFlywheel", Motor.GoBILDA.BARE);
+        motor1.setInverted(true);
 
         gp = new GamepadEx(gamepad2);
         flyWheel = new MotorGroup( motor1, motor2);

@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.test;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp(name = "Concept: Magnetic Switch test", group = "Concept")
-//@Disabled
+@Disabled
 public class MagneticSwitchTest extends LinearOpMode {
 
 

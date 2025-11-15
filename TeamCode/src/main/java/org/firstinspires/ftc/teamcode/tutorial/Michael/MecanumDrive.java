@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.tutorial.Michael;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.GoBildaPinpointDriver;
 
 public class MecanumDrive {
     // This declares the four motors needed
@@ -68,7 +67,7 @@ public class MecanumDrive {
 
         if(usePinpoint){
             pinpoint.update();
-            theta = AngleUnit.normalizeRadians(theta - pinpoint.getHeading());
+            theta = AngleUnit.normalizeRadians(theta - pinpoint.getHeading(AngleUnit.RADIANS));
         } else {
             // Second, rotate angle by the angle the robot is pointing
             theta = AngleUnit.normalizeRadians(theta -
@@ -139,7 +138,7 @@ public class MecanumDrive {
     public double getHeading(){
         if(usePinpoint){
             pinpoint.update();
-            return Math.toDegrees(pinpoint.getHeading());
+            return Math.toDegrees(pinpoint.getHeading(AngleUnit.RADIANS));
         } else {
             return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         }
