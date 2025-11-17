@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.decode.OpMode;
 
 import android.graphics.Color;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -27,7 +24,8 @@ public class DecodeTeleOp extends LinearOpMode {
         START,
         OPEN_TRIGGER,
         TRIGGER_OPENED,
-        STOP
+        STOP,
+        COMPLETED
     }
 
     private Timer actionTimer;
@@ -38,11 +36,9 @@ public class DecodeTeleOp extends LinearOpMode {
     private DriveTrain driveTrain;
     private Trigger trigger;
 
-    private GamepadEx gamepad1Ex;
-    private GamepadEx gamepad2Ex;
-
-    private ToggleButtonReader leftBumper1;
-    private boolean leftBumperToggled;
+    private boolean isIntakOn;
+    private boolean isShooterOn;
+    private int shootingSpeed; //1 slow, 2 middle, 3 fast
 
     ShootAutoCompleteMode shootAutoCompleteMode;
 
@@ -60,17 +56,10 @@ public class DecodeTeleOp extends LinearOpMode {
 
         telemetry.addLine("Initializing trigger");
         trigger = new Trigger(hardwareMap, this);
-        trigger.open();
+        trigger.close();
 
         actionTimer = new Timer();
         gameTimer = new Timer();
-
-        gamepad1Ex = new GamepadEx(gamepad1);
-        gamepad2Ex = new GamepadEx(gamepad2);
-
-        leftBumper1 = new ToggleButtonReader(
-                gamepad1Ex, GamepadKeys.Button.LEFT_BUMPER
-        );
 
         shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
 
@@ -85,6 +74,10 @@ public class DecodeTeleOp extends LinearOpMode {
         }
         telemetry.addLine("LynxModule initialized");
 
+
+        isIntakOn = false;
+        isShooterOn = true;
+
         waitForStart();
 
         if(isStopRequested()) return;
@@ -95,9 +88,6 @@ public class DecodeTeleOp extends LinearOpMode {
         {
             hubs.forEach(LynxModule::clearBulkCache);
 
-            gamepad1Ex.readButtons();
-            gamepad2Ex.readButtons();
-            leftBumper1.readValue();
 
             intakeOp();
             shootOp();
@@ -109,55 +99,69 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void intakeOp()
     {
-        //
-        if(leftBumper1.getState())
-            leftBumperToggled = true;
-        else
-            leftBumperToggled = false;
+        //use left bumper button to toggle
+        //intake
+        if(gamepad1.leftBumperWasPressed())
+            isIntakOn = !isIntakOn;
 
         //intake control
-        if (gamepad1Ex.isDown(GamepadKeys.Button.RIGHT_BUMPER)) //right bumper take in
+        if (gamepad1.right_bumper) //right bumper take in
             intake.SetIntakeMode(Intake.IntakeMode.OUT);
-        else if (gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))
-            shootAutoCompleteMode = ShootAutoCompleteMode.START;
-        else if (gamepad1Ex.wasJustReleased(GamepadKeys.Button.A))
-            shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
         else {
-            if (leftBumperToggled) { //intake mode
-                if(trigger.getHighColor() == Color.WHITE)
-                    intake.SetIntakeMode(Intake.IntakeMode.IN);
-                else
-                    intake.SetIntakeMode(Intake.IntakeMode.HIN);
+            if (isIntakOn) { //intake mode
+                intake.intake(-1);
             }
             else
-                intake.SetIntakeMode(Intake.IntakeMode.IDLE);
+                intake.intake(0);
         }
 
-        switch(shootAutoCompleteMode)
+        if (gamepad1.aWasPressed())
+            shootAutoCompleteMode = ShootAutoCompleteMode.START;
+        else if (gamepad1.aWasReleased()) {
+            shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
+            trigger.close();
+        }
+
+        if(shootAutoCompleteMode == ShootAutoCompleteMode.START ||
+            shootAutoCompleteMode == ShootAutoCompleteMode.COMPLETED)
         {
-            case START:
-                actionTimer.resetTimer();
-                shootAutoCompleteMode = ShootAutoCompleteMode.OPEN_TRIGGER;
-                trigger.open();
-                break;
-            case OPEN_TRIGGER:
-                if (actionTimer.getElapsedTime() > 250) {
+            switch (shootAutoCompleteMode) {
+                case START:
                     actionTimer.resetTimer();
-                    shootAutoCompleteMode = ShootAutoCompleteMode.TRIGGER_OPENED;
-                }
-            case TRIGGER_OPENED:
-                intake.SetIntakeMode(Intake.IntakeMode.FEED);
-                break;
-            case STOP:
-                intake.SetIntakeMode(Intake.IntakeMode.IDLE);
-                //trigger.close();
-                break;
+                    shootAutoCompleteMode = ShootAutoCompleteMode.OPEN_TRIGGER;
+                    trigger.open();
+                    break;
+                case OPEN_TRIGGER:
+                    if (actionTimer.getElapsedTime() > 250) {
+                        shootAutoCompleteMode = ShootAutoCompleteMode.TRIGGER_OPENED;
+                    }
+                case TRIGGER_OPENED:
+                    actionTimer.resetTimer();
+                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                    shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
+                    break;
+                case STOP:
+                    if (actionTimer.getElapsedTime() > 1000) {
+                        actionTimer.resetTimer();
+                        trigger.close();
+                        shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
+                    }
+                    break;
+                case COMPLETED:
+                    trigger.close();
+                    break;
+            }
         }
     }
 
     private void shootOp()
     {
-        if(!gamepad1Ex.isDown(GamepadKeys.Button.X))
+        //use gamepad1 X button to toggle
+        //shooter motors
+        if(gamepad1.xWasPressed())
+            isShooterOn = !isShooterOn;
+
+        if(isShooterOn)
             shooter.shoot();
         else
             shooter.stop();

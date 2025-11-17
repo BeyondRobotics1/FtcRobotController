@@ -35,8 +35,7 @@ public class Intake {
     {
         if(intakeMode == Intake.IntakeMode.IN)
         {
-            horizontalIntake.setPower(-1);
-            verticalIntake.setPower(-1);
+            intake(-1);
         }
         else if(intakeMode == Intake.IntakeMode.VIN)
         {
@@ -46,10 +45,10 @@ public class Intake {
         if(intakeMode == Intake.IntakeMode.HIN)
         {
             horizontalIntake.setPower(-1);
-            verticalIntake.setPower(0);
+            verticalIntake.setPower(-1);
         }
         else if (intakeMode == Intake.IntakeMode.OUT) {
-            outtake(1);
+            outtake(0.5);
         }
         else if (intakeMode == IntakeMode.FEED) {
             intake(-1);

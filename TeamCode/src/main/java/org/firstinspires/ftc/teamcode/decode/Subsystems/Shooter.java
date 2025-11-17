@@ -28,7 +28,7 @@ public class Shooter {
 
         leftFlywheel.setInverted(true);
 
-        //leftFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFlywheel.motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         flyWheel = new MotorGroup( leftFlywheel, rightFlywheel);
 
@@ -39,14 +39,14 @@ public class Shooter {
 
     public void shoot()
     {
-        setPower(0.53);
+        flyWheel.set(0.43);
+        //setPower(0.7);
     }
 
     public void setPower(double power)
     {
-        double localPower = Math.abs(power);
-        leftFlywheel.motor.setPower(-localPower);
-        rightFlywheel.motor.setPower(-localPower);
+        leftFlywheel.motor.setPower(power);
+        rightFlywheel.motor.setPower(power);
     }
 
     public void stop()

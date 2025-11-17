@@ -49,8 +49,8 @@ public class DriveTrain {
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 1; //forward/backward power adjustment
-    private double x_power_scale = 1; //left/right power adjustment, make it slower
+    private double y_power_scale = 0.9; //forward/backward power adjustment
+    private double x_power_scale = 0.9; //left/right power adjustment, make it slower
     private double rx_power_scale = 0.75;//rotation power adjustment, make it slower
 
 

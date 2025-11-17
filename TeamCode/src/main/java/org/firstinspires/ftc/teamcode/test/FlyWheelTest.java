@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import java.util.List;
 
 @TeleOp(name = "Concept: Fly Wheel test", group = "Concept")
-@Disabled
+//@Disabled
 public class FlyWheelTest extends LinearOpMode {
 
     private GamepadEx gp;
@@ -35,7 +35,7 @@ public class FlyWheelTest extends LinearOpMode {
         Motor motor2 = new Motor(hardwareMap, "rightFlywheel", Motor.GoBILDA.BARE);
         motor1.setInverted(true);
 
-        gp = new GamepadEx(gamepad2);
+        gp = new GamepadEx(gamepad1);
         flyWheel = new MotorGroup( motor1, motor2);
 
         flyWheel.setRunMode(Motor.RunMode.VelocityControl);
@@ -60,7 +60,7 @@ public class FlyWheelTest extends LinearOpMode {
             hubs.forEach(LynxModule::clearBulkCache);
 
             if(gp.isDown(GamepadKeys.Button.A)) {
-                flyWheel.set(1);
+                flyWheel.set(0.4);
             }
             else
                 flyWheel.stopMotor();
@@ -80,6 +80,7 @@ public class FlyWheelTest extends LinearOpMode {
 
             telemetry.addData("Left Flywheel RAW Velocity", motor1.encoder.getRawVelocity());
             telemetry.addData("Left Flywheel power", motor1.motor.getPower());
+            telemetry.addData("Left Flywheel power", motor1.motor.getPower());
 
             gp.readButtons();
 
@@ -91,7 +92,7 @@ public class FlyWheelTest extends LinearOpMode {
     {
         motor = hardwareMap.get(DcMotorEx.class, "motor1");
 
-        gp = new GamepadEx(gamepad2);
+        gp = new GamepadEx(gamepad1);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 

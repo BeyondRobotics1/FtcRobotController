@@ -40,7 +40,7 @@ public class Trigger {
      * in the storage
      */
     public void open(){
-        trigger.setPosition(0.5);//0.82
+        trigger.setPosition(0.44);//0.5
     }
 
     /**
