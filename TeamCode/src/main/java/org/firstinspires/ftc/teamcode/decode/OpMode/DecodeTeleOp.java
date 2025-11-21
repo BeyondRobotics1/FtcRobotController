@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.decode.OpMode;
 
-import android.graphics.Color;
-
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,21 +9,21 @@ import org.firstinspires.ftc.teamcode.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 
 import java.util.List;
 
 @TeleOp(name = "Decode TeleOp", group = "A")
-
 
 public class DecodeTeleOp extends LinearOpMode {
 
     enum ShootAutoCompleteMode
     {
         START,
-        OPEN_TRIGGER,
-        TRIGGER_OPENED,
+        SHOOT, //shoot the balls
         STOP,
-        COMPLETED
+        COMPLETED,
+        NOP //no op
     }
 
     private Timer actionTimer;
@@ -35,10 +33,12 @@ public class DecodeTeleOp extends LinearOpMode {
     private Intake intake;
     private DriveTrain driveTrain;
     private Trigger trigger;
+    private Turret turret;
 
+    private boolean isBlueTeleOp = true;
     private boolean isIntakOn;
     private boolean isShooterOn;
-    private int shootingSpeed; //1 slow, 2 middle, 3 fast
+    private int shootingLocation; //1 slow, 2 middle, 3 fast
 
     ShootAutoCompleteMode shootAutoCompleteMode;
 
@@ -78,22 +78,69 @@ public class DecodeTeleOp extends LinearOpMode {
         isIntakOn = false;
         isShooterOn = true;
 
-        waitForStart();
+        //waitForStart();
+        while (!isStarted() && !isStopRequested()) {
+
+            if(isBlueTeleOp)
+                telemetry.addLine("TeleOp Selected: BLUE");
+            else
+                telemetry.addLine("TeleOP Selected: RED");
+
+            telemetry.addLine("");
+            telemetry.addLine("WARNING: Select the right TelelOp!!!");
+            telemetry.addLine("Gamepad1.A: TeleOp RED");
+            telemetry.addLine("Gamepad1.B: TeleOp BLUE");
+
+            if(gamepad1.a)
+                isBlueTeleOp = false;
+            else if (gamepad1.b)
+                isBlueTeleOp = true;
+
+            telemetry.update();
+        }
+
+        if(isBlueTeleOp)
+            turret = new Turret(hardwareMap, this, 20);
+        else
+            turret = new Turret(hardwareMap, this, 24);
+
+        telemetry.addData("Turret initialized, camera is running:",
+                turret.isLimeLigh3ARunning());
+        telemetry.update();
 
         if(isStopRequested()) return;
 
-        shooter.shoot();
+        //let the flywheel spin for 500ms so
+        //the PID controller won't draw too much batteries
+        shooter.setPower(0.4);
+        sleep(1200);
 
         while(!isStopRequested() && opModeIsActive())
         {
             hubs.forEach(LynxModule::clearBulkCache);
 
+            if(isBlueTeleOp)
+                telemetry.addLine("TeleOp Selected: BLUE");
+            else
+                telemetry.addLine("TeleOP Selected: RED");
 
+            telemetry.addLine("");
+
+            //operate the intake
             intakeOp();
+
+            //
+            turretOp();
+
+            //operate the shooter
             shootOp();
 
 
+
+            //operate the drive train
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+            telemetry.update();
         }
     }
 
@@ -109,17 +156,16 @@ public class DecodeTeleOp extends LinearOpMode {
             intake.SetIntakeMode(Intake.IntakeMode.OUT);
         else {
             if (isIntakOn) { //intake mode
-                intake.intake(-1);
+                intake.intake(-0.9);
             }
             else
                 intake.intake(0);
         }
 
-        if (gamepad1.aWasPressed())
+        if (gamepad1.dpadUpWasPressed())
             shootAutoCompleteMode = ShootAutoCompleteMode.START;
-        else if (gamepad1.aWasReleased()) {
+        else if (gamepad1.dpadUpWasReleased()) {
             shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
-            trigger.close();
         }
 
         if(shootAutoCompleteMode == ShootAutoCompleteMode.START ||
@@ -128,22 +174,19 @@ public class DecodeTeleOp extends LinearOpMode {
             switch (shootAutoCompleteMode) {
                 case START:
                     actionTimer.resetTimer();
-                    shootAutoCompleteMode = ShootAutoCompleteMode.OPEN_TRIGGER;
+                    shootAutoCompleteMode = ShootAutoCompleteMode.SHOOT;
                     trigger.open();
                     break;
-                case OPEN_TRIGGER:
+                case SHOOT:
                     if (actionTimer.getElapsedTime() > 250) {
-                        shootAutoCompleteMode = ShootAutoCompleteMode.TRIGGER_OPENED;
+                        actionTimer.resetTimer();
+                        intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                        shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
                     }
-                case TRIGGER_OPENED:
-                    actionTimer.resetTimer();
-                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
-                    shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
                     break;
                 case STOP:
                     if (actionTimer.getElapsedTime() > 1000) {
                         actionTimer.resetTimer();
-                        trigger.close();
                         shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
                     }
                     break;
@@ -161,6 +204,19 @@ public class DecodeTeleOp extends LinearOpMode {
         if(gamepad1.xWasPressed())
             isShooterOn = !isShooterOn;
 
+        //gamepad1 a, shoot from close position
+        //gamepad1 y, shoot from far position
+        //gamepad1 b, shoot from medium position
+        if(gamepad1.aWasPressed())
+        {
+            shooter.setShootingLocation(Shooter.ShootingLocation.Near);
+        } else if (gamepad1.yWasPressed()){
+            shooter.setShootingLocation(Shooter.ShootingLocation.Far);
+        } else if (gamepad1.bWasPressed()){
+            shooter.setShootingLocation(Shooter.ShootingLocation.Medium);
+        }
+
+
         if(isShooterOn)
             shooter.shoot();
         else
@@ -169,7 +225,7 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void turretOp()
     {
-
+        turret.autoAim();
     }
 
     private void liftOp()

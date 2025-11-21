@@ -25,6 +25,10 @@ public class Intake {
         this.mode = linearOpMode;
         horizontalIntake = hardwareMap.get(DcMotor.class, "horizontalIntake");
         verticalIntake = hardwareMap.get(DcMotor.class, "verticalIntake");
+
+        horizontalIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        verticalIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 
     /**

@@ -1,0 +1,95 @@
+package org.firstinspires.ftc.teamcode.decode.Test;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import java.util.List;
+
+@Config
+@TeleOp(name = "Concept: FlyWheelPIDController Tuner", group = "Concept")
+
+public class FlyWheelPIDController extends LinearOpMode {
+
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    PIDController controller;
+    public static double kP = 0; //0.8
+    public static double kI = 0; //0.01
+    public static double kD = 0;
+
+    public static double kF = 0;
+
+    public static double targetSpeed = 0.5;
+    public static double targetVelocity;
+
+    //COUNTS_PER_MOTOR_REV    = 28.0;
+    //MOTOR MAX RMP = 6000;
+    //ACHIEVABLE_MAX_TICKS_PER_SECOND = 28 * 6000 / 60 = 2800;
+    public int kACHIEVABLE_MAX_TICKS_PER_SECOND = 2800; //
+
+    private DcMotorEx motor1, motor2;
+    @Override
+    public void runOpMode() {
+
+        controller = new PIDController(kP, kI, kD);
+
+        motor1 = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
+        motor2 = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
+
+        motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : hubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
+
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+
+        while (!isStopRequested() && opModeIsActive())
+        {
+
+           // if(gamepad1.a) {
+
+                hubs.forEach(LynxModule::clearBulkCache);
+
+                targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
+                controller.setPID(kP, kI, kD);
+
+                double velocity = motor2.getVelocity();
+
+                double pid = controller.calculate(velocity, targetVelocity);
+
+                double ff = kF * targetSpeed;
+
+                double power = pid + ff;
+
+                motor1.setPower(power);
+                motor2.setPower(power);
+
+                telemetry.addData("Flywheel Velocity", velocity);
+                telemetry.addData("Target Velocity", targetVelocity);
+
+                telemetry.addData("PID", pid);
+                telemetry.addData("ffff", ff);
+                telemetry.addData("Motor Power", power);
+
+                telemetry.update();
+           // }
+
+        }
+
+    }
+
+}

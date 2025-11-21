@@ -9,6 +9,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.teamcode.intothedeep.Subsystems.Slide;
 
 
 @Autonomous(name = "Auto Left Sample", group = "A Into the Deep")
-
+@Disabled
 public class AutoLeft extends LinearOpMode {
 
     //our robot subsystems
