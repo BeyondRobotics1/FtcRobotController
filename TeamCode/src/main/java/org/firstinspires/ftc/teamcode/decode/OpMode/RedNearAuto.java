@@ -45,19 +45,20 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose scorePose = new Pose(42, 42, Math.toRadians(-135)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     private final Pose pickup1Pose = new Pose(44, 59, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(19, 59, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(18.5, 59, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
 
     private final Pose pickup2Pose = new Pose(44, 83, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(19, 83, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(12, 83, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose backout2Pose = new Pose(19, 83, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
 
     private final Pose pickup3Pose = new Pose(44, 106, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose grab3Pose = new Pose(19, 106, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab3Pose = new Pose(12, 106, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
 
     private final Pose parkPose = new Pose(41, 58, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1Score;
-    private PathChain scorePickup2, pickup2Grab2, grab2Score;
+    private PathChain scorePickup2, pickup2Grab2, grab2Backout2, backout2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
 
@@ -145,7 +146,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 2000) { //make sure wait for all balls are shoot
+                if (pathTimer.getElapsedTime() > 1500) { //make sure wait for all balls are shoot 2000
 
                     trigger.close();
                     intake.intake(0.9);
@@ -166,7 +167,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 12:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
                     //move to score position
                     follower.followPath(grab1Score, true);
                     intake.intake(0);
@@ -189,7 +190,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 15:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 1500) { //shoot balls
 
                     trigger.close();
                     intake.intake(0.9);
@@ -210,9 +211,16 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 22:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
+                    //move to backout position
+                    follower.followPath(grab2Backout2, true);
+                    setPathState(221);
+                }
+                break;
+            case 221:
+                if (!follower.isBusy()) {
                     //move to score position
-                    follower.followPath(grab2Score, true);
+                    follower.followPath(backout2Score, true);
                     intake.intake(0);
                     setPathState(23);
                 }
@@ -233,7 +241,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 25:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 1500) { //shoot balls
 
                     trigger.close();
                     intake.intake(0.9);
@@ -254,7 +262,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
                     //move to score position
                     follower.followPath(grab3Score, true);
                     intake.intake(0);
@@ -277,7 +285,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 35:
-                if (pathTimer.getElapsedTime() > 2000) {
+                if (pathTimer.getElapsedTime() > 1500) { //shoot balls
 
                     //trigger.close();
                     //intake.intake(0.9);
@@ -330,9 +338,13 @@ public class RedNearAuto extends LinearOpMode {
                 .addPath(new BezierLine(pickup2Pose, grab2Pose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();
-        grab2Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab2Pose, scorePose))
-                .setLinearHeadingInterpolation(grab2Pose.getHeading(), scorePose.getHeading())
+        grab2Backout2 = follower.pathBuilder()
+                .addPath(new BezierLine(grab2Pose, backout2Pose))
+                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
+                .build();
+        backout2Score = follower.pathBuilder()
+                .addPath(new BezierLine(backout2Pose, scorePose))
+                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
                 .build();
 
         /* This is our grabPickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
