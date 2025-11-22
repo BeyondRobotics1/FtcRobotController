@@ -116,4 +116,8 @@ public class Turret {
         }
     }
 
+    public void setServoPosition(double position)
+    {
+        turretLeft.setPosition(position);
+    }
 }

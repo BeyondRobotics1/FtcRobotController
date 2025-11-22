@@ -118,7 +118,8 @@ public class RedNearAuto extends LinearOpMode {
             follower.update();
             autonomousPathUpdate();
 
-            turret.autoAim();
+            //turret.autoAim();
+            turret.setServoPosition(0.5); //hold the servo position
             shooter.shoot();
 
         }
