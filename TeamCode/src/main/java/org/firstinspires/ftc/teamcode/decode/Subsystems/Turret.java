@@ -99,7 +99,7 @@ public class Turret {
 
                 if(tagID == targetTagID) {
 
-                    double pid = controller.calculate(currentAngle, 0);
+                    double pid = controller.calculate(currentAngle, targetAngleDegree);
                     turretLeft.setPosition(pid + 0.5);
 
                     mode.telemetry.addData("Target tag found", "ID: %d, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
@@ -119,5 +119,10 @@ public class Turret {
     public void setServoPosition(double position)
     {
         turretLeft.setPosition(position);
+    }
+
+    public void setTargetAngleDegree(double angleDegree)
+    {
+        targetAngleDegree = angleDegree;
     }
 }

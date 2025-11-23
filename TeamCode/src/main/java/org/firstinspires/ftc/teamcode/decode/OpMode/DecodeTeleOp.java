@@ -99,8 +99,10 @@ public class DecodeTeleOp extends LinearOpMode {
             telemetry.update();
         }
 
-        if(isBlueTeleOp)
+        if(isBlueTeleOp) {
             turret = new Turret(hardwareMap, this, 20);
+            turret.setTargetAngleDegree(1.0);
+        }
         else
             turret = new Turret(hardwareMap, this, 24);
 
