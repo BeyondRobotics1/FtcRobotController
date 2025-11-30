@@ -20,11 +20,10 @@ public class FlyWheelPIDController extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     PIDController controller;
-    public static double kP = 0; //0.8
-    public static double kI = 0; //0.01
+    public static double kP = 0.001; //0.8
+    public static double kI = 0.2; //0.01
     public static double kD = 0;
-
-    public static double kF = 0;
+    public static double kF = 0.75;
 
     public static double targetSpeed = 0.5;
     public static double targetVelocity;
@@ -34,16 +33,16 @@ public class FlyWheelPIDController extends LinearOpMode {
     //ACHIEVABLE_MAX_TICKS_PER_SECOND = 28 * 6000 / 60 = 2800;
     public int kACHIEVABLE_MAX_TICKS_PER_SECOND = 2800; //
 
-    private DcMotorEx motor1, motor2;
+    private DcMotorEx leftFlywheel, rightFlywheel;
     @Override
     public void runOpMode() {
 
         controller = new PIDController(kP, kI, kD);
 
-        motor1 = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
-        motor2 = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
+        leftFlywheel = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
+        rightFlywheel = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
 
-        motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -67,7 +66,7 @@ public class FlyWheelPIDController extends LinearOpMode {
                 targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
                 controller.setPID(kP, kI, kD);
 
-                double velocity = motor2.getVelocity();
+                double velocity = Math.abs(rightFlywheel.getVelocity());
 
                 double pid = controller.calculate(velocity, targetVelocity);
 
@@ -75,8 +74,8 @@ public class FlyWheelPIDController extends LinearOpMode {
 
                 double power = pid + ff;
 
-                motor1.setPower(power);
-                motor2.setPower(power);
+                setPower(power);
+                setPower(power);
 
                 telemetry.addData("Flywheel Velocity", velocity);
                 telemetry.addData("Target Velocity", targetVelocity);
@@ -87,9 +86,15 @@ public class FlyWheelPIDController extends LinearOpMode {
 
                 telemetry.update();
            // }
-
         }
+    }
 
+    //shoot power is negative
+    public void setPower(double power)
+    {
+        double localPower = - Math.abs(power);
+        leftFlywheel.setPower(localPower);
+        rightFlywheel.setPower(localPower);
     }
 
 }

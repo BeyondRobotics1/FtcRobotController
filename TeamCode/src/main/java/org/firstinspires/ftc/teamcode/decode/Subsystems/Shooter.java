@@ -27,12 +27,12 @@ public class Shooter {
 
     private MotorGroup flyWheel;
     public static double kP = 0.001; //0.8
-    public static double kI = 0.2; //0.01
+    public static double kI = 0.25; //0.01
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedFar = 0.6;
+    double targetSpeedFar = 0.58;
     double targetSpeedMedium = 0.485;
     double targetSpeedClose = 0.423;//0.43
 
