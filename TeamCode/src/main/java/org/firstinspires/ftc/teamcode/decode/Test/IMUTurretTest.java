@@ -16,7 +16,7 @@ public class IMUTurretTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         IMUTurret turret = new IMUTurret(hardwareMap, this,
-                new Pose2D(DistanceUnit.INCH, 8, 0, AngleUnit.DEGREES, 0),
+                new Pose2D(DistanceUnit.INCH, 8, 48 + 7.5, AngleUnit.DEGREES, 0),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 false);
 
@@ -42,7 +42,9 @@ public class IMUTurretTest extends LinearOpMode {
             {
                 double pivotPosition = Math.abs(gamepad1.left_trigger);
 
-
+                if(pivotPosition > 0.42){
+                    pivotPosition = 0.42;
+                }
                 turret.setServoPosition(pivotPosition);
             }
 

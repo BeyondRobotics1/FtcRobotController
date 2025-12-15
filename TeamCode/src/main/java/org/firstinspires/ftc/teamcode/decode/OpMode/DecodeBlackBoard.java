@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class DecodeBlackBoard {
 
-    public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 0, 12, AngleUnit.DEGREES, 0);
+    public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 0, 144, AngleUnit.DEGREES, 0);
     public static final Pose2D RED_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
 
     public static final String DEFAULT_X = "DefaultX";

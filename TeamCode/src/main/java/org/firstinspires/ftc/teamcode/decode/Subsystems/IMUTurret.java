@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.opencv.core.Mat;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class IMUTurret {
     private Limelight3A limelight;
 
     //AnalogInput analogInput;
-    Pose2D targetPose; //red, -135 blue
+    Pose2D targetPose;
     double servoPositionRight = 0; //90 degree
     double servoPositionLeft = 0.42; //-90 degree
     double servoPositionMiddle = 0.205;//0 degree
@@ -116,7 +117,22 @@ public class IMUTurret {
 
     public void autoAim()
     {
-        //TBD
+        // read from odometry pinpoint
+        double x = pinpoint.getPosX(DistanceUnit.INCH);
+        double y = pinpoint.getPosY(DistanceUnit.INCH);
+
+        double heading = pinpoint.getHeading(AngleUnit.DEGREES);
+        // target position
+        double x0 = targetPose.getX(DistanceUnit.INCH);
+        double y0 = targetPose.getY(DistanceUnit.INCH);
+
+        // calculate alpha
+        double alpha = Math.atan2((x-x0), (y-y0));
+        double turretAngle = -90 - alpha + heading;
+
+        // calculate servo position
+        double servoPosition = servoPositionMiddle + (turretAngle / 180);
+        setServoPosition(servoPosition);
     }
 
     public void setIMUPose(double x, double y, double headingDegree)
