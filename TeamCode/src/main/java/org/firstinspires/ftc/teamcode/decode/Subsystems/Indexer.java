@@ -8,32 +8,49 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 public class Indexer {
-    private CRServo indexer;
+    private Servo indexer;
     private TouchSensor magnet;
     private LinearOpMode mode;
+
+    private double startingPosition = 0.04;
+    private double enqueueOnePosition = 0.45;
+    private double enqueueTwoPosition = 0.8;
+
     public Indexer(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
         this.mode = linearOpMode;
-        indexer = hardwareMap.get(CRServo.class, "indexer");
-        magnet = hardwareMap.get(TouchSensor.class, "magnet");
+        indexer = hardwareMap.get(Servo.class, "indexer");
+
+        //to the middle range so servo and rotate either direction
+        indexer.setPosition(startingPosition);
+
+        //magnet = hardwareMap.get(TouchSensor.class, "magnet");
         // indexer.setDirection(Servo.Direction.REVERSE);
     }
-    public void startTurn(int di){
-        // on button pressed
-        if (di == 1) {
-            indexer.setPower(0.9);
-        }
-        else{
-            indexer.setPower(0.1);
-        }
+
+    public void reset()
+    {
+        setPosition(startingPosition);
     }
-    public boolean checkForStop(){
-        // loop on button release
-        if(magnet.isPressed()){
-            indexer.setPower(0.5);
-            return true;
-        }
-        else{
-            return false;
-        }
+
+    public void setPosition(double position)
+    {
+        indexer.setPosition(position);
     }
+
+    public double getPosition()
+    {
+        return indexer.getPosition();
+    }
+
+    public void queue(int number)
+    {
+        if (number == 1)
+            setPosition(enqueueOnePosition);
+        else if (number == 2)
+            setPosition(enqueueTwoPosition);
+        else
+            setPosition(startingPosition);
+    }
+
+
 }

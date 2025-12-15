@@ -13,7 +13,7 @@ public class IntakeTest extends LinearOpMode {
         Intake intake = new Intake(hardwareMap, this);
 
         telemetry.addData("left_stick_y up", "outtake");
-        telemetry.addData("left_stick_y up", "intake");
+        telemetry.addData("left_stick_y down", "intake");
 
         waitForStart();
 

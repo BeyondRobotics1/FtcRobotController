@@ -51,7 +51,7 @@ public class DriveTrain {
     //adjust forward/backward, left/right, and rotation power
     private double y_power_scale = 0.9; //forward/backward power adjustment
     private double x_power_scale = 0.9; //left/right power adjustment, make it slower
-    private double rx_power_scale = 0.5;//rotation power adjustment, make it slower
+    private double rx_power_scale = 0.85;//rotation power adjustment, make it slower
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.

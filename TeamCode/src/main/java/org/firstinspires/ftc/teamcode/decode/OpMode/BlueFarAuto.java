@@ -10,7 +10,11 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
@@ -22,17 +26,19 @@ import java.util.List;
 @Autonomous(name = "Auto Blue Far", group = "Decode")
 
 public class BlueFarAuto extends LinearOpMode {
-    private Timer pathTimer;
-    private Timer opmodeTimer;
 
+    //Hardware
     private Shooter shooter;
     private Intake intake;
     private DriveTrain driveTrain;
     private Trigger trigger;
-    private Turret turret;
+    private IMUTurret turret;
 
+    //status
     Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.Medium;
 
+    private Timer pathTimer;
+    private Timer opmodeTimer;
 
     private int pathState = 0;
 
@@ -71,8 +77,16 @@ public class BlueFarAuto extends LinearOpMode {
         trigger = new Trigger(hardwareMap, this);
         trigger.close();
 
-        turret = new Turret(hardwareMap, this, 20);
+        turret = new IMUTurret(hardwareMap, this,
+                new Pose2D(DistanceUnit.INCH,
+                        startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
+               DecodeBlackBoard.BLUE_TARGET_POSE,
+                true);
+
         telemetry.addLine("hardware initialization completed");
+
+        DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, parkPose.getHeading()));
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
@@ -112,6 +126,12 @@ public class BlueFarAuto extends LinearOpMode {
             shooter.shoot();
 
         }
+
+        //in the end save current robot pose into black board
+        Pose p = follower.getPose();
+        DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading()));
+
     }
 
     private void autonomousPathUpdate() {

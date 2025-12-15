@@ -5,11 +5,14 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 
 import java.util.List;
 
@@ -26,19 +29,24 @@ public class DecodeTeleOp extends LinearOpMode {
         NOP //no op
     }
 
-    private Timer actionTimer;
-    private Timer gameTimer;
-
+    //hardware
     private Shooter shooter;
     private Intake intake;
     private DriveTrain driveTrain;
     private Trigger trigger;
-    private Turret turret;
+    private IMUTurret turret;
+
+
+    //status
+    private Timer actionTimer;
+    private Timer gameTimer;
 
     private boolean isBlueTeleOp = true;
-    private boolean isIntakOn;
+    private boolean isIntakeOn;
     private boolean isShooterOn;
     private int shootingLocation; //1 slow, 2 middle, 3 fast
+
+    Pose2D robotPose, targetPose;
 
     ShootAutoCompleteMode shootAutoCompleteMode;
 
@@ -75,11 +83,15 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addLine("LynxModule initialized");
 
 
-        isIntakOn = false;
+        isIntakeOn = false;
         isShooterOn = true;
+
 
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
+
+            if(robotPose == null)
+                robotPose = DecodeBlackBoard.robotAutoEndPose();
 
             if(isBlueTeleOp)
                 telemetry.addLine("TeleOp Selected: BLUE");
@@ -90,24 +102,32 @@ public class DecodeTeleOp extends LinearOpMode {
             telemetry.addLine("WARNING: Select the right TelelOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp RED");
             telemetry.addLine("Gamepad1.B: TeleOp BLUE");
+            telemetry.addLine("-----------------------");
+            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
-            if(gamepad1.a)
+            if(gamepad1.a) {
                 isBlueTeleOp = false;
-            else if (gamepad1.b)
+
+                if(targetPose == null)
+                    targetPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+            }
+            else if (gamepad1.b) {
                 isBlueTeleOp = true;
+
+                if(targetPose == null)
+                    targetPose = new Pose2D(DistanceUnit.INCH, 0, 18, AngleUnit.DEGREES, 0);
+            }
 
             telemetry.update();
         }
 
-        if(isBlueTeleOp) {
-            turret = new Turret(hardwareMap, this, 20);
-            turret.setTargetAngleDegree(1.0);
-        }
-        else
-            turret = new Turret(hardwareMap, this, 24);
+
+        turret = new IMUTurret(hardwareMap, this, robotPose, targetPose, false);
 
         telemetry.addData("Turret initialized, camera is running:",
-                turret.isLimeLigh3ARunning());
+                turret.isLimeLight3ARunning());
         telemetry.update();
 
         if(isStopRequested()) return;
@@ -151,13 +171,13 @@ public class DecodeTeleOp extends LinearOpMode {
         //use left bumper button to toggle
         //intake
         if(gamepad1.leftBumperWasPressed())
-            isIntakOn = !isIntakOn;
+            isIntakeOn = !isIntakeOn;
 
         //intake control
         if (gamepad1.right_bumper) //right bumper take in
             intake.SetIntakeMode(Intake.IntakeMode.OUT);
         else {
-            if (isIntakOn) { //intake mode
+            if (isIntakeOn) { //intake mode
                 intake.intake(-0.9);
             }
             else
@@ -234,5 +254,4 @@ public class DecodeTeleOp extends LinearOpMode {
     {
 
     }
-
 }

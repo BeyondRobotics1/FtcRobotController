@@ -39,23 +39,23 @@ public class Intake {
     {
         if(intakeMode == Intake.IntakeMode.IN)
         {
-            intake(-1);
+            intake(1);
         }
         else if(intakeMode == Intake.IntakeMode.VIN)
         {
             horizontalIntake.setPower(0);
-            verticalIntake.setPower(-1);
+            verticalIntake.setPower(1);
         }
         if(intakeMode == Intake.IntakeMode.HIN)
         {
-            horizontalIntake.setPower(-1);
-            verticalIntake.setPower(-1);
+            horizontalIntake.setPower(1);
+            verticalIntake.setPower(1);
         }
         else if (intakeMode == Intake.IntakeMode.OUT) {
             outtake(0.5);
         }
         else if (intakeMode == IntakeMode.FEED) {
-            intake(-1);
+            intake(1);
         }
         else {
             intake(0);
@@ -66,16 +66,16 @@ public class Intake {
     public void intake(double power)
     {
         double localPower = Math.abs(power);
-        horizontalIntake.setPower(-localPower);
-        verticalIntake.setPower(-localPower);
+        horizontalIntake.setPower(localPower);
+        verticalIntake.setPower(localPower);
     }
 
     //power should be negative
     public void outtake(double power)
     {
         double localPower = Math.abs(power);
-        horizontalIntake.setPower(localPower);
-        verticalIntake.setPower(localPower);
+        horizontalIntake.setPower(-localPower);
+        verticalIntake.setPower(-localPower);
     }
 
     public void stopVertical()

@@ -28,6 +28,9 @@ public class Trigger {
     public Trigger (HardwareMap hardwareMap, LinearOpMode mode){
         this.mode = mode;
         trigger = hardwareMap.get(Servo.class, "trigger");
+        //trigger.setDirection(Servo.Direction.REVERSE);
+
+        close();
 
         hsvValues = new float[3];
         colorSensorHigh = hardwareMap.get(NormalizedColorSensor.class, "color2");
@@ -40,7 +43,7 @@ public class Trigger {
      * in the storage
      */
     public void open(){
-        trigger.setPosition(0.44);//0.5
+        setPosition(0.03);//0.5
     }
 
     /**
@@ -48,7 +51,12 @@ public class Trigger {
      * to the turret shooter
      */
     public void close(){
-        trigger.setPosition(0.15);
+        setPosition(0.24);
+    }
+
+    public void setPosition(double position)
+    {
+        trigger.setPosition(position);//0.5
     }
 
     public int getHighColor()
