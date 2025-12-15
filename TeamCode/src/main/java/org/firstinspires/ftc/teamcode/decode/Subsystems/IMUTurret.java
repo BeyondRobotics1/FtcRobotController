@@ -76,11 +76,11 @@ public class IMUTurret {
         return turretLeft.getPosition();
     }
 
-    //use limelight to detect the April Tag of the Oblisk
+    //use limelight to detect the April Tag of the Obelisk
     //return:
-    //  0 - Oblisk April Tag is not detected
-    //  21, 22, 23 - Oblisk April Tag is detected
-    public int detectObliskTagID()
+    //  0 - Obelisk April Tag is not detected
+    //  21, 22, 23 - Obelisk April Tag is detected
+    public int detectObeliskTagID()
     {
         int tagID = 0;
 
