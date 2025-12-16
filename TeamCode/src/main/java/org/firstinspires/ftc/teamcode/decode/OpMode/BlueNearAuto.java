@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
@@ -33,6 +35,7 @@ public class BlueNearAuto extends LinearOpMode {
     private DriveTrain driveTrain;
     private Trigger trigger;
     private IMUTurret turret;
+    private Indexer indexer;
 
     //status
     Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.Medium;
@@ -60,7 +63,7 @@ public class BlueNearAuto extends LinearOpMode {
     private final Pose pickup3Pose = new Pose(43, 35, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose grab3Pose = new Pose(10, 35, Math.toRadians(180));
 
-    private final Pose parkPose = new Pose(40, 84, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1Score;
@@ -76,6 +79,10 @@ public class BlueNearAuto extends LinearOpMode {
         telemetry.update();
         driveTrain = new DriveTrain(hardwareMap, this, false);
 
+        telemetry.addLine("Initializing indexer");
+        telemetry.update();
+        indexer = new Indexer(hardwareMap, this);
+
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
         shooter.setShootingLocation(Shooter.ShootingLocation.Near);
@@ -90,6 +97,7 @@ public class BlueNearAuto extends LinearOpMode {
         turret = new IMUTurret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
+                DecodeBlackBoard.BLUE,
                 true);
 
         telemetry.addLine("hardware initialization completed");
@@ -132,14 +140,12 @@ public class BlueNearAuto extends LinearOpMode {
             autonomousPathUpdate();
 
             //turret.autoAim();
-            turret.setServoPosition(0.5); //hold the servo position
             shooter.shoot();
         }
 
         //in the end save current robot pose into black board
-        Pose p = follower.getPose();
-        DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
-                p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading()));
+        //in the end save current robot pose into black board
+        saveAutoState();
     }
 
     private void autonomousPathUpdate() {
@@ -318,6 +324,10 @@ public class BlueNearAuto extends LinearOpMode {
                 follower.followPath(scorePark, true); //grabPickup1
                 trigger.close();
                 intake.intake(0);//stop the intake
+                setPathState(100);
+                break;
+            case 100: //end of auto
+                saveAutoState();
                 setPathState(-1);
                 break;
         }
@@ -390,5 +400,17 @@ public class BlueNearAuto extends LinearOpMode {
 
     void setPathState(int newPathState) {
         this.pathState = newPathState;
+    }
+
+    void saveAutoState()
+    {
+        //in the end save current robot pose into black board
+        if(turret == null) {
+            Pose p = follower.getPose();
+            DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                    p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading() + 180.0));
+        }
+        else
+            DecodeBlackBoard.saveAutoEndPose(turret.readPinpoint());
     }
 }

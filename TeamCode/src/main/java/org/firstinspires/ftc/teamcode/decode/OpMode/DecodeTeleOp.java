@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
@@ -35,6 +36,7 @@ public class DecodeTeleOp extends LinearOpMode {
     private DriveTrain driveTrain;
     private Trigger trigger;
     private IMUTurret turret;
+    private Indexer indexer;
 
 
     //status
@@ -45,6 +47,7 @@ public class DecodeTeleOp extends LinearOpMode {
     private boolean isIntakeOn;
     private boolean isShooterOn;
     private int shootingLocation; //1 slow, 2 middle, 3 fast
+    private boolean enableAutoAiming = true;
 
     Pose2D robotPose, targetPose;
 
@@ -55,6 +58,10 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         driveTrain = new DriveTrain(hardwareMap, this, false);
+
+        telemetry.addLine("Initializing indexer");
+        telemetry.update();
+        indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
@@ -109,25 +116,30 @@ public class DecodeTeleOp extends LinearOpMode {
 
             if(gamepad1.a) {
                 isBlueTeleOp = false;
-
-                if(targetPose == null)
-                    targetPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
             }
             else if (gamepad1.b) {
                 isBlueTeleOp = true;
-
-                if(targetPose == null)
-                    targetPose = new Pose2D(DistanceUnit.INCH, 0, 18, AngleUnit.DEGREES, 0);
             }
 
             telemetry.update();
         }
 
 
-        turret = new IMUTurret(hardwareMap, this, robotPose, targetPose, false);
+        int alliance;
+        if(isBlueTeleOp) {
+            alliance = DecodeBlackBoard.BLUE;
+            turret = new IMUTurret(hardwareMap, this, robotPose, DecodeBlackBoard.BLUE_TARGET_POSE, alliance, false);
+        }
+        else {
+            alliance = DecodeBlackBoard.RED;
+            turret = new IMUTurret(hardwareMap, this, robotPose, DecodeBlackBoard.RED_TARGET_POSE, alliance, false);
+        }
+
+
 
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
+
         telemetry.update();
 
         if(isStopRequested()) return;
@@ -137,8 +149,16 @@ public class DecodeTeleOp extends LinearOpMode {
         shooter.setPower(0.4);
         sleep(1200);
 
+        Boolean isInitialPinpointPositionSet = false;
+
         while(!isStopRequested() && opModeIsActive())
         {
+            if(!isInitialPinpointPositionSet)
+            {
+                turret.setIMUPoseToRobotStartPose();
+                isInitialPinpointPositionSet = true;
+            }
+
             hubs.forEach(LynxModule::clearBulkCache);
 
             if(isBlueTeleOp)
@@ -168,22 +188,22 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void intakeOp()
     {
-        //use left bumper button to toggle
-        //intake
+        //use left bumper button to toggle intake on/off
         if(gamepad1.leftBumperWasPressed())
             isIntakeOn = !isIntakeOn;
 
-        //intake control
-        if (gamepad1.right_bumper) //right bumper take in
+        //right bumper to spit out extra ball
+        if (gamepad1.right_bumper)
             intake.SetIntakeMode(Intake.IntakeMode.OUT);
         else {
             if (isIntakeOn) { //intake mode
-                intake.intake(-0.9);
+                intake.intake(0.9);
             }
             else
                 intake.intake(0);
         }
 
+        //DPAD-UP to start the shooting
         if (gamepad1.dpadUpWasPressed())
             shootAutoCompleteMode = ShootAutoCompleteMode.START;
         else if (gamepad1.dpadUpWasReleased()) {
@@ -227,8 +247,8 @@ public class DecodeTeleOp extends LinearOpMode {
             isShooterOn = !isShooterOn;
 
         //gamepad1 a, shoot from close position
-        //gamepad1 y, shoot from far position
         //gamepad1 b, shoot from medium position
+        //gamepad1 y, shoot from far position
         if(gamepad1.aWasPressed())
         {
             shooter.setShootingLocation(Shooter.ShootingLocation.Near);
@@ -247,7 +267,20 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void turretOp()
     {
-        turret.autoAim();
+        //use gamepad2 A button to give a new known position to the pinpoint
+        if(gamepad2.a)
+            turret.resetIMUPose();
+
+        //use gamepad2 x button to disable or enable auto aiming
+        if(gamepad2.xWasPressed())
+        {
+            enableAutoAiming = !enableAutoAiming;
+        }
+
+        if(enableAutoAiming)
+            turret.autoAim();
+        else
+            turret.resetTurretHeading();
     }
 
     private void liftOp()

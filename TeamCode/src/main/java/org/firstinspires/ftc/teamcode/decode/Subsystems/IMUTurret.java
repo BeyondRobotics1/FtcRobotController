@@ -11,28 +11,37 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 import org.opencv.core.Mat;
 
 import java.util.List;
 
 public class IMUTurret {
     //hardware
+    LinearOpMode mode;
     private Servo turretLeft, turretRight;
     GoBildaPinpointDriver pinpoint;
     private Limelight3A limelight;
 
     //AnalogInput analogInput;
-    Pose2D targetPose;
+    Pose2D targetPose, startPose;
     double servoPositionRight = 0; //90 degree
     double servoPositionLeft = 0.42; //-90 degree
     double servoPositionMiddle = 0.205;//0 degree
+
+    double robotDistanceToGoal = 0.;
+    int alliance = DecodeBlackBoard.BLUE;
 
     //limelight is only need for auto
     //no limelight for teleop
     public IMUTurret(HardwareMap hardwareMap, LinearOpMode mode,
                      Pose2D robotPose, Pose2D targetPose,
+                     int alliance, //1 or 2
                      boolean useLimeLight) {
 
+        this.alliance = alliance;
+
+        this.mode = mode;
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
         //analogInput = hardwareMap.get(AnalogInput.class, "turretAnalogLeft");
@@ -44,8 +53,19 @@ public class IMUTurret {
 
         // Set the location of the robot - this should be the place you are starting the robot from
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+        this.startPose = new Pose2D(DistanceUnit.INCH,
+                robotPose.getX(DistanceUnit.INCH),
+                robotPose.getY(DistanceUnit.INCH),
+                AngleUnit.DEGREES,
+                robotPose.getHeading(AngleUnit.DEGREES));
         pinpoint.setPosition(robotPose);
-        this.targetPose = targetPose;
+
+
+        this.targetPose = new Pose2D(DistanceUnit.INCH,
+                targetPose.getX(DistanceUnit.INCH),
+                targetPose.getY(DistanceUnit.INCH),
+                AngleUnit.DEGREES,
+                targetPose.getHeading(AngleUnit.DEGREES));
 
 
         //use limelight
@@ -75,6 +95,45 @@ public class IMUTurret {
     public double getServoPosition()
     {
         return turretLeft.getPosition();
+    }
+
+    public void setIMUPoseToRobotStartPose()
+    {
+        if(pinpoint != null)
+            pinpoint.setPosition(startPose);
+    }
+
+    //set the turret to center heading
+    //could be useful when auto aiming is not
+    //working as expected
+    public void resetTurretHeading()
+    {
+        setServoPosition(servoPositionMiddle);
+    }
+
+    //drive robot to align with the white tap
+    //of the human player loading zone
+    public void resetIMUPose()
+    {
+        if(alliance == DecodeBlackBoard.RED)
+            setIMUPose(DecodeBlackBoard.RED_RESET_POSE);
+        else
+            setIMUPose(DecodeBlackBoard.BLUE_RESET_POSE);
+
+    }
+
+    public void setIMUPose(Pose2D robotPose)
+    {
+        if(pinpoint != null)
+            pinpoint.setPosition(robotPose);
+    }
+
+
+    //return the distance from robot to goal
+    //could use it to adjust shooter speed
+    public double distanceToGoal()
+    {
+        return robotDistanceToGoal;
     }
 
     //use limelight to detect the April Tag of the Obelisk
@@ -117,28 +176,81 @@ public class IMUTurret {
 
     public void autoAim()
     {
-        // read from odometry pinpoint
-        double x = pinpoint.getPosX(DistanceUnit.INCH);
-        double y = pinpoint.getPosY(DistanceUnit.INCH);
 
-        double heading = pinpoint.getHeading(AngleUnit.DEGREES);
+        // read from odometry pinpoint
+        pinpoint.update();
+
+        Pose2D pose2D = pinpoint.getPosition();
+
+        double x = pose2D.getX(DistanceUnit.INCH);
+        double y = pose2D.getY(DistanceUnit.INCH);
+        double heading = pose2D.getHeading(AngleUnit.DEGREES);
+
+        if(alliance == DecodeBlackBoard.RED)
+            heading = -heading;
+
+        //unwrap into [0 360]
+        if(heading < 0)
+            heading += 360;
+
         // target position
         double x0 = targetPose.getX(DistanceUnit.INCH);
         double y0 = targetPose.getY(DistanceUnit.INCH);
 
+        //calculate distance
+        robotDistanceToGoal = Math.sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0));
+
+
         // calculate alpha
-        double alpha = Math.atan2((x-x0), (y-y0));
-        double turretAngle = -90 - alpha + heading;
+        double alpha = Math.toDegrees(Math.atan2(Math.abs(x-x0), Math.abs(y-y0)));
+        double theta;
+
+        if(alliance == DecodeBlackBoard.RED)
+            theta = -90 - alpha + heading;
+        else
+            theta = 90 + alpha - heading;
 
         // calculate servo position
-        double servoPosition = servoPositionMiddle + (turretAngle / 180);
+        double servoPosition;
+
+        if(alliance == DecodeBlackBoard.RED)
+            servoPosition = servoPositionLeft * (theta + 90.0)/180.0;
+        else
+            servoPosition = servoPositionLeft * (theta + 90.0)/180.0;
+
+        mode.telemetry.addData("Servo position nc:", servoPosition);
+
+
+        if(servoPosition > servoPositionLeft){
+            servoPosition = servoPositionLeft;
+        }else if(servoPosition < servoPositionRight){
+            servoPosition = servoPositionRight;
+        }
+
         setServoPosition(servoPosition);
+
+        mode.telemetry.addData("Servo position:", servoPosition);
+
+        mode.telemetry.addData("IMU Heading:", heading);
+        mode.telemetry.addData("IMU x:", x);
+        mode.telemetry.addData("IMU y:", y);
+
+        mode.telemetry.addData("Delta x:", Math.abs(x-x0));
+        mode.telemetry.addData("Delta y:", Math.abs(y-y0));
+        mode.telemetry.addData("alpha:", alpha);
+        mode.telemetry.addData("theta:", theta);
+
     }
 
-    public void setIMUPose(double x, double y, double headingDegree)
+    //read the pinpoint readings
+    public Pose2D readPinpoint()
     {
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, headingDegree));
+        // read from odometry pinpoint
+        pinpoint.update();
+
+        return pinpoint.getPosition();
     }
+
 
     public void configurePinpoint(){
         /*

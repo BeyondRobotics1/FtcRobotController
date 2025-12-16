@@ -9,15 +9,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
 
-@TeleOp(name = "IMU Turret Test", group = "Decode Test")
-public class IMUTurretTest extends LinearOpMode {
+@TeleOp(name = "IMU Turret Tuner Blue", group = "Decode Test")
+public class IMUTurretTestBlue extends LinearOpMode {
+
+    boolean isInitialPinpointPositionSet;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+        isInitialPinpointPositionSet = false;
         IMUTurret turret = new IMUTurret(hardwareMap, this,
-                new Pose2D(DistanceUnit.INCH, 8, 48 + 7.5, AngleUnit.DEGREES, 0),
+                DecodeBlackBoard.BLUE_RESET_POSE,
                 DecodeBlackBoard.BLUE_TARGET_POSE,
+                DecodeBlackBoard.BLUE,
                 false);
 
 //        double startingAngle = turret.getAnalogStartingAngle();
@@ -30,8 +34,21 @@ public class IMUTurretTest extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
 
+            if(!isInitialPinpointPositionSet)
+            {
+                turret.setIMUPoseToRobotStartPose();
+                isInitialPinpointPositionSet = true;
+            }
+
             if(gamepad1.left_bumper)
-                turret.autoAim();
+            {
+                double pivotPosition = Math.abs(gamepad1.left_trigger);
+
+                if(pivotPosition > 0.42){
+                    pivotPosition = 0.42;
+                }
+                turret.setServoPosition(pivotPosition);
+            }
             else if (gamepad1.a)
                 turret.setServoPosition(0.21);
             else if (gamepad1.b)
@@ -40,12 +57,7 @@ public class IMUTurretTest extends LinearOpMode {
                 turret.setServoPosition(0);
             else
             {
-                double pivotPosition = Math.abs(gamepad1.left_trigger);
-
-                if(pivotPosition > 0.42){
-                    pivotPosition = 0.42;
-                }
-                turret.setServoPosition(pivotPosition);
+                turret.autoAim();
             }
 
 

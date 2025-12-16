@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public class GobildaPinpointTest extends OpMode {
     // Create an instance of the sensor
     GoBildaPinpointDriver pinpoint;
+    Boolean isInitialPinpointPositionSet = false;
 
     @Override
     public void init() {
@@ -36,15 +37,25 @@ public class GobildaPinpointTest extends OpMode {
 
         // Set the location of the robot - this should be the place you are starting the robot from
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
+        //pinpoint.update();
     }
 
     @Override
     public void loop() {
+
+        if(!isInitialPinpointPositionSet)
+        {
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
+            isInitialPinpointPositionSet = true;
+        }
+
         telemetry.addLine("Push your robot around to see it track");
         telemetry.addLine("Press A to reset the position");
         if(gamepad1.a){
             // You could use readings from April Tags here to give a new known position to the pinpoint
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
         }
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();

@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
@@ -33,6 +34,7 @@ public class BlueFarAuto extends LinearOpMode {
     private DriveTrain driveTrain;
     private Trigger trigger;
     private IMUTurret turret;
+    private Indexer indexer;
 
     //status
     Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.Medium;
@@ -66,6 +68,10 @@ public class BlueFarAuto extends LinearOpMode {
         telemetry.update();
         driveTrain = new DriveTrain(hardwareMap, this, false);
 
+        telemetry.addLine("Initializing indexer");
+        telemetry.update();
+        indexer = new Indexer(hardwareMap, this);
+
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
         shooter.setShootingLocation(Shooter.ShootingLocation.Medium);
@@ -81,6 +87,7 @@ public class BlueFarAuto extends LinearOpMode {
                 new Pose2D(DistanceUnit.INCH,
                         startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                DecodeBlackBoard.BLUE_TARGET_POSE,
+                DecodeBlackBoard.BLUE,
                 true);
 
         telemetry.addLine("hardware initialization completed");
@@ -128,9 +135,7 @@ public class BlueFarAuto extends LinearOpMode {
         }
 
         //in the end save current robot pose into black board
-        Pose p = follower.getPose();
-        DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
-                p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading()));
+        saveAutoState();
 
     }
 
@@ -227,8 +232,12 @@ public class BlueFarAuto extends LinearOpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if (!follower.isBusy()) {
                     /* Set the state to a Case we won't use or define, so it just stops running an new paths */
-                    setPathState(-1);
+                    setPathState(100);
                 }
+                break;
+            case 100: //end of auto
+                saveAutoState();
+                setPathState(-1);
                 break;
         }
 
@@ -282,4 +291,15 @@ public class BlueFarAuto extends LinearOpMode {
         this.pathState = newPathState;
     }
 
+    void saveAutoState()
+    {
+        //in the end save current robot pose into black board
+        if(turret == null) {
+            Pose p = follower.getPose();
+            DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                    p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading() + 180.0));
+        }
+        else
+            DecodeBlackBoard.saveAutoEndPose(turret.readPinpoint());
+    }
 }
