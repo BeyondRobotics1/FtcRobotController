@@ -4,6 +4,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -38,6 +39,9 @@ public class DecodeTeleOp extends LinearOpMode {
     private IMUTurret turret;
     private Indexer indexer;
 
+    Gamepad.RumbleEffect nearRumbleEffect;    // Use to build a custom rumble sequence
+    Gamepad.RumbleEffect mediumRumbleEffect;
+    Gamepad.RumbleEffect farRumbleEffect;
 
     //status
     private Timer actionTimer;
@@ -90,6 +94,23 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addLine("LynxModule initialized");
 
 
+        nearRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.1, 0.1, 200)  //
+                .build();
+
+        mediumRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.2, 0.2, 200)  //
+                .addStep(1, 1, 500)
+                .addStep(0.2, 0.2, 200)
+                .build();
+        farRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.3, 0.3, 200)  //
+                .addStep(1, 1, 200)
+                .addStep(0.3, 0.3, 200)
+                .addStep(1, 1, 200)
+                .addStep(0.3, 0.3, 200)
+                .build();
+
         isIntakeOn = false;
         isShooterOn = true;
 
@@ -128,11 +149,21 @@ public class DecodeTeleOp extends LinearOpMode {
         int alliance;
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
-            turret = new IMUTurret(hardwareMap, this, robotPose, DecodeBlackBoard.BLUE_TARGET_POSE, alliance, false);
+            turret = new IMUTurret(hardwareMap, this,
+                    robotPose,
+                    DecodeBlackBoard.BLUE_TARGET_POSE,
+                    alliance,
+                    true,
+                    true);
         }
         else {
             alliance = DecodeBlackBoard.RED;
-            turret = new IMUTurret(hardwareMap, this, robotPose, DecodeBlackBoard.RED_TARGET_POSE, alliance, false);
+            turret = new IMUTurret(hardwareMap, this,
+                    robotPose,
+                    DecodeBlackBoard.RED_TARGET_POSE,
+                    alliance,
+                    true,
+                    true);
         }
 
 
@@ -252,10 +283,16 @@ public class DecodeTeleOp extends LinearOpMode {
         if(gamepad1.aWasPressed())
         {
             shooter.setShootingLocation(Shooter.ShootingLocation.Near);
+            gamepad1.runRumbleEffect(nearRumbleEffect);
+            gamepad2.runRumbleEffect(nearRumbleEffect);
         } else if (gamepad1.yWasPressed()){
             shooter.setShootingLocation(Shooter.ShootingLocation.Far);
+            gamepad1.runRumbleEffect(farRumbleEffect);
+            gamepad2.runRumbleEffect(farRumbleEffect);
         } else if (gamepad1.bWasPressed()){
             shooter.setShootingLocation(Shooter.ShootingLocation.Medium);
+            gamepad1.runRumbleEffect(mediumRumbleEffect);
+            gamepad2.runRumbleEffect(mediumRumbleEffect);
         }
 
 
@@ -267,9 +304,9 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void turretOp()
     {
-        //use gamepad2 A button to give a new known position to the pinpoint
-        if(gamepad2.a)
-            turret.resetIMUPose();
+        //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
+        if(gamepad2.left_bumper)
+            turret.calibrateTurret();
 
         //use gamepad2 x button to disable or enable auto aiming
         if(gamepad2.xWasPressed())

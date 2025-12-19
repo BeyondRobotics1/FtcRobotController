@@ -16,9 +16,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(12.25)//27b
-            .forwardZeroPowerAcceleration(-31.864938)
-            .lateralZeroPowerAcceleration(-64.737043)
+            .mass(11.7)//25.8b
+            .forwardZeroPowerAcceleration(-27.0643)//-31.864938
+            .lateralZeroPowerAcceleration(-57.9476)//-64.737043
             .translationalPIDFCoefficients(new PIDFCoefficients(
                     0.06,
                     0,
@@ -57,6 +57,7 @@ public class Constants {
             .centripetalScaling(0.0005);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
+            .maxPower(0.9)
             .leftFrontMotorName("leftFront")
             .leftRearMotorName("leftBack")
             .rightFrontMotorName("rightFront")
@@ -65,8 +66,8 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(70.37)
-            .yVelocity(55.39);
+            .xVelocity(73.48)//70.37
+            .yVelocity(57.73);//55.39
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(-143.6)
@@ -83,6 +84,19 @@ public class Constants {
      brakingStrength, BEZIER_CURVE_SEARCH_LIMIT, brakingStart
 
      The BEZIER_CURVE_SEARCH_LIMIT should typically be left at 10 and shouldn't be changed.
+     */
+
+    /*
+    public static PathConstraints pathConstraints = new PathConstraints(
+            0.995,
+            0.1,
+            0.1,
+            0.009,
+            50,
+            0.75,
+            10,
+            1
+    );
      */
 
     public static PathConstraints pathConstraints = new PathConstraints(

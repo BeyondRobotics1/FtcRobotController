@@ -49,13 +49,13 @@ public class BlueFarAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(64, 9, Math.toRadians(90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(64, 76, Math.toRadians(135)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(56.5, 7.5, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(56.5, 7.5, Math.toRadians(90)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     private final Pose pickup1Pose = new Pose(64, 40, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose pickup2Pose = new Pose(43, 59, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose pickup3Pose = new Pose(43, 35, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
-    private final Pose parkPose = new Pose(64, 20, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose parkPose = new Pose(38, 9.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
     private PathChain grabPickup1, scorePickup1, grabPickup2, scorePickup2, grabPickup3, scorePickup3, scorePark;
@@ -74,7 +74,7 @@ public class BlueFarAuto extends LinearOpMode {
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
-        shooter.setShootingLocation(Shooter.ShootingLocation.Medium);
+        shooter.setShootingLocation(Shooter.ShootingLocation.Far);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -88,7 +88,9 @@ public class BlueFarAuto extends LinearOpMode {
                         startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
+                false,
                 true);
+        turret.setFarAutoServoPosition(DecodeBlackBoard.BLUE);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -142,11 +144,12 @@ public class BlueFarAuto extends LinearOpMode {
     private void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(scorePreload);
+                //follower.followPath(scorePreload);
+                pathTimer.resetTimer();
                 setPathState(1);
                 break;
             case 1:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTime() > 1000) {
                     pathTimer.resetTimer();
                     trigger.open();
                     setPathState(2);
@@ -166,78 +169,15 @@ public class BlueFarAuto extends LinearOpMode {
                     follower.followPath(scorePark, true); //grabPickup1
                     trigger.close();
                     intake.intake(0);//stop the intake
-                    setPathState(-1);
-                }
-                break;
-            case 11:
-            /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
-            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if (!follower.isBusy()) {
-                    /* Score Preload */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(scorePark, true); //grabPickup1
-                    setPathState(-1);
-                }
-                break;
-            case 12:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
-                if (!follower.isBusy()) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup1, true);
-                    setPathState(3);
-                }
-                break;
-            case 13:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if (!follower.isBusy()) {
-                    /* Score Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(grabPickup2, true);
-                    setPathState(4);
-                }
-                break;
-            case 14:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
-                if (!follower.isBusy()) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup2, true);
-                    setPathState(5);
-                }
-                break;
-            case 15:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if (!follower.isBusy()) {
-                    /* Score Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(grabPickup3, true);
-                    setPathState(6);
-                }
-                break;
-            case 16:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if (!follower.isBusy()) {
-                    /* Grab Sample */
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(scorePickup3, true);
-                    setPathState(7);
-                }
-                break;
-            case 17:
-                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if (!follower.isBusy()) {
-                    /* Set the state to a Case we won't use or define, so it just stops running an new paths */
                     setPathState(100);
                 }
                 break;
+
             case 100: //end of auto
-                saveAutoState();
-                setPathState(-1);
+                if (!follower.isBusy()) {
+                    saveAutoState();
+                    setPathState(-1);
+                }
                 break;
         }
 
@@ -293,13 +233,9 @@ public class BlueFarAuto extends LinearOpMode {
 
     void saveAutoState()
     {
-        //in the end save current robot pose into black board
-        if(turret == null) {
-            Pose p = follower.getPose();
-            DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
-                    p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading() + 180.0));
-        }
-        else
-            DecodeBlackBoard.saveAutoEndPose(turret.readPinpoint());
+        Pose p = follower.getPose();
+        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                p.getX(), p.getY(), AngleUnit.RADIANS, p.getHeading()));
+
     }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.decode.OpMode;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
@@ -50,15 +51,17 @@ public class BlueNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(16.5, 112, Math.toRadians(180)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(40, 97, Math.toRadians(135)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(17.25, 112.5, Math.toRadians(180)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(32, 103, Math.toRadians(135)); // 32, 103,// 30, 105 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
-    private final Pose pickup1Pose = new Pose(43, 85, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(18, 85, Math.toRadians(180));
+    private final Pose pickup1Pose = new Pose(43, 83, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.5, 83, Math.toRadians(180));
+    private final Pose backout1Pose = new Pose(24, 75, Math.toRadians(180)); //24, 77
+    private final Pose openGatePose = new Pose(18.75, 75, Math.toRadians(180)); //18, 77
 
     private final Pose pickup2Pose = new Pose(43, 59, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(10, 59, Math.toRadians(180));
-    private final Pose backout2Pose = new Pose(19, 59, Math.toRadians(180));
+    private final Pose backout2Pose = new Pose(17.5, 59, Math.toRadians(180)); //20, 59
 
     private final Pose pickup3Pose = new Pose(43, 35, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose grab3Pose = new Pose(10, 35, Math.toRadians(180));
@@ -66,8 +69,8 @@ public class BlueNearAuto extends LinearOpMode {
     private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1Score;
-    private PathChain scorePickup2, pickup2Grab2, grab2Backout2, backout2Score;
+    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGateScore, grab1Score;
+    private PathChain scorePickup2, pickup2Grab2, grab2Score, grab2Backout2, backout2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
 
@@ -98,6 +101,7 @@ public class BlueNearAuto extends LinearOpMode {
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
+                false,
                 true);
 
         telemetry.addLine("hardware initialization completed");
@@ -144,7 +148,6 @@ public class BlueNearAuto extends LinearOpMode {
         }
 
         //in the end save current robot pose into black board
-        //in the end save current robot pose into black board
         saveAutoState();
     }
 
@@ -162,7 +165,7 @@ public class BlueNearAuto extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 300) {//should be 250, 1000 is for camera
+                if (pathTimer.getElapsedTime() > 300) {//should be 250
                     pathTimer.resetTimer();
                     intake.SetIntakeMode(Intake.IntakeMode.FEED);
 
@@ -187,13 +190,28 @@ public class BlueNearAuto extends LinearOpMode {
                     pathTimer.resetTimer();
                     //grab balls at position 1
                     follower.followPath(pickup1Grab1, true); //grabPickup1
+                    setPathState(111);
+                }
+                break;
+            case 111:
+                if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
+                    //move grab1 position to open gate position
+                    follower.followPath(grab1OpenGate, true);
+                    pathTimer.resetTimer();
+                    setPathState(112);
+                }
+                break;
+            case 112:
+                if (!follower.isBusy()) {
+                    //Keep the gate open for 1 second
+                    pathTimer.resetTimer();
                     setPathState(12);
                 }
                 break;
             case 12:
-                if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
-                    //move to score position
-                    follower.followPath(grab1Score, true);
+                if (pathTimer.getElapsedTime() > 650) {
+                    //move from open gate position to score position
+                    follower.followPath(openGateScore, true);
                     intake.intake(0);
                     setPathState(13);
                 }
@@ -209,7 +227,6 @@ public class BlueNearAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 300) {//should be 250, 1000 is for camera
                     pathTimer.resetTimer();
                     intake.SetIntakeMode(Intake.IntakeMode.FEED);
-
                     setPathState(15);
                 }
                 break;
@@ -237,18 +254,19 @@ public class BlueNearAuto extends LinearOpMode {
             case 22:
                 if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
                     //move to backout position
-                    follower.followPath(grab2Backout2, true);
-                    setPathState(221);
-                }
-                break;
-            case 221:
-                if (!follower.isBusy()) {
-                    //move to score position
-                    follower.followPath(backout2Score, true);
-                    intake.intake(0);
+                    //follower.followPath(grab2Backout2, true);
+                    follower.followPath(grab2Score, true);
                     setPathState(23);
                 }
                 break;
+//            case 221:
+//                if (!follower.isBusy()) {
+//                    //move to score position
+//                    follower.followPath(backout2Score, true);
+//                    intake.intake(0);
+//                    setPathState(23);
+//                }
+//                break;
             case 23:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -327,8 +345,10 @@ public class BlueNearAuto extends LinearOpMode {
                 setPathState(100);
                 break;
             case 100: //end of auto
-                saveAutoState();
-                setPathState(-1);
+                if (!follower.isBusy()) {
+                    saveAutoState();
+                    setPathState(-1);
+                }
                 break;
         }
 
@@ -351,9 +371,27 @@ public class BlueNearAuto extends LinearOpMode {
                 .addPath(new BezierLine(pickup1Pose, grab1Pose))
                 .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
                 .build();
+
+        grab1OpenGate = follower.pathBuilder()
+                //.addPath(new BezierLine(grab1Pose, scorePose))
+                .addPath(new BezierLine(grab1Pose, backout1Pose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
+                .addPath(new BezierLine(backout1Pose, openGatePose))
+                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
+                .build();
+        openGateScore = follower.pathBuilder()
+                .addPath(new BezierLine(openGatePose, scorePose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
+                .build();
+
         grab1Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab1Pose, scorePose))
-                .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
+                //.addPath(new BezierLine(grab1Pose, scorePose))
+                .addPath(new BezierLine(grab1Pose, backout1Pose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
+                .addPath(new BezierLine(backout1Pose, openGatePose))
+                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
+                .addPath(new BezierLine(openGatePose, scorePose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
                 .build();
 
 
@@ -368,6 +406,14 @@ public class BlueNearAuto extends LinearOpMode {
                 .addPath(new BezierLine(pickup2Pose, grab2Pose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();
+
+        grab2Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab2Pose, backout2Pose))
+                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
+                .addPath(new BezierLine(backout2Pose, scorePose))
+                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
+                .build();
+
         grab2Backout2 = follower.pathBuilder()
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
@@ -404,13 +450,8 @@ public class BlueNearAuto extends LinearOpMode {
 
     void saveAutoState()
     {
-        //in the end save current robot pose into black board
-        if(turret == null) {
-            Pose p = follower.getPose();
-            DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
-                    p.getX(), p.getY(), AngleUnit.DEGREES, p.getHeading() + 180.0));
-        }
-        else
-            DecodeBlackBoard.saveAutoEndPose(turret.readPinpoint());
+        Pose p = follower.getPose();
+        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                p.getX(), p.getY(), AngleUnit.RADIANS, p.getHeading()));
     }
 }

@@ -19,10 +19,11 @@ public class IMUTurretTestRed extends LinearOpMode {
 
         isInitialPinpointPositionSet = false;
         IMUTurret turret = new IMUTurret(hardwareMap, this,
-                DecodeBlackBoard.RED_RESET_POSE,
+                DecodeBlackBoard.RED_RESET_POSE,//new Pose2D(DistanceUnit.INCH, 8, 111, AngleUnit.DEGREES, 0),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
-                false);
+                true,
+                true);
 
 //        double startingAngle = turret.getAnalogStartingAngle();
 //        telemetry.addData("Analog start degree", startingAngle);
@@ -42,17 +43,21 @@ public class IMUTurretTestRed extends LinearOpMode {
 
             if(gamepad1.left_bumper)
             {
+                turret.calibrateTurret();
+            }
+            else if(gamepad1.right_bumper)
+            {
                 double pivotPosition = Math.abs(gamepad1.left_trigger);
 
-                if(pivotPosition > 0.42){
-                    pivotPosition = 0.42;
+                if(pivotPosition > 0.390){
+                    pivotPosition = 0.390;
                 }
                 turret.setServoPosition(pivotPosition);
             }
             else if (gamepad1.a)
-                turret.setServoPosition(0.21);
+                turret.setServoPosition(0.195);
             else if (gamepad1.b)
-                turret.setServoPosition(0.42);
+                turret.setServoPosition(0.390);
             else if (gamepad1.x)
                 turret.setServoPosition(0);
             else
@@ -61,7 +66,7 @@ public class IMUTurretTestRed extends LinearOpMode {
             }
 
 
-            telemetry.addData("Trigger position", turret.getServoPosition());
+            telemetry.addData("Turret Servo position", turret.getServoPosition());
 
             telemetry.update();
         }

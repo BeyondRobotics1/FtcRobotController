@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.decode.Subsystems;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -26,15 +27,15 @@ public class Shooter {
     PIDController controller;
 
     private MotorGroup flyWheel;
-    public static double kP = 0.001; //0.8
-    public static double kI = 0.25; //0.01
+    public static double kP = 0.002; //0.001
+    public static double kI = 0.25; //0.25
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedFar = 0.58;
-    double targetSpeedMedium = 0.485;
-    double targetSpeedClose = 0.423;//0.43
+    double targetSpeedFar = 0.58; //0.58
+    double targetSpeedMedium = 0.48; //0.485
+    double targetSpeedClose = 0.39;//0.423
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -43,6 +44,7 @@ public class Shooter {
 
     private boolean isFlyWheelReady;
     public static double targetVelocity;
+    public static double targetSpeed;
 
     public Shooter(HardwareMap hardwareMap, LinearOpMode linearOpMode)
     {
@@ -51,26 +53,34 @@ public class Shooter {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
 
-        rightFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         controller = new PIDController(kP, kI, kD);
 
         shooterPosition = ShootingLocation.Medium;
         isFlyWheelReady = false;
+
+        targetSpeed = targetSpeedMedium;
     }
 
     //this method should be called in the loop
     //all the time
     public void shoot()
     {
-        controller.setPID(kP, kI, kD);
-
-        double targetSpeed = targetSpeedMedium;
-
         if(shooterPosition == ShootingLocation.Near)
             targetSpeed = targetSpeedClose;
         else if (shooterPosition == ShootingLocation.Far)
             targetSpeed = targetSpeedFar;
+        else
+            targetSpeed = targetSpeedMedium;
+
+        if(targetSpeed > 0.5)
+            kI = 0.3;
+
+        controller.setPID(kP, kI, kD);
 
         targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
 
@@ -90,13 +100,13 @@ public class Shooter {
         else
             isFlyWheelReady = false;
 
-        mode.telemetry.addLine("Shooter Status");
-        mode.telemetry.addData("Flywheel Velocity", velocity);
-        mode.telemetry.addData("Target Velocity", targetVelocity);
-
-        mode.telemetry.addData("Flywheel PID", pid);
-        mode.telemetry.addData("Flywheel FF", ff);
-        mode.telemetry.addData("Flywheel Motor Power", power);
+//        mode.telemetry.addLine("Shooter Status");
+//        mode.telemetry.addData("Flywheel Velocity", velocity);
+//        mode.telemetry.addData("Target Velocity", targetVelocity);
+//
+//        mode.telemetry.addData("Flywheel PID", pid);
+//        mode.telemetry.addData("Flywheel FF", ff);
+//        mode.telemetry.addData("Flywheel Motor Power", power);
 
         //flyWheel.set(targetSpeedFar);
     }

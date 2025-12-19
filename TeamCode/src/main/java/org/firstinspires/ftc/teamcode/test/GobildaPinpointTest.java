@@ -45,17 +45,17 @@ public class GobildaPinpointTest extends OpMode {
     @Override
     public void loop() {
 
-        if(!isInitialPinpointPositionSet)
-        {
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
-            isInitialPinpointPositionSet = true;
-        }
+//        if(!isInitialPinpointPositionSet)
+//        {
+//            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
+//            isInitialPinpointPositionSet = true;
+//        }
 
         telemetry.addLine("Push your robot around to see it track");
         telemetry.addLine("Press A to reset the position");
         if(gamepad1.a){
             // You could use readings from April Tags here to give a new known position to the pinpoint
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
+            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
         }
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();

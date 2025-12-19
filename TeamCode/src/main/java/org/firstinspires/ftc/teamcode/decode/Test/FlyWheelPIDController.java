@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -20,12 +21,14 @@ public class FlyWheelPIDController extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     PIDController controller;
-    public static double kP = 0.001; //0.8
-    public static double kI = 0.2; //0.01
+    public static double kP = 0.001;//0.001; //0.8
+    public static double kI = 0.25;//0.25; //0.01
     public static double kD = 0;
     public static double kF = 0.75;
 
-    public static double targetSpeed = 0.5;
+    //public static double targetSpeed = 0.59;
+    //public static double targetSpeed = 0.49;
+    public static double targetSpeed = 0.4;
     public static double targetVelocity;
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
@@ -42,7 +45,10 @@ public class FlyWheelPIDController extends LinearOpMode {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
 
-        rightFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -59,6 +65,10 @@ public class FlyWheelPIDController extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive())
         {
 
+
+            if(targetSpeed > 0.5)
+                kI = 0.3;
+
            // if(gamepad1.a) {
 
                 hubs.forEach(LynxModule::clearBulkCache);
@@ -74,7 +84,7 @@ public class FlyWheelPIDController extends LinearOpMode {
 
                 double power = pid + ff;
 
-                setPower(power);
+                //setPower(power);
                 setPower(power);
 
                 telemetry.addData("Flywheel Velocity", velocity);

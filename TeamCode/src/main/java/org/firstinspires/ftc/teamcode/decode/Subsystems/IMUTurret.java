@@ -26,40 +26,53 @@ public class IMUTurret {
     //AnalogInput analogInput;
     Pose2D targetPose, startPose;
     double servoPositionRight = 0; //90 degree
-    double servoPositionLeft = 0.42; //-90 degree
-    double servoPositionMiddle = 0.205;//0 degree
+    double servoPositionLeft = 0.390;//0.42; //-90 degree
+    double servoPositionMiddle = 0.195;//0.21;//0 degree
+    double servoPositionCalibration = 0.0;//0 degree
+
+    double servoPositionRedFarAuto = 0.12;
+    double servoPositionBlueFarAuto = 0.28;
 
     double robotDistanceToGoal = 0.;
     int alliance = DecodeBlackBoard.BLUE;
+    private int targetTagID;
+
 
     //limelight is only need for auto
     //no limelight for teleop
     public IMUTurret(HardwareMap hardwareMap, LinearOpMode mode,
                      Pose2D robotPose, Pose2D targetPose,
                      int alliance, //1 or 2
+                     boolean usePinpoint,
                      boolean useLimeLight) {
 
         this.alliance = alliance;
+
+        if(alliance == DecodeBlackBoard.BLUE)
+            targetTagID = 20;
+        else
+            targetTagID = 24;
 
         this.mode = mode;
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
         //analogInput = hardwareMap.get(AnalogInput.class, "turretAnalogLeft");
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        if(usePinpoint) {
+            pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        // Configure the sensor
-        configurePinpoint();
+            // Configure the sensor
+            configurePinpoint();
 
-        // Set the location of the robot - this should be the place you are starting the robot from
-        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-        this.startPose = new Pose2D(DistanceUnit.INCH,
-                robotPose.getX(DistanceUnit.INCH),
-                robotPose.getY(DistanceUnit.INCH),
-                AngleUnit.DEGREES,
-                robotPose.getHeading(AngleUnit.DEGREES));
-        pinpoint.setPosition(robotPose);
-
+            // Set the location of the robot - this should be the place you are starting the robot from
+            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+            this.startPose = new Pose2D(DistanceUnit.INCH,
+                    robotPose.getX(DistanceUnit.INCH),
+                    robotPose.getY(DistanceUnit.INCH),
+                    AngleUnit.DEGREES,
+                    robotPose.getHeading(AngleUnit.DEGREES));
+            pinpoint.setPosition(robotPose);
+        }
 
         this.targetPose = new Pose2D(DistanceUnit.INCH,
                 targetPose.getX(DistanceUnit.INCH),
@@ -75,7 +88,6 @@ public class IMUTurret {
             limelight.start();
         }
 
-
         setServoPosition(servoPositionMiddle);
     }
 
@@ -85,6 +97,14 @@ public class IMUTurret {
             return limelight.isRunning();
         else
             return false;
+    }
+
+    public void setFarAutoServoPosition(int alliance)
+    {
+        if(alliance == DecodeBlackBoard.BLUE)
+            setServoPosition(servoPositionBlueFarAuto);
+        else
+            setServoPosition(servoPositionRedFarAuto);
     }
 
     public void setServoPosition(double power)
@@ -111,6 +131,8 @@ public class IMUTurret {
         setServoPosition(servoPositionMiddle);
     }
 
+
+
     //drive robot to align with the white tap
     //of the human player loading zone
     public void resetIMUPose()
@@ -134,6 +156,38 @@ public class IMUTurret {
     public double distanceToGoal()
     {
         return robotDistanceToGoal;
+    }
+
+    //use limelight3A tx to calibrate turret heading with servo
+    public void calibrateTurret()
+    {
+
+        mode.telemetry.addLine("calibrateTurret");
+
+        if(limelight != null) {
+            LLResult result = limelight.getLatestResult();
+
+            // Access fiducial results
+            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fr : fiducialResults) {
+
+                int tagID = fr.getFiducialId();
+                double currentAngle = result.getTx();
+
+                mode.telemetry.addData("tagID:", tagID);
+                mode.telemetry.addData("targetTagID:", targetTagID);
+
+                if(targetTagID == tagID)
+                {
+                    servoPositionCalibration = currentAngle * servoPositionMiddle /100.0;
+
+                    mode.telemetry.addData("Tx:", currentAngle);
+                    mode.telemetry.addData("servo calibration:", servoPositionCalibration);
+
+                    break;
+                }
+            }
+        }
     }
 
     //use limelight to detect the April Tag of the Obelisk
@@ -176,6 +230,8 @@ public class IMUTurret {
 
     public void autoAim()
     {
+        if(pinpoint == null)
+            return;
 
         // read from odometry pinpoint
         pinpoint.update();
@@ -214,9 +270,11 @@ public class IMUTurret {
         double servoPosition;
 
         if(alliance == DecodeBlackBoard.RED)
-            servoPosition = servoPositionLeft * (theta + 90.0)/180.0;
+            servoPosition = servoPositionLeft * (theta + 90.0)/180 + servoPositionCalibration;
         else
-            servoPosition = servoPositionLeft * (theta + 90.0)/180.0;
+            servoPosition = servoPositionLeft * (theta + 90.0)/180 + servoPositionCalibration;
+
+
 
         mode.telemetry.addData("Servo position nc:", servoPosition);
 
@@ -240,15 +298,6 @@ public class IMUTurret {
         mode.telemetry.addData("alpha:", alpha);
         mode.telemetry.addData("theta:", theta);
 
-    }
-
-    //read the pinpoint readings
-    public Pose2D readPinpoint()
-    {
-        // read from odometry pinpoint
-        pinpoint.update();
-
-        return pinpoint.getPosition();
     }
 
 
