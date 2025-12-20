@@ -42,6 +42,7 @@ public class DecodeTeleOp extends LinearOpMode {
     Gamepad.RumbleEffect nearRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect mediumRumbleEffect;
     Gamepad.RumbleEffect farRumbleEffect;
+    Gamepad.RumbleEffect outZoneRumbleEffect;
 
     //status
     private Timer actionTimer;
@@ -107,8 +108,13 @@ public class DecodeTeleOp extends LinearOpMode {
                 .addStep(0.3, 0.3, 200)  //
                 .addStep(1, 1, 200)
                 .addStep(0.3, 0.3, 200)
+                .build();
+        outZoneRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.4, 0.4, 200)  //
                 .addStep(1, 1, 200)
-                .addStep(0.3, 0.3, 200)
+                .addStep(0.4, 0.4, 200)
+                .addStep(1, 1, 200)
+                .addStep(0.4, 0.4, 200)
                 .build();
 
         isIntakeOn = false;
@@ -274,25 +280,32 @@ public class DecodeTeleOp extends LinearOpMode {
     {
         //use gamepad1 X button to toggle
         //shooter motors
-        if(gamepad1.xWasPressed())
-            isShooterOn = !isShooterOn;
+        //if(gamepad1.xWasPressed())
+        //isShooterOn = !isShooterOn;
 
-        //gamepad1 a, shoot from close position
+        //gamepad1 a, shoot from near position
         //gamepad1 b, shoot from medium position
         //gamepad1 y, shoot from far position
+        //gamepad1 x, shoot from OUT_ZONE position
         if(gamepad1.aWasPressed())
         {
-            shooter.setShootingLocation(Shooter.ShootingLocation.Near);
+            shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
             gamepad1.runRumbleEffect(nearRumbleEffect);
-            gamepad2.runRumbleEffect(nearRumbleEffect);
-        } else if (gamepad1.yWasPressed()){
-            shooter.setShootingLocation(Shooter.ShootingLocation.Far);
+            //gamepad2.runRumbleEffect(nearRumbleEffect);
+        } else if (gamepad1.xWasPressed())
+        {
+            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+            gamepad1.runRumbleEffect(outZoneRumbleEffect);
+            //gamepad2.runRumbleEffect(outZoneRumbleEffect);
+        }
+        else if (gamepad1.yWasPressed()){
+            shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
             gamepad1.runRumbleEffect(farRumbleEffect);
-            gamepad2.runRumbleEffect(farRumbleEffect);
+            //gamepad2.runRumbleEffect(farRumbleEffect);
         } else if (gamepad1.bWasPressed()){
-            shooter.setShootingLocation(Shooter.ShootingLocation.Medium);
+            shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
             gamepad1.runRumbleEffect(mediumRumbleEffect);
-            gamepad2.runRumbleEffect(mediumRumbleEffect);
+            //gamepad2.runRumbleEffect(mediumRumbleEffect);
         }
 
 
@@ -306,7 +319,8 @@ public class DecodeTeleOp extends LinearOpMode {
     {
         //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
         if(gamepad2.left_bumper)
-            turret.calibrateTurret();
+            turret.resetIMUPose();
+ //
 
         //use gamepad2 x button to disable or enable auto aiming
         if(gamepad2.xWasPressed())

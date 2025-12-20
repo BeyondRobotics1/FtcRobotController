@@ -43,7 +43,7 @@ public class Trigger {
      * in the storage
      */
     public void open(){
-        setPosition(0.03);//0.5
+        setPosition(0.00);//0.03
     }
 
     /**

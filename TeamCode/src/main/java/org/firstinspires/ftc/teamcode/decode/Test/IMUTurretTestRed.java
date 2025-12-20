@@ -49,15 +49,15 @@ public class IMUTurretTestRed extends LinearOpMode {
             {
                 double pivotPosition = Math.abs(gamepad1.left_trigger);
 
-                if(pivotPosition > 0.390){
-                    pivotPosition = 0.390;
+                if(pivotPosition > 0.380){
+                    pivotPosition = 0.380;
                 }
                 turret.setServoPosition(pivotPosition);
             }
             else if (gamepad1.a)
                 turret.setServoPosition(0.195);
             else if (gamepad1.b)
-                turret.setServoPosition(0.390);
+                turret.setServoPosition(0.380);
             else if (gamepad1.x)
                 turret.setServoPosition(0);
             else

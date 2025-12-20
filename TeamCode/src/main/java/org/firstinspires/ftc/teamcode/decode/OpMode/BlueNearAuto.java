@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.decode.OpMode;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -21,7 +19,6 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
@@ -33,17 +30,17 @@ public class BlueNearAuto extends LinearOpMode {
     //hardware
     private Shooter shooter;
     private Intake intake;
-    private DriveTrain driveTrain;
+    //private DriveTrain driveTrain;
     private Trigger trigger;
     private IMUTurret turret;
     private Indexer indexer;
 
     //status
-    Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.Medium;
+    //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
 
 
     private Timer pathTimer;
-    private Timer opmodeTimer;
+    //private Timer opmodeTimer;
     private int pathState = 0;
 
     Follower follower;
@@ -51,20 +48,20 @@ public class BlueNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(17.25, 112.5, Math.toRadians(180)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(32, 103, Math.toRadians(135)); // 32, 103,// 30, 105 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(17.25, 112.5, Math.toRadians(180)); //17.25, 112.5, 180 Start Pose of our robot.
+    private final Pose scorePose = new Pose(33, 102, Math.toRadians(135)); // 32, 103,// 30, 105 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     private final Pose pickup1Pose = new Pose(43, 83, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose grab1Pose = new Pose(17.5, 83, Math.toRadians(180));
     private final Pose backout1Pose = new Pose(24, 75, Math.toRadians(180)); //24, 77
-    private final Pose openGatePose = new Pose(18.75, 75, Math.toRadians(180)); //18, 77
+    private final Pose openGatePose = new Pose(18, 75, Math.toRadians(180)); //18, 77
 
     private final Pose pickup2Pose = new Pose(43, 59, Math.toRadians(180)); // Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(10, 59, Math.toRadians(180));
+    private final Pose grab2Pose = new Pose(9.5, 59, Math.toRadians(180)); //10.59
     private final Pose backout2Pose = new Pose(17.5, 59, Math.toRadians(180)); //20, 59
 
-    private final Pose pickup3Pose = new Pose(43, 35, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose grab3Pose = new Pose(10, 35, Math.toRadians(180));
+    private final Pose pickup3Pose = new Pose(43, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
 
     private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
@@ -78,9 +75,9 @@ public class BlueNearAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        telemetry.addLine("Initializing drive train");
-        telemetry.update();
-        driveTrain = new DriveTrain(hardwareMap, this, false);
+//        telemetry.addLine("Initializing drive train");
+//        telemetry.update();
+//        driveTrain = new DriveTrain(hardwareMap, this, false);
 
         telemetry.addLine("Initializing indexer");
         telemetry.update();
@@ -88,7 +85,7 @@ public class BlueNearAuto extends LinearOpMode {
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
-        shooter.setShootingLocation(Shooter.ShootingLocation.Near);
+        shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -111,8 +108,8 @@ public class BlueNearAuto extends LinearOpMode {
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
+        //opmodeTimer = new Timer();
+        //opmodeTimer.resetTimer();
 
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
@@ -132,7 +129,7 @@ public class BlueNearAuto extends LinearOpMode {
 
         shooter.setPower(0.4);
 
-        opmodeTimer.resetTimer();
+        //opmodeTimer.resetTimer();
         setPathState(0);
 
         sleep(500);

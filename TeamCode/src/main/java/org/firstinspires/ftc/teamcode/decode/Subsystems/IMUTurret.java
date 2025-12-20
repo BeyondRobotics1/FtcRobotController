@@ -12,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-import org.opencv.core.Mat;
 
 import java.util.List;
 
@@ -26,20 +25,17 @@ public class IMUTurret {
     //AnalogInput analogInput;
     Pose2D targetPose, startPose;
     double servoPositionRight = 0; //90 degree
-    double servoPositionLeft = 0.390;//0.42; //-90 degree
+    double servoPositionLeft = 0.380;//0.42; //-90 degree
     double servoPositionMiddle = 0.195;//0.21;//0 degree
     double servoPositionCalibration = 0.0;//0 degree
 
-    double servoPositionRedFarAuto = 0.12;
-    double servoPositionBlueFarAuto = 0.28;
+    double servoPositionRedFarAuto = 0.15;
+    double servoPositionBlueFarAuto = 0.25;
 
     double robotDistanceToGoal = 0.;
     int alliance = DecodeBlackBoard.BLUE;
     private int targetTagID;
 
-
-    //limelight is only need for auto
-    //no limelight for teleop
     public IMUTurret(HardwareMap hardwareMap, LinearOpMode mode,
                      Pose2D robotPose, Pose2D targetPose,
                      int alliance, //1 or 2
@@ -99,7 +95,7 @@ public class IMUTurret {
             return false;
     }
 
-    public void setFarAutoServoPosition(int alliance)
+    public void setOutZoneAutoServoPosition(int alliance)
     {
         if(alliance == DecodeBlackBoard.BLUE)
             setServoPosition(servoPositionBlueFarAuto);
@@ -179,7 +175,7 @@ public class IMUTurret {
 
                 if(targetTagID == tagID)
                 {
-                    servoPositionCalibration = currentAngle * servoPositionMiddle /100.0;
+                    servoPositionCalibration = -currentAngle * servoPositionMiddle /90.;
 
                     mode.telemetry.addData("Tx:", currentAngle);
                     mode.telemetry.addData("servo calibration:", servoPositionCalibration);

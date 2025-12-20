@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
@@ -30,16 +29,16 @@ public class RedNearAuto extends LinearOpMode {
    //Hardware
     private Shooter shooter;
     private Intake intake;
-    private DriveTrain driveTrain;
+    //private DriveTrain driveTrain;
     private Trigger trigger;
     private IMUTurret turret;
     private Indexer indexer;
 
     //status
-    Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.Medium;
+    //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
 
     private Timer pathTimer;
-    private Timer opmodeTimer;
+    //private Timer opmodeTimer;
 
     private int pathState = 0;
 
@@ -48,8 +47,8 @@ public class RedNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(17.25, 28.75, Math.toRadians(180)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(48, 46, Math.toRadians(-135)); // 42, 42 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(17.25, 28.75, Math.toRadians(180)); //tart Pose of our robot.
+    private final Pose scorePose = new Pose(49, 47, Math.toRadians(-135)); // 48, 46 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     //x 44
     private final Pose pickup1Pose = new Pose(47.5, 58, Math.toRadians(180)); // Highest (First Set) picking up start
@@ -76,9 +75,9 @@ public class RedNearAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        telemetry.addLine("Initializing drive train");
-        telemetry.update();
-        driveTrain = new DriveTrain(hardwareMap, this, false);
+//        telemetry.addLine("Initializing drive train");
+//        telemetry.update();
+//        driveTrain = new DriveTrain(hardwareMap, this, false);
 
         telemetry.addLine("Initializing indexer");
         telemetry.update();
@@ -86,7 +85,7 @@ public class RedNearAuto extends LinearOpMode {
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
-        shooter.setShootingLocation(Shooter.ShootingLocation.Near);
+        shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -99,7 +98,7 @@ public class RedNearAuto extends LinearOpMode {
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
-                true,
+                false,
                 true);
         telemetry.addLine("hardware initialization completed");
 
@@ -108,8 +107,8 @@ public class RedNearAuto extends LinearOpMode {
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
+        //opmodeTimer = new Timer();
+        //opmodeTimer.resetTimer();
 
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
@@ -129,7 +128,7 @@ public class RedNearAuto extends LinearOpMode {
 
         shooter.setPower(0.4);
 
-        opmodeTimer.resetTimer();
+        //opmodeTimer.resetTimer();
         setPathState(0);
 
         sleep(500);

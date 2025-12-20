@@ -13,13 +13,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
@@ -31,16 +29,16 @@ public class BlueFarAuto extends LinearOpMode {
     //Hardware
     private Shooter shooter;
     private Intake intake;
-    private DriveTrain driveTrain;
+    //private DriveTrain driveTrain;
     private Trigger trigger;
     private IMUTurret turret;
     private Indexer indexer;
 
     //status
-    Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.Medium;
+    //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
 
     private Timer pathTimer;
-    private Timer opmodeTimer;
+    //private Timer opmodeTimer;
 
     private int pathState = 0;
 
@@ -64,9 +62,9 @@ public class BlueFarAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        telemetry.addLine("Initializing drive train");
-        telemetry.update();
-        driveTrain = new DriveTrain(hardwareMap, this, false);
+//        telemetry.addLine("Initializing drive train");
+//        telemetry.update();
+//        driveTrain = new DriveTrain(hardwareMap, this, false);
 
         telemetry.addLine("Initializing indexer");
         telemetry.update();
@@ -74,7 +72,7 @@ public class BlueFarAuto extends LinearOpMode {
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this);
-        shooter.setShootingLocation(Shooter.ShootingLocation.Far);
+        shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -90,7 +88,7 @@ public class BlueFarAuto extends LinearOpMode {
                 DecodeBlackBoard.BLUE,
                 false,
                 true);
-        turret.setFarAutoServoPosition(DecodeBlackBoard.BLUE);
+        turret.setOutZoneAutoServoPosition(DecodeBlackBoard.BLUE);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -99,8 +97,8 @@ public class BlueFarAuto extends LinearOpMode {
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
+        //opmodeTimer = new Timer();
+        //opmodeTimer.resetTimer();
 
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
@@ -120,7 +118,7 @@ public class BlueFarAuto extends LinearOpMode {
 
         shooter.setPower(0.4);
 
-        opmodeTimer.resetTimer();
+        //opmodeTimer.resetTimer();
         setPathState(0);
 
         sleep(500);
@@ -131,7 +129,7 @@ public class BlueFarAuto extends LinearOpMode {
             follower.update();
             autonomousPathUpdate();
 
-            turret.autoAim();
+            //turret.autoAim();
             shooter.shoot();
 
         }

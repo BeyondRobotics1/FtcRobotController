@@ -12,9 +12,10 @@ public class Shooter {
 
     public enum ShootingLocation
     {
-        Far,
-        Medium,
-        Near
+        OUT_ZONE,
+        FAR,
+        MEDIUM,
+        NEAR
     }
 
     ShootingLocation shooterPosition;
@@ -33,9 +34,10 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedFar = 0.58; //0.58
-    double targetSpeedMedium = 0.48; //0.485
-    double targetSpeedClose = 0.39;//0.423
+    double targetSpeedOutZone = 0.52; //0.58
+    double targetSpeedFar = 0.445; //0.485
+    double targetSpeedMedium = 0.42; //0.485
+    double targetSpeedNear = 0.391;//0.386
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -60,7 +62,7 @@ public class Shooter {
 
         controller = new PIDController(kP, kI, kD);
 
-        shooterPosition = ShootingLocation.Medium;
+        shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
         targetSpeed = targetSpeedMedium;
@@ -70,10 +72,12 @@ public class Shooter {
     //all the time
     public void shoot()
     {
-        if(shooterPosition == ShootingLocation.Near)
-            targetSpeed = targetSpeedClose;
-        else if (shooterPosition == ShootingLocation.Far)
+        if(shooterPosition == ShootingLocation.NEAR)
+            targetSpeed = targetSpeedNear;
+        else if (shooterPosition == ShootingLocation.FAR)
             targetSpeed = targetSpeedFar;
+        else if (shooterPosition == ShootingLocation.OUT_ZONE)
+            targetSpeed = targetSpeedOutZone;
         else
             targetSpeed = targetSpeedMedium;
 
@@ -86,6 +90,8 @@ public class Shooter {
 
         //motor could give us negative velocity
         double velocity = Math.abs(rightFlywheel.getVelocity());
+        if(velocity < 5)
+            return;
 
         double pid = controller.calculate(velocity, targetVelocity);
 
