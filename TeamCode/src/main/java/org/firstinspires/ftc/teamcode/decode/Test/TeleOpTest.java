@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.decode.OpMode;
+package org.firstinspires.ftc.teamcode.decode.Test;
 
 import android.graphics.Color;
 
@@ -8,30 +8,24 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
+import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOp;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 
 import java.util.List;
 
-@TeleOp(name = "Decode TeleOp", group = "A")
-
-public class DecodeTeleOp extends LinearOpMode {
-
-    public enum ShootAutoCompleteMode
-    {
-        START,
-        //SHOOT, //shoot the balls
-        //STOP,
-        COMPLETED,
-        //NOP //no op
-    }
+@TeleOp(name = "Decode TeleOp Test", group = "Decode Test")
+public class TeleOpTest extends LinearOpMode {
 
     //hardware
     private Shooter shooter;
@@ -64,7 +58,7 @@ public class DecodeTeleOp extends LinearOpMode {
 
     Pose2D robotPose;
 
-    ShootAutoCompleteMode shootAutoCompleteMode;
+    DecodeTeleOp.ShootAutoCompleteMode shootAutoCompleteMode;
 
 
     //field centric driving by default
@@ -97,7 +91,7 @@ public class DecodeTeleOp extends LinearOpMode {
         actionTimer = new Timer();
         gameTimer = new Timer();
 
-        shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
+        shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.COMPLETED;
 
         telemetry.addLine("hardware initialization completed");
 
@@ -141,29 +135,36 @@ public class DecodeTeleOp extends LinearOpMode {
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
-            if(robotPose == null)
-                robotPose = DecodeBlackBoard.robotAutoEndPose();
-
-            if(isBlueTeleOp)
-                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
-            else
-                telemetry.addLine("TeleOP Selected: RED RED RED");
-
-            telemetry.addLine("");
-            telemetry.addLine("WARNING WARNING: Select the right TelelOp!!!");
-            telemetry.addLine("Gamepad1.A: TeleOp RED");
-            telemetry.addLine("Gamepad1.B: TeleOp BLUE");
-//            telemetry.addLine("-----------------------");
-//            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
-//            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-//            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
-
             if(gamepad1.a) {
                 isBlueTeleOp = false;
+
+
             }
             else if (gamepad1.b) {
                 isBlueTeleOp = true;
             }
+
+            if(isBlueTeleOp) {
+                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
+
+                if(robotPose == null)
+                    robotPose = DecodeBlackBoard.BLUE_RESET_POSE;
+            }
+            else {
+                telemetry.addLine("TeleOP Selected: RED RED RED");
+
+                if (robotPose == null)
+                    robotPose = DecodeBlackBoard.RED_RESET_POSE;
+            }
+
+            telemetry.addLine("");
+            telemetry.addLine("WARNING: Select the right TelelOp!!!");
+            telemetry.addLine("Gamepad1.A: TeleOp RED");
+            telemetry.addLine("Gamepad1.B: TeleOp BLUE");
+            telemetry.addLine("-----------------------");
+            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
             telemetry.update();
         }
@@ -173,7 +174,7 @@ public class DecodeTeleOp extends LinearOpMode {
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
-                    robotPose,
+                    DecodeBlackBoard.BLUE_RESET_POSE,
                     DecodeBlackBoard.BLUE_TARGET_POSE,
                     alliance,
                     true,
@@ -182,7 +183,7 @@ public class DecodeTeleOp extends LinearOpMode {
         else {
             alliance = DecodeBlackBoard.RED;
             turret = new Turret(hardwareMap, this,
-                    robotPose,
+                    DecodeBlackBoard.RED_RESET_POSE,
                     DecodeBlackBoard.RED_TARGET_POSE,
                     alliance,
                     true,
@@ -213,12 +214,12 @@ public class DecodeTeleOp extends LinearOpMode {
 
             hubs.forEach(LynxModule::clearBulkCache);
 
-            if(isBlueTeleOp)
-                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
-            else
-                telemetry.addLine("TeleOP Selected: RED RED RED");
-
-            telemetry.addLine("");
+//            if(isBlueTeleOp)
+//                telemetry.addLine("TeleOp Selected: BLUE");
+//            else
+//                telemetry.addLine("TeleOP Selected: RED");
+//
+//            telemetry.addLine("");
 
             //operate the intake
             intakeOp();
@@ -230,14 +231,14 @@ public class DecodeTeleOp extends LinearOpMode {
             shootOp();
 
 
-            ////DPAD UP to toggle field centric or robot centric driving
-            //if(gamepad1.dpadUpWasPressed())
-            //    fieldCentric = !fieldCentric;
+            ////DPAD LEFT to toggle field centric or robot centric driving
+            if(gamepad1.dpadLeftWasPressed())
+                fieldCentric = !fieldCentric;
 
-            //if(fieldCentric)
-            //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
-            //            Math.toRadians(180+turret.getBotHeadingDegrees()));
-            //else
+            if(fieldCentric)
+                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
+                        Math.toRadians(180+turret.getBotHeadingDegrees()));
+            else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             telemetry.update();
@@ -259,7 +260,7 @@ public class DecodeTeleOp extends LinearOpMode {
             if (isIntakeOn) { //intake mode
 
                 //shooting is done, intake now
-                if(shootAutoCompleteMode == ShootAutoCompleteMode.COMPLETED) {
+                if(shootAutoCompleteMode == DecodeTeleOp.ShootAutoCompleteMode.COMPLETED) {
                     //To save battery
                     //
                     //If there are three balls already, stop the intake
@@ -287,11 +288,11 @@ public class DecodeTeleOp extends LinearOpMode {
 
         //LEFT BUMPER to start the shooting
         if (gamepad1.leftBumperWasPressed()) {
-            shootAutoCompleteMode = ShootAutoCompleteMode.START;
+            shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.START;
             trigger.open();
         }
         else if (gamepad1.leftBumperWasReleased()) {
-            shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
+            shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.COMPLETED;
             trigger.close();
         }
 

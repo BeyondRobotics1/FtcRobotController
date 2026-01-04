@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.List;
 
-@Config
+//@Config
 @TeleOp(name = "Concept: Turret Tuner April Tag", group = "Concept")
 public class TurretTunerAprilTag extends LinearOpMode {
 

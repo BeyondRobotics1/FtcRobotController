@@ -13,8 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
@@ -32,7 +31,7 @@ public class BlueNearAuto extends LinearOpMode {
     private Intake intake;
     //private DriveTrain driveTrain;
     private Trigger trigger;
-    private IMUTurret turret;
+    private Turret turret;
     private Indexer indexer;
 
     //status
@@ -91,15 +90,15 @@ public class BlueNearAuto extends LinearOpMode {
         intake = new Intake(hardwareMap, this);
 
         telemetry.addLine("Initializing trigger");
-        trigger = new Trigger(hardwareMap, this);
+        trigger = new Trigger(hardwareMap);
         trigger.close();
 
-        turret = new IMUTurret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
+        turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
                 false,
-                true);
+                true, true);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -164,7 +163,7 @@ public class BlueNearAuto extends LinearOpMode {
             case 2:
                 if (pathTimer.getElapsedTime() > 300) {//should be 250
                     pathTimer.resetTimer();
-                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                     setPathState(3);
                 }
@@ -209,7 +208,7 @@ public class BlueNearAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 650) {
                     //move from open gate position to score position
                     follower.followPath(openGateScore, true);
-                    intake.intake(0);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
                 }
                 break;
@@ -223,7 +222,7 @@ public class BlueNearAuto extends LinearOpMode {
             case 14:
                 if (pathTimer.getElapsedTime() > 300) {//should be 250, 1000 is for camera
                     pathTimer.resetTimer();
-                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
                     setPathState(15);
                 }
                 break;
@@ -274,7 +273,7 @@ public class BlueNearAuto extends LinearOpMode {
             case 24:
                 if (pathTimer.getElapsedTime() > 300) {//should be 250, 1000 is for camera
                     pathTimer.resetTimer();
-                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                     setPathState(25);
                 }
@@ -304,7 +303,7 @@ public class BlueNearAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 2000) { //grab 3 balls
                     //move to score position
                     follower.followPath(grab3Score, true);
-                    intake.intake(0);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(33);
                 }
                 break;
@@ -318,7 +317,7 @@ public class BlueNearAuto extends LinearOpMode {
             case 34:
                 if (pathTimer.getElapsedTime() > 300) {//should be 250, 1000 is for camera
                     pathTimer.resetTimer();
-                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                     setPathState(35);
                 }
@@ -338,7 +337,7 @@ public class BlueNearAuto extends LinearOpMode {
             case 40:
                 follower.followPath(scorePark, true); //grabPickup1
                 trigger.close();
-                intake.intake(0);//stop the intake
+                intake.setIntakeMode(Intake.IntakeMode.IDLE);//stop the intake
                 setPathState(100);
                 break;
             case 100: //end of auto

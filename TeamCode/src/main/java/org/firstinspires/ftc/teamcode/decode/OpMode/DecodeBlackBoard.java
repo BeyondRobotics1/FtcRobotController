@@ -15,8 +15,6 @@ public class DecodeBlackBoard {
     public static final Pose2D BLUE_RESET_POSE = new Pose2D(DistanceUnit.INCH, 134, 30, AngleUnit.DEGREES, 180);
 
 
-    //10, 134
-    //10, 10
     public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 139, AngleUnit.DEGREES, 0);
     public static final Pose2D RED_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 5, AngleUnit.DEGREES, 0);
 
@@ -28,12 +26,38 @@ public class DecodeBlackBoard {
     public static final String Y = "Y";
     public static final String HEADING = "Heading";
 
+    public static final String Obelisk = "Obelisk";
+
 //    LinearOpMode mode;
 //    public DecodeBlackBoard(LinearOpMode mode)
 //    {
 //        this.mode = mode;
 //    }
 
+    public static void saveObelisk(int obelisk)
+    {
+        if(obelisk < 21 || obelisk > 23)
+            LinearOpMode.blackboard.put(Obelisk, 21);
+        else
+            LinearOpMode.blackboard.put(Obelisk, obelisk);
+    }
+
+    public static int getObelisk()
+    {
+        int result = 21;
+
+        Object ob = LinearOpMode.blackboard.getOrDefault(Obelisk, 21);
+
+        try {
+            if(ob != null)
+                result = (int) ob;
+        }
+        catch(Exception ignored)
+        {
+        }
+
+        return result;
+    }
 
     public static void saveDefaultAutoEndPose(Pose2D defaultPos)
     {

@@ -13,7 +13,7 @@ public class TriggerTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Trigger trigger = new Trigger(hardwareMap, this);
+        Trigger trigger = new Trigger(hardwareMap);
 
         waitForStart();
 

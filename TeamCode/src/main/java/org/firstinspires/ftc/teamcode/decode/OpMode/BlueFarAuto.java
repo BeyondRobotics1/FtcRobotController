@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
@@ -31,7 +31,7 @@ public class BlueFarAuto extends LinearOpMode {
     private Intake intake;
     //private DriveTrain driveTrain;
     private Trigger trigger;
-    private IMUTurret turret;
+    private Turret turret;
     private Indexer indexer;
 
     //status
@@ -78,16 +78,16 @@ public class BlueFarAuto extends LinearOpMode {
         intake = new Intake(hardwareMap, this);
 
         telemetry.addLine("Initializing trigger");
-        trigger = new Trigger(hardwareMap, this);
+        trigger = new Trigger(hardwareMap);
         trigger.close();
 
-        turret = new IMUTurret(hardwareMap, this,
+        turret = new Turret(hardwareMap, this,
                 new Pose2D(DistanceUnit.INCH,
                         startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
                 false,
-                true);
+                true, true);
         turret.setOutZoneAutoServoPosition(DecodeBlackBoard.BLUE);
 
         telemetry.addLine("hardware initialization completed");
@@ -156,7 +156,7 @@ public class BlueFarAuto extends LinearOpMode {
             case 2:
                 if (pathTimer.getElapsedTime() > 2500) {//should be 250, 1000 is for camera
                     pathTimer.resetTimer();
-                    intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                     setPathState(3);
                 }
@@ -166,7 +166,7 @@ public class BlueFarAuto extends LinearOpMode {
 
                     follower.followPath(scorePark, true); //grabPickup1
                     trigger.close();
-                    intake.intake(0);//stop the intake
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);//stop the intake
                     setPathState(100);
                 }
                 break;

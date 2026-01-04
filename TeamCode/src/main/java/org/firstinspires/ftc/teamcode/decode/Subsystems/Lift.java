@@ -1,0 +1,81 @@
+package org.firstinspires.ftc.teamcode.decode.Subsystems;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+//Lify subsystem
+public class Lift {
+
+    //hardware
+    Clutch clutch;
+    SlideHolder holder;
+
+    DcMotorEx motorFrontLeft;
+    DcMotorEx motorFrontRight;
+
+    //
+    public Lift(HardwareMap hardwareMap)
+    {
+        clutch = new Clutch(hardwareMap);
+        holder = new SlideHolder(hardwareMap);
+
+        motorFrontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
+        motorFrontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
+
+        //Reverse motors
+        //motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //
+        clutch.disengage();
+        holder.hold();
+    }
+
+    //engage clutch or not
+    public void engageClutch(boolean tf)
+    {
+        if(tf)
+            clutch.engage();
+        else
+            clutch.disengage();
+    }
+
+    public void releaseHolder(boolean tf)
+    {
+        if(tf)
+            holder.release();
+        else
+            holder.hold();
+    }
+
+    public void liftUp(double power)
+    {
+        motorFrontLeft.setPower(power);
+        motorFrontRight.setPower(power);
+    }
+
+    public double getLeftClutchServoPosition()
+    {
+        return clutch.getLeftClutchServoPosition();
+    }
+
+    public double getRightClutchServoPosition()
+    {
+        return clutch.getRightClutchServoPosition();
+    }
+
+    public double getLeftSlideServoPosition()
+    {
+        return holder.getLeftSlideServoPosition();
+    }
+
+    public double getRightSlideServoPosition()
+    {
+        return holder.getRightSlideServoPosition();
+    }
+}

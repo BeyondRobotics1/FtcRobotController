@@ -81,8 +81,12 @@ public class Shooter {
         else
             targetSpeed = targetSpeedMedium;
 
+
+        //far zone use different kI
         if(targetSpeed > 0.5)
             kI = 0.3;
+        else
+            kI = 0.25;
 
         controller.setPID(kP, kI, kD);
 
@@ -99,9 +103,15 @@ public class Shooter {
 
         double power = pid + ff;
 
+//        //cap the power, set to the default speed
+//        if(power > 0.7) {
+//
+//            power = ff;
+//        }
+
         setPower(power);
 
-        if(Math.abs(velocity - targetVelocity) <= 100)
+        if(Math.abs(Math.abs(velocity) - targetVelocity) <= 100)
             isFlyWheelReady = true;
         else
             isFlyWheelReady = false;

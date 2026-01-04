@@ -1,30 +1,18 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
-import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.Path;
-import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOp;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.IMUTurret;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
@@ -46,7 +34,7 @@ public class ShooterTest extends LinearOpMode {
         private Intake intake;
         private DriveTrain driveTrain;
         private Trigger trigger;
-        private IMUTurret turret;
+        private Turret turret;
         private Indexer indexer;
 
         Gamepad.RumbleEffect nearRumbleEffect;    // Use to build a custom rumble sequence
@@ -79,7 +67,7 @@ public class ShooterTest extends LinearOpMode {
             intake = new Intake(hardwareMap, this);
 
             telemetry.addLine("Initializing trigger");
-            trigger = new Trigger(hardwareMap, this);
+            trigger = new Trigger(hardwareMap);
             trigger.close();
 
             telemetry.addLine("hardware initialization completed");
@@ -128,20 +116,20 @@ public class ShooterTest extends LinearOpMode {
             int alliance;
             if (isBlueTeleOp) {
                 alliance = DecodeBlackBoard.BLUE;
-                turret = new IMUTurret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this,
                         DecodeBlackBoard.BLUE_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
                         true,
-                        true);
+                        true, false);
             } else {
                 alliance = DecodeBlackBoard.RED;
-                turret = new IMUTurret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this,
                         DecodeBlackBoard.RED_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true,
-                        true);
+                        true, false);
             }
 
 
@@ -198,7 +186,7 @@ public class ShooterTest extends LinearOpMode {
 
             //right bumper to spit out extra ball
             if (gamepad1.right_bumper)
-                intake.SetIntakeMode(Intake.IntakeMode.OUT);
+                intake.setIntakeMode(Intake.IntakeMode.OUT);
             else {
                 if (isIntakeOn) { //intake mode
                     intake.intake(0.9);
@@ -225,7 +213,7 @@ public class ShooterTest extends LinearOpMode {
                     case SHOOT:
                         if (actionTimer.getElapsedTime() > 250) {
                             actionTimer.resetTimer();
-                            intake.SetIntakeMode(Intake.IntakeMode.FEED);
+                            intake.setIntakeMode(Intake.IntakeMode.FEED);
                             shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
                         }
                         break;
@@ -280,7 +268,7 @@ public class ShooterTest extends LinearOpMode {
         private void turretOp() {
             //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
             if (gamepad2.left_bumper)
-                turret.calibrateTurret();
+                turret.resetIMUPose();
 
             //use gamepad2 x button to disable or enable auto aiming
             if (gamepad2.xWasPressed()) {
@@ -288,9 +276,11 @@ public class ShooterTest extends LinearOpMode {
             }
 
             if (enableAutoAiming)
-                turret.autoAim();
-            else
+                turret.autoAim(true);
+            else {
+                turret.autoAim(false);
                 turret.resetTurretHeading();
+            }
         }
 
         private void liftOp() {
