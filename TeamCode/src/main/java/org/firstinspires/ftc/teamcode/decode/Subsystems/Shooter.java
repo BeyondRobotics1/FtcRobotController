@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
+
 public class Shooter {
 
     public enum ShootingLocation
@@ -35,9 +37,11 @@ public class Shooter {
 
 
     double targetSpeedOutZone = 0.52; //0.58
-    double targetSpeedFar = 0.445; //0.485
-    double targetSpeedMedium = 0.42; //0.485
-    double targetSpeedNear = 0.391;//0.386
+    double targetSpeedFar = 0.44; //0.445
+    double targetSpeedMedium = 0.42; //0.42
+    double targetSpeedNear = 0.394;//0.391
+
+    double blueTargetSpeedOffset = 0.05;
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -48,7 +52,7 @@ public class Shooter {
     public static double targetVelocity;
     public static double targetSpeed;
 
-    public Shooter(HardwareMap hardwareMap, LinearOpMode linearOpMode)
+    public Shooter(HardwareMap hardwareMap, LinearOpMode linearOpMode, int alliance)
     {
         this.mode = linearOpMode;
 
@@ -65,14 +69,21 @@ public class Shooter {
         shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
+        if( alliance == DecodeBlackBoard.BLUE)
+        {
+            targetSpeedOutZone = 0.53; //0.52
+            targetSpeedFar = 0.447; //0.44
+            targetSpeedMedium = 0.426; //0.42
+            targetSpeedNear = 0.395;//0.391
+        }
+
         targetSpeed = targetSpeedMedium;
     }
 
     //this method should be called in the loop
     //all the time
-    public void shoot()
-    {
-        if(shooterPosition == ShootingLocation.NEAR)
+    public void shoot() {
+        if (shooterPosition == ShootingLocation.NEAR)
             targetSpeed = targetSpeedNear;
         else if (shooterPosition == ShootingLocation.FAR)
             targetSpeed = targetSpeedFar;
@@ -83,7 +94,7 @@ public class Shooter {
 
 
         //far zone use different kI
-        if(targetSpeed > 0.5)
+        if (targetSpeed > 0.5)
             kI = 0.3;
         else
             kI = 0.25;
@@ -94,7 +105,7 @@ public class Shooter {
 
         //motor could give us negative velocity
         double velocity = Math.abs(rightFlywheel.getVelocity());
-        if(velocity < 5)
+        if (velocity < 5)
             return;
 
         double pid = controller.calculate(velocity, targetVelocity);
@@ -103,11 +114,22 @@ public class Shooter {
 
         double power = pid + ff;
 
-//        //cap the power, set to the default speed
-//        if(power > 0.7) {
-//
-//            power = ff;
-//        }
+
+//        mode.telemetry.addLine("Shooter Status ----------");
+//        mode.telemetry.addData("Target Velocity", targetVelocity);
+//        mode.telemetry.addData("Flywheel Velocity", velocity);
+//        mode.telemetry.addData("Flywheel PID", pid);
+//        mode.telemetry.addData("Flywheel FF", ff);
+//        mode.telemetry.addData("PID Power", power);
+
+        //calculated power could be negative
+        //We can't use the negative power which cause motor damage
+        if (power < 0) {
+            //mode.telemetry.addData("Negative PID Power", power);
+            power = 0.0;
+        }
+
+        //mode.telemetry.addData("Power Applied", power);
 
         setPower(power);
 
@@ -115,16 +137,6 @@ public class Shooter {
             isFlyWheelReady = true;
         else
             isFlyWheelReady = false;
-
-//        mode.telemetry.addLine("Shooter Status");
-//        mode.telemetry.addData("Flywheel Velocity", velocity);
-//        mode.telemetry.addData("Target Velocity", targetVelocity);
-//
-//        mode.telemetry.addData("Flywheel PID", pid);
-//        mode.telemetry.addData("Flywheel FF", ff);
-//        mode.telemetry.addData("Flywheel Motor Power", power);
-
-        //flyWheel.set(targetSpeedFar);
     }
 
     public void setShootingLocation(ShootingLocation position)
@@ -140,7 +152,7 @@ public class Shooter {
     //shoot power is negative
     public void setPower(double power)
     {
-        double localPower = - Math.abs(power);
+        double localPower = -power;//-Math.abs(power);
         leftFlywheel.setPower(localPower);
         rightFlywheel.setPower(localPower);
     }

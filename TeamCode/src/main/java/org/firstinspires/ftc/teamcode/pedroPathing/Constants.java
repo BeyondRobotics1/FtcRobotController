@@ -56,8 +56,9 @@ public class Constants {
             .drivePIDFSwitch(15)
             .centripetalScaling(0.0005);
 
+    //maxPower 0.95
     public static MecanumConstants driveConstants = new MecanumConstants()
-            .maxPower(0.9)
+            .maxPower(0.998)
             .leftFrontMotorName("leftFront")
             .leftRearMotorName("leftBack")
             .rightFrontMotorName("rightFront")

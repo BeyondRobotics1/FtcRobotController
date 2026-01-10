@@ -25,12 +25,12 @@ public class IMULocalizer {
 
     //know locations
     //red near zone
-    public static final double RED_X1 = 24;
-    public static final double RED_Y1 = 30;
-    public static final double RED_X2 = 78;
+    public static final double RED_X1 = 25;//24
+    public static final double RED_Y1 = 35; //30
+    public static final double RED_X2 = 80;
     public static final double RED_Y2 = 90;
-    public static final double RED_X3 = 128;
-    public static final double RED_Y3 = 32;
+    public static final double RED_X3 = 131;//128
+    public static final double RED_Y3 = 32; //32
     //red out zone
     public static final double RED_X4 = 56;
     public static final double RED_Y4 = 110;
@@ -46,7 +46,7 @@ public class IMULocalizer {
     public static final double BLUE_Y3 = 114;
     //red out zone
     public static final double BLUE_X4 = 54;
-    public static final double BLUE_Y4 = 30;
+    public static final double BLUE_Y4 = 36; //30
     public static final double BLUE_X5 = 88;
     public static final double BLUE_Y5 = 30;
 
@@ -255,7 +255,7 @@ public class IMULocalizer {
                 //check line 1 (x1, y1) - (x2, y2)
                 double yint1 = (RED_Y1 * (RED_X2 - x) + RED_Y2 * (x - RED_X1)) / (RED_X2 - RED_X1);
 
-                mode.telemetry.addData("yint1:", yint1);
+                //mode.telemetry.addData("yint1:", yint1);
 
                 if(y <= yint1)
                     inZone = true;
@@ -265,7 +265,7 @@ public class IMULocalizer {
                 //check line 2 (x2, y2) - (x3, y3)
                 double yint2 = (RED_Y2 * (RED_X3 - x) + RED_Y3 * (x - RED_X2)) / (RED_X3 - RED_X2);
 
-                mode.telemetry.addData("yint2:", yint2);
+                //mode.telemetry.addData("yint2:", yint2);
 
                 if (y <= yint2)
                     inZone = true;

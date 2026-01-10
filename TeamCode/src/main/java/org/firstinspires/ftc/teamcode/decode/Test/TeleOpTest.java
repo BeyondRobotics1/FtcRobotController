@@ -75,8 +75,6 @@ public class TeleOpTest extends LinearOpMode {
         telemetry.update();
         indexer = new Indexer(hardwareMap, this);
 
-        telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -179,6 +177,9 @@ public class TeleOpTest extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
+
+            telemetry.addLine("Initializing shooter");
+            shooter = new Shooter(hardwareMap, this, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
@@ -188,6 +189,9 @@ public class TeleOpTest extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
+
+            telemetry.addLine("Initializing shooter");
+            shooter = new Shooter(hardwareMap, this, alliance);
         }
 
         telemetry.addData("Turret initialized, camera is running:",
@@ -202,7 +206,7 @@ public class TeleOpTest extends LinearOpMode {
         shooter.setPower(0.4);
         sleep(1200);
 
-        Boolean isInitialPinpointPositionSet = false;
+        boolean isInitialPinpointPositionSet = false;
 
         while(!isStopRequested() && opModeIsActive())
         {

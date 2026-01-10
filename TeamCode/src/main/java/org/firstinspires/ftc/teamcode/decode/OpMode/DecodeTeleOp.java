@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
@@ -81,9 +83,6 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.update();
         indexer = new Indexer(hardwareMap, this);
 
-        telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this);
-
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
 
@@ -153,10 +152,10 @@ public class DecodeTeleOp extends LinearOpMode {
             telemetry.addLine("WARNING WARNING: Select the right TelelOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp RED");
             telemetry.addLine("Gamepad1.B: TeleOp BLUE");
-//            telemetry.addLine("-----------------------");
-//            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
-//            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-//            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+            telemetry.addLine("-----------------------");
+            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
             if(gamepad1.a) {
                 isBlueTeleOp = false;
@@ -178,6 +177,9 @@ public class DecodeTeleOp extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
+
+            telemetry.addLine("Initializing shooter");
+            shooter = new Shooter(hardwareMap, this, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
@@ -187,6 +189,9 @@ public class DecodeTeleOp extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
+
+            telemetry.addLine("Initializing shooter");
+            shooter = new Shooter(hardwareMap, this, alliance);
         }
 
         telemetry.addData("Turret initialized, camera is running:",
@@ -199,9 +204,9 @@ public class DecodeTeleOp extends LinearOpMode {
         //let the flywheel spin for 500ms so
         //the PID controller won't draw too much batteries
         shooter.setPower(0.4);
-        sleep(1200);
+        sleep(1000);
 
-        Boolean isInitialPinpointPositionSet = false;
+        boolean isInitialPinpointPositionSet = false;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -276,7 +281,7 @@ public class DecodeTeleOp extends LinearOpMode {
                             artifactColors[1] != Color.WHITE)
                         intake.setIntakeMode(Intake.IntakeMode.HIN);
                     else
-                        intake.intake(0.9);
+                        intake.intake(0.925);
                 }
                 else
                     intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed

@@ -37,11 +37,11 @@ public class IntakeTest extends LinearOpMode {
                         artifactColors[1] != Color.WHITE)
                     intake.setIntakeMode(Intake.IntakeMode.HIN);
                 else
-                    intake.intake(0.9);;
+                    intake.intake(0.95);;
             }
             else if(gamepad1.a)
                 //intake.setIntakeMode(Intake.IntakeMode.IN);
-                intake.intake(0.9);
+                intake.intake(0.95);
             else if(gamepad1.b)
                 intake.setIntakeMode(Intake.IntakeMode.HIN);
             else if(gamepad1.y)

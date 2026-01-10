@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
+import android.graphics.Color;
+
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -7,7 +9,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
+import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOp;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
@@ -23,10 +27,10 @@ public class ShooterTest extends LinearOpMode {
     enum ShootAutoCompleteMode
     {
         START,
-        SHOOT, //shoot the balls
-        STOP,
+        //SHOOT, //shoot the balls
+        //STOP,
         COMPLETED,
-        NOP //no op
+        //NOP //no op
     }
 
         //hardware
@@ -51,6 +55,10 @@ public class ShooterTest extends LinearOpMode {
         private int shootingLocation; //1 slow, 2 middle, 3 fast
         private boolean enableAutoAiming = true;
 
+        int[] artifactColors; //0 - top, 1 - middle, 2 - bottom
+        boolean isHeadingToGoal = false;
+        IMULocalizer.RobotZone robotZone = IMULocalizer.RobotZone.NOT_IN_SHOOTING_ZONE;
+
         ShootAutoCompleteMode shootAutoCompleteMode;
 
         @Override
@@ -60,11 +68,6 @@ public class ShooterTest extends LinearOpMode {
             telemetry.update();
             indexer = new Indexer(hardwareMap, this);
 
-            telemetry.addLine("Initializing shooter");
-            shooter = new Shooter(hardwareMap, this);
-
-            telemetry.addLine("Initializing intake");
-            intake = new Intake(hardwareMap, this);
 
             telemetry.addLine("Initializing trigger");
             trigger = new Trigger(hardwareMap);
@@ -83,8 +86,10 @@ public class ShooterTest extends LinearOpMode {
 
             isIntakeOn = false;
             isShooterOn = true;
+            artifactColors = new int[3];
+            artifactColors[0] = artifactColors[1] = artifactColors[2] = Color.WHITE;
 
-            shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
+            shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
             actionTimer = new Timer();
             gameTimer = new Timer();
 
@@ -122,6 +127,10 @@ public class ShooterTest extends LinearOpMode {
                         alliance,
                         true,
                         true, false);
+
+                telemetry.addLine("Initializing shooter");
+                shooter = new Shooter(hardwareMap, this, alliance);
+
             } else {
                 alliance = DecodeBlackBoard.RED;
                 turret = new Turret(hardwareMap, this,
@@ -130,6 +139,8 @@ public class ShooterTest extends LinearOpMode {
                         alliance,
                         true,
                         true, false);
+                telemetry.addLine("Initializing shooter");
+                shooter = new Shooter(hardwareMap, this, alliance);
             }
 
 
@@ -180,61 +191,61 @@ public class ShooterTest extends LinearOpMode {
         }
 
         private void intakeOp() {
-            //use left bumper button to toggle intake on/off
-            if (gamepad1.leftBumperWasPressed())
+            artifactColors = intake.detectArtifactColors();
+
+            //RIGHT BUMPER button to toggle intake on/off
+            if(gamepad1.rightBumperWasPressed())
                 isIntakeOn = !isIntakeOn;
 
-            //right bumper to spit out extra ball
-            if (gamepad1.right_bumper)
+            //RIGHT TRIGGER to spit out extra ball
+            if (Math.abs(gamepad1.right_trigger) > 0.5)
                 intake.setIntakeMode(Intake.IntakeMode.OUT);
             else {
                 if (isIntakeOn) { //intake mode
-                    intake.intake(0.9);
-                } else
-                    intake.intake(0);
-            }
 
-            //DPAD-UP to start the shooting
-            if (gamepad1.dpadUpWasPressed())
-                shootAutoCompleteMode = ShootAutoCompleteMode.START;
-            else if (gamepad1.dpadUpWasReleased()) {
-                shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
-            }
-
-            if(shootAutoCompleteMode == ShootAutoCompleteMode.START ||
-                    shootAutoCompleteMode == ShootAutoCompleteMode.COMPLETED)
-            {
-                switch (shootAutoCompleteMode) {
-                    case START:
-                        actionTimer.resetTimer();
-                        shootAutoCompleteMode = ShootAutoCompleteMode.SHOOT;
-                        trigger.open();
-                        break;
-                    case SHOOT:
-                        if (actionTimer.getElapsedTime() > 250) {
-                            actionTimer.resetTimer();
-                            intake.setIntakeMode(Intake.IntakeMode.FEED);
-                            shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
-                        }
-                        break;
-                    case STOP:
-                        if (actionTimer.getElapsedTime() > 1000) {
-                            actionTimer.resetTimer();
-                            shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
-                        }
-                        break;
-                    case COMPLETED:
-                        trigger.close();
-                        break;
+                    //shooting is done, intake now
+                    if(shootAutoCompleteMode == ShootAutoCompleteMode.COMPLETED) {
+                        //To save battery
+                        //
+                        //If there are three balls already, stop the intake
+                        //
+                        //if there're two balls already
+                        //stop the 2nd intake motor and keep the front
+                        //intake motor running only
+                        //
+                        if (artifactColors[0] != Color.WHITE &&
+                                artifactColors[1] != Color.WHITE &&
+                                artifactColors[2] != Color.WHITE)
+                            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                        else if (artifactColors[0] != Color.WHITE &&
+                                artifactColors[1] != Color.WHITE)
+                            intake.setIntakeMode(Intake.IntakeMode.HIN);
+                        else
+                            intake.intake(0.9);
+                    }
+                    else
+                        intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed
                 }
+                else
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+            }
+
+            //LEFT BUMPER to start the shooting
+            if (gamepad1.leftBumperWasPressed()) {
+                shootAutoCompleteMode = ShootAutoCompleteMode.START;
+                trigger.open();
+            }
+            else if (gamepad1.leftBumperWasReleased()) {
+                shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
+                trigger.close();
             }
         }
 
         private void shootOp() {
             //use gamepad1 X button to toggle
             //shooter motors
-            //if (gamepad1.xWasPressed())
-//isShooterOn = !isShooterOn;
+            if (gamepad1.leftBumperWasPressed())
+                isShooterOn = !isShooterOn;
 
             //gamepad1 a, shoot from close position
             //gamepad1 b, shoot from medium position
@@ -266,19 +277,22 @@ public class ShooterTest extends LinearOpMode {
         }
 
         private void turretOp() {
+            isHeadingToGoal = turret.isHeadingToGoal();
+            robotZone = turret.getRobotZone();
+
             //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
-            if (gamepad2.left_bumper)
+            if(gamepad2.left_bumper)
                 turret.resetIMUPose();
 
             //use gamepad2 x button to disable or enable auto aiming
-            if (gamepad2.xWasPressed()) {
+            if(gamepad2.xWasPressed())
                 enableAutoAiming = !enableAutoAiming;
-            }
 
-            if (enableAutoAiming)
+            if(enableAutoAiming)
                 turret.autoAim(true);
             else {
                 turret.autoAim(false);
+
                 turret.resetTurretHeading();
             }
         }

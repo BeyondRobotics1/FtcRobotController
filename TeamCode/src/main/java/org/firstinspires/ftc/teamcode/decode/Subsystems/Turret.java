@@ -300,6 +300,10 @@ public class Turret {
         double y = localizer.getY();
         double heading = localizer.getHeading();
 
+        mode.telemetry.addData("IMU Heading", "%.3f",  heading);
+        mode.telemetry.addData("IMU x", "%.3f", x);
+        mode.telemetry.addData("IMU y", "%.3f", y);
+
         isHeadingToGoal = localizer.isHeadingToGoal();
 
         if(enabled) {
@@ -355,9 +359,7 @@ public class Turret {
 
             mode.telemetry.addData("Servo position set", "%.5f", servoPosition);
 
-            mode.telemetry.addData("IMU Heading", "%.3f",  heading);
-            mode.telemetry.addData("IMU x", "%.3f", x);
-            mode.telemetry.addData("IMU y", "%.3f", y);
+
             mode.telemetry.addData("Distance to goal", "%.3f", localizer.getRobotDistanceToGoal());
             mode.telemetry.addData("Robot Zone", localizer.getRobotZone().ordinal());
 

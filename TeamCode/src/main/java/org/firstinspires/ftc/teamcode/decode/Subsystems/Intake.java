@@ -88,9 +88,9 @@ public class Intake {
         }
         else if (intakeMode == Intake.IntakeMode.OUT) {
 
-            outtake(0.5);
-            //horizontalIntake.setPower(-0.5);
-            //verticalIntake.setPower(-0.5);
+            //outtake(0.5);
+            horizontalIntake.setPower(0.5);
+            //verticalIntake.setPower(0.5);
         }
         else if (intakeMode == IntakeMode.FEED) {
             intake(1);
@@ -107,10 +107,10 @@ public class Intake {
 
     public void intake(double power)
     {
-        double localPower = Math.abs(power);
+        double localPower = -Math.abs(power);
 
-        horizontalIntake.setPower(-localPower);
-        verticalIntake.setPower(-localPower);
+        horizontalIntake.setPower(localPower);
+        verticalIntake.setPower(localPower);
 
 //        mode.telemetry.addLine()
 //                .addData("horizontal Power", "%.3f", -localPower)

@@ -70,7 +70,7 @@ public class RedFarAuto extends LinearOpMode {
         indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this);
+        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
         shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
 
         telemetry.addLine("Initializing intake");
@@ -90,7 +90,7 @@ public class RedFarAuto extends LinearOpMode {
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, parkPose.getHeading()));
+                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES,  Math.toDegrees(parkPose.getHeading())));
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
@@ -227,8 +227,9 @@ public class RedFarAuto extends LinearOpMode {
 
     void saveAutoState()
     {
+        //pedro pos is in Radian
         Pose p = follower.getPose();
         DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
-                p.getX(), p.getY(), AngleUnit.RADIANS, p.getHeading()));
+                p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
     }
 }
