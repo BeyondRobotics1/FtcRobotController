@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import java.util.List;
 
 @Config
-@TeleOp(name = "Concept: FlyWheelPIDController Tuner", group = "Concept")
+@TeleOp(name = "FlyWheelPIDController Tuner", group = "Decode Test")
 
 public class FlyWheelPIDController extends LinearOpMode {
 
@@ -87,12 +87,12 @@ public class FlyWheelPIDController extends LinearOpMode {
                 //setPower(power);
                 setPower(power);
 
-                telemetry.addData("Flywheel Velocity", velocity);
-                telemetry.addData("Target Velocity", targetVelocity);
+                telemetry.addData("Flywheel Velocity (RPM)", "%.1f",  velocity);
+                telemetry.addData("Target Velocity (RPM)", "%.1f",  targetVelocity);
 
-                telemetry.addData("PID", pid);
-                telemetry.addData("ffff", ff);
-                telemetry.addData("Motor Power", power);
+                telemetry.addData("PID", "%.5f",  pid);
+                telemetry.addData("Feedforward", "%.5f",  ff);
+                telemetry.addData("Motor Power", "%.5f",  power);
 
                 telemetry.update();
            // }
@@ -102,7 +102,7 @@ public class FlyWheelPIDController extends LinearOpMode {
     //shoot power is negative
     public void setPower(double power)
     {
-        double localPower = - Math.abs(power);
+        double localPower = -power;//-Math.abs(power);
         leftFlywheel.setPower(localPower);
         rightFlywheel.setPower(localPower);
     }

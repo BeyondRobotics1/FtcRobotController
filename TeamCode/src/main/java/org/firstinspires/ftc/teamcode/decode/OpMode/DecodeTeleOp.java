@@ -44,10 +44,8 @@ public class DecodeTeleOp extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
-    Gamepad.RumbleEffect nearRumbleEffect;    // Use to build a custom rumble sequence
-    Gamepad.RumbleEffect mediumRumbleEffect;
-    Gamepad.RumbleEffect farRumbleEffect;
-    Gamepad.RumbleEffect outZoneRumbleEffect;
+    Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
+    Gamepad.RumbleEffect strongRumbleEffect;
 
     //status
     private Timer actionTimer;
@@ -72,6 +70,7 @@ public class DecodeTeleOp extends LinearOpMode {
     //field centric driving by default
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
+    int rumbleReady = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -109,27 +108,13 @@ public class DecodeTeleOp extends LinearOpMode {
         }
         telemetry.addLine("LynxModule initialized");
 
-
-        nearRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.1, 0.1, 200)  //
+        softRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.1, 0.1, 100)  //
                 .build();
-
-        mediumRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.2, 0.2, 200)  //
-                .addStep(1, 1, 500)
-                .addStep(0.2, 0.2, 200)
-                .build();
-        farRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.3, 0.3, 200)  //
+        strongRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.5, 0.5, 100)  //
                 .addStep(1, 1, 200)
-                .addStep(0.3, 0.3, 200)
-                .build();
-        outZoneRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.4, 0.4, 200)  //
-                .addStep(1, 1, 200)
-                .addStep(0.4, 0.4, 200)
-                .addStep(1, 1, 200)
-                .addStep(0.4, 0.4, 200)
+                .addStep(0.5, 0.5, 100)
                 .build();
 
         isIntakeOn = false;
@@ -166,6 +151,9 @@ public class DecodeTeleOp extends LinearOpMode {
 
             telemetry.update();
         }
+
+        gameTimer.resetTimer();
+        int rumbleEndgame = 0;
 
 
         int alliance;
@@ -245,6 +233,12 @@ public class DecodeTeleOp extends LinearOpMode {
             //else
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
+            if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
+                rumbleEndgame = 1;
+                gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad2.runRumbleEffect(strongRumbleEffect);
+            }
+
             telemetry.update();
         }
     }
@@ -275,8 +269,19 @@ public class DecodeTeleOp extends LinearOpMode {
                     //
                     if (artifactColors[0] != Color.WHITE &&
                             artifactColors[1] != Color.WHITE &&
-                            artifactColors[2] != Color.WHITE)
+                            artifactColors[2] != Color.WHITE) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
+                        if((rumbleReady % 10) == 0) {
+                            gamepad1.runRumbleEffect(softRumbleEffect);
+                            gamepad2.runRumbleEffect(softRumbleEffect);
+                        }
+
+                        rumbleReady++;
+
+                        if(rumbleReady >= 100000)
+                            rumbleReady = 0;
+                    }
                     else if (artifactColors[0] != Color.WHITE &&
                             artifactColors[1] != Color.WHITE)
                         intake.setIntakeMode(Intake.IntakeMode.HIN);
@@ -388,16 +393,13 @@ public class DecodeTeleOp extends LinearOpMode {
             //gamepad1 x, shoot from OUT_ZONE position
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-                gamepad1.runRumbleEffect(nearRumbleEffect);
+
             } else if (gamepad1.xWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-                gamepad1.runRumbleEffect(outZoneRumbleEffect);
             } else if (gamepad1.yWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-                gamepad1.runRumbleEffect(farRumbleEffect);
             } else if (gamepad1.bWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-                gamepad1.runRumbleEffect(mediumRumbleEffect);
             }
         }
 

@@ -46,9 +46,9 @@ public class IMULocalizer {
     public static final double BLUE_Y3 = 114;
     //red out zone
     public static final double BLUE_X4 = 54;
-    public static final double BLUE_Y4 = 36; //30
+    public static final double BLUE_Y4 = 39; //36
     public static final double BLUE_X5 = 88;
-    public static final double BLUE_Y5 = 30;
+    public static final double BLUE_Y5 = 39;
 
     public static final double RED_FAR_ZONE_DISTANCE = 86;
     public static final double RED_MEDIUM_ZONE_DISTANCE = 70;
