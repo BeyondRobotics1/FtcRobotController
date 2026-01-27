@@ -27,6 +27,24 @@ import java.util.List;
 @TeleOp(name = "Decode TeleOp Test", group = "Decode Test")
 public class TeleOpTest extends LinearOpMode {
 
+
+    public enum ShootAutoCompleteMode
+    {
+        START,
+        //SHOOT, //shoot the balls
+        //STOP,
+        COMPLETED,
+        //NOP //no op
+    }
+
+    public enum LiftMode
+    {
+        NONE,
+        START,
+        PTO_ENGAGED,
+        COMPLETED
+    }
+
     //hardware
     private Shooter shooter;
     private Intake intake;
@@ -36,10 +54,8 @@ public class TeleOpTest extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
-    Gamepad.RumbleEffect nearRumbleEffect;    // Use to build a custom rumble sequence
-    Gamepad.RumbleEffect mediumRumbleEffect;
-    Gamepad.RumbleEffect farRumbleEffect;
-    Gamepad.RumbleEffect outZoneRumbleEffect;
+    Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
+    Gamepad.RumbleEffect strongRumbleEffect;
 
     //status
     private Timer actionTimer;
@@ -59,11 +75,12 @@ public class TeleOpTest extends LinearOpMode {
     Pose2D robotPose;
 
     DecodeTeleOp.ShootAutoCompleteMode shootAutoCompleteMode;
-
+    DecodeTeleOp.LiftMode liftMode;
 
     //field centric driving by default
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
+    int rumbleReady = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -74,7 +91,6 @@ public class TeleOpTest extends LinearOpMode {
         telemetry.addLine("Initializing indexer");
         telemetry.update();
         indexer = new Indexer(hardwareMap, this);
-
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -90,6 +106,7 @@ public class TeleOpTest extends LinearOpMode {
         gameTimer = new Timer();
 
         shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.COMPLETED;
+        liftMode = DecodeTeleOp.LiftMode.NONE;
 
         telemetry.addLine("hardware initialization completed");
 
@@ -102,27 +119,13 @@ public class TeleOpTest extends LinearOpMode {
         }
         telemetry.addLine("LynxModule initialized");
 
-
-        nearRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.1, 0.1, 200)  //
+        softRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.1, 0.1, 100)  //
                 .build();
-
-        mediumRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.2, 0.2, 200)  //
-                .addStep(1, 1, 500)
-                .addStep(0.2, 0.2, 200)
-                .build();
-        farRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.3, 0.3, 200)  //
+        strongRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.5, 0.5, 100)  //
                 .addStep(1, 1, 200)
-                .addStep(0.3, 0.3, 200)
-                .build();
-        outZoneRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.4, 0.4, 200)  //
-                .addStep(1, 1, 200)
-                .addStep(0.4, 0.4, 200)
-                .addStep(1, 1, 200)
-                .addStep(0.4, 0.4, 200)
+                .addStep(0.5, 0.5, 100)
                 .build();
 
         isIntakeOn = false;
@@ -167,6 +170,8 @@ public class TeleOpTest extends LinearOpMode {
             telemetry.update();
         }
 
+        gameTimer.resetTimer();
+        int rumbleEndgame = 0;
 
         int alliance;
         if(isBlueTeleOp) {
@@ -204,7 +209,7 @@ public class TeleOpTest extends LinearOpMode {
         //let the flywheel spin for 500ms so
         //the PID controller won't draw too much batteries
         shooter.setPower(0.4);
-        sleep(1200);
+        sleep(1000);
 
         boolean isInitialPinpointPositionSet = false;
 
@@ -218,12 +223,12 @@ public class TeleOpTest extends LinearOpMode {
 
             hubs.forEach(LynxModule::clearBulkCache);
 
-//            if(isBlueTeleOp)
-//                telemetry.addLine("TeleOp Selected: BLUE");
-//            else
-//                telemetry.addLine("TeleOP Selected: RED");
-//
-//            telemetry.addLine("");
+            if(isBlueTeleOp)
+                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
+            else
+                telemetry.addLine("TeleOP Selected: RED RED RED");
+
+            telemetry.addLine("");
 
             //operate the intake
             intakeOp();
@@ -234,16 +239,32 @@ public class TeleOpTest extends LinearOpMode {
             //operate the shooter
             shootOp();
 
+            //operate the lift
+            liftOp();
 
-            ////DPAD LEFT to toggle field centric or robot centric driving
-            if(gamepad1.dpadLeftWasPressed())
-                fieldCentric = !fieldCentric;
+            ////DPAD UP to toggle field centric or robot centric driving
+            //if(gamepad1.dpadUpWasPressed())
+            //    fieldCentric = !fieldCentric;
 
-            if(fieldCentric)
-                driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
-                        Math.toRadians(180+turret.getBotHeadingDegrees()));
-            else
+            //if(fieldCentric)
+            //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
+            //            Math.toRadians(180+turret.getBotHeadingDegrees()));
+            //else
+            if(liftMode == DecodeTeleOp.LiftMode.NONE)
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+            if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
+                rumbleEndgame = 1;
+                gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad2.runRumbleEffect(strongRumbleEffect);
+            }
+
+
+            if (gameTimer.getElapsedTimeSeconds() >= 100 && rumbleEndgame == 1)  {
+                rumbleEndgame = 2;
+                gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad2.runRumbleEffect(strongRumbleEffect);
+            }
 
             telemetry.update();
         }
@@ -275,13 +296,24 @@ public class TeleOpTest extends LinearOpMode {
                     //
                     if (artifactColors[0] != Color.WHITE &&
                             artifactColors[1] != Color.WHITE &&
-                            artifactColors[2] != Color.WHITE)
+                            artifactColors[2] != Color.WHITE) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
+                        if((rumbleReady % 10) == 0) {
+                            gamepad1.runRumbleEffect(softRumbleEffect);
+                            gamepad2.runRumbleEffect(softRumbleEffect);
+                        }
+
+                        rumbleReady++;
+
+                        if(rumbleReady >= 100000)
+                            rumbleReady = 0;
+                    }
                     else if (artifactColors[0] != Color.WHITE &&
                             artifactColors[1] != Color.WHITE)
                         intake.setIntakeMode(Intake.IntakeMode.HIN);
                     else
-                        intake.intake(0.9);
+                        intake.intake(0.925);
                 }
                 else
                     intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed
@@ -299,35 +331,6 @@ public class TeleOpTest extends LinearOpMode {
             shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.COMPLETED;
             trigger.close();
         }
-
-//        ////auto complete shooting
-//        if(shootAutoCompleteMode == ShootAutoCompleteMode.START ||
-//            shootAutoCompleteMode == ShootAutoCompleteMode.COMPLETED)
-//        {
-//            switch (shootAutoCompleteMode) {
-//                case START:
-//                    actionTimer.resetTimer();
-//                    shootAutoCompleteMode = ShootAutoCompleteMode.SHOOT;
-//                    trigger.open();
-//                    break;
-////                case SHOOT:
-////                    if (actionTimer.getElapsedTime() > 250) {
-////                        actionTimer.resetTimer();
-////                        intake.setIntakeMode(Intake.IntakeMode.FEED);
-////                        shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
-////                    }
-////                    break;
-////                case STOP:
-////                    if (actionTimer.getElapsedTime() > 2000) {
-////                        actionTimer.resetTimer();
-////                        shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
-////                    }
-////                    break;
-//                case COMPLETED:
-//                    trigger.close();
-//                    break;
-//            }
-//        }
     }
 
     private void turretOp()
@@ -388,16 +391,13 @@ public class TeleOpTest extends LinearOpMode {
             //gamepad1 x, shoot from OUT_ZONE position
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-                gamepad1.runRumbleEffect(nearRumbleEffect);
+
             } else if (gamepad1.xWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-                gamepad1.runRumbleEffect(outZoneRumbleEffect);
             } else if (gamepad1.yWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-                gamepad1.runRumbleEffect(farRumbleEffect);
             } else if (gamepad1.bWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-                gamepad1.runRumbleEffect(mediumRumbleEffect);
             }
         }
 
@@ -409,6 +409,41 @@ public class TeleOpTest extends LinearOpMode {
 
     private void liftOp()
     {
+
+        if (gamepad2.dpadUpWasPressed()) {
+            if(liftMode == DecodeTeleOp.LiftMode.NONE ||
+                    liftMode == DecodeTeleOp.LiftMode.COMPLETED) {
+                liftMode = DecodeTeleOp.LiftMode.START;
+                actionTimer.resetTimer();
+            }
+        }
+        else if (gamepad2.dpadUpWasReleased())
+            liftMode = DecodeTeleOp.LiftMode.COMPLETED;
+
+        switch (liftMode)
+        {
+            case START:
+                isIntakeOn = false;
+                isShooterOn = false;
+                enableAutoAiming = false;
+                enableAutoShootingSpeed =false;
+
+                lift.releaseHolder(true);
+                lift.engageClutch(true);
+                liftMode = DecodeTeleOp.LiftMode.PTO_ENGAGED;
+                break;
+            case PTO_ENGAGED:
+                if(actionTimer.getElapsedTime() > 800)
+                {
+                    driveTrain.liftUp(1.0);
+                }
+                break;
+            case COMPLETED:
+                driveTrain.liftUp(0.0);
+                lift.engageClutch(false);
+                break;
+        }
+
 
     }
 }

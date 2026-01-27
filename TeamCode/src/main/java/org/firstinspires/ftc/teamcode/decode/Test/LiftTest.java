@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 
@@ -13,6 +14,7 @@ public class LiftTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        DriveTrain driveTrain = new DriveTrain(hardwareMap, this, false);
         Lift lift = new Lift(hardwareMap);
 
 
@@ -40,12 +42,15 @@ public class LiftTest extends LinearOpMode {
                 lift.releaseHolder(true);
             }
 
-            lift.liftUp(Math.abs(gamepad1.left_stick_y));
+            double power = Math.abs(gamepad1.left_stick_y);
+            driveTrain.liftUp(power);
 
             telemetry.addData("Left clutch servo position", lift.getLeftClutchServoPosition());
             telemetry.addData("Right clutch servo position", lift.getRightClutchServoPosition());
             telemetry.addData("Left slide servo position", lift.getLeftSlideServoPosition());
             telemetry.addData("Right slide servo position", lift.getRightSlideServoPosition());
+            telemetry.addData("Motor Power", power);
+
             //trigger.setPosition(pivotPosition)
 
             telemetry.update();

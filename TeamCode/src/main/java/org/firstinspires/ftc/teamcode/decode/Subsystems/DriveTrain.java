@@ -172,6 +172,21 @@ public class DriveTrain {
         motorBackRight.setPower(backRight);
     }
 
+
+    //lift it up the robot through PTO
+    public void liftUp(double power)
+    {
+
+        //front motors move forward
+        motorFrontLeft.setPower(Math.abs(power));
+        motorFrontRight.setPower(Math.abs(power));
+
+        //back motors move back to cancel out
+        //front motors's moving forward
+        motorBackLeft.setPower(-Math.abs(power));
+        motorBackRight.setPower(-Math.abs(power));
+    }
+
     public void printMotorCurrents()
     {
         double motorFrontLeftCurrent = motorFrontLeft.getCurrent(CurrentUnit.AMPS);

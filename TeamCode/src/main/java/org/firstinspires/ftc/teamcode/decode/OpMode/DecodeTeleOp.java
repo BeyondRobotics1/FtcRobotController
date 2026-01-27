@@ -35,6 +35,14 @@ public class DecodeTeleOp extends LinearOpMode {
         //NOP //no op
     }
 
+    public enum LiftMode
+    {
+        NONE,
+        START,
+        PTO_ENGAGED,
+        COMPLETED
+    }
+
     //hardware
     private Shooter shooter;
     private Intake intake;
@@ -65,7 +73,7 @@ public class DecodeTeleOp extends LinearOpMode {
     Pose2D robotPose;
 
     ShootAutoCompleteMode shootAutoCompleteMode;
-
+    LiftMode liftMode;
 
     //field centric driving by default
     //use dpad up to toggle on/off
@@ -96,6 +104,7 @@ public class DecodeTeleOp extends LinearOpMode {
         gameTimer = new Timer();
 
         shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
+        liftMode = LiftMode.NONE;
 
         telemetry.addLine("hardware initialization completed");
 
@@ -222,6 +231,8 @@ public class DecodeTeleOp extends LinearOpMode {
             //operate the shooter
             shootOp();
 
+            //operate the lift
+            liftOp();
 
             ////DPAD UP to toggle field centric or robot centric driving
             //if(gamepad1.dpadUpWasPressed())
@@ -231,10 +242,18 @@ public class DecodeTeleOp extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
+            if(liftMode == LiftMode.NONE)
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
                 rumbleEndgame = 1;
+                gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad2.runRumbleEffect(strongRumbleEffect);
+            }
+
+
+            if (gameTimer.getElapsedTimeSeconds() >= 100 && rumbleEndgame == 1)  {
+                rumbleEndgame = 2;
                 gamepad1.runRumbleEffect(strongRumbleEffect);
                 gamepad2.runRumbleEffect(strongRumbleEffect);
             }
@@ -304,35 +323,6 @@ public class DecodeTeleOp extends LinearOpMode {
             shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
             trigger.close();
         }
-
-//        ////auto complete shooting
-//        if(shootAutoCompleteMode == ShootAutoCompleteMode.START ||
-//            shootAutoCompleteMode == ShootAutoCompleteMode.COMPLETED)
-//        {
-//            switch (shootAutoCompleteMode) {
-//                case START:
-//                    actionTimer.resetTimer();
-//                    shootAutoCompleteMode = ShootAutoCompleteMode.SHOOT;
-//                    trigger.open();
-//                    break;
-////                case SHOOT:
-////                    if (actionTimer.getElapsedTime() > 250) {
-////                        actionTimer.resetTimer();
-////                        intake.setIntakeMode(Intake.IntakeMode.FEED);
-////                        shootAutoCompleteMode = ShootAutoCompleteMode.STOP;
-////                    }
-////                    break;
-////                case STOP:
-////                    if (actionTimer.getElapsedTime() > 2000) {
-////                        actionTimer.resetTimer();
-////                        shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
-////                    }
-////                    break;
-//                case COMPLETED:
-//                    trigger.close();
-//                    break;
-//            }
-//        }
     }
 
     private void turretOp()
@@ -411,6 +401,41 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void liftOp()
     {
+
+        if (gamepad2.dpadUpWasPressed()) {
+            if(liftMode == LiftMode.NONE ||
+                    liftMode == LiftMode.COMPLETED) {
+                liftMode = LiftMode.START;
+                actionTimer.resetTimer();
+            }
+        }
+        else if (gamepad2.dpadUpWasReleased())
+            liftMode = LiftMode.COMPLETED;
+
+        switch (liftMode)
+        {
+            case START:
+                isIntakeOn = false;
+                isShooterOn = false;
+                enableAutoAiming = false;
+                enableAutoShootingSpeed =false;
+
+                lift.releaseHolder(true);
+                lift.engageClutch(true);
+                liftMode = LiftMode.PTO_ENGAGED;
+                break;
+            case PTO_ENGAGED:
+               if(actionTimer.getElapsedTime() > 800)
+               {
+                   driveTrain.liftUp(1.0);
+               }
+                break;
+            case COMPLETED:
+                driveTrain.liftUp(0.0);
+                lift.engageClutch(false);
+                break;
+        }
+
 
     }
 }

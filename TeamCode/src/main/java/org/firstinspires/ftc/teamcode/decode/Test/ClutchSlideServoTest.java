@@ -36,11 +36,12 @@ public class ClutchSlideServoTest extends LinearOpMode {
                 }
                 else if (gamepad1.x) {
                     servo = hardwareMap.get(Servo.class, "slideLeft");
-                    servo.setDirection(Servo.Direction.REVERSE);
+                    //servo.setDirection(Servo.Direction.REVERSE);
                     servoName = "slideLeft";
                 }
                 else if (gamepad1.y) {
                     servo = hardwareMap.get(Servo.class, "slideRight");
+                    servo.setDirection(Servo.Direction.REVERSE);
                     servoName = "slideRight";
                 }
             }

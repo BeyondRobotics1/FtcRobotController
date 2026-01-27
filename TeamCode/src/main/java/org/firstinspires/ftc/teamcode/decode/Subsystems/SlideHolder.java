@@ -14,7 +14,8 @@ public class SlideHolder {
         leftSlidehServo = hardwareMap.get(Servo.class, "slideLeft");
         rightSlideServo = hardwareMap.get(Servo.class, "slideRight");
 
-        leftSlidehServo.setDirection(Servo.Direction.REVERSE);
+        //leftSlidehServo.setDirection(Servo.Direction.REVERSE);
+        rightSlideServo.setDirection(Servo.Direction.REVERSE);
     }
 
     //engage left and right clutches
