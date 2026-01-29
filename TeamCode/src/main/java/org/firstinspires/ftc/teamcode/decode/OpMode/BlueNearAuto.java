@@ -59,7 +59,7 @@ public class BlueNearAuto extends LinearOpMode {
     private final Pose pickup3Pose = new Pose(42, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose grab3Pose = new Pose(10, 35.5, Math.toRadians(180)); //10, 35
 
-    private final Pose pickup4Pose = new Pose(15, 26, Math.toRadians(-90)); //15, 26, -90 loading zone
+    private final Pose pickup4Pose = new Pose(15.5, 25.5, Math.toRadians(-90)); //15, 26, -90 loading zone
     //private final Pose grab4Pose = new Pose(19, 21, Math.toRadians(-90)); //12, 16, -90
 
     private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.

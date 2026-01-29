@@ -68,6 +68,8 @@ public class ShooterTest extends LinearOpMode {
             telemetry.update();
             indexer = new Indexer(hardwareMap, this);
 
+            telemetry.addLine("Initializing intake");
+            intake = new Intake(hardwareMap, this);
 
             telemetry.addLine("Initializing trigger");
             trigger = new Trigger(hardwareMap);

@@ -204,6 +204,7 @@ public class DecodeTeleOp extends LinearOpMode {
         sleep(1000);
 
         boolean isInitialPinpointPositionSet = false;
+        boolean isEndGame = false;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -232,7 +233,8 @@ public class DecodeTeleOp extends LinearOpMode {
             shootOp();
 
             //operate the lift
-            liftOp();
+            if(isEndGame)
+                liftOp();
 
             ////DPAD UP to toggle field centric or robot centric driving
             //if(gamepad1.dpadUpWasPressed())
@@ -256,6 +258,8 @@ public class DecodeTeleOp extends LinearOpMode {
                 rumbleEndgame = 2;
                 gamepad1.runRumbleEffect(strongRumbleEffect);
                 gamepad2.runRumbleEffect(strongRumbleEffect);
+
+                isEndGame = true;
             }
 
             telemetry.update();
@@ -349,12 +353,12 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void shootOp()
     {
-        //press DPAD-UP to enable auto shooting speed
-        if(gamepad1.dpadUpWasPressed())
+        //GAMEPAD 2 press DPAD-UP to enable auto shooting speed
+        if(gamepad2.dpadUpWasPressed())
             enableAutoShootingSpeed = true;
 
-        //press DPA-DOWN to disable auto shooting speed
-        if(gamepad1.dpadDownWasPressed())
+        //GAMEPAD 2 press DPAD-DOWN to disable auto shooting speed
+        if(gamepad2.dpadDownWasPressed())
             enableAutoShootingSpeed = false;
 
         //auto shooting speed is enabled
@@ -402,14 +406,14 @@ public class DecodeTeleOp extends LinearOpMode {
     private void liftOp()
     {
 
-        if (gamepad2.dpadUpWasPressed()) {
+        if (gamepad1.dpadUpWasPressed()) {
             if(liftMode == LiftMode.NONE ||
                     liftMode == LiftMode.COMPLETED) {
                 liftMode = LiftMode.START;
                 actionTimer.resetTimer();
             }
         }
-        else if (gamepad2.dpadUpWasReleased())
+        else if (gamepad1.dpadUpWasReleased())
             liftMode = LiftMode.COMPLETED;
 
         switch (liftMode)
@@ -435,7 +439,5 @@ public class DecodeTeleOp extends LinearOpMode {
                 lift.engageClutch(false);
                 break;
         }
-
-
     }
 }

@@ -45,9 +45,9 @@ public class DriveTrain {
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private double y_power_scale = 0.9; //forward/backward power adjustment
-    private double x_power_scale = 0.9; //left/right power adjustment, make it slower
-    private double rx_power_scale = 0.85;//rotation power adjustment, make it slower
+    private final double y_power_scale = 0.99; //forward/backward power adjustment
+    private final double x_power_scale = 0.99; //left/right power adjustment, make it slower
+    private final double rx_power_scale = 0.85;//rotation power adjustment, make it slower
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -56,9 +56,6 @@ public class DriveTrain {
     // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    static final double     MOVE_FORWARD_ADJUSTMENT = 0.95; //adjustment moving forward auto
-    static final double     MOVE_BACKWARD_ADJUSTMENT = 0.95; //adjustment moving backward auto
-    static final double     MOVE_LEFT_ADJUSTMENT = 1.1; //adjustment moving backward auto
 
     static final double     COUNTS_PER_MOTOR_REV    = 384.5;// 435 rmp; 537.7, 312 rmp ;    // eg: goBilda Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.

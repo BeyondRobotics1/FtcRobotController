@@ -46,24 +46,27 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose startPose = new Pose(17.25, 28.75, Math.toRadians(180)); //tart Pose of our robot.
     private final Pose scorePose = new Pose(52, 52, Math.toRadians(-135)); // 49, 47 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
-    //x 44
-    private final Pose pickup1Pose = new Pose(48.5, 58, Math.toRadians(180)); // 47.5, 58Highest (First Set) picking up start
+    //Highest (First Set)
+    private final Pose pickup1Pose = new Pose(48.5, 58, Math.toRadians(180)); // 47.5, 58 Highest (First Set) picking up start
     private final Pose grab1Pose = new Pose(18, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
     private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
-    private final Pose openGatePose = new Pose(19.35, 65.5, Math.toRadians(180)); //18, 65.5
+    private final Pose openGatePose = new Pose(19.35, 65.5, Math.toRadians(180)); //18, 65.5 //gate posistion
 
+    //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(44, 82.5, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
-    private final Pose grab2Pose = new Pose(12, 82.5, Math.toRadians(180)); // 12, 83 Middle (Second Set) picking up end.
-    private final Pose backout2Pose = new Pose(20, 82.5, Math.toRadians(180)); // 20, 83Middle (Second Set) backout.
+    private final Pose grab2Pose = new Pose(12.25, 82.5, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
+    private final Pose backout2Pose = new Pose(20, 82.5, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
 
-    private final Pose pickup3Pose = new Pose(44, 105, Math.toRadians(180)); //46, 106 Lowest (Third Set) picking up start.
-    private final Pose grab3Pose = new Pose(12, 105, Math.toRadians(180)); // Highest (First Set) picking up end.
+    //Lowest (Third Set)
+    private final Pose pickup3Pose = new Pose(44, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
+    private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
 
-    //negative? not possible, something wrong, but
-    private final Pose pickup4Pose = new Pose(24, 128, Math.toRadians(135)); //-2, 120, 90, 24, 132.5, 180 loading zone
-    private final Pose grab4Pose = new Pose(12, 132.5, Math.toRadians(180)); //-2, 136, 90 12, 132.5, 180
+    //loading zone
+    private final Pose pickup4Pose = new Pose(24, 128, Math.toRadians(135)); //24, 128, 135
+    private final Pose grab4Pose = new Pose(12.25, 132.5, Math.toRadians(180)); //12, 132.5, 180
 
-    private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    //park
+    private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGateScore;
