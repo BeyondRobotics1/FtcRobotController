@@ -12,9 +12,9 @@ public class Indexer {
     private TouchSensor magnet;
     private LinearOpMode mode;
 
-    private double startingPosition = 0.04;
-    private double enqueueOnePosition = 0.45;
-    private double enqueueTwoPosition = 0.8;
+    private double startingPosition = 0.02;
+    private double enqueueOnePosition = 0.395;
+    private double enqueueTwoPosition = 0.768;
 
     public Indexer(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
         this.mode = linearOpMode;

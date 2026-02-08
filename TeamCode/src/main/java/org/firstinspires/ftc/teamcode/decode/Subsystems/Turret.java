@@ -215,43 +215,8 @@ public class Turret {
 
                     calibrationCalculated = true;
 
-
-
-/*
-                    if(Math.abs(currentAngle) > 1) {
-                        servoPositionCalibration = -currentAngle * servoPositionMiddle / 90. + 0.006;
-
-                        //check the range, don't be too large to cause oscillation
-                        if(Math.abs(servoPositionCalibration) > servoPositionMiddle * 0.2) {
-
-                            mode.telemetry.addData("Servo calibration too large:", servoPositionCalibration);
-
-                            if(servoPositionCalibration < 0)
-                                servoPositionCalibration = -0.2 * servoPositionMiddle;
-                            else
-                                servoPositionCalibration = 0.2 * servoPositionMiddle;
-                        }
-
-                        servoPreviousPositionCalibration = servoPositionCalibration;
-
-                        calibrationCalculated = true;
-
-                        mode.telemetry.addData("Servo calibration to apply:", servoPositionCalibration);
-                    }
-                    else {
-
-                        servoPositionCalibration = 0.0;
-                        mode.telemetry.addData("Servo calibration skipped:", servoPositionCalibration);
-                    }
-
-*/
                     break;
                 }
-//                else
-//                {
-//                    mode.telemetry.addLine("Tag NOT found");
-//                    mode.telemetry.addData("Previous servo calibration:", servoPreviousPositionCalibration);
-//                }
             }
         }
 

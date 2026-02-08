@@ -71,10 +71,10 @@ public class Shooter {
 
         if( alliance == DecodeBlackBoard.BLUE)
         {
-            targetSpeedOutZone = 0.526; //0.52
-            targetSpeedFar = 0.444; //0.44
-            targetSpeedMedium = 0.425; //0.42
-            targetSpeedNear = 0.395;//0.391
+            targetSpeedOutZone = 0.522; //0.526
+            targetSpeedFar = 0.441; //0.444
+            targetSpeedMedium = 0.42; //0.425
+            targetSpeedNear = 0.395;//0.395
         }
 
         targetSpeed = targetSpeedMedium;
