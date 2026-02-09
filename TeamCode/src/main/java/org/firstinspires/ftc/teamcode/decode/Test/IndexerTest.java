@@ -25,9 +25,9 @@ public class IndexerTest extends LinearOpMode {
             //double pivotPosition = Math.abs(gamepad1.left_trigger);
 
             if(gamepad1.a)
-                indexer.queue(1);
+                indexer.index(1);
             else if (gamepad1.b)
-                indexer.queue(2);
+                indexer.index(2);
             else if (gamepad1.x)
                 indexer.reset();
             else

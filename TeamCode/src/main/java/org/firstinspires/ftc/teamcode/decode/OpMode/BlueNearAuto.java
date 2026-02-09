@@ -44,13 +44,13 @@ public class BlueNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(17.25, 112.5, Math.toRadians(180)); //17.25, 112.5, 180 //31, 131, 90, Start Pose of our robot.
-    private final Pose scorePose = new Pose(34, 96, Math.toRadians(136)); // 33, 102, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(21.5, 136.5, Math.toRadians(90)); //17.25, 112.5, 180 //31, 131, 90, Start Pose of our robot.
+    private final Pose scorePose = new Pose(40, 94, Math.toRadians(136)); // 34, 102, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     private final Pose pickup1Pose = new Pose(42, 84, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(17.5, 84, Math.toRadians(180)); //17.5, 83
+    private final Pose grab1Pose = new Pose(18.5, 84, Math.toRadians(180)); //17.5, 83
     private final Pose backout1Pose = new Pose(24, 75, Math.toRadians(180)); //24, 75
-    private final Pose openGatePose = new Pose(16, 75, Math.toRadians(180)); //18, 75
+    private final Pose openGatePose = new Pose(20, 75, Math.toRadians(180)); //18, 75
 
     private final Pose pickup2Pose = new Pose(42, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(10, 58, Math.toRadians(180)); //10, 59
@@ -155,7 +155,7 @@ public class BlueNearAuto extends LinearOpMode {
                     pathTimer.resetTimer();
 
                     trigger.open();
-                    setPathState(2);
+                    setPathState(2); //2
                 }
                 break;
             case 2:

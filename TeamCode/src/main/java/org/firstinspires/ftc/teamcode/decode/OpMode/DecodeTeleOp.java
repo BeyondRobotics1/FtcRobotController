@@ -257,6 +257,8 @@ public class DecodeTeleOp extends LinearOpMode {
             if (gameTimer.getElapsedTimeSeconds() >= 100 && rumbleEndgame == 1)  {
                 rumbleEndgame = 2;
                 gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad2.runRumbleEffect(strongRumbleEffect);
                 gamepad2.runRumbleEffect(strongRumbleEffect);
 
                 isEndGame = true;
@@ -347,6 +349,9 @@ public class DecodeTeleOp extends LinearOpMode {
         else {
             turret.autoAim(false);
 
+            //when auto aim is diable, reset the turret heading to center
+            //and force to use zone 3 (FAR) shooting speed
+            shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
             turret.resetTurretHeading();
         }
     }
