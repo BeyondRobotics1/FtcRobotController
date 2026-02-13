@@ -34,6 +34,8 @@ public class RedNearAuto extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
+    private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
+
     //status
     private Timer pathTimer;
     private int pathState = 0;
@@ -126,7 +128,32 @@ public class RedNearAuto extends LinearOpMode {
         }
         telemetry.addLine("LynxModule initialized");
 
-        waitForStart();
+        //waitForStart();
+        while (!isStarted() && !isStopRequested()) {
+
+            int tag_id = turret.detectObeliskTagID();
+
+            telemetry.addLine("Red Near Auto");
+            telemetry.addData("Obelisk ID:", tag_id);
+
+            if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
+                obelisk_id = tag_id;
+                telemetry.addLine("Obelisk: GPP");
+            }
+            else if(tag_id == DecodeBlackBoard.OBELISK_PGP) {
+                obelisk_id = tag_id;
+                telemetry.addLine("Obelisk: PGP");
+            }
+            else if(tag_id == DecodeBlackBoard.OBELISK_PPG) {
+                obelisk_id = tag_id;
+                telemetry.addLine("Obelisk: PPG");
+            }
+            else
+                telemetry.addLine("Obelisk: Not Detected");
+
+            telemetry.update();
+            sleep(100);
+        }
 
         shooter.setPower(0.4);
 

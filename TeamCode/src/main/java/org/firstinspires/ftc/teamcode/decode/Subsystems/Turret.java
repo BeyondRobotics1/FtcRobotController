@@ -33,10 +33,17 @@ public class Turret {
     // target x, y coordinates in INCH
     double x0, y0;
 
-    double servoPositionRight = 0; //90 degree
-    double servoPositionLeft = 0.380;//0.42; //-90 degree
-    double servoPositionMiddle = 0.195;//0.21;//0 degree
-    double servoPreviousPositionCalibration = 0.0;//0 degree
+    public static double servoPositionRight = 0; //90 degree
+    public static double servoPositionLeft = 0.380;//0.42; //-90 degree
+    public static double servoPositionMiddle = 0.195;//0.21;//0 degree
+    public static double servoPreviousPositionCalibration = 0.0;//0 degree
+
+    public static double servoPositionObeliskDetectionRedAlliance = 0.357;
+    public static double servoPositionObeliskDetectionBlueAlliance = 0.042;
+
+    public static double servoPositionAutoShootingRedAlliance = 0.296;
+    public static double servoPositionAutoShootingBlueAlliance = 0.096;
+
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;
@@ -93,14 +100,26 @@ public class Turret {
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
             //auto use pipeline 1
-            if(isAuto)
-                limelight.pipelineSwitch(1);
+            if(isAuto) {
+                if(this.alliance == DecodeBlackBoard.RED)
+                    limelight.pipelineSwitch(1);
+                else
+                    limelight.pipelineSwitch(2);
+            }
             else //teleop use pipeline 0
                 limelight.pipelineSwitch(0);
             limelight.start();
         }
 
-        setServoPosition(servoPositionMiddle);
+        if(isAuto)
+        {
+            if(this.alliance == DecodeBlackBoard.RED)
+                setServoPosition(servoPositionObeliskDetectionRedAlliance);
+            else
+                setServoPosition(servoPositionObeliskDetectionBlueAlliance);
+        }
+        else
+            setServoPosition(servoPositionMiddle);
     }
 
     public boolean isLimeLight3ARunning()
@@ -120,9 +139,12 @@ public class Turret {
             setServoPosition(servoPositionRedFarAuto);
     }
 
-    public void setServoPosition(double power)
+    public void setServoPosition(double position)
     {
-        turretLeft.setPosition(power);
+        turretLeft.setPosition(position);
+
+        if(turretRight != null)
+            turretRight.setPosition(position);
     }
 
     public double getServoPosition()
