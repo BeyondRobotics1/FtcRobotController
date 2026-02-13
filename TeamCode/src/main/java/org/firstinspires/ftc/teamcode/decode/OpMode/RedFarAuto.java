@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Auto Red Far", group = "Decode")
+@Autonomous(name = "Red Far Auto", group = "Decode")
 
 public class RedFarAuto extends LinearOpMode {
 

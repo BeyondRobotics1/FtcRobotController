@@ -23,10 +23,16 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Auto Red Near", group = "Decode")
+@Autonomous(name = "Red Near Auto", group = "Decode")
 public class RedNearAuto extends LinearOpMode {
 
-   //Hardware
+    //wait time in ms
+    private final int indexingWaitTime = 200;
+    private final int shootingOneBallWaitTime = 400;
+    private final int transferringOneBallWaitTime = 300;
+    private final int openingTriggerWaitTime = 50;
+
+    //hardware
     private Shooter shooter;
     private Intake intake;
     private Trigger trigger;
@@ -34,33 +40,40 @@ public class RedNearAuto extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
-    private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
+    private int obelisk_id = -1;
 
     //status
     private Timer pathTimer;
     private int pathState = 0;
+
+    //5000 clean up just in case there's balls in the indexer
+    //4000 for two-ball indexing 2, 0, 1
+    //3000 for two-ball indexing 2, 1, 0
+    //2000 for one-ball indexing
+    //1000 for no-ball indexing
+    private int indexingPathState = 0;
 
     Follower follower;
 
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(17.25, 28.75, Math.toRadians(180)); //tart Pose of our robot.
-    private final Pose scorePose = new Pose(52, 52, Math.toRadians(-135)); // 49, 47 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(30.5, 11, Math.toRadians(-90)); //tart Pose of our robot.
+    private final Pose scorePose = new Pose(43, 43, Math.toRadians(-134)); // 52, 52 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(48.5, 58, Math.toRadians(180)); // 47.5, 58 Highest (First Set) picking up start
-    private final Pose grab1Pose = new Pose(18, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
+    private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
+    private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
     private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
-    private final Pose openGatePose = new Pose(19.35, 65.5, Math.toRadians(180)); //18, 65.5 //gate posistion
+    private final Pose openGatePose = new Pose(19.35, 65.5, Math.toRadians(180)); //18, 65.5 //gate position
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(44, 82.5, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
-    private final Pose grab2Pose = new Pose(12.25, 82.5, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
-    private final Pose backout2Pose = new Pose(20, 82.5, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
+    private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
+    private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
+    private final Pose backout2Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
 
     //Lowest (Third Set)
-    private final Pose pickup3Pose = new Pose(44, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
+    private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
 
     //loading zone
@@ -74,9 +87,8 @@ public class RedNearAuto extends LinearOpMode {
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGateScore;
     private PathChain scorePickup2, pickup2Grab2, grab2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
-    private PathChain scorePickup4, scoreGrab4, grab4Score;
+    private PathChain scorePickup4, pickup4Score;
     private PathChain scorePark;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -155,6 +167,10 @@ public class RedNearAuto extends LinearOpMode {
             sleep(100);
         }
 
+
+        //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
+        turret.setServoPosition(Turret.servoPositionMiddle);
+
         shooter.setPower(0.4);
 
         setPathState(0);
@@ -167,7 +183,8 @@ public class RedNearAuto extends LinearOpMode {
             follower.update();
             autonomousPathUpdate();
 
-            //turret.autoAim();
+            //displayPose();
+
             shooter.shoot();
         }
 
@@ -186,7 +203,7 @@ public class RedNearAuto extends LinearOpMode {
                     pathTimer.resetTimer();
 
                     trigger.open();
-                    setPathState(2);
+                    setPathState(2); //2
                 }
                 break;
             case 2:
@@ -198,7 +215,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 950) { //1250
+                if (pathTimer.getElapsedTime() > 900) { //1250
 
                     trigger.close();
                     intake.intake(0.925);
@@ -214,7 +231,7 @@ public class RedNearAuto extends LinearOpMode {
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
 
-                    //grab balls at position 1
+                    ////grab balls at position 1
                     follower.followPath(pickup1Grab1, true); //grabPickup1
                     setPathState(111);
                 }
@@ -223,97 +240,88 @@ public class RedNearAuto extends LinearOpMode {
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
 
-                    //move grab1 position to open gate position
+                    ////move grab1 position to open gate position
                     follower.followPath(grab1OpenGate, true);
-                    setPathState(112);
-                }
-                break;
-            case 112:
-                if (!follower.isBusy()) {
-                    //Keep the gate open for 1 second
-                    pathTimer.resetTimer();
                     setPathState(12);
                 }
                 break;
+//            case 112:
+//                if (!follower.isBusy()) {
+//                    //Keep the gate open for 1 second
+//                    pathTimer.resetTimer();
+//                    setPathState(12);
+//                }
+//                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 350) { //500, 650
+                if (pathTimer.getElapsedTime() > 1500) { //350, 650
                     //move from open gate position to score position
                     follower.followPath(openGateScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
+
+                    if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
+                        indexingPathState = 1000; //GPP -> GPP, no indexing
+                    else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
+                        indexingPathState = 4000; //GPP -> PGP, 2 indexing - 2, 0, 1
+                    else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
+                        indexingPathState = 2000; //GPP -> PPG, 1 indexing
+                    else
+                        indexingPathState = 1000; //no indexing if not valid tag
                 }
                 break;
             case 13:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    trigger.open();
-                    setPathState(14);
-                }
-                break;
-            case 14:
-                if (pathTimer.getElapsedTime() > 100) {//110, 300
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-                    setPathState(15);
-                }
-                break;
-            case 15:
-                if (pathTimer.getElapsedTime() > 950) { //shoot balls 1500
-
-                    trigger.close();
-                    intake.intake(0.925);
-
+                if(indexAndShoot())
+                {
                     //move to the pickup 1 position
                     follower.followPath(scorePickup2, true); //grabPickup1
 
                     setPathState(21);
                 }
                 break;
+
             //second set of balls
             case 21:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
 
-                    //grab balls at position 1
+                    ////grab balls at set 2
                     follower.followPath(pickup2Grab2, true); //grabPickup1
                     setPathState(22);
                 }
                 break;
             case 22:
                 if (!follower.isBusy()) {
+
+                    //spit out the 4th ball
+                    intake.setIntakeMode(Intake.IntakeMode.OUT);
+                    sleep(60);
+
                     //move to backout position
                     //follower.followPath(grab2Backout2, true);
                     follower.followPath(grab2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
+
+                    if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
+                        indexingPathState = 2000; //PGP -> GPP, 1 indexing
+                    else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
+                        indexingPathState = 1000; //PGP -> PGP, 0 indexing
+                    else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
+                        indexingPathState = 4000; //PGP -> PPG, 2 indexing - 2, 0, 1
+                    else
+                        indexingPathState = 1000; //no indexing if not valid tag
                 }
                 break;
             case 23:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    trigger.open();
-                    setPathState(24);
-                }
-                break;
-            case 24:
-                if (pathTimer.getElapsedTime() > 100) {//110
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-
-                    setPathState(25);
-                }
-                break;
-            case 25:
-                if (pathTimer.getElapsedTime() > 950) { //shoot balls 1500
-                    trigger.close();
-                    intake.intake(0.925);
-
+                if(indexAndShoot())
+                {
                     //move to the pickup 1 position
                     follower.followPath(scorePickup3, true); //grabPickup1
 
                     setPathState(31);
                 }
                 break;
+
             //3rd set of balls
             case 31:
                 if (!follower.isBusy()) {
@@ -326,93 +334,38 @@ public class RedNearAuto extends LinearOpMode {
                 break;
             case 32:
                 if (!follower.isBusy()) {
+                    //spit out the 4th ball
+                    intake.setIntakeMode(Intake.IntakeMode.OUT);
+                    sleep(60);
+
                     follower.followPath(grab3Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(33);
-                }
 
-//                if (pathTimer.getElapsedTime() > 1300) { //grab 3 balls 2000
-//                    //move to score position
-//                    follower.followPath(grab3Score, true);
-//                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
-//                    setPathState(33);
-//                }
+                    if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
+                        indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
+                    else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
+                        indexingPathState = 2000; //PPG -> PGP, 1 indexing
+                    else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
+                        indexingPathState = 1000; //PPG -> PPG, 0 indexing
+                    else
+                        indexingPathState = 1000; //no indexing if not valid tag
+                }
                 break;
             case 33:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    trigger.open();
-                    setPathState(34);
-                }
-                break;
-            case 34:
-                if (pathTimer.getElapsedTime() > 100) {//should be 110
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-
-                    setPathState(35);
-                }
-                break;
-            case 35:
-                if (pathTimer.getElapsedTime() > 950) { //shoot balls 1000
-
-                    trigger.close();
-                    intake.intake(0.925);
-
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup4, true); //grabPickup1
-
-                    setPathState(41);
-                }
-                break;
-
-            //4th set of balls
-            case 41:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    follower.followPath(scoreGrab4, true); //grabPickup4
-
-                    setPathState(411);
-                }
-                break;
-            case 411:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-
-                    setPathState(42);
-                }
-                break;
-            case 42:
-                if (pathTimer.getElapsedTime() > 50) {
-
-                    //grab balls at position 4 & back to score position
-                    follower.followPath(grab4Score, true); //grab4Score, pickup4Score
-                    setPathState(43);
-                }
-                break;
-            case 43:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-                    trigger.open();
-                    setPathState(44);
-                }
-                break;
-            case 44:
-                if (pathTimer.getElapsedTime() > 50) {//should be 100
-                    pathTimer.resetTimer();
-                    //intake.setIntakeMode(Intake.IntakeMode.FEED);
-
-                    setPathState(45);
-                }
-                break;
-            case 45:
-                if (pathTimer.getElapsedTime() > 900) { //shoot balls 1500
+                if(indexAndShoot())
+                {
+                    indexingPathState = 5000; //clean up
                     setPathState(50);
                 }
                 break;
-
-            case 50:
+            case 50: //clearn up
+                if(indexAndShoot())
+                {
+                    setPathState(51);
+                }
+                break;
+            case 51:
                 follower.followPath(scorePark, true); //grabPickup1
                 intake.setIntakeMode(Intake.IntakeMode.IDLE);//stop the intake
                 trigger.close();
@@ -458,6 +411,7 @@ public class RedNearAuto extends LinearOpMode {
                 .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
                 .build();
 
+
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
 
         /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
@@ -497,16 +451,10 @@ public class RedNearAuto extends LinearOpMode {
                 .addPath(new BezierLine(scorePose, pickup4Pose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), pickup4Pose.getHeading())
                 .build();
-        scoreGrab4 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup4Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup4Pose.getHeading())
-                .addPath(new BezierLine(pickup4Pose, grab4Pose))
-                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), grab4Pose.getHeading())
-                .build();
 
-        grab4Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab4Pose, scorePose))
-                .setLinearHeadingInterpolation(grab4Pose.getHeading(), scorePose.getHeading())
+        pickup4Score = follower.pathBuilder()
+                .addPath(new BezierLine(pickup4Pose, scorePose))
+                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), scorePose.getHeading())
                 .build();
 
         /* This is our scoreParkPathChain. We are using a single path with a BezierLine, which is a straight line. */
@@ -520,11 +468,548 @@ public class RedNearAuto extends LinearOpMode {
         this.pathState = newPathState;
     }
 
+    boolean indexAndShoot()
+    {
+        if(indexingPathState >= 5000)
+            return clearIndexer();
+        else if(indexingPathState >= 4000)
+            return doTwoIndexingShooting201();
+        else if(indexingPathState >= 3000)
+            return doTwoIndexingShooting210();
+        else if (indexingPathState >= 2000)
+            return doOneIndexingShooting();
+        else if (indexingPathState >= 1000)
+            return doNoneIndexingShooting();
+        else
+            return true;
+    }
+
+    /**
+     * No indexing required
+     */
+    boolean doNoneIndexingShooting()
+    {
+
+        if(indexingPathState == 1000 ) {
+            if (!follower.isBusy()) {
+
+                pathTimer.resetTimer();
+                trigger.open();
+                indexingPathState = 1001;
+            }
+        }
+        else if(indexingPathState == 1001 )
+        {
+            //open trigger takes 50 mm
+            //shoot the third ball first
+            if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                pathTimer.resetTimer();
+
+                indexingPathState = 1002;
+            }
+        }
+        else if(indexingPathState == 1002 )
+        {
+            //shooting three takes 900 ms
+            if (pathTimer.getElapsedTime() > 900)
+            {
+                trigger.close();
+                intake.intake(0.925);
+
+                pathTimer.resetTimer();
+
+                indexingPathState = 1003;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Index one artifact
+     */
+    boolean doOneIndexingShooting()
+    {
+        if(indexingPathState == 2000 ) {
+
+            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+            trigger.close();
+
+            //index the first ball
+            pathTimer.resetTimer();
+            indexer.index(1);
+
+            indexingPathState = 2001;
+        }
+        else if(indexingPathState == 2001 )
+        {
+            //indexing takes 200 ms
+            //then move the second ball up
+            if (!follower.isBusy() &&
+                    pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.intake(0.5);
+                trigger.open();
+
+                pathTimer.resetTimer();
+                indexingPathState = 2002;
+            }
+        }
+        else if(indexingPathState == 2002 )
+        {
+            //open trigger takes 50 mm
+            //shoot the third ball first
+            if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                pathTimer.resetTimer();
+
+                indexingPathState = 2003;
+            }
+        }
+        else if(indexingPathState == 2003 )
+        {
+            //shooting two balls takes 600 ms
+            //then un-index the first ball
+            if (pathTimer.getElapsedTime() > 600)
+            {
+                intake.intake(0.5);
+                indexer.index(0);
+
+                pathTimer.resetTimer();
+                indexingPathState = 2004;
+            }
+        }
+        else if(indexingPathState == 2004 )
+        {
+            //un-indexing takes 200 ms, increased the waiting time
+            //to allow other two balls to get out of the goal
+            //then shoot the second ball
+            if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                pathTimer.resetTimer();
+                indexingPathState = 2005;
+            }
+        }
+        else if(indexingPathState == 2005 )
+        {
+            //shooting takes 300 ms
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                indexer.index(0);
+                trigger.close();
+
+                indexingPathState = 2006;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Index two artifact
+     */
+    boolean doTwoIndexingShooting210()
+    {
+        if(indexingPathState == 3000 ) {
+
+            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+            trigger.close();
+
+            //index the first ball
+            pathTimer.resetTimer();
+            indexer.index(1);
+
+            indexingPathState = 3001;
+        }
+        else if(indexingPathState == 3001 )
+        {
+            //indexing takes 200 ms
+            //then move the second ball up
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.intake(0.9);
+                pathTimer.resetTimer();
+                indexingPathState = 3002;
+            }
+        }
+        else if(indexingPathState == 3002 )
+        {
+            //moving up takes 300 ms
+            //then index the second ball
+            if (pathTimer.getElapsedTime() > transferringOneBallWaitTime)
+            {
+                indexer.index(2);
+                pathTimer.resetTimer();
+
+                indexingPathState = 3003;
+            }
+        }
+        else if(indexingPathState == 3003 )
+        {
+            //indexing takes 200 ms
+            //then move the third ball up
+            if (!follower.isBusy() &&
+                    pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.intake(0.5);
+                trigger.open();
+
+                pathTimer.resetTimer();
+
+                indexingPathState = 3004;
+            }
+        }
+        else if(indexingPathState == 3004 )
+        {
+            //open trigger takes 50 mm
+            //shoot the third ball first
+            if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                pathTimer.resetTimer();
+
+                indexingPathState = 3005;
+            }
+        }
+        else if(indexingPathState == 3005 )
+        {
+            //shooting takes 300 ms
+            //then un-index the second ball
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                intake.intake(0.5);
+                indexer.index(1);
+
+                pathTimer.resetTimer();
+                indexingPathState = 3006;
+            }
+        }
+        else if(indexingPathState == 3006 )
+        {
+            //un-indexing takes 200 ms
+            //then shoot the second ball
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                pathTimer.resetTimer();
+                indexingPathState = 3007;
+            }
+        }
+        else if(indexingPathState == 3007 )
+        {
+            //shooting takes 300 ms
+            //then un-index the first ball
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                //deque the third ball
+                intake.intake(0.5);
+                indexer.index(0);
+
+                pathTimer.resetTimer();
+                indexingPathState = 3008;
+            }
+        }
+        else if(indexingPathState == 3008 )
+        {
+            //indexing takes 200 ms
+            //then shoot the first ball
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                pathTimer.resetTimer();
+                indexingPathState = 3009;
+            }
+        }
+        else if(indexingPathState == 3009 )
+        {
+            //shooting takes 300 ms
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                trigger.close();
+                intake.intake(0.925);
+
+                pathTimer.resetTimer();
+
+                indexingPathState = 3100;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Index two artifact
+     */
+    boolean doTwoIndexingShooting201()
+    {
+        if(indexingPathState == 4000 ) {
+
+            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+            trigger.close();
+
+            //index the first ball
+            pathTimer.resetTimer();
+            indexer.index(1);
+
+            indexingPathState = 4001;
+        }
+        else if(indexingPathState == 4001 )
+        {
+            //indexing takes 200 ms
+            //then move the second ball up
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.intake(0.9);
+                pathTimer.resetTimer();
+                indexingPathState = 4002;
+            }
+        }
+        else if(indexingPathState == 4002 )
+        {
+            //moving up takes 300 ms
+            //then index the second ball
+            if (pathTimer.getElapsedTime() > transferringOneBallWaitTime)
+            {
+                indexer.index(2);
+                pathTimer.resetTimer();
+
+                indexingPathState = 4003;
+            }
+        }
+        else if(indexingPathState == 4003 )
+        {
+            //indexing takes 200 ms
+            //then move the third ball up
+            if (!follower.isBusy() &&
+                    pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.intake(0.5);
+                trigger.open();
+
+                pathTimer.resetTimer();
+
+                indexingPathState = 4004;
+            }
+        }
+        else if(indexingPathState == 4004 )
+        {
+            //open trigger takes 50 mm
+            //shoot the third ball first
+            if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                pathTimer.resetTimer();
+
+                indexingPathState = 4005;
+            }
+        }
+        else if(indexingPathState == 4005 )
+        {
+            //shooting takes 300 ms
+            //then un-index the second ball
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                trigger.close();
+                intake.intake(0.5);
+                indexer.index(0);
+
+                pathTimer.resetTimer();
+                indexingPathState = 4006;
+            }
+        }
+        else if(indexingPathState == 4006 )
+        {
+            //un-indexing takes two spots take 400 ms
+            //then shoot the second ball
+            if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
+            {
+                trigger.open();
+
+                pathTimer.resetTimer();
+                indexingPathState = 4007;
+            }
+        }
+        else if(indexingPathState == 4007 )
+        {
+            //open trigger takes 50 mm
+            //shoot the third ball first
+            if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                pathTimer.resetTimer();
+
+                indexingPathState = 4008;
+            }
+        }
+        else if(indexingPathState == 4008 )
+        {
+            //shooting takes 300 ms
+            //then un-index the first ball
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                //deque the third ball
+                intake.intake(0.5);
+                indexer.index(1);
+
+                pathTimer.resetTimer();
+                indexingPathState = 4009;
+            }
+        }
+        else if(indexingPathState == 4009 )
+        {
+            //indexing takes 200 ms
+            //then shoot the first ball
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                pathTimer.resetTimer();
+                indexingPathState = 4010;
+            }
+        }
+        else if(indexingPathState == 4010 )
+        {
+            //shooting takes 300 ms
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                /////reset indexer IMPORTANT
+                indexer.index(0);
+
+                trigger.close();
+                intake.intake(0.925);
+
+                pathTimer.resetTimer();
+
+                indexingPathState = 4100;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Index two artifact
+     */
+    boolean clearIndexer()
+    {
+        if(indexingPathState == 5000 )
+        {
+            trigger.open();
+            intake.intake(0.5);
+            indexer.index(2);
+
+            pathTimer.resetTimer();
+
+            indexingPathState = 5001;
+        }
+        else if(indexingPathState == 5001 )
+        {
+            if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                pathTimer.resetTimer();
+
+                indexingPathState = 5003;
+            }
+        }
+        else if(indexingPathState == 5003 )
+        {
+            //shooting takes 300 ms
+            //then un-index the second ball
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                intake.intake(0.5);
+                indexer.index(1);
+
+                pathTimer.resetTimer();
+                indexingPathState = 5004;
+            }
+        }
+        else if(indexingPathState == 5004 )
+        {
+            //un-indexing takes 200 ms
+            //then shoot the second ball
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                pathTimer.resetTimer();
+                indexingPathState = 5005;
+            }
+        }
+        else if(indexingPathState == 5005 )
+        {
+            //shooting takes 300 ms
+            //then un-index the first ball
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                //deque the third ball
+                intake.intake(0.5);
+                indexer.index(0);
+
+                pathTimer.resetTimer();
+                indexingPathState = 5006;
+            }
+        }
+        else if(indexingPathState == 5006 )
+        {
+            //indexing takes 200 ms
+            //then shoot the first ball
+            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            {
+                intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                pathTimer.resetTimer();
+                indexingPathState = 5007;
+            }
+        }
+        else if(indexingPathState == 5007 )
+        {
+            //shooting takes 300 ms
+            if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
+            {
+                indexer.index(0);
+
+                trigger.close();
+                intake.setIntakeMode(Intake.IntakeMode.IDLE);//stop the intake
+
+                indexingPathState = 5100;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void saveAutoState()
     {
         //pedro pos is in Radian
         Pose p = follower.getPose();
         DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
                 p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
+    }
+
+    void displayPose()
+    {
+        Pose p = follower.getPose();
+        telemetry.addData("X", p.getX());
+        telemetry.addData("Y", p.getY());
+        telemetry.addData("Heading",  Math.toDegrees(p.getHeading()));
+
+        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
+
+        telemetry.update();
     }
 }

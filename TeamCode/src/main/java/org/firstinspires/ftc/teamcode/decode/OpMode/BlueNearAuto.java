@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Auto Blue Near", group = "Decode")
+@Autonomous(name = "Blue Near Auto", group = "Decode")
 
 public class BlueNearAuto extends LinearOpMode {
 
@@ -59,7 +59,7 @@ public class BlueNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(31.5, 130.5, Math.toRadians(90)); //21.5, 136.5, 180 //31, 131, 90, Start Pose of our robot.
+    private final Pose startPose = new Pose(31.5, 130.5, Math.toRadians(90)); //31, 131, 90, Start Pose of our robot.
     private final Pose scorePose = new Pose(42, 97, Math.toRadians(135)); // 43, 97, 18// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     private final Pose pickup1Pose = new Pose(42, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
@@ -583,9 +583,10 @@ public class BlueNearAuto extends LinearOpMode {
         }
         else if(indexingPathState == 2004 )
         {
-            //un-indexing takes 200 ms
+            //un-indexing takes 200 ms, increased the waiting time
+            //to allow other two balls to get out of the goal
             //then shoot the second ball
-            if (pathTimer.getElapsedTime() > indexingWaitTime)
+            if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
             {
                 intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -902,8 +903,9 @@ public class BlueNearAuto extends LinearOpMode {
     {
         if(indexingPathState == 5000 )
         {
-            intake.intake(0.5);
             trigger.open();
+            intake.intake(0.5);
+            indexer.index(2);
 
             pathTimer.resetTimer();
 
@@ -911,17 +913,15 @@ public class BlueNearAuto extends LinearOpMode {
         }
         else if(indexingPathState == 5001 )
         {
-            //open trigger takes 50 mm
-            //shoot the third ball first
-            if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
+            if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
             {
                 intake.setIntakeMode(Intake.IntakeMode.FEED);
                 pathTimer.resetTimer();
 
-                indexingPathState = 5002;
+                indexingPathState = 5003;
             }
         }
-        else if(indexingPathState == 5002 )
+        else if(indexingPathState == 5003 )
         {
             //shooting takes 300 ms
             //then un-index the second ball
@@ -931,10 +931,10 @@ public class BlueNearAuto extends LinearOpMode {
                 indexer.index(1);
 
                 pathTimer.resetTimer();
-                indexingPathState = 5003;
+                indexingPathState = 5004;
             }
         }
-        else if(indexingPathState == 5003 )
+        else if(indexingPathState == 5004 )
         {
             //un-indexing takes 200 ms
             //then shoot the second ball
@@ -943,10 +943,10 @@ public class BlueNearAuto extends LinearOpMode {
                 intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                 pathTimer.resetTimer();
-                indexingPathState = 5004;
+                indexingPathState = 5005;
             }
         }
-        else if(indexingPathState == 5004 )
+        else if(indexingPathState == 5005 )
         {
             //shooting takes 300 ms
             //then un-index the first ball
@@ -957,10 +957,10 @@ public class BlueNearAuto extends LinearOpMode {
                 indexer.index(0);
 
                 pathTimer.resetTimer();
-                indexingPathState = 5005;
+                indexingPathState = 5006;
             }
         }
-        else if(indexingPathState == 5005 )
+        else if(indexingPathState == 5006 )
         {
             //indexing takes 200 ms
             //then shoot the first ball
@@ -969,10 +969,10 @@ public class BlueNearAuto extends LinearOpMode {
                 intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                 pathTimer.resetTimer();
-                indexingPathState = 5006;
+                indexingPathState = 5007;
             }
         }
-        else if(indexingPathState == 5006 )
+        else if(indexingPathState == 5007 )
         {
             //shooting takes 300 ms
             if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
@@ -980,9 +980,7 @@ public class BlueNearAuto extends LinearOpMode {
                 indexer.index(0);
 
                 trigger.close();
-                intake.intake(0.925);
-
-                pathTimer.resetTimer();
+                intake.setIntakeMode(Intake.IntakeMode.IDLE);//stop the intake
 
                 indexingPathState = 5100;
                 return true;

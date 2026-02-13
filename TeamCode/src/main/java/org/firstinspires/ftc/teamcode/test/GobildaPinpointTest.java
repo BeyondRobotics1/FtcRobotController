@@ -37,8 +37,12 @@ public class GobildaPinpointTest extends OpMode {
 
         // Set the location of the robot - this should be the place you are starting the robot from
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.5, 130.5, AngleUnit.DEGREES, 90));
-        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
+
+        //blue auto starting point
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+
+        //red auto starting point
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
         pinpoint.update();
     }
 
@@ -47,7 +51,7 @@ public class GobildaPinpointTest extends OpMode {
 
         if(!isInitialPinpointPositionSet)
         {
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.5, 130.5, AngleUnit.DEGREES, 90));
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
             isInitialPinpointPositionSet = true;
         }
 

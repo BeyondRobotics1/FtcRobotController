@@ -57,9 +57,6 @@ public class Indexer {
             setPosition(startingPosition);
             current_index = 0;
         }
-
-
     }
-
 
 }
