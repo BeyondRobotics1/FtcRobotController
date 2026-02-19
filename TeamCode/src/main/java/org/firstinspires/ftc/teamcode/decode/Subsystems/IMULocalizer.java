@@ -25,36 +25,36 @@ public class IMULocalizer {
 
     //know locations
     //red near zone
-    public static final double RED_X1 = 25;//24
-    public static final double RED_Y1 = 35; //30
-    public static final double RED_X2 = 80;
-    public static final double RED_Y2 = 90;
-    public static final double RED_X3 = 131;//128
-    public static final double RED_Y3 = 32; //32
+    public static final double RED_X1 = 22;//25;//24
+    public static final double RED_Y1 = 33;//35; //30
+    public static final double RED_X2 = 70;//80;
+    public static final double RED_Y2 = 84;//90;
+    public static final double RED_X3 = 122;//131;//128
+    public static final double RED_Y3 = 32;//32; //32
     //red out zone
-    public static final double RED_X4 = 56;
+    public static final double RED_X4 = 52;
     public static final double RED_Y4 = 110;
-    public static final double RED_X5 = 102;
+    public static final double RED_X5 = 84;
     public static final double RED_Y5 = 110;
 
     //red near zone
-    public static final double BLUE_X1 = 14;
-    public static final double BLUE_Y1 = 114;
-    public static final double BLUE_X2 = 62;
-    public static final double BLUE_Y2 = 66;
-    public static final double BLUE_X3 = 130;
-    public static final double BLUE_Y3 = 114;
+    public static final double BLUE_X1 = 23;// 14;
+    public static final double BLUE_Y1 = 107;//114;
+    public static final double BLUE_X2 = 70;//62;
+    public static final double BLUE_Y2 = 57;//66;
+    public static final double BLUE_X3 = 122;//130;
+    public static final double BLUE_Y3 = 105;//114;
     //red out zone
-    public static final double BLUE_X4 = 54;
-    public static final double BLUE_Y4 = 39; //36
-    public static final double BLUE_X5 = 88;
-    public static final double BLUE_Y5 = 39;
+    public static final double BLUE_X4 = 52;
+    public static final double BLUE_Y4 = 32;//39; //36
+    public static final double BLUE_X5 = 84;
+    public static final double BLUE_Y5 = 32;//39;
 
-    public static final double RED_FAR_ZONE_DISTANCE = 86;
-    public static final double RED_MEDIUM_ZONE_DISTANCE = 70;
+    public static final double RED_FAR_ZONE_DISTANCE = 80;//86;
+    public static final double RED_MEDIUM_ZONE_DISTANCE = 60;//70;
 
-    public static final double BLUE_FAR_ZONE_DISTANCE = 70;
-    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 50;
+    public static final double BLUE_FAR_ZONE_DISTANCE = 80;//70;
+    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 60;//50;
 
     //hardware
     LinearOpMode mode;

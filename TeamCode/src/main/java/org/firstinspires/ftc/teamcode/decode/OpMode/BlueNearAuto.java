@@ -59,20 +59,20 @@ public class BlueNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(31.5, 130.5, Math.toRadians(90)); //31, 131, 90, Start Pose of our robot.
-    private final Pose scorePose = new Pose(42, 97, Math.toRadians(135)); // 43, 97, 18// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(30.5, 130.5, Math.toRadians(90)); //31, 131, 90, Start Pose of our robot.
+    private final Pose scorePose = new Pose(43, 96, Math.toRadians(135)); // 43, 97, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
-    private final Pose pickup1Pose = new Pose(42, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose pickup1Pose = new Pose(41.5, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose grab1Pose = new Pose(17.75, 83, Math.toRadians(180)); //17.5, 83
-    private final Pose backout1Pose = new Pose(24, 76, Math.toRadians(180)); //24, 76
-    private final Pose openGatePose = new Pose(16.75, 76, Math.toRadians(180)); //17, 76
+    private final Pose backout1Pose = new Pose(23, 76, Math.toRadians(180)); //24, 76
+    private final Pose openGatePose = new Pose(16.6, 76, Math.toRadians(180)); //17, 76
 
-    private final Pose pickup2Pose = new Pose(42, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(10, 58, Math.toRadians(180)); //10, 59
+    private final Pose pickup2Pose = new Pose(41.125, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
     private final Pose backout2Pose = new Pose(19, 58, Math.toRadians(180)); //20, 58
 
-    private final Pose pickup3Pose = new Pose(42, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose grab3Pose = new Pose(10, 35.5, Math.toRadians(180)); //10, 35
+    private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
 
     private final Pose pickup4Pose = new Pose(15.5, 25.5, Math.toRadians(-90)); //15, 26, -90 loading zone
     //private final Pose grab4Pose = new Pose(19, 21, Math.toRadians(-90)); //12, 16, -90
@@ -251,7 +251,7 @@ public class BlueNearAuto extends LinearOpMode {
 //                }
 //                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 1500) { //350, 650
+                if (pathTimer.getElapsedTime() > 1800) { //350, 650
                     //move from open gate position to score position
                     follower.followPath(openGateScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);

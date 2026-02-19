@@ -11,8 +11,8 @@ public class DecodeBlackBoard {
     public static final int BLUE = 1;
     public static final int RED = 2;
 
-    public static final Pose2D RED_RESET_POSE = new Pose2D(DistanceUnit.INCH, 134, 111, AngleUnit.DEGREES, 180);
-    public static final Pose2D BLUE_RESET_POSE = new Pose2D(DistanceUnit.INCH, 134, 30, AngleUnit.DEGREES, 180);
+    public static final Pose2D RED_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.5, 111, AngleUnit.DEGREES, 180);
+    public static final Pose2D BLUE_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.5, 30, AngleUnit.DEGREES, 180);
 
 
     public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 139, AngleUnit.DEGREES, 0);

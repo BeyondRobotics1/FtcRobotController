@@ -39,10 +39,10 @@ public class GobildaPinpointTest extends OpMode {
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
 
         //blue auto starting point
-        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
 
         //red auto starting point
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
         pinpoint.update();
     }
 

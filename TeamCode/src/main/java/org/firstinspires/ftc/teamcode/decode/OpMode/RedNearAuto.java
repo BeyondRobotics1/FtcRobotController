@@ -65,7 +65,7 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
     private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
     private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
-    private final Pose openGatePose = new Pose(19.35, 65.5, Math.toRadians(180)); //18, 65.5 //gate position
+    private final Pose openGatePose = new Pose(19.2, 65.5, Math.toRadians(180)); //18, 65.5 //gate position
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
@@ -253,7 +253,7 @@ public class RedNearAuto extends LinearOpMode {
 //                }
 //                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 1500) { //350, 650
+                if (pathTimer.getElapsedTime() > 1800) { //350, 650
                     //move from open gate position to score position
                     follower.followPath(openGateScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);

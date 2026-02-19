@@ -77,7 +77,7 @@ public class IndexedShootingTest extends LinearOpMode {
 
         //let the flywheel spin for 500ms so
         //the PID controller won't draw too much batteries
-        shooter.setPower(0.4);
+        shooter.setPower(0.5);
         sleep(1000);
 
         boolean isInitialPinpointPositionSet = false;

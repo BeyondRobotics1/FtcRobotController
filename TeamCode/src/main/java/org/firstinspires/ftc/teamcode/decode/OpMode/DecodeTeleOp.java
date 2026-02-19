@@ -385,22 +385,19 @@ public class DecodeTeleOp extends LinearOpMode {
                 }
             }
         }
-        else {
-            //gamepad1 a, shoot from near position
-            //gamepad1 b, shoot from medium position
-            //gamepad1 y, shoot from far position
-            //gamepad1 x, shoot from OUT_ZONE position
-            if (gamepad1.aWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
 
-            } else if (gamepad1.xWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-            } else if (gamepad1.yWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-            } else if (gamepad1.bWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-            }
+
+        //gamepad1 a, index 2
+        //gamepad1 b, index 1
+        //otherwise, index 0
+        if (gamepad1.b) {
+            indexer.index(2);
+        } else if (gamepad1.a) {
+            indexer.index(1);
+        } else  {
+            indexer.index(0);
         }
+
 
         if(isShooterOn)
             shooter.shoot();

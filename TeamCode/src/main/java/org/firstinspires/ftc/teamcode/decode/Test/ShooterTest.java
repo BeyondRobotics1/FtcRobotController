@@ -254,22 +254,25 @@ public class ShooterTest extends LinearOpMode {
             //gamepad1 y, shoot from far position
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-                //gamepad1.runRumbleEffect(nearRumbleEffect);
-                //gamepad2.runRumbleEffect(nearRumbleEffect);
             }
             else if (gamepad1.bWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-                //gamepad1.runRumbleEffect(farRumbleEffect);
-                //gamepad2.runRumbleEffect(farRumbleEffect);
             }else if (gamepad1.yWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-                //gamepad1.runRumbleEffect(farRumbleEffect);
-                //gamepad2.runRumbleEffect(farRumbleEffect);
             } else if (gamepad1.xWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-                //gamepad1.runRumbleEffect(mediumRumbleEffect);
-                //gamepad2.runRumbleEffect(mediumRumbleEffect);
             }
+
+            Shooter.ShootingLocation shooterPosition = shooter.getShooterPosition();
+
+            if (shooterPosition == Shooter.ShootingLocation.NEAR)
+                telemetry.addLine("Shooting from Near");
+            else if (shooterPosition == Shooter.ShootingLocation.FAR)
+                telemetry.addLine("Shooting from FAR");
+            else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE)
+                telemetry.addLine("Shooting from OUT ZONE");
+            else
+            telemetry.addLine("Shooting from MEDIUM");;
 
 
             if (isShooterOn)
