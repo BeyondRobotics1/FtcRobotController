@@ -39,7 +39,6 @@ public class BlueNearAuto extends LinearOpMode {
     private Trigger trigger;
     private Turret turret;
     private Indexer indexer;
-    private Lift lift;
 
     private int obelisk_id = -1;
 
@@ -76,16 +75,12 @@ public class BlueNearAuto extends LinearOpMode {
     private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
 
-    private final Pose pickup4Pose = new Pose(15.5, 25.5, Math.toRadians(-90)); //15, 26, -90 loading zone
-    //private final Pose grab4Pose = new Pose(19, 21, Math.toRadians(-90)); //12, 16, -90
-
     private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore, openGate2Score;
     private PathChain scorePickup2, pickup2Grab2, grab1Score, grab2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
-    private PathChain scorePickup4, pickup4Score;
     private PathChain scorePark;
 
 
@@ -106,9 +101,6 @@ public class BlueNearAuto extends LinearOpMode {
         telemetry.addLine("Initializing trigger");
         trigger = new Trigger(hardwareMap);
         trigger.close();
-
-        telemetry.addLine("Initializing lift");
-        lift = new Lift(hardwareMap);
 
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
@@ -462,17 +454,6 @@ public class BlueNearAuto extends LinearOpMode {
         grab3Score = follower.pathBuilder()
                 .addPath(new BezierLine(grab3Pose, scorePose))
                 .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
-                .build();
-
-        /* This is our scorePickup4 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup4 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup4Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup4Pose.getHeading())
-                .build();
-
-        pickup4Score = follower.pathBuilder()
-                .addPath(new BezierLine(pickup4Pose, scorePose))
-                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), scorePose.getHeading())
                 .build();
 
         /* This is our scoreParkPathChain. We are using a single path with a BezierLine, which is a straight line. */

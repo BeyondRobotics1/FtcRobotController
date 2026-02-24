@@ -61,7 +61,7 @@ public class Turret {
     public static double kI = 0.005;//0.25; //0.01
     public static double kD = 0;
     public static double kF = 0.0095;
-    public double targetAngleDegree = 0;
+    public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
                   Pose2D robotPose, Pose2D targetPose,
@@ -114,13 +114,23 @@ public class Turret {
 
         if(isAuto)
         {
-            if(this.alliance == DecodeBlackBoard.RED)
+            if(this.alliance == DecodeBlackBoard.RED) {
                 setServoPosition(servoPositionObeliskDetectionRedAlliance);
-            else
+            }
+            else {
                 setServoPosition(servoPositionObeliskDetectionBlueAlliance);
+            }
         }
-        else
+        else {
+            if(this.alliance == DecodeBlackBoard.RED) {
+                targetAngleDegree = 0;
+            }
+            else {
+                targetAngleDegree = 5;
+            }
+
             setServoPosition(servoPositionMiddle);
+        }
     }
 
     public boolean isLimeLight3ARunning()

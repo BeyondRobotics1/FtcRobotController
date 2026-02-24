@@ -34,7 +34,6 @@ public class RedFarAuto extends LinearOpMode {
     private Trigger trigger;
     private Turret turret;
     private Indexer indexer;
-    private Lift lift;
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
     //status
     //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
@@ -79,15 +78,13 @@ public class RedFarAuto extends LinearOpMode {
         trigger = new Trigger(hardwareMap);
         trigger.close();
 
-        telemetry.addLine("Initializing lift");
-        lift = new Lift(hardwareMap);
-
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
                 false,
                 true, true);
+        turret.resetTurretHeading();
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
@@ -137,7 +134,7 @@ public class RedFarAuto extends LinearOpMode {
 
 
         //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
-        turret.setServoPosition(0.150);
+        turret.setServoPosition(0.15);
 
         shooter.setPower(0.60);
 
@@ -316,9 +313,6 @@ public class RedFarAuto extends LinearOpMode {
                     setPathState(-1);
                 }
                 break;
-            //first set of balls
-
-
         }
 
     }

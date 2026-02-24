@@ -38,7 +38,6 @@ public class RedNearAuto extends LinearOpMode {
     private Trigger trigger;
     private Turret turret;
     private Indexer indexer;
-    private Lift lift;
 
     private int obelisk_id = -1;
 
@@ -59,7 +58,7 @@ public class RedNearAuto extends LinearOpMode {
      * Start Pose of our robot
      */
     private final Pose startPose = new Pose(30.5, 11, Math.toRadians(-90)); //tart Pose of our robot.
-    private final Pose scorePose = new Pose(43, 43, Math.toRadians(-134)); // 52, 52 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose scorePose = new Pose(43, 43, Math.toRadians(-133)); // 43, 43, -134 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     //Highest (First Set)
     private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
@@ -76,10 +75,6 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
 
-    //loading zone
-    private final Pose pickup4Pose = new Pose(24, 128, Math.toRadians(135)); //24, 128, 135
-    private final Pose grab4Pose = new Pose(12.25, 132.5, Math.toRadians(180)); //12, 132.5, 180
-
     //park
     private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
 
@@ -87,7 +82,6 @@ public class RedNearAuto extends LinearOpMode {
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore, openGate2Score;
     private PathChain scorePickup2, pickup2Grab2, grab2Score, grab1Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
-    private PathChain scorePickup4, pickup4Score;
     private PathChain scorePark;
 
     @Override
@@ -108,8 +102,6 @@ public class RedNearAuto extends LinearOpMode {
         trigger = new Trigger(hardwareMap);
         trigger.close();
 
-        telemetry.addLine("Initializing lift");
-        lift = new Lift(hardwareMap);
 
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
@@ -220,13 +212,13 @@ public class RedNearAuto extends LinearOpMode {
                     trigger.close();
                     intake.intake(0.925);
 
-                    //move to the pickup 1 position
+                    //move to the pickup 2 position
                     follower.followPath(scorePickup2, true); //grabPickup1
 
                     setPathState(11);
                 }
                 break;
-            //first set of balls
+            //Second set of balls
             case 11:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -240,20 +232,13 @@ public class RedNearAuto extends LinearOpMode {
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
 
-                    ////move grab1 position to open gate position
+                    ////move grab2 position to open gate position
                     follower.followPath(grab2OpenGate, true);
                     setPathState(12);
                 }
                 break;
-//            case 112:
-//                if (!follower.isBusy()) {
-//                    //Keep the gate open for 1 second
-//                    pathTimer.resetTimer();
-//                    setPathState(12);
-//                }
-//                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 2800) { //1800, 350, 650
+                if (pathTimer.getElapsedTime() > 4000) { //2800, 350, 650
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -266,8 +251,6 @@ public class RedNearAuto extends LinearOpMode {
                         indexingPathState = 4000; //PGP -> PPG, 2 indexing - 2, 0, 1
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
-
-
                 }
                 break;
             case 13:
@@ -280,7 +263,7 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
 
-            //second set of balls
+            //first set of balls
             case 21:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -293,12 +276,11 @@ public class RedNearAuto extends LinearOpMode {
             case 22:
                 if (!follower.isBusy()) {
 
-                    //spit out the 4th ball
-                    intake.setIntakeMode(Intake.IntakeMode.OUT);
-                    sleep(60);
+//                    //spit out the 4th ball
+//                    intake.setIntakeMode(Intake.IntakeMode.OUT);
+//                    sleep(60);
 
                     //move to backout position
-                    //follower.followPath(grab2Backout2, true);
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
@@ -335,9 +317,9 @@ public class RedNearAuto extends LinearOpMode {
                 break;
             case 32:
                 if (!follower.isBusy()) {
-                    //spit out the 4th ball
-                    intake.setIntakeMode(Intake.IntakeMode.OUT);
-                    sleep(60);
+//                    //spit out the 4th ball
+//                    intake.setIntakeMode(Intake.IntakeMode.OUT);
+//                    sleep(60);
 
                     follower.followPath(grab3Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -356,11 +338,11 @@ public class RedNearAuto extends LinearOpMode {
             case 33:
                 if(indexAndShoot())
                 {
-                    indexingPathState = 5000; //clean up
+                    indexingPathState = 5000; //clean up of any balls in the indexer!
                     setPathState(50);
                 }
                 break;
-            case 50: //clearn up
+            case 50: //clean up
                 if(indexAndShoot())
                 {
                     setPathState(51);
@@ -463,17 +445,6 @@ public class RedNearAuto extends LinearOpMode {
         grab3Score = follower.pathBuilder()
                 .addPath(new BezierLine(grab3Pose, scorePose))
                 .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
-                .build();
-
-        /* This is our scorePickup4 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup4 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup4Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup4Pose.getHeading())
-                .build();
-
-        pickup4Score = follower.pathBuilder()
-                .addPath(new BezierLine(pickup4Pose, scorePose))
-                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), scorePose.getHeading())
                 .build();
 
         /* This is our scoreParkPathChain. We are using a single path with a BezierLine, which is a straight line. */

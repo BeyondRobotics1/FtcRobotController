@@ -36,10 +36,10 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.52;//0.53;//0.52
-    double targetSpeedFar = 0.44;//0.466;//0.44
-    double targetSpeedMedium = 0.42;//0.43;////0.42
-    double targetSpeedNear = 0.394;//0.42;//0.394
+    double targetSpeedOutZone = 0.525;//0.52
+    double targetSpeedFar = 0.452;//0.44
+    double targetSpeedMedium = 0.42;//0.42
+    double targetSpeedNear = 0.392;//0.394
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;

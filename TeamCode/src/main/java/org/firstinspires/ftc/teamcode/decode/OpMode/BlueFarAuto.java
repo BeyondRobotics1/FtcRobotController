@@ -34,7 +34,6 @@ public class BlueFarAuto extends LinearOpMode {
     private Trigger trigger;
     private Turret turret;
     private Indexer indexer;
-    private Lift lift;
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
     //status
     //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
@@ -79,15 +78,13 @@ public class BlueFarAuto extends LinearOpMode {
         trigger = new Trigger(hardwareMap);
         trigger.close();
 
-        telemetry.addLine("Initializing lift");
-        lift = new Lift(hardwareMap);
-
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
                 false,
                 true, true);
+        turret.resetTurretHeading();
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
