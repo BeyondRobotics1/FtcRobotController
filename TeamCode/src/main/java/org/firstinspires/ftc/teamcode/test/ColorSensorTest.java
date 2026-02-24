@@ -38,6 +38,8 @@ public class ColorSensorTest extends LinearOpMode {
         telemetry.addData("gamepad1.a", "Top Color Sensor." );
         telemetry.addData("gamepad1.b", "Bottom Color Sensor." );
         telemetry.addData("gamepad1.y", "Front Color Sensor." );
+        telemetry.addData("gamepad1.left_bumper", "Left Color Sensor." );
+        telemetry.addData("gamepad1.right_bumper", "Right Color Sensor." );
         telemetry.update();
 
         String name = "";
@@ -80,6 +82,26 @@ public class ColorSensorTest extends LinearOpMode {
                         ((SwitchableLight)colorSensor).enableLight(true);
                     }
                 }
+                else if (gamepad1.left_bumper) {
+                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorLeft");
+                    name = "Left Color Sensor";
+
+                    // If possible, turn the light on in the beginning (it might already be on anyway,
+                    // we just make sure it is if we can).
+                    if (colorSensor instanceof SwitchableLight) {
+                        ((SwitchableLight)colorSensor).enableLight(true);
+                    }
+                }
+                else if (gamepad1.right_bumper) {
+                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorRight");
+                    name = "Right Color Sensor";
+
+                    // If possible, turn the light on in the beginning (it might already be on anyway,
+                    // we just make sure it is if we can).
+                    if (colorSensor instanceof SwitchableLight) {
+                        ((SwitchableLight) colorSensor).enableLight(true);
+                    }
+                }
             }
 
 
@@ -110,19 +132,37 @@ public class ColorSensorTest extends LinearOpMode {
                         .addData("Value", "%.3f", hsvValues[2]);
                 telemetry.addData("Alpha", "%.3f", colors.alpha);
 
-                if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 4) { //
-                    if (hsvValues[0] >= 120 && hsvValues[0] <= 200)
-                        telemetry.addData("Color", "%s", "Green");
-                    else if (hsvValues[0] > 200 && hsvValues[0] < 250)
-                        telemetry.addData("Color", "%s", "Purple");
-                } else
-                    telemetry.addData("Color", "%s", "White");
 
+                if(!name.contains("Left") && !name.contains("Right")) {
+                    if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 4) { //
+                        if (hsvValues[0] >= 120 && hsvValues[0] <= 200)
+                            telemetry.addData("Color", "%s", "Green");
+                        else if (hsvValues[0] > 200 && hsvValues[0] < 250)
+                            telemetry.addData("Color", "%s", "Purple");
+                        else if ((hsvValues[0] >= 0 && hsvValues[0] <= 20) ||
+                                (hsvValues[0] >= 340 && hsvValues[0] <= 360))
+                            telemetry.addData("Color", "%s", "Red");
+                        else if (hsvValues[0] >= 210 && hsvValues[0] <= 270)
+                            telemetry.addData("Color", "%s", "Blue");
+                    } else
+                        telemetry.addData("Color", "%s", "White");
+                }
+                else
+                {
+                    //Left and right color sensor are for blue/red line detection
+                   if (hsvValues[0] > 200 && hsvValues[0] < 270)
+                        telemetry.addData("Color", "%s", "Blue");
+                    else if ((hsvValues[0] >= 0 && hsvValues[0] <= 30) ||
+                            (hsvValues[0] >= 340 && hsvValues[0] <= 360))
+                        telemetry.addData("Color", "%s", "Red");
+                    else
+                        telemetry.addData("Color", "%s", "Grey");
+                }
 
 //            if(((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 5) { //
 //                if (hsvValues[0] >= 50 && hsvValues[0] < 92)
 //                    telemetry.addData("Color", "%s", "Yellow");
-//                else if ((hsvValues[0] >= 0 && hsvValues[0] <= 20) ||
+//                else if ((hsvValues[0] >= 0 && hsvValues[0] <= 30) ||
 //                        (hsvValues[0] >= 340 && hsvValues[0] <= 360))
 //                    telemetry.addData("Color", "%s", "Red");
 //                else if (hsvValues[0] >= 210 && hsvValues[0] <= 270)

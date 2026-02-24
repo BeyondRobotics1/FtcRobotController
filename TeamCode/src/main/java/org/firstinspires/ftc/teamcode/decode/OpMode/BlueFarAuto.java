@@ -140,9 +140,9 @@ public class BlueFarAuto extends LinearOpMode {
 
 
         //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
-        turret.setServoPosition(0.250);
+        turret.setServoPosition(0.244);
 
-        shooter.setPower(0.55);
+        shooter.setPower(0.60);
 
         setPathState(0);
 

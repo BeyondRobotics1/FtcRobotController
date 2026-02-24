@@ -133,6 +133,7 @@ public class TeleOpTest extends LinearOpMode {
         artifactColors = new int[3];
         artifactColors[0] = artifactColors[1] = artifactColors[2] = Color.WHITE;
 
+
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
@@ -168,6 +169,8 @@ public class TeleOpTest extends LinearOpMode {
             telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
             telemetry.update();
+
+
         }
 
         gameTimer.resetTimer();
@@ -202,6 +205,9 @@ public class TeleOpTest extends LinearOpMode {
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
 
+//        turret.setIMUPoseToRobotStartPose();
+//        telemetry.addLine("Pinpoint is reset to the park position");
+
         telemetry.update();
 
         if(isStopRequested()) return;
@@ -210,9 +216,13 @@ public class TeleOpTest extends LinearOpMode {
         //the PID controller won't draw too much batteries
         shooter.setPower(0.4);
         sleep(1000);
+        //sleep(200);
+
+        boolean isEndGame = false;
 
         boolean isInitialPinpointPositionSet = false;
-        boolean isEndGame = false;
+
+        //isIntakeOn = true;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -302,21 +312,27 @@ public class TeleOpTest extends LinearOpMode {
                             artifactColors[2] != Color.WHITE) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
 
-                        if((rumbleReady % 10) == 0) {
-                            gamepad1.runRumbleEffect(softRumbleEffect);
-                            gamepad2.runRumbleEffect(softRumbleEffect);
-                        }
+                        intake.setLedColor(Intake.LED_GREEN);
 
-                        rumbleReady++;
-
-                        if(rumbleReady >= 100000)
-                            rumbleReady = 0;
+//                        if((rumbleReady % 10) == 0) {
+//                            gamepad1.runRumbleEffect(softRumbleEffect);
+//                            gamepad2.runRumbleEffect(softRumbleEffect);
+//                        }
+//
+//                        rumbleReady++;
+//
+//                        if(rumbleReady >= 100000)
+//                            rumbleReady = 0;
                     }
                     else if (artifactColors[0] != Color.WHITE &&
-                            artifactColors[1] != Color.WHITE)
+                            artifactColors[1] != Color.WHITE) {
                         intake.setIntakeMode(Intake.IntakeMode.HIN);
-                    else
-                        intake.intake(0.925);
+                        intake.setLedColor(Intake.LED_YELLOW);
+                    }
+                    else {
+                        intake.setLedColor(Intake.LED_OFF);
+                        intake.intake(925);
+                    }
                 }
                 else
                     intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed
@@ -404,6 +420,17 @@ public class TeleOpTest extends LinearOpMode {
             }
         }
 
+        //gamepad2 a, index 2
+        //gamepad2 b, index 1
+        //otherwise, index 0
+        if (gamepad2.b) {
+            indexer.index(2);
+        } else if (gamepad2.a) {
+            indexer.index(1);
+        } else  {
+            indexer.index(0);
+        }
+
         if(isShooterOn)
             shooter.shoot();
         else
@@ -412,6 +439,11 @@ public class TeleOpTest extends LinearOpMode {
 
     private void liftOp()
     {
+        //gamepad 1 dpad down for auto parking till
+        //the red or blue line
+        if(gamepad1.dpad_down)
+            driveTrain.driveToLine();
+
 
         //gamepad 1 dpad up pressed
         if (gamepad1.dpadUpWasPressed()) {

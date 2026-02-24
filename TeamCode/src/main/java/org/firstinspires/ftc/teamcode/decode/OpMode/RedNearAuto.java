@@ -66,12 +66,12 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
     private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
     private final Pose openGatePose = new Pose(19.2, 65.5, Math.toRadians(180)); //18, 65.5 //gate position
-
+    private final Pose openGate2Pose = new Pose(18, 76, Math.toRadians(180));
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
     private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
     private final Pose backout2Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
-
+    private final Pose backout22Pose = new Pose(42, 75.5, Math.toRadians(180));
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
@@ -84,8 +84,8 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGateScore;
-    private PathChain scorePickup2, pickup2Grab2, grab2Score;
+    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore, openGate2Score;
+    private PathChain scorePickup2, pickup2Grab2, grab2Score, grab1Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePickup4, pickup4Score;
     private PathChain scorePark;
@@ -221,7 +221,7 @@ public class RedNearAuto extends LinearOpMode {
                     intake.intake(0.925);
 
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup1, true); //grabPickup1
+                    follower.followPath(scorePickup2, true); //grabPickup1
 
                     setPathState(11);
                 }
@@ -232,7 +232,7 @@ public class RedNearAuto extends LinearOpMode {
                     pathTimer.resetTimer();
 
                     ////grab balls at position 1
-                    follower.followPath(pickup1Grab1, true); //grabPickup1
+                    follower.followPath(pickup2Grab2, true); //grabPickup1
                     setPathState(111);
                 }
                 break;
@@ -241,7 +241,7 @@ public class RedNearAuto extends LinearOpMode {
                     pathTimer.resetTimer();
 
                     ////move grab1 position to open gate position
-                    follower.followPath(grab1OpenGate, true);
+                    follower.followPath(grab2OpenGate, true);
                     setPathState(12);
                 }
                 break;
@@ -253,27 +253,28 @@ public class RedNearAuto extends LinearOpMode {
 //                }
 //                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 1800) { //350, 650
+                if (pathTimer.getElapsedTime() > 2800) { //1800, 350, 650
                     //move from open gate position to score position
-                    follower.followPath(openGateScore, true);
+                    follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
-
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
-                        indexingPathState = 1000; //GPP -> GPP, no indexing
+                        indexingPathState = 2000; //PGP -> GPP, 1 indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
-                        indexingPathState = 4000; //GPP -> PGP, 2 indexing - 2, 0, 1
+                        indexingPathState = 1000; //PGP -> PGP, 0 indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
-                        indexingPathState = 2000; //GPP -> PPG, 1 indexing
+                        indexingPathState = 4000; //PGP -> PPG, 2 indexing - 2, 0, 1
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
+
                 }
                 break;
             case 13:
                 if(indexAndShoot())
                 {
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup2, true); //grabPickup1
+                    follower.followPath(scorePickup1, true); //grabPickup1
 
                     setPathState(21);
                 }
@@ -285,7 +286,7 @@ public class RedNearAuto extends LinearOpMode {
                     pathTimer.resetTimer();
 
                     ////grab balls at set 2
-                    follower.followPath(pickup2Grab2, true); //grabPickup1
+                    follower.followPath(pickup1Grab1, true); //grabPickup1
                     setPathState(22);
                 }
                 break;
@@ -298,16 +299,16 @@ public class RedNearAuto extends LinearOpMode {
 
                     //move to backout position
                     //follower.followPath(grab2Backout2, true);
-                    follower.followPath(grab2Score, true);
+                    follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
 
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
-                        indexingPathState = 2000; //PGP -> GPP, 1 indexing
+                        indexingPathState = 1000; //GPP -> GPP, no indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
-                        indexingPathState = 1000; //PGP -> PGP, 0 indexing
+                        indexingPathState = 4000; //GPP -> PGP, 2 indexing - 2, 0, 1
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
-                        indexingPathState = 4000; //PGP -> PPG, 2 indexing - 2, 0, 1
+                        indexingPathState = 2000; //GPP -> PPG, 1 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
                 }
@@ -406,9 +407,22 @@ public class RedNearAuto extends LinearOpMode {
                 .addPath(new BezierLine(backout1Pose, openGatePose))
                 .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
                 .build();
+        grab2OpenGate = follower.pathBuilder()
+                //.addPath(new BezierLine(grab1Pose, scorePose))
+                .addPath(new BezierLine(grab2Pose, backout2Pose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
+                .addPath(new BezierLine(backout2Pose, openGate2Pose))
+                .setLinearHeadingInterpolation(backout2Pose.getHeading(), openGate2Pose.getHeading())
+                .build();
         openGateScore = follower.pathBuilder()
                 .addPath(new BezierLine(openGatePose, scorePose))
                 .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
+                .build();
+        openGate2Score = follower.pathBuilder()
+                .addPath(new BezierLine(openGate2Pose, backout22Pose))
+                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(backout22Pose, scorePose))
+                .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
                 .build();
 
 
@@ -429,6 +443,11 @@ public class RedNearAuto extends LinearOpMode {
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
                 .addPath(new BezierLine(backout2Pose, scorePose))
                 .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
+                .build();
+        grab1Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab1Pose, scorePose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
+
                 .build();
 
 

@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -24,8 +25,20 @@ public class Intake {
         IDLE
     }
 
+    public static double LED_OFF = 0;
+    public static double LED_RED = 0.277;
+    public static double LED_ORANGE = 0.333;
+    public static double LED_YELLOW = 0.388;
+    public static double LED_SAGE = 0.444;
+    public static double LED_GREEN = 0.5;
+    public static double LED_Azure = 0.555;
+    public static double LED_BLUE = 0.611;
+    public static double LED_INDIGO = 0.666;
+    public static double LED_VIOLET = 0.722;
+
     private DcMotor horizontalIntake;
     private DcMotor verticalIntake;
+    private Servo led;
     private LinearOpMode mode;
 
 
@@ -44,6 +57,8 @@ public class Intake {
         this.mode = linearOpMode;
         horizontalIntake = hardwareMap.get(DcMotor.class, "horizontalIntake");
         verticalIntake = hardwareMap.get(DcMotor.class, "verticalIntake");
+
+        led = hardwareMap.get(Servo.class, "led");
 
         verticalIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -221,6 +236,12 @@ public class Intake {
             else //not yet, count down
                 latchCounters[index] -= 1;
         }
+    }
 
+    public void setLedColor(double colorPosition)
+    {
+        if(led != null) {
+            led.setPosition(colorPosition);
+        }
     }
 }

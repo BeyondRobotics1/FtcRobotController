@@ -31,13 +31,19 @@ public class IntakeTest extends LinearOpMode {
             if(gamepad1.right_bumper) {
                 if (artifactColors[0] != Color.WHITE &&
                         artifactColors[1] != Color.WHITE &&
-                        artifactColors[2] != Color.WHITE)
+                        artifactColors[2] != Color.WHITE) {
+                    intake.setLedColor(Intake.LED_GREEN);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                }
                 else if (artifactColors[0] != Color.WHITE &&
-                        artifactColors[1] != Color.WHITE)
+                        artifactColors[1] != Color.WHITE) {
+                    intake.setLedColor(Intake.LED_YELLOW);
                     intake.setIntakeMode(Intake.IntakeMode.HIN);
-                else
-                    intake.intake(0.95);;
+                }
+                else {
+                    intake.intake(0.95);
+                    intake.setLedColor(Intake.LED_OFF);
+                }
             }
             else if(gamepad1.a)
                 //intake.setIntakeMode(Intake.IntakeMode.IN);

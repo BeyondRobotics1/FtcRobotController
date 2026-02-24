@@ -55,6 +55,7 @@ public class Turret {
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
+    //PID controller for limelight 3A auto aiming
     PIDController controller;
     public static double kP = 0.001;//0.001; //0.8
     public static double kI = 0.005;//0.25; //0.01
@@ -202,15 +203,14 @@ public class Turret {
     }
 
     //use limelight3A tx to calibrate turret heading with servo
-    public double calibrateTurret()
-    {
+    public double calibrateTurret() {
 
         boolean calibrationCalculated = false;
         double servoPositionCalibration = 0.0;
 
         controller.setPID(kP, kI, kD);
 
-        if(limelight != null) {
+        if (limelight != null) {
             LLResult result = limelight.getLatestResult();
 
             // Access fiducial results
@@ -226,8 +226,7 @@ public class Turret {
                 mode.telemetry.addData("Limelight3A Tx (Degree):", "%.3f", currentAngleDegree);
                 mode.telemetry.addData("Target Angle  (Degree):", "%.3f", targetAngleDegree);
 
-                if(targetTagID == tagID)
-                {
+                if (targetTagID == tagID) {
 
                     double pid = controller.calculate(currentAngleDegree, targetAngleDegree);
 
@@ -244,10 +243,15 @@ public class Turret {
 
         //if tag not found, return previous calibration value
         //to avoid oscillating between 0 and servoPositionCalibration
-        if(calibrationCalculated)
+        if (calibrationCalculated)
             return servoPositionCalibration;
-        else
+        else {
+            ////reset controller
+            controller.reset();
+            controller.setPID(kP, kI, kD);
+
             return servoPreviousPositionCalibration;
+        }
     }
 
     //use limelight to detect the April Tag of the Obelisk
