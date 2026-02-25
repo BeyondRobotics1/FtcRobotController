@@ -70,7 +70,7 @@ public class RedNearAuto extends LinearOpMode {
     private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
     private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
     private final Pose backout2Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
-    private final Pose backout22Pose = new Pose(42, 75.5, Math.toRadians(180));
+    private final Pose backout22Pose = new Pose(45, 75.5, Math.toRadians(180)); //42, 75.5
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
@@ -199,26 +199,26 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 100) {//110
+                if (pathTimer.getElapsedTime() > 80) {//100
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
 
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 900) { //1250
+                if (pathTimer.getElapsedTime() > 950) { //1250
 
                     trigger.close();
                     intake.intake(0.925);
 
-                    //move to the pickup 2 position
+                    //move to the pickup 1 position
                     follower.followPath(scorePickup2, true); //grabPickup1
 
                     setPathState(11);
                 }
                 break;
-            //Second set of balls
+            //second set of balls
             case 11:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -232,17 +232,25 @@ public class RedNearAuto extends LinearOpMode {
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
 
-                    ////move grab2 position to open gate position
+                    ////move grab1 position to open gate position
                     follower.followPath(grab2OpenGate, true);
                     setPathState(12);
                 }
                 break;
+//            case 112:
+//                if (!follower.isBusy()) {
+//                    //Keep the gate open for 1 second
+//                    pathTimer.resetTimer();
+//                    setPathState(12);
+//                }
+//                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 4000) { //2800, 350, 650
+                if (pathTimer.getElapsedTime() > 4000) { //1800, 350, 650
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
+
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 2000; //PGP -> GPP, 1 indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -275,12 +283,7 @@ public class RedNearAuto extends LinearOpMode {
                 break;
             case 22:
                 if (!follower.isBusy()) {
-
-//                    //spit out the 4th ball
-//                    intake.setIntakeMode(Intake.IntakeMode.OUT);
-//                    sleep(60);
-
-                    //move to backout position
+                    //move to score position
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
@@ -298,7 +301,7 @@ public class RedNearAuto extends LinearOpMode {
             case 23:
                 if(indexAndShoot())
                 {
-                    //move to the pickup 1 position
+                    //move to the pickup 3 position
                     follower.followPath(scorePickup3, true); //grabPickup1
 
                     setPathState(31);
@@ -317,14 +320,17 @@ public class RedNearAuto extends LinearOpMode {
                 break;
             case 32:
                 if (!follower.isBusy()) {
-//                    //spit out the 4th ball
-//                    intake.setIntakeMode(Intake.IntakeMode.OUT);
-//                    sleep(60);
+
+                    pathTimer.resetTimer();
 
                     follower.followPath(grab3Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(33);
-
+                }
+                break;
+            case 33:
+                if(pathTimer.getElapsedTime() > 400)
+                {
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -333,12 +339,14 @@ public class RedNearAuto extends LinearOpMode {
                         indexingPathState = 1000; //PPG -> PPG, 0 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
+                    setPathState(34);
                 }
                 break;
-            case 33:
+            case 34:
                 if(indexAndShoot())
                 {
-                    indexingPathState = 5000; //clean up of any balls in the indexer!
+                    indexingPathState = 5000; //clean up
                     setPathState(50);
                 }
                 break;
@@ -361,7 +369,6 @@ public class RedNearAuto extends LinearOpMode {
                 }
                 break;
         }
-
     }
 
     public void buildPaths() {
@@ -392,17 +399,18 @@ public class RedNearAuto extends LinearOpMode {
         grab2OpenGate = follower.pathBuilder()
                 //.addPath(new BezierLine(grab1Pose, scorePose))
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
-                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
+                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
                 .addPath(new BezierLine(backout2Pose, openGate2Pose))
                 .setLinearHeadingInterpolation(backout2Pose.getHeading(), openGate2Pose.getHeading())
                 .build();
+
         openGateScore = follower.pathBuilder()
                 .addPath(new BezierLine(openGatePose, scorePose))
                 .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
                 .build();
         openGate2Score = follower.pathBuilder()
-                .addPath(new BezierLine(openGate2Pose, backout22Pose))
-                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(openGatePose, backout22Pose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), backout22Pose.getHeading())
                 .addPath(new BezierLine(backout22Pose, scorePose))
                 .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
                 .build();
@@ -419,17 +427,15 @@ public class RedNearAuto extends LinearOpMode {
                 .addPath(new BezierLine(pickup2Pose, grab2Pose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();
-
+        grab1Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab1Pose, scorePose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
+                .build();
         grab2Score = follower.pathBuilder()
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
                 .addPath(new BezierLine(backout2Pose, scorePose))
                 .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
-                .build();
-        grab1Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab1Pose, scorePose))
-                .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
-
                 .build();
 
 
@@ -492,9 +498,10 @@ public class RedNearAuto extends LinearOpMode {
         {
             //open trigger takes 50 mm
             //shoot the third ball first
+            //Feed the balls slower than reqular
             if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
             {
-                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
                 pathTimer.resetTimer();
 
                 indexingPathState = 1002;
@@ -551,10 +558,10 @@ public class RedNearAuto extends LinearOpMode {
         else if(indexingPathState == 2002 )
         {
             //open trigger takes 50 mm
-            //shoot the third ball first
+            //shoot the second & third ball first
             if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
             {
-                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
                 pathTimer.resetTimer();
 
                 indexingPathState = 2003;
@@ -580,7 +587,7 @@ public class RedNearAuto extends LinearOpMode {
             //then shoot the second ball
             if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
             {
-                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
 
                 pathTimer.resetTimer();
                 indexingPathState = 2005;

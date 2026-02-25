@@ -21,6 +21,8 @@ public class Intake {
         VIN,
         HIN,
         OUT,
+        SLOW_FEED,
+        MEDIUM_FEED,
         FEED,
         IDLE
     }
@@ -111,6 +113,14 @@ public class Intake {
             intake(1);
             //horizontalIntake.setPower(1);
             //verticalIntake.setPower(1);
+        }
+        else if (intakeMode == IntakeMode.SLOW_FEED)
+        {
+            intake(0.65);
+        }
+        else if (intakeMode == IntakeMode.MEDIUM_FEED)
+        {
+            intake(0.8);
         }
         else {
             horizontalIntake.setPower(0);

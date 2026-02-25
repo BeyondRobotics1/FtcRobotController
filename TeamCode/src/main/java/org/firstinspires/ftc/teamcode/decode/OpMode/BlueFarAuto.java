@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
@@ -49,15 +48,20 @@ public class BlueFarAuto extends LinearOpMode {
      * Start Pose of our robot
      */
     private final Pose startPose = new Pose(55, 7.5, Math.toRadians(90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(55, 20.5, Math.toRadians(90)); // Scoring Pose of our robot.
-    private final Pose pickup1Pose = new Pose(12.5, 12.25, Math.toRadians(180)); // first pickup spot.
-    private final Pose pickup2Pose = new Pose(12.5, 8.75, Math.toRadians(180)); // Second pickup spot
-    private final Pose pickup3Pose = new Pose(12.5, 15, Math.toRadians(180)); //Third pickup spot
+    private final Pose scorePose = new Pose(58.39, 20.23, Math.toRadians(115)); // 55, 20.5, 90 Scoring Pose of our robot.
 
-    private final Pose parkPose = new Pose(55, 31.5, Math.toRadians(90)); // Where we park
+    private final Pose pickup1Pose = new Pose(40, 12, Math.toRadians(180)); // Second pickup spot
+    private final Pose grab1Pose = new Pose(12.5, 8.75, Math.toRadians(180)); // Second pickup spot
+
+    private final Pose pickup2Pose = new Pose(40, 12, Math.toRadians(180)); //Third pickup spot
+    private final Pose grab2Pose = new Pose(12.5, 18, Math.toRadians(180)); // Second pickup spot
+
+    private final Pose parkPose = new Pose(43, 14, Math.toRadians(135)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
-    private PathChain pickupScore1, scorePickup1, pickupScore2, scorePickup2, pickupScore3, scorePickup3, scorePark;
+    private PathChain scorePickup1Grab1, grab1Score;
+    private PathChain scorePickup2Grab2, grab2Score;
+    private PathChain scorePark;
 
 
     @Override
@@ -137,7 +141,7 @@ public class BlueFarAuto extends LinearOpMode {
 
 
         //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
-        turret.setServoPosition(0.244);
+        //turret.setServoPosition(0.244);
 
         shooter.setPower(0.60);
 
@@ -177,140 +181,195 @@ public class BlueFarAuto extends LinearOpMode {
             case 2:
                 if (pathTimer.getElapsedTime() > 100) {//110
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
 
-                    setPathState(3);
-                }
-                break;
-            case 3:
-                if (pathTimer.getElapsedTime() > 950) { //1250
-
-                    trigger.close();
-                    intake.intake(0.925);
-
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup1, true); //grabPickup1
-
-                    setPathState(4);
-                }
-                break;
-            case 4:
-                if (!follower.isBusy()) {
-                    //Keep the gate open for 1 second
-                    pathTimer.resetTimer();
-                    setPathState(5);
-                }
-                break;
-            case 5:
-                if (pathTimer.getElapsedTime() > 1000) { //500, 650
-                    follower.followPath(pickupScore1, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                    setPathState(6);
-                }
-                break;
-            case 6:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    trigger.open();
-                    setPathState(7);
-                }
-                break;
-            case 7:
-                if (pathTimer.getElapsedTime() > 100) {//110, 300
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-                    setPathState(8);
-                }
-                break;
-            case 8:
-                if (pathTimer.getElapsedTime() > 950) { //1250
-
-                    trigger.close();
-                    intake.intake(0.925);
-
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup2, true); //grabPickup1
-
-                    setPathState(9);
-                }
-                break;
-            case 9:
-                if (!follower.isBusy()) {
-                    //Keep the gate open for 1 second
-                    pathTimer.resetTimer();
                     setPathState(10);
                 }
                 break;
+
+                //first loop
             case 10:
-                if (pathTimer.getElapsedTime() > 1000) { //500, 650
-                    follower.followPath(pickupScore2, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                if (pathTimer.getElapsedTime() > 1000) { //1250
+
+                    trigger.close();
+                    intake.intake(0.925);
+
+                    //move to the pickup 1 position
+                    follower.followPath(scorePickup1Grab1, true); //grabPickup1
+
                     setPathState(11);
                 }
                 break;
             case 11:
                 if (!follower.isBusy()) {
+                    //Keep intake on for 1 second
                     pathTimer.resetTimer();
-                    trigger.open();
                     setPathState(12);
                 }
                 break;
             case 12:
-                if (pathTimer.getElapsedTime() > 100) {//110, 300
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                //intake for 2 seconds to make sure all 3 balls are in
+                if (pathTimer.getElapsedTime() > 1500) {
+                    follower.followPath(grab1Score, true);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
                 }
                 break;
             case 13:
-                if (pathTimer.getElapsedTime() > 950) { //1250
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    trigger.open();
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                if (pathTimer.getElapsedTime() > 500) {//wait for robot to stabilize
+                    pathTimer.resetTimer();
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+                    setPathState(20);
+                }
+                break;
+
+            //second loop
+            case 20:
+                if (pathTimer.getElapsedTime() > 1000) { //1250
 
                     trigger.close();
                     intake.intake(0.925);
 
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup3, true); //grabPickup1
+                    follower.followPath(scorePickup2Grab2, true); //grabPickup1
 
-                    setPathState(14);
+                    setPathState(21);
                 }
                 break;
-            case 14:
+            case 21:
                 if (!follower.isBusy()) {
-                    //Keep the gate open for 1 second
+                    //Keep inke on for 1 second
                     pathTimer.resetTimer();
-                    setPathState(15);
+                    setPathState(22);
                 }
                 break;
-            case 15:
-                if (pathTimer.getElapsedTime() > 1000) { //500, 650
-                    follower.followPath(pickupScore3, true);
+            case 22:
+                if (pathTimer.getElapsedTime() > 1500) { //intake balls
+                    follower.followPath(grab2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                    setPathState(16);
+                    setPathState(23);
                 }
                 break;
-            case 16:
+            case 23:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
                     trigger.open();
-                    setPathState(17);
+                    setPathState(24);
                 }
                 break;
-            case 17:
-                if (pathTimer.getElapsedTime() > 100) {//110, 300
+            case 24:
+                if (pathTimer.getElapsedTime() > 500) {//wait for robot to stabilize
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-                    setPathState(18);
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+                    setPathState(30);
                 }
                 break;
-            case 18:
-                if (pathTimer.getElapsedTime() > 950) {
+
+
+            //third loop is the same as second loop
+            case 30:
+                if (pathTimer.getElapsedTime() > 1000) { //1250
+
+                    trigger.close();
+                    intake.intake(0.925);
+
+                    //move to the pickup 1 position
+                    follower.followPath(scorePickup2Grab2, true); //grabPickup1
+
+                    setPathState(31);
+                }
+                break;
+            case 31:
+                if (!follower.isBusy()) {
+                    //Keep inke on for 1 second
+                    pathTimer.resetTimer();
+                    setPathState(32);
+                }
+                break;
+            case 32:
+                if (pathTimer.getElapsedTime() > 1500) { //intake balls
+                    follower.followPath(grab2Score, true);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                    setPathState(33);
+                }
+                break;
+            case 33:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    trigger.open();
+                    setPathState(34);
+                }
+                break;
+            case 34:
+                if (pathTimer.getElapsedTime() > 500) {//wait for robot to stabilize
+                    pathTimer.resetTimer();
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+                    setPathState(40);
+                }
+                break;
+
+
+            //forth loop is the same as the first loop
+            case 40:
+                if (pathTimer.getElapsedTime() > 1000) { //1250
+
+                    trigger.close();
+                    intake.intake(0.925);
+
+                    //move to the pickup 1 position
+                    follower.followPath(scorePickup1Grab1, true); //grabPickup1
+
+                    setPathState(41);
+                }
+                break;
+            case 41:
+                if (!follower.isBusy()) {
+                    //Keep intake on for 1 second
+                    pathTimer.resetTimer();
+                    setPathState(42);
+                }
+                break;
+            case 42:
+                //intake for 2 seconds to make sure all 3 balls are in
+                if (pathTimer.getElapsedTime() > 1500) {
+                    follower.followPath(grab1Score, true);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                    setPathState(43);
+                }
+                break;
+            case 43:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    trigger.open();
+                    setPathState(44);
+                }
+                break;
+            case 44:
+                if (pathTimer.getElapsedTime() > 500) {//wait for robot to stabilize
+                    pathTimer.resetTimer();
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+                    setPathState(100);
+                }
+                break;
+
+
+                //park
+            case 100:
+                if (pathTimer.getElapsedTime() > 1000) {
                     follower.followPath(scorePark, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     trigger.close();
-                    setPathState(19);
+                    setPathState(1000);
                 }
                 break;
-            case 19: //end of auto
+            case 1000: //end of auto
                 if (!follower.isBusy()) {
                     saveAutoState();
                     setPathState(-1);
@@ -331,39 +390,37 @@ public class BlueFarAuto extends LinearOpMode {
     scorePreload.setConstantInterpolation(startPose.getHeading()); */
         /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
 
-        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup1 = follower.pathBuilder()
+        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        scorePickup1Grab1 = follower.pathBuilder()
                 .addPath(new BezierLine(scorePose, pickup1Pose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading())
+                .addPath(new BezierLine(pickup1Pose, grab1Pose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
                 .build();
 
-
-        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-
-        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup2Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
-                .build();
-
-
-
-        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup3Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
-                .build();
-        pickupScore1 = follower.pathBuilder()
+        grab1Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab1Pose, pickup1Pose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), pickup1Pose.getHeading())
                 .addPath(new BezierLine(pickup1Pose, scorePose))
                 .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
                 .build();
-        pickupScore2 = follower.pathBuilder()
+
+
+
+        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        scorePickup2Grab2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .addPath(new BezierLine(pickup2Pose, grab2Pose))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
+                .build();
+
+
+        grab2Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab2Pose, pickup2Pose))
+                .setLinearHeadingInterpolation(grab2Pose.getHeading(), pickup2Pose.getHeading())
                 .addPath(new BezierLine(pickup2Pose, scorePose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
-                .build();
-        pickupScore3 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup3Pose, scorePose))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), scorePose.getHeading())
                 .build();
 
 

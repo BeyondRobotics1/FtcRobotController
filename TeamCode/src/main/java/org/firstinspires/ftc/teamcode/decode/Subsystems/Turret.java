@@ -44,6 +44,9 @@ public class Turret {
     public static double servoPositionAutoShootingRedAlliance = 0.296;
     public static double servoPositionAutoShootingBlueAlliance = 0.096;
 
+    //Limelight 3A auto aiming target degree of Tx
+    public static double TARGET_ANGLE_DEGREE_RED = 0.0;
+    public static double TARGET_ANGLE_DEGREE_BLUE = 5.0;
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;
@@ -123,10 +126,10 @@ public class Turret {
         }
         else {
             if(this.alliance == DecodeBlackBoard.RED) {
-                targetAngleDegree = 0;
+                targetAngleDegree = TARGET_ANGLE_DEGREE_RED;
             }
             else {
-                targetAngleDegree = 5;
+                targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE;
             }
 
             setServoPosition(servoPositionMiddle);

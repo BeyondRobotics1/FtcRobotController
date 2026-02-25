@@ -59,7 +59,7 @@ public class BlueNearAuto extends LinearOpMode {
      * Start Pose of our robot
      */
     private final Pose startPose = new Pose(30.5, 130.5, Math.toRadians(90)); //31, 131, 90, Start Pose of our robot.
-    private final Pose scorePose = new Pose(43, 96, Math.toRadians(135)); // 43, 97, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose scorePose = new Pose(43, 96, Math.toRadians(136)); // 43, 96, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     private final Pose pickup1Pose = new Pose(41.5, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose grab1Pose = new Pose(17.75, 83, Math.toRadians(180)); //17.5, 83
@@ -70,7 +70,7 @@ public class BlueNearAuto extends LinearOpMode {
     private final Pose pickup2Pose = new Pose(41.125, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
     private final Pose backout2Pose = new Pose(19, 58, Math.toRadians(180)); //20, 58
-    private final Pose backout22Pose = new Pose(35, 66, Math.toRadians(180));
+    private final Pose backout22Pose = new Pose(40, 66, Math.toRadians(180)); //35, 66, 180
 
     private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
@@ -199,15 +199,15 @@ public class BlueNearAuto extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 100) {//110
+                if (pathTimer.getElapsedTime() > 80) {//100
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
 
                     setPathState(3);
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 900) { //1250
+                if (pathTimer.getElapsedTime() > 950) { //1250
 
                     trigger.close();
                     intake.intake(0.925);
@@ -218,7 +218,7 @@ public class BlueNearAuto extends LinearOpMode {
                     setPathState(11);
                 }
                 break;
-            //first set of balls
+            //second set of balls
             case 11:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -245,7 +245,7 @@ public class BlueNearAuto extends LinearOpMode {
 //                }
 //                break;
             case 12:
-                if (pathTimer.getElapsedTime() > 1800) { //1800, 350, 650
+                if (pathTimer.getElapsedTime() > 4000) { //1800, 350, 650
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -271,7 +271,7 @@ public class BlueNearAuto extends LinearOpMode {
                 }
                 break;
 
-            //second set of balls
+            //first set of balls
             case 21:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -283,17 +283,10 @@ public class BlueNearAuto extends LinearOpMode {
                 break;
             case 22:
                 if (!follower.isBusy()) {
-
-                    //spit out the 4th ball
-                    intake.setIntakeMode(Intake.IntakeMode.OUT);
-                    sleep(60);
-
-                    //move to backout position
-                    //follower.followPath(grab2Backout2, true);
+                    //move to score position
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
-
 
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 1000; //GPP -> GPP, no indexing
@@ -308,7 +301,7 @@ public class BlueNearAuto extends LinearOpMode {
             case 23:
                 if(indexAndShoot())
                 {
-                    //move to the pickup 1 position
+                    //move to the pickup 3 position
                     follower.followPath(scorePickup3, true); //grabPickup1
 
                     setPathState(31);
@@ -327,14 +320,17 @@ public class BlueNearAuto extends LinearOpMode {
                 break;
             case 32:
                 if (!follower.isBusy()) {
-                    //spit out the 4th ball
-                    intake.setIntakeMode(Intake.IntakeMode.OUT);
-                    sleep(60);
+
+                    pathTimer.resetTimer();
 
                     follower.followPath(grab3Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(33);
-
+                }
+                break;
+            case 33:
+                if(pathTimer.getElapsedTime() > 400)
+                {
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -343,16 +339,18 @@ public class BlueNearAuto extends LinearOpMode {
                         indexingPathState = 1000; //PPG -> PPG, 0 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
+                    setPathState(34);
                 }
                 break;
-            case 33:
+            case 34:
                 if(indexAndShoot())
                 {
                     indexingPathState = 5000; //clean up
                     setPathState(50);
                 }
                 break;
-            case 50: //clearn up
+            case 50: //clean up
                 if(indexAndShoot())
                 {
                     setPathState(51);
@@ -371,7 +369,6 @@ public class BlueNearAuto extends LinearOpMode {
                 }
                 break;
         }
-
     }
 
     public void buildPaths() {
@@ -501,9 +498,10 @@ public class BlueNearAuto extends LinearOpMode {
         {
             //open trigger takes 50 mm
             //shoot the third ball first
+            //Feed the balls slower than reqular
             if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
             {
-                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
                 pathTimer.resetTimer();
 
                 indexingPathState = 1002;
@@ -560,10 +558,10 @@ public class BlueNearAuto extends LinearOpMode {
         else if(indexingPathState == 2002 )
         {
             //open trigger takes 50 mm
-            //shoot the third ball first
+            //shoot the second & third ball first
             if (pathTimer.getElapsedTime() > openingTriggerWaitTime)
             {
-                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
                 pathTimer.resetTimer();
 
                 indexingPathState = 2003;
@@ -589,7 +587,7 @@ public class BlueNearAuto extends LinearOpMode {
             //then shoot the second ball
             if (pathTimer.getElapsedTime() > 2*indexingWaitTime)
             {
-                intake.setIntakeMode(Intake.IntakeMode.FEED);
+                intake.setIntakeMode(Intake.IntakeMode.SLOW_FEED);
 
                 pathTimer.resetTimer();
                 indexingPathState = 2005;
