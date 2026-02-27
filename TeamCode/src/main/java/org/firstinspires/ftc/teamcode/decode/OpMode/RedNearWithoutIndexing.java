@@ -54,13 +54,16 @@ public class RedNearWithoutIndexing extends LinearOpMode{
     private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
     private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
     private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
-    private final Pose openGatePose = new Pose(19.35, 65.5, Math.toRadians(180)); //18, 65.5 //gate position
+    private final Pose openGatePose = new Pose(17, 76, Math.toRadians(180)); //18, 65.5 //gate position
+    private final Pose openGate2Pose = new Pose(14, 82, Math.toRadians(-154)); //14, 82 //gate position
+    private final Pose openGatePickupPose = new Pose(14, 83, Math.toRadians(-170)); //
+    //18, 65.5 //gate position
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
     private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
     private final Pose backout2Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
-
+    private final Pose backout22Pose = new Pose(45, 75.5, Math.toRadians(180)); //42, 75.5
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
@@ -73,10 +76,11 @@ public class RedNearWithoutIndexing extends LinearOpMode{
     private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGateScore;
+    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore;
     private PathChain scorePickup2, pickup2Grab2, grab2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePickup4, scoreGrab4, grab4Score;
+    private PathChain scoreOpenGate,openGatePickup, gatePickUpScore;
     private PathChain scorePark;
 
 
@@ -211,7 +215,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                     intake.intake(0.925);
 
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup1, true); //grabPickup1
+                    follower.followPath(scorePickup2, true); //grabPickup1
 
                     setPathState(11);
                 }
@@ -222,7 +226,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                     pathTimer.resetTimer();
 
                     //grab balls at position 1
-                    follower.followPath(pickup1Grab1, true); //grabPickup1
+                    follower.followPath(pickup2Grab2, true); //grabPickup1
                     setPathState(111);
                 }
                 break;
@@ -231,7 +235,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                     pathTimer.resetTimer();
 
                     //move grab1 position to open gate position
-                    follower.followPath(grab1OpenGate, true);
+                    follower.followPath(grab2OpenGate, true);
                     setPathState(112);
                 }
                 break;
@@ -266,31 +270,48 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 break;
             case 15:
                 if (pathTimer.getElapsedTime() > 950) { //shoot balls 1500
+             ;
+
 
                     trigger.close();
-                    intake.intake(0.925);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
 
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup2, true); //grabPickup1
+                    follower.followPath(scoreOpenGate, true); //grabPickup1
+
+                    setPathState(210);
+                }
+                break;
+            case 210:
+                if (!follower.isBusy()) { //shoot balls 1500
+                    pathTimer.resetTimer();
+
+
+
 
                     setPathState(21);
                 }
                 break;
             //second set of balls
             case 21:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTime() > 400) {
                     pathTimer.resetTimer();
 
+                    intake.intake(0.925);
                     //grab balls at position 1
-                    follower.followPath(pickup2Grab2, true); //grabPickup1
-                    setPathState(22);
+                    follower.followPath(openGatePickup, true); //grabPickup1
+                    setPathState(-220);
                 }
                 break;
-            case 22:
+            case 220:
                 if (!follower.isBusy()) {
-                    //move to backout position
-                    //follower.followPath(grab2Backout2, true);
-                    follower.followPath(grab2Score, true);
+
+                    setPathState(22);
+                }
+            case 22:
+                if (pathTimer.getElapsedTime() > 700) {
+
+                    follower.followPath(gatePickUpScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
                 }
@@ -307,7 +328,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
-                    setPathState(25);
+                    setPathState(-25);
                 }
                 break;
             case 25:
@@ -460,10 +481,39 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 .addPath(new BezierLine(backout1Pose, openGatePose))
                 .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
                 .build();
-        openGateScore = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, scorePose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
+        grab2OpenGate = follower.pathBuilder()
+                //.addPath(new BezierLine(grab1Pose, scorePose))
+                .addPath(new BezierLine(grab2Pose, backout2Pose))
+                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
+                .addPath(new BezierLine(backout2Pose, openGatePose))
+                .setLinearHeadingInterpolation(backout2Pose.getHeading(), openGatePose.getHeading())
                 .build();
+        scoreOpenGate = follower.pathBuilder()
+                //.addPath(new BezierLine(grab1Pose, scorePose))
+                .addPath(new BezierLine(scorePose, backout22Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(backout22Pose, openGate2Pose))
+                .setLinearHeadingInterpolation(backout22Pose.getHeading(), openGate2Pose.getHeading())
+                .build();
+        openGatePickup = follower.pathBuilder()
+                .addPath(new BezierLine(openGate2Pose, openGatePickupPose))
+                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), openGatePickupPose.getHeading())
+                .build();
+        gatePickUpScore = follower.pathBuilder()
+                .addPath(new BezierLine(openGatePickupPose, backout22Pose))
+                .setLinearHeadingInterpolation(openGatePickupPose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(backout22Pose, scorePose))
+                .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
+                .build();
+
+        openGateScore = follower.pathBuilder()
+                .addPath(new BezierLine(openGatePose, backout22Pose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(backout22Pose, scorePose))
+                .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
+
+                .build();
+
 
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
 

@@ -46,7 +46,7 @@ public class Turret {
 
     //Limelight 3A auto aiming target degree of Tx
     public static double TARGET_ANGLE_DEGREE_RED = 0.0;
-    public static double TARGET_ANGLE_DEGREE_BLUE = 5.0;
+    public static double TARGET_ANGLE_DEGREE_BLUE = 6.0;
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;
@@ -115,25 +115,17 @@ public class Turret {
             limelight.start();
         }
 
-        if(isAuto)
+        if(!isAuto)
         {
-            if(this.alliance == DecodeBlackBoard.RED) {
-                setServoPosition(servoPositionObeliskDetectionRedAlliance);
-            }
-            else {
-                setServoPosition(servoPositionObeliskDetectionBlueAlliance);
-            }
-        }
-        else {
             if(this.alliance == DecodeBlackBoard.RED) {
                 targetAngleDegree = TARGET_ANGLE_DEGREE_RED;
             }
             else {
                 targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE;
             }
-
-            setServoPosition(servoPositionMiddle);
         }
+
+        setServoPosition(servoPositionMiddle);
     }
 
     public boolean isLimeLight3ARunning()

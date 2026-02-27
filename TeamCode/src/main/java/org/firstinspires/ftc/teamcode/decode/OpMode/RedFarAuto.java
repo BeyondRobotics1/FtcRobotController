@@ -59,16 +59,16 @@ public class RedFarAuto extends LinearOpMode {
 //    private Path scorePreload;
 //    private PathChain pickupScore1, scorePickup1, pickupScore2, scorePickup2, pickupScore3, scorePickup3, scorePark;
 
-    private final Pose startPose = new Pose(55, 133, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(60, 120, Math.toRadians(-115)); // 55, 20.5, 90 Scoring Pose of our robot.
+    private final Pose startPose = new Pose(55, 134, Math.toRadians(-90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, 90 Scoring Pose of our robot.
 
     private final Pose pickup1Pose = new Pose(40, 130, Math.toRadians(180)); // Second pickup spot
-    private final Pose grab1Pose = new Pose(12.5, 133, Math.toRadians(180)); // Second pickup spot
+    private final Pose grab1Pose = new Pose(12.5, 134, Math.toRadians(180)); // Second pickup spot
 
     private final Pose pickup2Pose = new Pose(40, 130, Math.toRadians(180)); //Third pickup spot
     private final Pose grab2Pose = new Pose(12.5, 126, Math.toRadians(180)); // Second pickup spot
 
-    private final Pose parkPose = new Pose(43, 129, Math.toRadians(-135)); // 55, 31.5, 90 Where we park
+    private final Pose parkPose = new Pose(38, 129 , Math.toRadians(-180)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;

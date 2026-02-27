@@ -108,6 +108,7 @@ public class BlueNearAuto extends LinearOpMode {
                 DecodeBlackBoard.BLUE,
                 false,
                 true, true);
+        turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAlliance);
 
         telemetry.addLine("hardware initialization completed");
 

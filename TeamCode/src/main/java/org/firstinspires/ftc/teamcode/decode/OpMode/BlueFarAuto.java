@@ -56,7 +56,7 @@ public class BlueFarAuto extends LinearOpMode {
     private final Pose pickup2Pose = new Pose(40, 12, Math.toRadians(180)); //Third pickup spot
     private final Pose grab2Pose = new Pose(12.5, 18, Math.toRadians(180)); // Second pickup spot
 
-    private final Pose parkPose = new Pose(43, 14, Math.toRadians(135)); // 55, 31.5, 90 Where we park
+    private final Pose parkPose = new Pose(39, 12, Math.toRadians(180)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;

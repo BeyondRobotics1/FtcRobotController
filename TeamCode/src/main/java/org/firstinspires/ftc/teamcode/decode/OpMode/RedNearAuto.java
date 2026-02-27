@@ -109,6 +109,8 @@ public class RedNearAuto extends LinearOpMode {
                 DecodeBlackBoard.RED,
                 false,
                 true, true);
+        turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAlliance);
+
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
