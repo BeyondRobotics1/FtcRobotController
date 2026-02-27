@@ -30,16 +30,16 @@ public class Shooter {
     PIDController controller;
 
     private MotorGroup flyWheel;
-    public static double kP = 0.002; //0.001
+    public static double kP = 0.001; //0.001
     public static double kI = 0.25; //0.25
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.525;//0.52
-    double targetSpeedFar = 0.452;//0.44
-    double targetSpeedMedium = 0.42;//0.42
-    double targetSpeedNear = 0.392;//0.394
+    double targetSpeedOutZone = 0.4;//0.52
+    double targetSpeedFar = 0.4;//0.44
+    double targetSpeedMedium = 0.35;//0.42
+    double targetSpeedNear = 0.32;//0.394
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -57,7 +57,7 @@ public class Shooter {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
 
-        leftFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -102,7 +102,7 @@ public class Shooter {
         targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
 
         //motor could give us negative velocity
-        double velocity = Math.abs(rightFlywheel.getVelocity());
+        double velocity = Math.abs(leftFlywheel.getVelocity());
         if (velocity < 5)
             return;
 

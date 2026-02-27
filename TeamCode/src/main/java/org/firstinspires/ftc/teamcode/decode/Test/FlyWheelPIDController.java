@@ -45,7 +45,7 @@ public class FlyWheelPIDController extends LinearOpMode {
         leftFlywheel = hardwareMap.get(DcMotorEx.class, "leftFlywheel");
         rightFlywheel = hardwareMap.get(DcMotorEx.class, "rightFlywheel");
 
-        leftFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFlywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -76,7 +76,7 @@ public class FlyWheelPIDController extends LinearOpMode {
                 targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
                 controller.setPID(kP, kI, kD);
 
-                double velocity = Math.abs(rightFlywheel.getVelocity());
+                double velocity = Math.abs(leftFlywheel.getVelocity());
 
                 double pid = controller.calculate(velocity, targetVelocity);
 
