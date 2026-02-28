@@ -291,11 +291,11 @@ public class RedNearAuto extends LinearOpMode {
                     setPathState(23);
 
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
-                        indexingPathState = 1000; //GPP -> GPP, no indexing
+                        indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
-                        indexingPathState = 4000; //GPP -> PGP, 2 indexing - 2, 0, 1
+                        indexingPathState = 2000; //PPG -> PGP, 1 indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
-                        indexingPathState = 2000; //GPP -> PPG, 1 indexing
+                        indexingPathState = 1000; //PPG -> PPG, 0 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
                 }
@@ -333,12 +333,13 @@ public class RedNearAuto extends LinearOpMode {
             case 33:
                 if(pathTimer.getElapsedTime() > 400)
                 {
+
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
-                        indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
+                        indexingPathState = 1000; //GPP -> GPP, no indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
-                        indexingPathState = 2000; //PPG -> PGP, 1 indexing
+                        indexingPathState = 4000; //GPP -> PGP, 2 indexing - 2, 0, 1
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PPG)
-                        indexingPathState = 1000; //PPG -> PPG, 0 indexing
+                        indexingPathState = 2000; //GPP -> PPG, 1 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
 
