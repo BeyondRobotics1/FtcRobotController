@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Near NO indexing 3 Spikes", group = "Decode")
+@Autonomous(name = "Red Near 3 Spikes", group = "Decode")
 public class RedNearWithoutIndexing3Spikes extends LinearOpMode {
 
     //Hardware

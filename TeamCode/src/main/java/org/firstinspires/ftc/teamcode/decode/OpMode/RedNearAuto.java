@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Near Auto", group = "Decode")
+@Autonomous(name = "Red Near Indexing", group = "Decode")
 public class RedNearAuto extends LinearOpMode {
 
     //wait time in ms

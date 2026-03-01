@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.common.PID;
 
 public class DriveTrain {
 
-    static final double     APPROACH_SPEED  = 0.25;
+    static final double     APPROACH_SPEED  = -0.09;
 
     final float[] hsvValuesLeft = new float[3];
     final float[] hsvValuesRight = new float[3];
@@ -132,10 +132,10 @@ public class DriveTrain {
         double x = left_stick_x;
         double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
 
-        if(x != 0.0 && Math.abs(y/x) >= 1.2)
+        if(x != 0.0 && Math.abs(y/x) >= 1.1)
             x = 0.0;
 
-        if(y != 0.0 && Math.abs(x/y) >= 1.2)
+        if(y != 0.0 && Math.abs(x/y) >= 1.1)
             y = 0.0;
 
         y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
@@ -199,6 +199,12 @@ public class DriveTrain {
     //drive to Red/Blue lines on the field and stop
     public void driveToLine()
     {
+        if(colorSensorLeft == null)
+            mode.telemetry.addLine("colorSensorLeft is null");
+        if(colorSensorRight == null)
+            mode.telemetry.addLine("colorSensorRight is null");
+
+
         if(colorSensorLeft != null &&
                 colorSensorRight != null) {
             NormalizedRGBA colorsLeft = colorSensorLeft.getNormalizedColors();
@@ -207,20 +213,25 @@ public class DriveTrain {
             Color.colorToHSV(colorsLeft.toColor(), hsvValuesLeft);
             Color.colorToHSV(colorsRight.toColor(), hsvValuesRight);
 
-            if (hsvValuesLeft[0] < 30 || hsvValuesLeft[0] > 200) {
-                motorFrontLeft.setPower(APPROACH_SPEED);
-                motorBackLeft.setPower(APPROACH_SPEED);
-            } else {
+            mode.telemetry.addData("colorSensorLeft hue", "%f.2", hsvValuesLeft[0]);
+            mode.telemetry.addData("colorSensorRight hue", "%f.2", hsvValuesRight[0]);
+
+            //red/blue line detected, set power to 0
+            if (hsvValuesLeft[0] <= 31 || hsvValuesLeft[0] > 200) {
                 motorFrontLeft.setPower(0);
                 motorBackLeft.setPower(0);
+            } else {
+                motorFrontLeft.setPower(APPROACH_SPEED);
+                motorBackLeft.setPower(APPROACH_SPEED);
             }
 
-            if (hsvValuesRight[0] < 30 || hsvValuesRight[0] > 200) {
-                motorFrontRight.setPower(APPROACH_SPEED);
-                motorBackRight.setPower(APPROACH_SPEED);
-            } else {
+            //red/blue line detected, set power to 0
+            if (hsvValuesRight[0] <= 31 || hsvValuesRight[0] > 200) {
                 motorFrontRight.setPower(0);
                 motorBackRight.setPower(0);
+            } else {
+                motorFrontRight.setPower(APPROACH_SPEED);
+                motorBackRight.setPower(APPROACH_SPEED);
             }
         }
     }

@@ -120,11 +120,15 @@ public class TeleOpTest extends LinearOpMode {
         telemetry.addLine("LynxModule initialized");
 
         softRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.1, 0.1, 100)  //
+                .addStep(0.5, 0.5, 100)  //
+                .addStep(0.9, 0.9, 300)
+                .addStep(0.5, 0.5, 100)
                 .build();
         strongRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.5, 0.5, 100)  //
-                .addStep(1, 1, 200)
+                .addStep(1, 1, 350)
+                .addStep(0.5, 0.5, 100)
+                .addStep(1, 1, 350)
                 .addStep(0.5, 0.5, 100)
                 .build();
 
@@ -262,13 +266,13 @@ public class TeleOpTest extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
-            if(liftMode == DecodeTeleOp.LiftMode.NONE)
+            if(liftMode == DecodeTeleOp.LiftMode.NONE && !gamepad1.dpad_down)
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
                 rumbleEndgame = 1;
-                gamepad1.runRumbleEffect(strongRumbleEffect);
-                gamepad2.runRumbleEffect(strongRumbleEffect);
+                gamepad1.runRumbleEffect(softRumbleEffect);
+                gamepad2.runRumbleEffect(softRumbleEffect);
             }
 
 
@@ -276,6 +280,7 @@ public class TeleOpTest extends LinearOpMode {
                 rumbleEndgame = 2;
                 gamepad1.runRumbleEffect(strongRumbleEffect);
                 gamepad2.runRumbleEffect(strongRumbleEffect);
+
                 isEndGame = true;
             }
 

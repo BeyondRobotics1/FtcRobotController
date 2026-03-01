@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
@@ -23,9 +22,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Far Auto", group = "Decode")
+@Autonomous(name = "Blue Far Loading Zone", group = "Decode")
 
-public class RedFarAuto extends LinearOpMode {
+public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
     //Hardware
     private Shooter shooter;
@@ -47,28 +46,17 @@ public class RedFarAuto extends LinearOpMode {
 
     /**
      * Start Pose of our robot
-    */
-//    private final Pose startPose = new Pose(55, 136.5, Math.toRadians(-90)); // Start Pose of our robot.
-//    private final Pose scorePose = new Pose(55, 123.5, Math.toRadians(-90)); // Scoring Pose of our robot.
-//    private final Pose pickup1Pose = new Pose(12.5, 131.75, Math.toRadians(180)); // first pickup spot.
-//    private final Pose pickup2Pose = new Pose(12.5, 135.25, Math.toRadians(180)); // Second pickup spot
-//    private final Pose pickup3Pose = new Pose(12.5, 129, Math.toRadians(180)); //Third pickup spot
-//
-//    private final Pose parkPose = new Pose(55, 112.5, Math.toRadians(-90)); // Where we park
-//
-//    private Path scorePreload;
-//    private PathChain pickupScore1, scorePickup1, pickupScore2, scorePickup2, pickupScore3, scorePickup3, scorePark;
+     */
+    private final Pose startPose = new Pose(55, 7.5, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(58.39, 20.23, Math.toRadians(115)); // 55, 20.5, 90 Scoring Pose of our robot.
 
-    private final Pose startPose = new Pose(55, 134, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, 90 Scoring Pose of our robot.
+    private final Pose pickup1Pose = new Pose(40, 10, Math.toRadians(180)); //40, 12, 180 Second pickup spot
+    private final Pose grab1Pose = new Pose(12.25, 8.75, Math.toRadians(180)); // Second pickup spot
 
-    private final Pose pickup1Pose = new Pose(40, 130, Math.toRadians(180)); // Second pickup spot
-    private final Pose grab1Pose = new Pose(12.5, 134, Math.toRadians(180)); // Second pickup spot
+    private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 12Third pickup spot
+    private final Pose grab2Pose = new Pose(12.25, 24, Math.toRadians(180)); // Second pickup spot
 
-    private final Pose pickup2Pose = new Pose(40, 130, Math.toRadians(180)); //Third pickup spot
-    private final Pose grab2Pose = new Pose(12.5, 126, Math.toRadians(180)); // Second pickup spot
-
-    private final Pose parkPose = new Pose(38, 129 , Math.toRadians(-180)); // 55, 31.5, 90 Where we park
+    private final Pose parkPose = new Pose(39, 12, Math.toRadians(180)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
@@ -84,7 +72,7 @@ public class RedFarAuto extends LinearOpMode {
         indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
+        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.BLUE);
         shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
 
         telemetry.addLine("Initializing intake");
@@ -96,8 +84,8 @@ public class RedFarAuto extends LinearOpMode {
 
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
-                DecodeBlackBoard.RED_TARGET_POSE,
-                DecodeBlackBoard.RED,
+                DecodeBlackBoard.BLUE_TARGET_POSE,
+                DecodeBlackBoard.BLUE,
                 false,
                 true, true);
         turret.resetTurretHeading();
@@ -129,19 +117,22 @@ public class RedFarAuto extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Far Auto");
+            telemetry.addLine("Blue Far Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
                 obelisk_id = tag_id;
                 telemetry.addLine("Obelisk: GPP");
-            } else if (tag_id == DecodeBlackBoard.OBELISK_PGP) {
+            }
+            else if(tag_id == DecodeBlackBoard.OBELISK_PGP) {
                 obelisk_id = tag_id;
                 telemetry.addLine("Obelisk: PGP");
-            } else if (tag_id == DecodeBlackBoard.OBELISK_PPG) {
+            }
+            else if(tag_id == DecodeBlackBoard.OBELISK_PPG) {
                 obelisk_id = tag_id;
                 telemetry.addLine("Obelisk: PPG");
-            } else
+            }
+            else
                 telemetry.addLine("Obelisk: Not Detected");
 
             telemetry.update();
@@ -150,7 +141,7 @@ public class RedFarAuto extends LinearOpMode {
 
 
         //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
-        //turret.setServoPosition(0.15);
+        //turret.setServoPosition(0.244);
 
         shooter.setPower(0.60);
 
@@ -188,7 +179,7 @@ public class RedFarAuto extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 100) {//110
+                if (pathTimer.getElapsedTime() > 80) {//110
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
 
@@ -196,9 +187,9 @@ public class RedFarAuto extends LinearOpMode {
                 }
                 break;
 
-            //first loop
+                //first loop
             case 10:
-                if (pathTimer.getElapsedTime() > 1000) { //1250
+                if (pathTimer.getElapsedTime() > 1000) { //shoot preload
 
                     trigger.close();
                     intake.intake(0.925);
@@ -217,8 +208,8 @@ public class RedFarAuto extends LinearOpMode {
                 }
                 break;
             case 12:
-                //intake for 2 seconds to make sure all 3 balls are in
-                if (pathTimer.getElapsedTime() > 1500) {
+                //intake for 1.5 seconds to make sure all 3 balls are in
+                if (pathTimer.getElapsedTime() > 1300) {
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
@@ -241,13 +232,13 @@ public class RedFarAuto extends LinearOpMode {
 
             //second loop
             case 20:
-                if (pathTimer.getElapsedTime() > 1000) { //1250
+                if (pathTimer.getElapsedTime() > 1000) { //1000
 
                     trigger.close();
                     intake.intake(0.925);
 
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup2Grab2, true); //grabPickup1
+                    follower.followPath(scorePickup1Grab1, true); //grabPickup1
 
                     setPathState(21);
                 }
@@ -260,8 +251,8 @@ public class RedFarAuto extends LinearOpMode {
                 }
                 break;
             case 22:
-                if (pathTimer.getElapsedTime() > 1500) { //intake balls
-                    follower.followPath(grab2Score, true);
+                if (pathTimer.getElapsedTime() > 1300) { //intake balls
+                    follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
                 }
@@ -282,7 +273,7 @@ public class RedFarAuto extends LinearOpMode {
                 break;
 
 
-            //third loop is the same as second loop
+            //third loop
             case 30:
                 if (pathTimer.getElapsedTime() > 1000) { //1250
 
@@ -303,7 +294,7 @@ public class RedFarAuto extends LinearOpMode {
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1500) { //intake balls
+                if (pathTimer.getElapsedTime() > 1300) { //intake balls
                     follower.followPath(grab2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(33);
@@ -325,9 +316,9 @@ public class RedFarAuto extends LinearOpMode {
                 break;
 
 
-            //forth loop is the same as the first loop
+            //forth loop
             case 40:
-                if (pathTimer.getElapsedTime() > 1000) { //1250
+                if (pathTimer.getElapsedTime() > 1000) {
 
                     trigger.close();
                     intake.intake(0.925);
@@ -347,7 +338,7 @@ public class RedFarAuto extends LinearOpMode {
                 break;
             case 42:
                 //intake for 2 seconds to make sure all 3 balls are in
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 1300) {
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(43);
@@ -369,7 +360,7 @@ public class RedFarAuto extends LinearOpMode {
                 break;
 
 
-            //park
+                //park
             case 100:
                 if (pathTimer.getElapsedTime() > 1000) {
                     follower.followPath(scorePark, true);

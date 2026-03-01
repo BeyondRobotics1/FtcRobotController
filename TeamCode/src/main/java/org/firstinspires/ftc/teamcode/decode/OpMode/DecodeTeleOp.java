@@ -118,12 +118,16 @@ public class DecodeTeleOp extends LinearOpMode {
         }
         telemetry.addLine("LynxModule initialized");
 
-//        softRumbleEffect = new Gamepad.RumbleEffect.Builder()
-//                .addStep(0.1, 0.1, 100)  //
-//                .build();
+        softRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.5, 0.5, 100)  //
+                .addStep(0.9, 0.9, 300)
+                .addStep(0.5, 0.5, 100)
+                .build();
         strongRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.5, 0.5, 100)  //
-                .addStep(1, 1, 200)
+                .addStep(1, 1, 350)
+                .addStep(0.5, 0.5, 100)
+                .addStep(1, 1, 350)
                 .addStep(0.5, 0.5, 100)
                 .build();
 
@@ -254,20 +258,19 @@ public class DecodeTeleOp extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
-            if(liftMode == LiftMode.NONE)
+            if(liftMode == LiftMode.NONE && !gamepad1.dpad_down)
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
                 rumbleEndgame = 1;
-                gamepad1.runRumbleEffect(strongRumbleEffect);
-                gamepad2.runRumbleEffect(strongRumbleEffect);
+                gamepad1.runRumbleEffect(softRumbleEffect);
+                gamepad2.runRumbleEffect(softRumbleEffect);
             }
 
 
             if (gameTimer.getElapsedTimeSeconds() >= 100 && rumbleEndgame == 1)  {
                 rumbleEndgame = 2;
                 gamepad1.runRumbleEffect(strongRumbleEffect);
-                gamepad2.runRumbleEffect(strongRumbleEffect);
                 gamepad2.runRumbleEffect(strongRumbleEffect);
 
                 isEndGame = true;
@@ -306,16 +309,6 @@ public class DecodeTeleOp extends LinearOpMode {
                             artifactColors[2] != Color.WHITE) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
                         intake.setLedColor(Intake.LED_GREEN);
-
-//                        if((rumbleReady % 10) == 0) {
-//                            gamepad1.runRumbleEffect(softRumbleEffect);
-//                            gamepad2.runRumbleEffect(softRumbleEffect);
-//                        }
-//
-//                        rumbleReady++;
-//
-//                        if(rumbleReady >= 100000)
-//                            rumbleReady = 0;
                     }
                     else if (artifactColors[0] != Color.WHITE &&
                             artifactColors[1] != Color.WHITE) {
@@ -408,7 +401,6 @@ public class DecodeTeleOp extends LinearOpMode {
             //gamepad1 x, shoot from OUT_ZONE position
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-
             } else if (gamepad1.xWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
             } else if (gamepad1.yWasPressed()) {

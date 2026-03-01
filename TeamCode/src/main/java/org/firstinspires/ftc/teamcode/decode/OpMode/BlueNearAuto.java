@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near Auto", group = "Decode")
+@Autonomous(name = "Blue Near Indexing", group = "Decode")
 
 public class BlueNearAuto extends LinearOpMode {
 
