@@ -8,7 +8,6 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -25,8 +24,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.List;
 
 
-@Autonomous(name = "Red Near NO indexing Auto", group = "Decode")
-public class RedNearWithoutIndexing extends LinearOpMode{
+@Autonomous(name = "Red Near NO indexing Gate Spamming", group = "Decode")
+public class RedNearWithoutIndexingGateSpaming extends LinearOpMode{
 
     //Hardware
     private Shooter shooter;
@@ -48,22 +47,26 @@ public class RedNearWithoutIndexing extends LinearOpMode{
      * Start Pose of our robot
      */
     private final Pose startPose = new Pose(30.5, 11, Math.toRadians(-90)); //tart Pose of our robot.
-    private final Pose scorePose = new Pose(43, 43, Math.toRadians(-134)); // 52, 52 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose scorePose = new Pose(43, 43, Math.toRadians(-135)); // 43, 43, -134 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     //Highest (First Set)
     private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
     private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
     private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
+
     private final Pose openGatePose = new Pose(17, 76, Math.toRadians(180)); //18, 65.5 //gate position
-    private final Pose openGate2Pose = new Pose(14, 82, Math.toRadians(-154)); //14, 82 //gate position
-    private final Pose openGatePickupPose = new Pose(14, 83, Math.toRadians(-170)); //
+    private final Pose openGate2Pose = new Pose(17, 77, Math.toRadians(180)); //14, 77, --170 //gate position
+    private final Pose openGatePickupPose = new Pose(13.5, 84, Math.toRadians(-170)); //
     //18, 65.5 //gate position
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
     private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
     private final Pose backout2Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
+
+
     private final Pose backout22Pose = new Pose(45, 75.5, Math.toRadians(180)); //42, 75.5
+
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
@@ -76,11 +79,10 @@ public class RedNearWithoutIndexing extends LinearOpMode{
     private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore;
-    private PathChain scorePickup2, pickup2Grab2, grab2Score;
+    private PathChain scorePickup1, pickup1Grab1, grab1Score;
+    private PathChain scorePickup2, pickup2Grab2, grab2OpenGate, openGateScore;
+    private PathChain scoreOpenGate,openGatePickup, gatePickupScore;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
-    private PathChain scorePickup4, scoreGrab4, grab4Score;
-    private PathChain scoreOpenGate,openGatePickup, gatePickUpScore;
     private PathChain scorePark;
 
 
@@ -201,7 +203,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 100) {//110
+                if (pathTimer.getElapsedTime() > 80) {//100
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -209,18 +211,19 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 950) { //1250
+                if (pathTimer.getElapsedTime() > 800) { //1250
 
                     trigger.close();
                     intake.intake(0.925);
 
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup2, true); //grabPickup1
+                    //move to the pickup 2 position
+                    follower.followPath(scorePickup2, true); //scorePickup2
 
-                    setPathState(11);
+                    setPathState(11);//11
                 }
                 break;
-            //first set of balls
+
+            //Middle set of balls
             case 11:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
@@ -247,7 +250,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 }
                 break;
             case 12:
-                if (pathTimer.getElapsedTime() > 350) { //500, 650
+                if (pathTimer.getElapsedTime() > 400) { //350
                     //move from open gate position to score position
                     follower.followPath(openGateScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -262,56 +265,45 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 }
                 break;
             case 14:
-                if (pathTimer.getElapsedTime() > 100) {//110, 300
+                if (pathTimer.getElapsedTime() > 80) {//110, 300
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
                     setPathState(15);
                 }
                 break;
             case 15:
-                if (pathTimer.getElapsedTime() > 950) { //shoot balls 1500
+                if (pathTimer.getElapsedTime() > 800) { //shoot balls 900
              ;
-
-
                     trigger.close();
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
-
-                    //move to the pickup 1 position
+//                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                    intake.intake(0.925);
+                    //move to the open gate position
                     follower.followPath(scoreOpenGate, true); //grabPickup1
 
                     setPathState(210);
                 }
                 break;
             case 210:
-                if (!follower.isBusy()) { //shoot balls 1500
+                if (!follower.isBusy()){
                     pathTimer.resetTimer();
-
-
-
-
                     setPathState(21);
                 }
                 break;
-            //second set of balls
+
+            //Pickup balls from gate
             case 21:
-                if (pathTimer.getElapsedTime() > 400) {
+                if (pathTimer.getElapsedTime() > 300) {//Keep gate open 700
                     pathTimer.resetTimer();
 
-                    intake.intake(0.925);
                     //grab balls at position 1
-                    follower.followPath(openGatePickup, true); //grabPickup1
-                    setPathState(-220);
-                }
-                break;
-            case 220:
-                if (!follower.isBusy()) {
-
+                    follower.followPath(openGatePickup, true); //
                     setPathState(22);
                 }
+                break;
             case 22:
-                if (pathTimer.getElapsedTime() > 700) {
+                if (pathTimer.getElapsedTime() > 3000) { //in take
 
-                    follower.followPath(gatePickUpScore, true);
+                    follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
                 }
@@ -324,47 +316,50 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 }
                 break;
             case 24:
-                if (pathTimer.getElapsedTime() > 100) {//110
+                if (pathTimer.getElapsedTime() > 80) {//100
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
-                    setPathState(-25);
+                    setPathState(25);
                 }
                 break;
+
             case 25:
-                if (pathTimer.getElapsedTime() > 950) { //shoot balls 1500
+                if (pathTimer.getElapsedTime() > 800) { //shoot balls
                     trigger.close();
                     intake.intake(0.925);
 
                     //move to the pickup 1 position
-                    follower.followPath(scorePickup3, true); //grabPickup1
+                    follower.followPath(scorePickup1, true); //scoreOpenGate
 
+                    setPathState(41);
+                }
+                break;
+
+
+            //Pickup balls from gate
+            case 30:
+                if (!follower.isBusy()){
+                    pathTimer.resetTimer();
                     setPathState(31);
                 }
                 break;
-            //3rd set of balls
             case 31:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTime() > 400) {//Keep gate open 700
                     pathTimer.resetTimer();
 
                     //grab balls at position 1
-                    follower.followPath(pickup3Grab3, true); //grabPickup1
+                    follower.followPath(openGatePickup, true); //
                     setPathState(32);
                 }
                 break;
             case 32:
-                if (!follower.isBusy()) {
-                    follower.followPath(grab3Score, true);
+                if (pathTimer.getElapsedTime() > 1000) { //in take
+
+                    follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(33);
                 }
-
-//                if (pathTimer.getElapsedTime() > 1300) { //grab 3 balls 2000
-//                    //move to score position
-//                    follower.followPath(grab3Score, true);
-//                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
-//                    setPathState(33);
-//                }
                 break;
             case 33:
                 if (!follower.isBusy()) {
@@ -374,79 +369,76 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 }
                 break;
             case 34:
-                if (pathTimer.getElapsedTime() > 100) {//should be 110
+                if (pathTimer.getElapsedTime() > 80) {//100
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                     setPathState(35);
                 }
                 break;
-            case 35:
-                if (pathTimer.getElapsedTime() > 950) { //shoot balls 1000
 
+            case 35:
+                if (pathTimer.getElapsedTime() > 800) { //shoot balls
                     trigger.close();
                     intake.intake(0.925);
 
-                    ////move to the pickup 4 position
-                    //follower.followPath(scorePickup4, true); //grabPickup1
+                    //move to the pickup 1 position
+                    follower.followPath(scorePickup1, true); //grabPickup1
 
-                    setPathState(50);
+                    setPathState(41);
                 }
                 break;
 
-            //4th set of balls
+            //1st set of balls
             case 41:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
-                    follower.followPath(scoreGrab4, true); //grabPickup4
 
-                    setPathState(411);
-                }
-                break;
-            case 411:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-
+                    //grab balls at position 1
+                    follower.followPath(pickup1Grab1, true); //grabPickup1
                     setPathState(42);
                 }
                 break;
             case 42:
-                if (pathTimer.getElapsedTime() > 50) {
-
-                    //grab balls at position 4 & back to score position
-                    follower.followPath(grab4Score, true); //grab4Score, pickup4Score
+                if (!follower.isBusy()) {
+                    follower.followPath(grab1Score, true);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(43);
                 }
+
                 break;
             case 43:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
                     trigger.open();
                     setPathState(44);
                 }
                 break;
             case 44:
-                if (pathTimer.getElapsedTime() > 50) {//should be 100
+                if (pathTimer.getElapsedTime() > 80) {//should be 110
                     pathTimer.resetTimer();
-                    //intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
 
                     setPathState(45);
                 }
                 break;
             case 45:
-                if (pathTimer.getElapsedTime() > 900) { //shoot balls 1500
-                    setPathState(50);
+                if (pathTimer.getElapsedTime() > 800) { //shoot balls 1000
+
+                    trigger.close();
+                    intake.intake(0.925);
+
+                    setPathState(900);
                 }
                 break;
 
-            case 50:
-                follower.followPath(scorePark, true); //grabPickup1
+            case 900:
+                follower.followPath(scorePark, true); //score to park
                 intake.setIntakeMode(Intake.IntakeMode.IDLE);//stop the intake
                 trigger.close();
-                setPathState(100);
+                setPathState(1000);
                 break;
-            case 100: //end of auto
+            case 1000: //end of auto
                 if (!follower.isBusy()) {
                     saveAutoState();
                     setPathState(-1);
@@ -474,20 +466,30 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
                 .build();
 
-        grab1OpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
-                .addPath(new BezierLine(grab1Pose, backout1Pose))
-                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
-                .addPath(new BezierLine(backout1Pose, openGatePose))
-                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
+        grab1Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab1Pose, scorePose))
+                .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
+                .build();
+
+
+        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        scorePickup2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .build();
+        pickup2Grab2 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup2Pose, grab2Pose))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();
         grab2OpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
                 .addPath(new BezierLine(backout2Pose, openGatePose))
                 .setLinearHeadingInterpolation(backout2Pose.getHeading(), openGatePose.getHeading())
                 .build();
+
+
+        /* This is our gate spamming PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scoreOpenGate = follower.pathBuilder()
                 //.addPath(new BezierLine(grab1Pose, scorePose))
                 .addPath(new BezierLine(scorePose, backout22Pose))
@@ -499,7 +501,7 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 .addPath(new BezierLine(openGate2Pose, openGatePickupPose))
                 .setLinearHeadingInterpolation(openGate2Pose.getHeading(), openGatePickupPose.getHeading())
                 .build();
-        gatePickUpScore = follower.pathBuilder()
+        gatePickupScore = follower.pathBuilder()
                 .addPath(new BezierLine(openGatePickupPose, backout22Pose))
                 .setLinearHeadingInterpolation(openGatePickupPose.getHeading(), backout22Pose.getHeading())
                 .addPath(new BezierLine(backout22Pose, scorePose))
@@ -511,27 +513,6 @@ public class RedNearWithoutIndexing extends LinearOpMode{
                 .setLinearHeadingInterpolation(openGatePose.getHeading(), backout22Pose.getHeading())
                 .addPath(new BezierLine(backout22Pose, scorePose))
                 .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
-
-                .build();
-
-
-        /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-
-        /* This is our scorePickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup2Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
-                .build();
-        pickup2Grab2 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup2Pose, grab2Pose))
-                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
-                .build();
-
-        grab2Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab2Pose, backout2Pose))
-                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
-                .addPath(new BezierLine(backout2Pose, scorePose))
-                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
                 .build();
 
 
@@ -547,23 +528,6 @@ public class RedNearWithoutIndexing extends LinearOpMode{
         grab3Score = follower.pathBuilder()
                 .addPath(new BezierLine(grab3Pose, scorePose))
                 .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
-                .build();
-
-        /* This is our scorePickup4 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup4 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup4Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup4Pose.getHeading())
-                .build();
-        scoreGrab4 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup4Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup4Pose.getHeading())
-                .addPath(new BezierLine(pickup4Pose, grab4Pose))
-                .setLinearHeadingInterpolation(pickup4Pose.getHeading(), grab4Pose.getHeading())
-                .build();
-
-        grab4Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab4Pose, scorePose))
-                .setLinearHeadingInterpolation(grab4Pose.getHeading(), scorePose.getHeading())
                 .build();
 
         /* This is our scoreParkPathChain. We are using a single path with a BezierLine, which is a straight line. */
