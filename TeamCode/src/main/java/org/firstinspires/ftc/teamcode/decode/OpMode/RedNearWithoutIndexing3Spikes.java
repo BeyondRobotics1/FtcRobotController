@@ -322,7 +322,7 @@ public class RedNearWithoutIndexing3Spikes extends LinearOpMode {
                 }
                 break;
 
-            //Middle set of balls
+            //Low set of balls
             case 31:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();

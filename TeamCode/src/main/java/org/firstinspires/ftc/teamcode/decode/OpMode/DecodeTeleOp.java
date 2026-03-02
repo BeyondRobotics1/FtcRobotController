@@ -317,7 +317,7 @@ public class DecodeTeleOp extends LinearOpMode {
                     }
                     else {
                         intake.setLedColor(Intake.LED_OFF);
-                        intake.intake(0.925);
+                        intake.intake(0.925);//0.925
                     }
                 }
                 else

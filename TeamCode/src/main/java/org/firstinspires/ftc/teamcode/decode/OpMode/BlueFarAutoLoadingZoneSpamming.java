@@ -51,10 +51,10 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
     private final Pose scorePose = new Pose(58.39, 20.23, Math.toRadians(115)); // 55, 20.5, 90 Scoring Pose of our robot.
 
     private final Pose pickup1Pose = new Pose(40, 10, Math.toRadians(180)); //40, 12, 180 Second pickup spot
-    private final Pose grab1Pose = new Pose(12.25, 8.75, Math.toRadians(180)); // Second pickup spot
+    private final Pose grab1Pose = new Pose(12.5, 8.75, Math.toRadians(180)); // Second pickup spot
 
     private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 12Third pickup spot
-    private final Pose grab2Pose = new Pose(12.25, 24, Math.toRadians(180)); // Second pickup spot
+    private final Pose grab2Pose = new Pose(12.5, 24, Math.toRadians(180)); // Second pickup spot
 
     private final Pose parkPose = new Pose(39, 12, Math.toRadians(180)); // 55, 31.5, 90 Where we park
 

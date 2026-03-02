@@ -336,7 +336,7 @@ public class TeleOpTest extends LinearOpMode {
                     }
                     else {
                         intake.setLedColor(Intake.LED_OFF);
-                        intake.intake(925);
+                        intake.intake(0.95);
                     }
                 }
                 else

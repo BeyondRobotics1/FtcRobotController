@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
@@ -23,8 +22,9 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Near Indexing", group = "Decode")
-public class RedNearAuto extends LinearOpMode {
+@Autonomous(name = "Blue Near Indexing", group = "Decode")
+
+public class BlueNearIndexingAuto extends LinearOpMode {
 
     //wait time in ms
     private final int indexingWaitTime = 200;
@@ -57,32 +57,31 @@ public class RedNearAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(30.5, 11, Math.toRadians(-90)); //tart Pose of our robot.
-    private final Pose scorePose = new Pose(43, 43, Math.toRadians(-133)); // 43, 43, -134 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose startPose = new Pose(30.5, 130.5, Math.toRadians(90)); //31, 131, 90, Start Pose of our robot.
+    private final Pose scorePose = new Pose(43, 96, Math.toRadians(136)); // 43, 96, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
-    //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
-    private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
-    private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //24, 65.5
-    private final Pose openGatePose = new Pose(19.2, 65.5, Math.toRadians(180)); //18, 65.5 //gate position
-    private final Pose openGate2Pose = new Pose(18, 76, Math.toRadians(180));
-    //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
-    private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
-    private final Pose backout2Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
-    private final Pose backout22Pose = new Pose(45, 75.5, Math.toRadians(180)); //42, 75.5
-    //Lowest (Third Set)
-    private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
-    private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
+    private final Pose pickup1Pose = new Pose(41.5, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.75, 83, Math.toRadians(180)); //17.5, 83
+    private final Pose backout1Pose = new Pose(23, 76, Math.toRadians(180)); //24, 76
+    private final Pose openGatePose = new Pose(16.6, 76, Math.toRadians(180)); //17, 76
+    private final Pose openGate2Pose = new Pose(16.6, 66, Math.toRadians(180));
 
-    //park
-    private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
+    private final Pose pickup2Pose = new Pose(41.125, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
+    private final Pose backout2Pose = new Pose(19, 58, Math.toRadians(180)); //20, 58
+    private final Pose backout22Pose = new Pose(40, 66, Math.toRadians(180)); //35, 66, 180
+
+    private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
+
+    private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore, openGate2Score;
-    private PathChain scorePickup2, pickup2Grab2, grab2Score, grab1Score;
+    private PathChain scorePickup2, pickup2Grab2, grab1Score, grab2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -92,7 +91,7 @@ public class RedNearAuto extends LinearOpMode {
         indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
+        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.BLUE);
         shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
 
         telemetry.addLine("Initializing intake");
@@ -102,14 +101,13 @@ public class RedNearAuto extends LinearOpMode {
         trigger = new Trigger(hardwareMap);
         trigger.close();
 
-
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
-                DecodeBlackBoard.RED_TARGET_POSE,
-                DecodeBlackBoard.RED,
+                DecodeBlackBoard.BLUE_TARGET_POSE,
+                DecodeBlackBoard.BLUE,
                 false,
                 true, true);
-        turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAlliance);
+        turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAlliance);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -118,7 +116,6 @@ public class RedNearAuto extends LinearOpMode {
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
-
 
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
@@ -135,11 +132,12 @@ public class RedNearAuto extends LinearOpMode {
         telemetry.addLine("LynxModule initialized");
 
         //waitForStart();
+
         while (!isStarted() && !isStopRequested()) {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Near Auto");
+            telemetry.addLine("Blue Near Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
@@ -161,20 +159,20 @@ public class RedNearAuto extends LinearOpMode {
             sleep(100);
         }
 
-
-        //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
+        //turret.setServoPosition(Turret.servoPositionAutoShootingBlueAlliance);
         turret.setServoPosition(Turret.servoPositionMiddle);
 
         shooter.setPower(0.4);
 
         setPathState(0);
 
-        sleep(100);//500
+        sleep(100);
 
         while (!isStopRequested() && opModeIsActive()) {
             hubs.forEach(LynxModule::clearBulkCache);
 
             follower.update();
+
             autonomousPathUpdate();
 
             //displayPose();
@@ -289,7 +287,6 @@ public class RedNearAuto extends LinearOpMode {
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
-
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -298,6 +295,8 @@ public class RedNearAuto extends LinearOpMode {
                         indexingPathState = 1000; //PPG -> PPG, 0 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
+
                 }
                 break;
             case 23:
@@ -333,7 +332,6 @@ public class RedNearAuto extends LinearOpMode {
             case 33:
                 if(pathTimer.getElapsedTime() > 400)
                 {
-
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 1000; //GPP -> GPP, no indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -342,6 +340,7 @@ public class RedNearAuto extends LinearOpMode {
                         indexingPathState = 2000; //GPP -> PPG, 1 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
 
                     setPathState(34);
                 }

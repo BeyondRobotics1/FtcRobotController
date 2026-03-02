@@ -13,19 +13,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Far Loading Zone", group = "Decode")
-
-public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
-
+@Autonomous(name = "Red Far Spike", group = "Decode")
+public class RedFarAutoSpike extends LinearOpMode {
     //Hardware
     private Shooter shooter;
     private Intake intake;
@@ -46,7 +44,10 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
 
     /**
      * Start Pose of our robot
-    */
+     */
+    /**
+     * Start Pose of our robot
+     */
     private final Pose startPose = new Pose(55, 134, Math.toRadians(-90)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, 90 Scoring Pose of our robot.
 
@@ -56,11 +57,17 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
     private final Pose pickup2Pose = new Pose(40, 126, Math.toRadians(180)); //Third pickup spot
     private final Pose grab2Pose = new Pose(12.5, 122, Math.toRadians(180)); // Second pickup spot
 
+    //Lowest (Third Set)
+    private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
+    private final Pose grab3Pose = new Pose(12.5, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
+
+
     private final Pose parkPose = new Pose(38, 129 , Math.toRadians(-180)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
     private PathChain scorePickup2Grab2, grab2Score;
+    private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
 
 
@@ -72,7 +79,7 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
         indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
+        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.BLUE);
         shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
 
         telemetry.addLine("Initializing intake");
@@ -84,8 +91,8 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
 
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
-                DecodeBlackBoard.RED_TARGET_POSE,
-                DecodeBlackBoard.RED,
+                DecodeBlackBoard.BLUE_TARGET_POSE,
+                DecodeBlackBoard.BLUE,
                 false,
                 true, true);
         turret.resetTurretHeading();
@@ -117,19 +124,22 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Far Auto");
+            telemetry.addLine("Blue Far Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
                 obelisk_id = tag_id;
                 telemetry.addLine("Obelisk: GPP");
-            } else if (tag_id == DecodeBlackBoard.OBELISK_PGP) {
+            }
+            else if(tag_id == DecodeBlackBoard.OBELISK_PGP) {
                 obelisk_id = tag_id;
                 telemetry.addLine("Obelisk: PGP");
-            } else if (tag_id == DecodeBlackBoard.OBELISK_PPG) {
+            }
+            else if(tag_id == DecodeBlackBoard.OBELISK_PPG) {
                 obelisk_id = tag_id;
                 telemetry.addLine("Obelisk: PPG");
-            } else
+            }
+            else
                 telemetry.addLine("Obelisk: Not Detected");
 
             telemetry.update();
@@ -138,7 +148,7 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
 
 
         //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
-        //turret.setServoPosition(0.15);
+        //turret.setServoPosition(0.244);
 
         shooter.setPower(0.60);
 
@@ -184,9 +194,11 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
                 }
                 break;
 
-            //first loop
+
+
+            //first loop, loading zone
             case 10:
-                if (pathTimer.getElapsedTime() > 1000) { //shoot preload
+                if (pathTimer.getElapsedTime() > 1000) { //shoot spike 3
 
                     trigger.close();
                     intake.intake(0.925);
@@ -223,11 +235,58 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 500) {//wait for robot to stabilize
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+                    setPathState(60);
+                }
+                break;
+
+            //low spike
+            case 60:
+                if (pathTimer.getElapsedTime() > 1000) { //shoot preload
+
+                    trigger.close();
+                    intake.intake(0.925);
+
+                    //move to the pickup 1 position
+                    follower.followPath(scorePickup3, true); //grabPickup1
+
+                    setPathState(61);
+                }
+                break;
+            case 61:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+
+                    //grab balls at position 2
+                    follower.followPath(pickup3Grab3, true); //grabPickup1
+                    setPathState(62);
+                }
+                break;
+            case 62:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+
+                    //move grab1 position to open gate position
+                    follower.followPath(grab3Score, true);
+                    setPathState(63);
+                }
+                break;
+            case 63:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    trigger.open();
+                    setPathState(64);
+                }
+                break;
+            case 64:
+                if (pathTimer.getElapsedTime() > 80) {//110, 300
+                    pathTimer.resetTimer();
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
                     setPathState(20);
                 }
                 break;
 
-            //second loop
+
+            //loading zone again
             case 20:
                 if (pathTimer.getElapsedTime() > 1000) { //1000
 
@@ -313,17 +372,19 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
                 break;
 
 
-            //forth loop
+            //forth loop by passed, no enough time
             case 40:
                 if (pathTimer.getElapsedTime() > 1000) {
 
                     trigger.close();
                     intake.intake(0.925);
 
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup1Grab1, true); //grabPickup1
+                    setPathState(900);
 
-                    setPathState(41);
+                    ////move to the pickup 1 position
+                    //follower.followPath(scorePickup1Grab1, true); //grabPickup1
+
+                    //setPathState(41);
                 }
                 break;
             case 41:
@@ -358,7 +419,7 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
 
 
             //park
-            case 100:
+            case 900:
                 if (pathTimer.getElapsedTime() > 1000) {
                     follower.followPath(scorePark, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -420,6 +481,19 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading())
                 .build();
 
+        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        scorePickup3 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup3Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
+                .build();
+        pickup3Grab3 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup3Pose, grab3Pose))
+                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), grab3Pose.getHeading())
+                .build();
+        grab3Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab3Pose, scorePose))
+                .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
+                .build();
 
 
         /* This is our scoreParkPathChain. We are using a single path with a BezierLine, which is a straight line. */
@@ -453,4 +527,5 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
 
         telemetry.update();
     }
+
 }
