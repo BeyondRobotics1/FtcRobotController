@@ -33,10 +33,20 @@ public class Turret {
     // target x, y coordinates in INCH
     double x0, y0;
 
-    double servoPositionRight = 0; //90 degree
-    double servoPositionLeft = 0.380;//0.42; //-90 degree
-    double servoPositionMiddle = 0.195;//0.21;//0 degree
-    double servoPreviousPositionCalibration = 0.0;//0 degree
+    public static double servoPositionRight = 0; //90 degree
+    public static double servoPositionLeft = 0.380;//0.42; //-90 degree
+    public static double servoPositionMiddle = 0.197;//0.195;//0 degree
+    public static double servoPreviousPositionCalibration = 0.0;//0 degree
+
+    public static double servoPositionObeliskDetectionRedAlliance = 0.357;
+    public static double servoPositionObeliskDetectionBlueAlliance = 0.042;
+
+    public static double servoPositionAutoShootingRedAlliance = 0.296;
+    public static double servoPositionAutoShootingBlueAlliance = 0.096;
+
+    //Limelight 3A auto aiming target degree of Tx
+    public static double TARGET_ANGLE_DEGREE_RED = 0.0;
+    public static double TARGET_ANGLE_DEGREE_BLUE = 6.0;
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;
@@ -48,12 +58,13 @@ public class Turret {
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
+    //PID controller for limelight 3A auto aiming
     PIDController controller;
     public static double kP = 0.001;//0.001; //0.8
     public static double kI = 0.005;//0.25; //0.01
     public static double kD = 0;
     public static double kF = 0.0095;
-    public double targetAngleDegree = 0;
+    public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
                   Pose2D robotPose, Pose2D targetPose,
@@ -93,11 +104,25 @@ public class Turret {
             limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
             //auto use pipeline 1
-            if(isAuto)
-                limelight.pipelineSwitch(1);
+            if(isAuto) {
+                if(this.alliance == DecodeBlackBoard.RED)
+                    limelight.pipelineSwitch(1);
+                else
+                    limelight.pipelineSwitch(2);
+            }
             else //teleop use pipeline 0
                 limelight.pipelineSwitch(0);
             limelight.start();
+        }
+
+        if(!isAuto)
+        {
+            if(this.alliance == DecodeBlackBoard.RED) {
+                targetAngleDegree = TARGET_ANGLE_DEGREE_RED;
+            }
+            else {
+                targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE;
+            }
         }
 
         setServoPosition(servoPositionMiddle);
@@ -120,9 +145,12 @@ public class Turret {
             setServoPosition(servoPositionRedFarAuto);
     }
 
-    public void setServoPosition(double power)
+    public void setServoPosition(double position)
     {
-        turretLeft.setPosition(power);
+        turretLeft.setPosition(position);
+
+        if(turretRight != null)
+            turretRight.setPosition(position);
     }
 
     public double getServoPosition()
@@ -180,15 +208,14 @@ public class Turret {
     }
 
     //use limelight3A tx to calibrate turret heading with servo
-    public double calibrateTurret()
-    {
+    public double calibrateTurret() {
 
         boolean calibrationCalculated = false;
         double servoPositionCalibration = 0.0;
 
         controller.setPID(kP, kI, kD);
 
-        if(limelight != null) {
+        if (limelight != null) {
             LLResult result = limelight.getLatestResult();
 
             // Access fiducial results
@@ -204,8 +231,7 @@ public class Turret {
                 mode.telemetry.addData("Limelight3A Tx (Degree):", "%.3f", currentAngleDegree);
                 mode.telemetry.addData("Target Angle  (Degree):", "%.3f", targetAngleDegree);
 
-                if(targetTagID == tagID)
-                {
+                if (targetTagID == tagID) {
 
                     double pid = controller.calculate(currentAngleDegree, targetAngleDegree);
 
@@ -215,52 +241,22 @@ public class Turret {
 
                     calibrationCalculated = true;
 
-
-
-/*
-                    if(Math.abs(currentAngle) > 1) {
-                        servoPositionCalibration = -currentAngle * servoPositionMiddle / 90. + 0.006;
-
-                        //check the range, don't be too large to cause oscillation
-                        if(Math.abs(servoPositionCalibration) > servoPositionMiddle * 0.2) {
-
-                            mode.telemetry.addData("Servo calibration too large:", servoPositionCalibration);
-
-                            if(servoPositionCalibration < 0)
-                                servoPositionCalibration = -0.2 * servoPositionMiddle;
-                            else
-                                servoPositionCalibration = 0.2 * servoPositionMiddle;
-                        }
-
-                        servoPreviousPositionCalibration = servoPositionCalibration;
-
-                        calibrationCalculated = true;
-
-                        mode.telemetry.addData("Servo calibration to apply:", servoPositionCalibration);
-                    }
-                    else {
-
-                        servoPositionCalibration = 0.0;
-                        mode.telemetry.addData("Servo calibration skipped:", servoPositionCalibration);
-                    }
-
-*/
                     break;
                 }
-//                else
-//                {
-//                    mode.telemetry.addLine("Tag NOT found");
-//                    mode.telemetry.addData("Previous servo calibration:", servoPreviousPositionCalibration);
-//                }
             }
         }
 
         //if tag not found, return previous calibration value
         //to avoid oscillating between 0 and servoPositionCalibration
-        if(calibrationCalculated)
+        if (calibrationCalculated)
             return servoPositionCalibration;
-        else
+        else {
+            ////reset controller
+            controller.reset();
+            controller.setPID(kP, kI, kD);
+
             return servoPreviousPositionCalibration;
+        }
     }
 
     //use limelight to detect the April Tag of the Obelisk

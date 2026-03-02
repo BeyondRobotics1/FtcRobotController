@@ -36,20 +36,28 @@ public class GobildaPinpointTest extends OpMode {
         configurePinpoint();
 
         // Set the location of the robot - this should be the place you are starting the robot from
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
-        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
-        //pinpoint.update();
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+
+        //blue auto starting point
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+
+        //red auto starting point
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+        pinpoint.update();
     }
 
     @Override
     public void loop() {
 
-//        if(!isInitialPinpointPositionSet)
-//        {
-//            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 8, 55.5, AngleUnit.DEGREES, 0));
-//            isInitialPinpointPositionSet = true;
-//        }
+        if(!isInitialPinpointPositionSet)
+        {
+            //blue
+            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+
+            //red
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+            isInitialPinpointPositionSet = true;
+        }
 
         telemetry.addLine("Push your robot around to see it track");
         telemetry.addLine("Press A to reset the position");
@@ -60,8 +68,8 @@ public class GobildaPinpointTest extends OpMode {
         pinpoint.update();
         Pose2D pose2D = pinpoint.getPosition();
 
-        telemetry.addData("X coordinate (IN)", pose2D.getX(DistanceUnit.INCH));
-        telemetry.addData("Y coordinate (IN)", pose2D.getY(DistanceUnit.INCH));
+        telemetry.addData("X coordinate (MM)", pose2D.getX(DistanceUnit.INCH));
+        telemetry.addData("Y coordinate (MM)", pose2D.getY(DistanceUnit.INCH));
         telemetry.addData("Heading angle (DEGREES)", pose2D.getHeading(AngleUnit.DEGREES));
     }
 
@@ -76,7 +84,8 @@ public class GobildaPinpointTest extends OpMode {
          *  Forward of center is a positive number, backwards is a negative number.
          */
         //pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        pinpoint.setOffsets(-106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        //pinpoint.setOffsets(-106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

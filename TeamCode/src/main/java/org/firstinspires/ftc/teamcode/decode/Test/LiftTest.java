@@ -22,6 +22,7 @@ public class LiftTest extends LinearOpMode {
         telemetry.addData("gamepad1.b", "Disengage clutches." );
         telemetry.addData("gamepad1.x", "Hold Slides." );
         telemetry.addData("gamepad1.y", "Release Slides." );
+        telemetry.addData("gamepad1.left_stick_y", "Set power to the motors" );
         telemetry.update();
 
         waitForStart();

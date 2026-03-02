@@ -70,9 +70,10 @@ public class Constants {
             .xVelocity(73.48)//70.37
             .yVelocity(57.73);//55.39
 
+    //pedro and gobilda pinpoint tester has X, Y offset reversed
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(-143.6)
-            .strafePodX(-106)
+            .forwardPodY(106)
+            .strafePodX(-143.6)
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)

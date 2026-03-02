@@ -36,7 +36,7 @@ public class ShooterTest extends LinearOpMode {
         //hardware
         private Shooter shooter;
         private Intake intake;
-        private DriveTrain driveTrain;
+        //private DriveTrain driveTrain;
         private Trigger trigger;
         private Turret turret;
         private Indexer indexer;
@@ -156,9 +156,9 @@ public class ShooterTest extends LinearOpMode {
             //let the flywheel spin for 500ms so
             //the PID controller won't draw too much batteries
             shooter.setPower(0.4);
-            sleep(1200);
+            sleep(1000);
 
-            Boolean isInitialPinpointPositionSet = false;
+            boolean isInitialPinpointPositionSet = false;
 
             while (!isStopRequested() && opModeIsActive()) {
                 if (!isInitialPinpointPositionSet) {
@@ -244,7 +244,7 @@ public class ShooterTest extends LinearOpMode {
         }
 
         private void shootOp() {
-            //use gamepad1 X button to toggle
+            //use gamepad1 leftBumper button to toggle
             //shooter motors
             if (gamepad1.leftBumperWasPressed())
                 isShooterOn = !isShooterOn;
@@ -254,22 +254,25 @@ public class ShooterTest extends LinearOpMode {
             //gamepad1 y, shoot from far position
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-                //gamepad1.runRumbleEffect(nearRumbleEffect);
-                //gamepad2.runRumbleEffect(nearRumbleEffect);
             }
             else if (gamepad1.bWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-                //gamepad1.runRumbleEffect(farRumbleEffect);
-                //gamepad2.runRumbleEffect(farRumbleEffect);
             }else if (gamepad1.yWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-                //gamepad1.runRumbleEffect(farRumbleEffect);
-                //gamepad2.runRumbleEffect(farRumbleEffect);
             } else if (gamepad1.xWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-                //gamepad1.runRumbleEffect(mediumRumbleEffect);
-                //gamepad2.runRumbleEffect(mediumRumbleEffect);
             }
+
+            Shooter.ShootingLocation shooterPosition = shooter.getShooterPosition();
+
+            if (shooterPosition == Shooter.ShootingLocation.NEAR)
+                telemetry.addLine("Shooting from Near");
+            else if (shooterPosition == Shooter.ShootingLocation.FAR)
+                telemetry.addLine("Shooting from FAR");
+            else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE)
+                telemetry.addLine("Shooting from OUT ZONE");
+            else
+            telemetry.addLine("Shooting from MEDIUM");;
 
 
             if (isShooterOn)

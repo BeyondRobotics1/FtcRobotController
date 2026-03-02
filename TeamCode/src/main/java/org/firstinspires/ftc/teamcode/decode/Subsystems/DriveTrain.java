@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.decode.Subsystems;
 
 
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -22,6 +27,10 @@ import org.firstinspires.ftc.teamcode.common.PID;
 
 public class DriveTrain {
 
+    static final double     APPROACH_SPEED  = -0.09;
+
+    final float[] hsvValuesLeft = new float[3];
+    final float[] hsvValuesRight = new float[3];
 
     // The IMU sensor object
     IMU imu = null;
@@ -31,6 +40,9 @@ public class DriveTrain {
     DcMotorEx motorBackLeft;
     DcMotorEx motorFrontRight;
     DcMotorEx motorBackRight;
+
+    NormalizedColorSensor colorSensorLeft;
+    NormalizedColorSensor colorSensorRight;
 
     LinearOpMode mode;
 
@@ -45,8 +57,8 @@ public class DriveTrain {
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private final double y_power_scale = 0.99; //forward/backward power adjustment
-    private final double x_power_scale = 0.99; //left/right power adjustment, make it slower
+    private final double y_power_scale = 1; //forward/backward power adjustment
+    private final double x_power_scale = 1; //left/right power adjustment, make it slower
     private final double rx_power_scale = 0.85;//rotation power adjustment, make it slower
 
 
@@ -93,6 +105,21 @@ public class DriveTrain {
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        colorSensorLeft = hardwareMap.get(NormalizedColorSensor.class, "colorLeft");
+        colorSensorRight = hardwareMap.get(NormalizedColorSensor.class, "colorRight");
+
+        // If possible, turn the light on in the beginning (it might already be on anyway,
+        // we just make sure it is if we can).
+        if (colorSensorLeft instanceof SwitchableLight) {
+            ((SwitchableLight) colorSensorLeft).enableLight(true);
+        }
+
+        if (colorSensorRight instanceof SwitchableLight) {
+            ((SwitchableLight) colorSensorRight).enableLight(true);
+        }
+
+        colorSensorLeft.setGain(2.0f);
+        colorSensorRight.setGain(2.0f);
     }
 
     //robot centric
@@ -105,10 +132,10 @@ public class DriveTrain {
         double x = left_stick_x;
         double rx = right_stick_x * rx_power_scale; //Helper.squareWithSign(right_stick_x);
 
-        if(x != 0.0 && Math.abs(y/x) >= 1.2)
+        if(x != 0.0 && Math.abs(y/x) >= 1.1)
             x = 0.0;
 
-        if(y != 0.0 && Math.abs(x/y) >= 1.2)
+        if(y != 0.0 && Math.abs(x/y) >= 1.1)
             y = 0.0;
 
         y *= y_power_scale;//Helper.squareWithSign(left_stick_y); // Remember, this is reversed!
@@ -169,6 +196,45 @@ public class DriveTrain {
         motorBackRight.setPower(backRight);
     }
 
+    //drive to Red/Blue lines on the field and stop
+    public void driveToLine()
+    {
+        if(colorSensorLeft == null)
+            mode.telemetry.addLine("colorSensorLeft is null");
+        if(colorSensorRight == null)
+            mode.telemetry.addLine("colorSensorRight is null");
+
+
+        if(colorSensorLeft != null &&
+                colorSensorRight != null) {
+            NormalizedRGBA colorsLeft = colorSensorLeft.getNormalizedColors();
+            NormalizedRGBA colorsRight = colorSensorRight.getNormalizedColors();
+
+            Color.colorToHSV(colorsLeft.toColor(), hsvValuesLeft);
+            Color.colorToHSV(colorsRight.toColor(), hsvValuesRight);
+
+            mode.telemetry.addData("colorSensorLeft hue", "%f.2", hsvValuesLeft[0]);
+            mode.telemetry.addData("colorSensorRight hue", "%f.2", hsvValuesRight[0]);
+
+            //red/blue line detected, set power to 0
+            if (hsvValuesLeft[0] <= 31 || hsvValuesLeft[0] > 200) {
+                motorFrontLeft.setPower(0);
+                motorBackLeft.setPower(0);
+            } else {
+                motorFrontLeft.setPower(APPROACH_SPEED);
+                motorBackLeft.setPower(APPROACH_SPEED);
+            }
+
+            //red/blue line detected, set power to 0
+            if (hsvValuesRight[0] <= 31 || hsvValuesRight[0] > 200) {
+                motorFrontRight.setPower(0);
+                motorBackRight.setPower(0);
+            } else {
+                motorFrontRight.setPower(APPROACH_SPEED);
+                motorBackRight.setPower(APPROACH_SPEED);
+            }
+        }
+    }
 
     //lift it up the robot through PTO
     public void liftUp(double power)
@@ -222,6 +288,5 @@ public class DriveTrain {
 
         mode.telemetry.addData("total", "%.2f", total);
         mode.telemetry.addData("totalMax", "%.2f", motorTotalMaxCurrent);
-
     }
 }

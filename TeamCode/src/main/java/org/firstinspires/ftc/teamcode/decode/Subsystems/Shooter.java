@@ -36,12 +36,10 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.52; //0.58
-    double targetSpeedFar = 0.44; //0.445
-    double targetSpeedMedium = 0.42; //0.42
-    double targetSpeedNear = 0.394;//0.391
-
-    double blueTargetSpeedOffset = 0.05;
+    double targetSpeedOutZone = 0.525;//0.52
+    double targetSpeedFar = 0.452;//0.44
+    double targetSpeedMedium = 0.42;//0.42
+    double targetSpeedNear = 0.392;//0.394
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -69,13 +67,13 @@ public class Shooter {
         shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
-        if( alliance == DecodeBlackBoard.BLUE)
-        {
-            targetSpeedOutZone = 0.526; //0.52
-            targetSpeedFar = 0.444; //0.44
-            targetSpeedMedium = 0.425; //0.42
-            targetSpeedNear = 0.395;//0.391
-        }
+//        if( alliance == DecodeBlackBoard.BLUE)
+//        {
+//            targetSpeedOutZone = 0.522; //0.526
+//            targetSpeedFar = 0.441; //0.444
+//            targetSpeedMedium = 0.42; //0.425
+//            targetSpeedNear = 0.394;//0.395
+//        }
 
         targetSpeed = targetSpeedMedium;
     }
@@ -142,6 +140,11 @@ public class Shooter {
     public void setShootingLocation(ShootingLocation position)
     {
         shooterPosition = position;
+    }
+
+    public ShootingLocation getShooterPosition()
+    {
+        return shooterPosition;
     }
 
     public boolean isFlyWheelReady()

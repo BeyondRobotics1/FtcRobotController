@@ -78,7 +78,7 @@ public class DecodeTeleOp extends LinearOpMode {
     //field centric driving by default
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
-    int rumbleReady = 0;
+    //int rumbleReady = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -89,6 +89,7 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addLine("Initializing indexer");
         telemetry.update();
         indexer = new Indexer(hardwareMap, this);
+
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -118,11 +119,15 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addLine("LynxModule initialized");
 
         softRumbleEffect = new Gamepad.RumbleEffect.Builder()
-                .addStep(0.1, 0.1, 100)  //
+                .addStep(0.5, 0.5, 100)  //
+                .addStep(0.9, 0.9, 300)
+                .addStep(0.5, 0.5, 100)
                 .build();
         strongRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.5, 0.5, 100)  //
-                .addStep(1, 1, 200)
+                .addStep(1, 1, 350)
+                .addStep(0.5, 0.5, 100)
+                .addStep(1, 1, 350)
                 .addStep(0.5, 0.5, 100)
                 .build();
 
@@ -130,6 +135,8 @@ public class DecodeTeleOp extends LinearOpMode {
         isShooterOn = true;
         artifactColors = new int[3];
         artifactColors[0] = artifactColors[1] = artifactColors[2] = Color.WHITE;
+
+
 
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
@@ -194,7 +201,12 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
 
+
+//        turret.setIMUPoseToRobotStartPose();
+//        telemetry.addLine("Pinpoint is reset to the park position");
+
         telemetry.update();
+
 
         if(isStopRequested()) return;
 
@@ -205,6 +217,8 @@ public class DecodeTeleOp extends LinearOpMode {
 
         boolean isInitialPinpointPositionSet = false;
         boolean isEndGame = false;
+
+        //isIntakeOn = true;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -244,13 +258,13 @@ public class DecodeTeleOp extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
-            if(liftMode == LiftMode.NONE)
+            if(liftMode == LiftMode.NONE && !gamepad1.dpad_down)
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
                 rumbleEndgame = 1;
-                gamepad1.runRumbleEffect(strongRumbleEffect);
-                gamepad2.runRumbleEffect(strongRumbleEffect);
+                gamepad1.runRumbleEffect(softRumbleEffect);
+                gamepad2.runRumbleEffect(softRumbleEffect);
             }
 
 
@@ -294,22 +308,17 @@ public class DecodeTeleOp extends LinearOpMode {
                             artifactColors[1] != Color.WHITE &&
                             artifactColors[2] != Color.WHITE) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
-
-                        if((rumbleReady % 10) == 0) {
-                            gamepad1.runRumbleEffect(softRumbleEffect);
-                            gamepad2.runRumbleEffect(softRumbleEffect);
-                        }
-
-                        rumbleReady++;
-
-                        if(rumbleReady >= 100000)
-                            rumbleReady = 0;
+                        intake.setLedColor(Intake.LED_GREEN);
                     }
                     else if (artifactColors[0] != Color.WHITE &&
-                            artifactColors[1] != Color.WHITE)
+                            artifactColors[1] != Color.WHITE) {
+                        intake.setLedColor(Intake.LED_YELLOW);
                         intake.setIntakeMode(Intake.IntakeMode.HIN);
-                    else
+                    }
+                    else {
+                        intake.setLedColor(Intake.LED_OFF);
                         intake.intake(0.925);
+                    }
                 }
                 else
                     intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed
@@ -347,6 +356,10 @@ public class DecodeTeleOp extends LinearOpMode {
         else {
             turret.autoAim(false);
 
+            //when auto aim is diable, reset the turret heading to center
+            //and force to use zone 3 (FAR) shooting speed
+
+
             turret.resetTurretHeading();
         }
     }
@@ -380,14 +393,14 @@ public class DecodeTeleOp extends LinearOpMode {
                 }
             }
         }
-        else {
+        else
+        {
             //gamepad1 a, shoot from near position
             //gamepad1 b, shoot from medium position
             //gamepad1 y, shoot from far position
             //gamepad1 x, shoot from OUT_ZONE position
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-
             } else if (gamepad1.xWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
             } else if (gamepad1.yWasPressed()) {
@@ -397,6 +410,19 @@ public class DecodeTeleOp extends LinearOpMode {
             }
         }
 
+
+        //gamepad2 a, index 2
+        //gamepad2 b, index 1
+        //otherwise, index 0
+        if (gamepad2.b) {
+            indexer.index(2);
+        } else if (gamepad2.a) {
+            indexer.index(1);
+        } else  {
+            indexer.index(0);
+        }
+
+
         if(isShooterOn)
             shooter.shoot();
         else
@@ -405,6 +431,11 @@ public class DecodeTeleOp extends LinearOpMode {
 
     private void liftOp()
     {
+        //gamepad 1 dpad down for auto parking till
+        //the red or blue line
+        if(gamepad1.dpad_down)
+            driveTrain.driveToLine();
+
 
         if (gamepad1.dpadUpWasPressed()) {
             if(liftMode == LiftMode.NONE ||

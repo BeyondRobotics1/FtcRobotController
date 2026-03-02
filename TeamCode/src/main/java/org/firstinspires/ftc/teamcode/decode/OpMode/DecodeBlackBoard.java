@@ -11,8 +11,8 @@ public class DecodeBlackBoard {
     public static final int BLUE = 1;
     public static final int RED = 2;
 
-    public static final Pose2D RED_RESET_POSE = new Pose2D(DistanceUnit.INCH, 134, 111, AngleUnit.DEGREES, 180);
-    public static final Pose2D BLUE_RESET_POSE = new Pose2D(DistanceUnit.INCH, 134, 30, AngleUnit.DEGREES, 180);
+    public static final Pose2D RED_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.5, 111, AngleUnit.DEGREES, 180);
+    public static final Pose2D BLUE_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.5, 30, AngleUnit.DEGREES, 180);
 
 
     public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 139, AngleUnit.DEGREES, 0);
@@ -27,6 +27,9 @@ public class DecodeBlackBoard {
     public static final String HEADING = "Heading";
 
     public static final String Obelisk = "Obelisk";
+    public static final int OBELISK_GPP = 21;
+    public static final int OBELISK_PGP = 22;
+    public static final int OBELISK_PPG = 23;
 
 //    LinearOpMode mode;
 //    public DecodeBlackBoard(LinearOpMode mode)
@@ -36,17 +39,17 @@ public class DecodeBlackBoard {
 
     public static void saveObelisk(int obelisk)
     {
-        if(obelisk < 21 || obelisk > 23)
-            LinearOpMode.blackboard.put(Obelisk, 21);
+        if(obelisk < OBELISK_GPP || obelisk > OBELISK_PPG)
+            LinearOpMode.blackboard.put(Obelisk, OBELISK_GPP);
         else
             LinearOpMode.blackboard.put(Obelisk, obelisk);
     }
 
     public static int getObelisk()
     {
-        int result = 21;
+        int result = OBELISK_GPP;
 
-        Object ob = LinearOpMode.blackboard.getOrDefault(Obelisk, 21);
+        Object ob = LinearOpMode.blackboard.getOrDefault(Obelisk, OBELISK_GPP);
 
         try {
             if(ob != null)
