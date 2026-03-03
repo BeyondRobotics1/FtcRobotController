@@ -304,18 +304,20 @@ public class DecodeTeleOp extends LinearOpMode {
                     //stop the 2nd intake motor and keep the front
                     //intake motor running only
                     //
-                    if (artifactColors[0] != Color.WHITE &&
-                            artifactColors[1] != Color.WHITE &&
-                            artifactColors[2] != Color.WHITE) {
+                    if (intake.detectedArtifacts() == 3) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
                         intake.setLedColor(Intake.LED_GREEN);
                     }
-                    else if (artifactColors[0] != Color.WHITE &&
-                            artifactColors[1] != Color.WHITE) {
+                    else if (intake.detectedArtifacts() == 2) {
                         intake.setLedColor(Intake.LED_YELLOW);
                         intake.setIntakeMode(Intake.IntakeMode.HIN);
                     }
-                    else {
+                    else if (intake.detectedArtifacts() == 1){
+                        intake.setLedColor(Intake.LED_ORANGE);
+                        intake.intake(0.925);//0.925
+                    }
+                    else
+                    {
                         intake.setLedColor(Intake.LED_OFF);
                         intake.intake(0.925);//0.925
                     }

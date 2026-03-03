@@ -312,31 +312,22 @@ public class TeleOpTest extends LinearOpMode {
                     //stop the 2nd intake motor and keep the front
                     //intake motor running only
                     //
-                    if (artifactColors[0] != Color.WHITE &&
-                            artifactColors[1] != Color.WHITE &&
-                            artifactColors[2] != Color.WHITE) {
+                    if (intake.detectedArtifacts() == 3) {
                         intake.setIntakeMode(Intake.IntakeMode.IDLE);
-
                         intake.setLedColor(Intake.LED_GREEN);
-
-//                        if((rumbleReady % 10) == 0) {
-//                            gamepad1.runRumbleEffect(softRumbleEffect);
-//                            gamepad2.runRumbleEffect(softRumbleEffect);
-//                        }
-//
-//                        rumbleReady++;
-//
-//                        if(rumbleReady >= 100000)
-//                            rumbleReady = 0;
                     }
-                    else if (artifactColors[0] != Color.WHITE &&
-                            artifactColors[1] != Color.WHITE) {
-                        intake.setIntakeMode(Intake.IntakeMode.HIN);
+                    else if (intake.detectedArtifacts() == 2) {
                         intake.setLedColor(Intake.LED_YELLOW);
+                        intake.setIntakeMode(Intake.IntakeMode.HIN);
                     }
-                    else {
+                    else if (intake.detectedArtifacts() == 1){
+                        intake.setLedColor(Intake.LED_ORANGE);
+                        intake.intake(0.925);//0.925
+                    }
+                    else
+                    {
                         intake.setLedColor(Intake.LED_OFF);
-                        intake.intake(0.95);
+                        intake.intake(0.925);//0.925
                     }
                 }
                 else

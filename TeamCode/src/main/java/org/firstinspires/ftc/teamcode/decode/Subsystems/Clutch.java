@@ -23,8 +23,8 @@ public class Clutch {
     //engage left and right clutches
     public void engage()
     {
-        leftClutchServo.setPosition(0.1);
-        rightClutchServo.setPosition(0.09);
+        leftClutchServo.setPosition(0.08);//0.1
+        rightClutchServo.setPosition(0.07);//0.09
     }
 
     //Disengage left and right clutches

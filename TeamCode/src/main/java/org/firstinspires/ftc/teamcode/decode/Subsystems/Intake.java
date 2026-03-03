@@ -51,7 +51,7 @@ public class Intake {
     int[] artifactColors; //0 - top, 1 - middle, 2 - bottom
     int[] latchCounters; //0 - top, 1 - middle, 2 - bottom
 
-    int latchLimit = 5;
+    int latchLimit = 8;
 
 
     public Intake(HardwareMap hardwareMap, LinearOpMode linearOpMode)
@@ -155,6 +155,20 @@ public class Intake {
         verticalIntake.setPower(0);
     }
 
+
+    public int detectedArtifacts() {
+        if (artifactColors[0] != Color.WHITE &&
+                artifactColors[1] != Color.WHITE &&
+                artifactColors[2] != Color.WHITE)
+            return 3;
+        else if (artifactColors[0] != Color.WHITE &&
+                artifactColors[1] != Color.WHITE)
+            return 2;
+        else if (artifactColors[0] != Color.WHITE)
+            return 1;
+        else
+            return 0;
+    }
 
     //detect if there is an artifact at top, middle, and bottom
     //location of the transfer system
