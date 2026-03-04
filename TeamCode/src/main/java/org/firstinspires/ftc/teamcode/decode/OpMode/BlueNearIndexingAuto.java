@@ -60,15 +60,16 @@ public class BlueNearIndexingAuto extends LinearOpMode {
     private final Pose startPose = new Pose(30.5, 130.5, Math.toRadians(90)); //31, 131, 90, Start Pose of our robot.
     private final Pose scorePose = new Pose(43, 96, Math.toRadians(136)); // 43, 96, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
-    private final Pose pickup1Pose = new Pose(41.5, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(17.75, 83, Math.toRadians(180)); //17.5, 83
-    private final Pose backout1Pose = new Pose(23, 76, Math.toRadians(180)); //24, 76
-    private final Pose openGatePose = new Pose(16.6, 76, Math.toRadians(180)); //17, 76
-    private final Pose openGate2Pose = new Pose(16.6, 66, Math.toRadians(180));
+    private final Pose pickup1Pose = new Pose(41.5, 83, Math.toRadians(180)); //41.5, 83 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.5, 83, Math.toRadians(180)); //17.75, 83
+    //private final Pose backout1Pose = new Pose(23, 76, Math.toRadians(180)); //24, 76
+    //private final Pose openGatePose = new Pose(16.6, 76, Math.toRadians(180)); //17, 76
+
 
     private final Pose pickup2Pose = new Pose(41.125, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
     private final Pose backout2Pose = new Pose(19, 58, Math.toRadians(180)); //20, 58
+    private final Pose openGate2Pose = new Pose(16.25, 66, Math.toRadians(180)); //16.6, 66
     private final Pose backout22Pose = new Pose(40, 66, Math.toRadians(180)); //35, 66, 180
 
     private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
@@ -77,8 +78,8 @@ public class BlueNearIndexingAuto extends LinearOpMode {
     private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore, openGate2Score;
-    private PathChain scorePickup2, pickup2Grab2, grab1Score, grab2Score;
+    private PathChain scorePickup1, pickup1Grab1, grab1Score;// grab1OpenGate, openGateScore;
+    private PathChain scorePickup2, pickup2Grab2, grab2OpenGate, openGate2Score;//grab2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
 
@@ -237,13 +238,6 @@ public class BlueNearIndexingAuto extends LinearOpMode {
                     setPathState(12);
                 }
                 break;
-//            case 112:
-//                if (!follower.isBusy()) {
-//                    //Keep the gate open for 1 second
-//                    pathTimer.resetTimer();
-//                    setPathState(12);
-//                }
-//                break;
             case 12:
                 if (pathTimer.getElapsedTime() > 4000) { //1800, 350, 650
                     //move from open gate position to score position
@@ -391,28 +385,27 @@ public class BlueNearIndexingAuto extends LinearOpMode {
                 .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
                 .build();
 
-        grab1OpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
-                .addPath(new BezierLine(grab1Pose, backout1Pose))
-                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
-                .addPath(new BezierLine(backout1Pose, openGatePose))
-                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
-                .build();
+//        grab1OpenGate = follower.pathBuilder()
+//                //.addPath(new BezierLine(grab1Pose, scorePose))
+//                .addPath(new BezierLine(grab1Pose, backout1Pose))
+//                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
+//                .addPath(new BezierLine(backout1Pose, openGatePose))
+//                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
+//                .build();
         grab2OpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
                 .addPath(new BezierLine(backout2Pose, openGate2Pose))
                 .setLinearHeadingInterpolation(backout2Pose.getHeading(), openGate2Pose.getHeading())
                 .build();
 
-        openGateScore = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, scorePose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
-                .build();
+//        openGateScore = follower.pathBuilder()
+//                .addPath(new BezierLine(openGatePose, scorePose))
+//                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
+//                .build();
         openGate2Score = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, backout22Pose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(openGate2Pose, backout22Pose))
+                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), backout22Pose.getHeading())
                 .addPath(new BezierLine(backout22Pose, scorePose))
                 .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
                 .build();
@@ -433,12 +426,12 @@ public class BlueNearIndexingAuto extends LinearOpMode {
                 .addPath(new BezierLine(grab1Pose, scorePose))
                 .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
                 .build();
-        grab2Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab2Pose, backout2Pose))
-                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
-                .addPath(new BezierLine(backout2Pose, scorePose))
-                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
-                .build();
+//        grab2Score = follower.pathBuilder()
+//                .addPath(new BezierLine(grab2Pose, backout2Pose))
+//                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
+//                .addPath(new BezierLine(backout2Pose, scorePose))
+//                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
+//                .build();
 
 
         /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */

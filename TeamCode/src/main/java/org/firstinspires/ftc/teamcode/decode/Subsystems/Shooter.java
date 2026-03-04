@@ -36,10 +36,10 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.525;//0.52
-    double targetSpeedFar = 0.452;//0.44
+    double targetSpeedOutZone = 0.530;//0.525
+    double targetSpeedFar = 0.455;//0.452
     double targetSpeedMedium = 0.42;//0.42
-    double targetSpeedNear = 0.394;//0.392, 0.394
+    double targetSpeedNear = 0.392;//0.392, 0.394
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -67,13 +67,13 @@ public class Shooter {
         shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
-//        if( alliance == DecodeBlackBoard.BLUE)
-//        {
-//            targetSpeedOutZone = 0.522; //0.526
-//            targetSpeedFar = 0.441; //0.444
-//            targetSpeedMedium = 0.42; //0.425
-//            targetSpeedNear = 0.394;//0.395
-//        }
+        if( alliance == DecodeBlackBoard.RED)
+        {
+            //targetSpeedOutZone = 0.528;//0.525
+            //targetSpeedFar = 0.455;//0.452
+            targetSpeedMedium = 0.425;//0.42
+            //targetSpeedNear = 0.392;//0.392, 0.394
+        }
 
         targetSpeed = targetSpeedMedium;
     }

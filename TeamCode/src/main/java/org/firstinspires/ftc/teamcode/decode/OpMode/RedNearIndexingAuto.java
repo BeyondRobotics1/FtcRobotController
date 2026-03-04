@@ -78,8 +78,8 @@ public class RedNearIndexingAuto extends LinearOpMode {
     private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab2OpenGate, openGateScore, openGate2Score;
-    private PathChain scorePickup2, pickup2Grab2, grab2Score, grab1Score;
+    private PathChain scorePickup1, pickup1Grab1, grab1Score;// grab1OpenGate, openGateScore;
+    private PathChain scorePickup2, pickup2Grab2, grab2OpenGate, openGate2Score;//grab2Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
 
@@ -185,6 +185,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
         saveAutoState();
     }
 
+
     private void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
@@ -238,13 +239,6 @@ public class RedNearIndexingAuto extends LinearOpMode {
                     setPathState(12);
                 }
                 break;
-//            case 112:
-//                if (!follower.isBusy()) {
-//                    //Keep the gate open for 1 second
-//                    pathTimer.resetTimer();
-//                    setPathState(12);
-//                }
-//                break;
             case 12:
                 if (pathTimer.getElapsedTime() > 4000) { //1800, 350, 650
                     //move from open gate position to score position
@@ -288,7 +282,6 @@ public class RedNearIndexingAuto extends LinearOpMode {
                     follower.followPath(grab1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(23);
-
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 3000; //PPG -> GPP, 2 indexing - 2, 1, 0
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -297,6 +290,8 @@ public class RedNearIndexingAuto extends LinearOpMode {
                         indexingPathState = 1000; //PPG -> PPG, 0 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
+
                 }
                 break;
             case 23:
@@ -332,7 +327,6 @@ public class RedNearIndexingAuto extends LinearOpMode {
             case 33:
                 if(pathTimer.getElapsedTime() > 400)
                 {
-
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
                         indexingPathState = 1000; //GPP -> GPP, no indexing
                     else if(obelisk_id == DecodeBlackBoard.OBELISK_PGP)
@@ -341,6 +335,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
                         indexingPathState = 2000; //GPP -> PPG, 1 indexing
                     else
                         indexingPathState = 1000; //no indexing if not valid tag
+
 
                     setPathState(34);
                 }
@@ -391,28 +386,27 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
                 .build();
 
-        grab1OpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
-                .addPath(new BezierLine(grab1Pose, backout1Pose))
-                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
-                .addPath(new BezierLine(backout1Pose, openGatePose))
-                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
-                .build();
+//        grab1OpenGate = follower.pathBuilder()
+//                //.addPath(new BezierLine(grab1Pose, scorePose))
+//                .addPath(new BezierLine(grab1Pose, backout1Pose))
+//                .setLinearHeadingInterpolation(grab1Pose.getHeading(), backout1Pose.getHeading())
+//                .addPath(new BezierLine(backout1Pose, openGatePose))
+//                .setLinearHeadingInterpolation(backout1Pose.getHeading(), openGatePose.getHeading())
+//                .build();
         grab2OpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
                 .addPath(new BezierLine(backout2Pose, openGate2Pose))
                 .setLinearHeadingInterpolation(backout2Pose.getHeading(), openGate2Pose.getHeading())
                 .build();
 
-        openGateScore = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, scorePose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
-                .build();
+//        openGateScore = follower.pathBuilder()
+//                .addPath(new BezierLine(openGatePose, scorePose))
+//                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
+//                .build();
         openGate2Score = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, backout22Pose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), backout22Pose.getHeading())
+                .addPath(new BezierLine(openGate2Pose, backout22Pose))
+                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), backout22Pose.getHeading())
                 .addPath(new BezierLine(backout22Pose, scorePose))
                 .setLinearHeadingInterpolation(backout22Pose.getHeading(), scorePose.getHeading())
                 .build();
@@ -433,12 +427,12 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 .addPath(new BezierLine(grab1Pose, scorePose))
                 .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
                 .build();
-        grab2Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab2Pose, backout2Pose))
-                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
-                .addPath(new BezierLine(backout2Pose, scorePose))
-                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
-                .build();
+//        grab2Score = follower.pathBuilder()
+//                .addPath(new BezierLine(grab2Pose, backout2Pose))
+//                .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())
+//                .addPath(new BezierLine(backout2Pose, scorePose))
+//                .setLinearHeadingInterpolation(backout2Pose.getHeading(), scorePose.getHeading())
+//                .build();
 
 
         /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
@@ -461,6 +455,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 .setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading())
                 .build();
     }
+
 
     void setPathState(int newPathState) {
         this.pathState = newPathState;

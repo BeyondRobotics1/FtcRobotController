@@ -383,9 +383,7 @@ public class TeleOpTest extends LinearOpMode {
         //auto shooting speed is enabled
         //Only adjust shooting speed if there're balls in our robot
         if(enableAutoShootingSpeed) {
-            if (artifactColors[0] != Color.WHITE ||
-                    artifactColors[1] != Color.WHITE ||
-                    artifactColors[2] != Color.WHITE) {
+            if (intake.detectedArtifacts() > 0) {
                 if (isHeadingToGoal)
                 {
                     if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE)

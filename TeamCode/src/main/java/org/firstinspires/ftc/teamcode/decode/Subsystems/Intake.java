@@ -107,7 +107,7 @@ public class Intake {
 
             //outtake(0.5);
             horizontalIntake.setPower(0.5);
-            //verticalIntake.setPower(0.5);
+            verticalIntake.setPower(0.5);
         }
         else if (intakeMode == IntakeMode.FEED) {
             intake(1);
@@ -116,7 +116,7 @@ public class Intake {
         }
         else if (intakeMode == IntakeMode.SLOW_FEED)
         {
-            intake(0.65);
+            intake(0.6); //0.65
         }
         else if (intakeMode == IntakeMode.MEDIUM_FEED)
         {
