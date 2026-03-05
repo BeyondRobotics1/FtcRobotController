@@ -91,7 +91,7 @@ public class Intake {
     {
         if(intakeMode == Intake.IntakeMode.IN)
         {
-            intake(0.9);
+            intake(0.925);
         }
         else if(intakeMode == Intake.IntakeMode.VIN)
         {
@@ -129,7 +129,6 @@ public class Intake {
     }
 
     //Power should be negative
-
     public void intake(double power)
     {
         double localPower = -Math.abs(power);
@@ -140,6 +139,13 @@ public class Intake {
 //        mode.telemetry.addLine()
 //                .addData("horizontal Power", "%.3f", -localPower)
 //                .addData("vertical Power", "%.3f", -localPower);
+    }
+
+    public void intake(double horizontalIntakePower,
+                       double verticalIntakePower)
+    {
+        horizontalIntake.setPower( -Math.abs(horizontalIntakePower));
+        verticalIntake.setPower( -Math.abs(verticalIntakePower));
     }
 
     //Power should be positive

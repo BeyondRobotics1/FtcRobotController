@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near Gate Spamming", group = "Decode")
+@Autonomous(name = "Blue Near Spamming Gate", group = "Decode")
 public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
 
     //Hardware
@@ -49,22 +49,24 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
     private final Pose scorePose = new Pose(43, 96, Math.toRadians(136)); // 43, 96, 135// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
 
     //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(41.5, 83, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(17.75, 83, Math.toRadians(180)); //17.5, 83
-    private final Pose backout1Pose = new Pose(23, 76, Math.toRadians(180)); //24, 76
-    private final Pose openGate1Pose = new Pose(15.6, 76, Math.toRadians(180)); //16.6, 76
+    private final Pose pickup1Pose = new Pose(41.5, 84, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.75, 84, Math.toRadians(180)); //17.5, 83
+    private final Pose backout1Pose = new Pose(20, 78, Math.toRadians(180)); //23, 76
+    private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(41.125, 58, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose pickup2Pose = new Pose(41.125, 59, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
-    private final Pose backout2Pose = new Pose(19, 58, Math.toRadians(180)); //20, 58
-    private final Pose openGate2Pose = new Pose(15.6, 70, Math.toRadians(180)); //17, 65.5 //gate position
+    private final Pose backout2Pose = new Pose(15, 58, Math.toRadians(180)); //16.5, 58
+    private final Pose openGate2Pose = new Pose(15.5, 70, Math.toRadians(180)); //17, 65.5 //gate position
 
 
-    private final Pose openGatePose = new Pose(13.5, 66, Math.toRadians(160)); //13.5, 66, 160 //gate position
-    private final Pose openGateSetupPose = new Pose(20, 66, Math.toRadians(180)); //20, 66 Middle (Second Set) backout
-    private final Pose openGatePickupPose = new Pose(10, 59, Math.toRadians(160)); //12.5, 59, 170
-    private final Pose backout22Pose = new Pose(20, 59, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
+    private final Pose openGateSetupPose = new Pose(22, 70, Math.toRadians(180)); //20, 68, 180 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(15.8, 68, Math.toRadians(180)); //13.5, 66, 160 //gate position
+    private final Pose openGatePose = new Pose(11.5, 63, Math.toRadians(150)); //11.5.5, 62, 150 //gate position
+
+    private final Pose openGatePickupPose = new Pose(10.5, 59, Math.toRadians(160)); //12.5, 58, 160
+    private final Pose backout22Pose = new Pose(15, 59, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
     //18, 65.5 //gate position
 
 
@@ -85,13 +87,13 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
 //    private final Pose grab4Pose = new Pose(12.25, 132.5, Math.toRadians(180)); //12, 132.5, 180
 
     //park
-    private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
+    private final Pose parkPose = new Pose(40, 80, Math.toRadians(180));
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGate1Score;
     private PathChain scorePickup2, pickup2Grab2, grab2OpenGate2, openGate2Score;
     private PathChain scoreOpenGate,openGatePickup, gatePickupScore;
-    private PathChain scorePickup3, pickup3Grab3, grab3Score;
+    //private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
 
 
@@ -222,7 +224,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 800) { //900
 
                     trigger.close();
-                    intake.intake(0.925);
+                    intake.intake(0.95,0.925);
 
                     //move to the pickup 1 position
                     follower.followPath(scorePickup1, true); //scorePickup2
@@ -249,7 +251,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 13:
-                if (pathTimer.getElapsedTime() > 1500) {
+                if (pathTimer.getElapsedTime() > 1400) {//1500
                     follower.followPath(openGate1Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(15);
@@ -275,7 +277,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 800) { //shoot balls 900
 
                     trigger.close();
-                    intake.intake(0.925);
+                    intake.intake(0.95,0.925);
 
                     //move to the pickup 1 position
                     follower.followPath(scorePickup2, true); //scorePickup2
@@ -305,7 +307,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1500) { //350
+                if (pathTimer.getElapsedTime() > 1500) { //1500
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -328,37 +330,34 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 break;
             case 27:
                 if (pathTimer.getElapsedTime() > 800) { //shoot balls 900
+                    pathTimer.resetTimer();
                     trigger.close();
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
 
                     //move to the 3rd spike
                     follower.followPath(scoreOpenGate, true); //grabPickup1
 
-                    setPathState(30);
-                }
-                break;
-
-
-            //Pickup balls from gate
-            case 30:
-                if (!follower.isBusy()){
-                    pathTimer.resetTimer();
                     setPathState(31);
                 }
                 break;
 
+
             case 31:
-                if (pathTimer.getElapsedTime() > 500) {//Keep gate open 400
+                if (pathTimer.getElapsedTime() > 2100) {//Keep gate open 250
                     pathTimer.resetTimer();
 
-                    //grab balls at position 1
+                    //setPathState(-32);
+
+                    //grab balls at gate
                     follower.followPath(openGatePickup, true); //
-                    intake.intake(0.925);
-                    setPathState(-32);
+                    intake.intake(0.95,0.925);
+                    setPathState(32);
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1000) { //in take
+                if (pathTimer.getElapsedTime() > 1500) { //1000, in take
+
+                    //setPathState(33);
 
                     follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -389,31 +388,22 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                     //move to the 3rd spike
                     follower.followPath(scoreOpenGate, true); //grabPickup1
 
-                    setPathState(41);
-                }
-                break;
-
-
-            //Pickup balls from gate
-            case 41:
-                if (!follower.isBusy()){
-                    pathTimer.resetTimer();
                     setPathState(42);
                 }
                 break;
 
             case 42:
-                if (pathTimer.getElapsedTime() > 500) {//Keep gate open 400
+                if (pathTimer.getElapsedTime() > 2100) {//Keep gate open 400
                     pathTimer.resetTimer();
 
-                    //grab balls at position 1
+                    //grab balls at gate
                     follower.followPath(openGatePickup, true); //
-                    intake.intake(0.925);
+                    intake.intake(0.95,0.925);
                     setPathState(43);
                 }
                 break;
             case 43:
-                if (pathTimer.getElapsedTime() > 1000) { //in take
+                if (pathTimer.getElapsedTime() > 1500) { //1000 in take
 
                     follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -447,50 +437,6 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                     setPathState(900);
                 }
                 break;
-
-
-//            //1st set of balls
-//            case 41:
-//                if (!follower.isBusy()) {
-//                    pathTimer.resetTimer();
-//
-//                    //grab balls at position 1
-//                    follower.followPath(pickup1Grab1, true); //grabPickup1
-//                    setPathState(42);
-//                }
-//                break;
-//            case 42:
-//                if (!follower.isBusy()) {
-//                    follower.followPath(grab1Score, true);
-//                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
-//                    setPathState(43);
-//                }
-//
-//                break;
-//            case 43:
-//                if (!follower.isBusy()) {
-//                    pathTimer.resetTimer();
-//                    trigger.open();
-//                    setPathState(44);
-//                }
-//                break;
-//            case 44:
-//                if (pathTimer.getElapsedTime() > 80) {//should be 110
-//                    pathTimer.resetTimer();
-//                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-//
-//                    setPathState(45);
-//                }
-//                break;
-//            case 45:
-//                if (pathTimer.getElapsedTime() > 800) { //shoot balls 1000
-//
-//                    trigger.close();
-//                    intake.intake(0.925);
-//
-//                    setPathState(900);
-//                }
-//                break;
 
             case 900:
                 follower.followPath(scorePark, true); //score to park
@@ -562,12 +508,15 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
 
         /* This is our gate spamming PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scoreOpenGate = follower.pathBuilder()
-                //.addPath(new BezierLine(grab1Pose, scorePose))
                 .addPath(new BezierLine(scorePose, openGateSetupPose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), openGateSetupPose.getHeading())
-                .addPath(new BezierLine(openGateSetupPose, openGatePose))
-                .setLinearHeadingInterpolation(openGateSetupPose.getHeading(), openGatePose.getHeading())
+                .addPath(new BezierLine(openGateSetupPose, openGateStartPose))
+                .setLinearHeadingInterpolation(openGateSetupPose.getHeading(), openGateStartPose.getHeading())
+                .addPath(new BezierLine(openGateStartPose, openGatePose))
+                .setLinearHeadingInterpolation(openGateStartPose.getHeading(), openGatePose.getHeading())
                 .build();
+
+
         openGatePickup = follower.pathBuilder()
                 .addPath(new BezierLine(openGatePose, openGatePickupPose))
                 .setLinearHeadingInterpolation(openGatePose.getHeading(), openGatePickupPose.getHeading())
@@ -580,19 +529,19 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 .build();
 
 
-        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        scorePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup3Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
-                .build();
-        pickup3Grab3 = follower.pathBuilder()
-                .addPath(new BezierLine(pickup3Pose, grab3Pose))
-                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), grab3Pose.getHeading())
-                .build();
-        grab3Score = follower.pathBuilder()
-                .addPath(new BezierLine(grab3Pose, scorePose))
-                .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
-                .build();
+//        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+//        scorePickup3 = follower.pathBuilder()
+//                .addPath(new BezierLine(scorePose, pickup3Pose))
+//                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup3Pose.getHeading())
+//                .build();
+//        pickup3Grab3 = follower.pathBuilder()
+//                .addPath(new BezierLine(pickup3Pose, grab3Pose))
+//                .setLinearHeadingInterpolation(pickup3Pose.getHeading(), grab3Pose.getHeading())
+//                .build();
+//        grab3Score = follower.pathBuilder()
+//                .addPath(new BezierLine(grab3Pose, scorePose))
+//                .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
+//                .build();
 
         /* This is our scoreParkPathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePark = follower.pathBuilder()

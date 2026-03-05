@@ -314,12 +314,12 @@ public class DecodeTeleOp extends LinearOpMode {
                     }
                     else if (intake.detectedArtifacts() == 1){
                         intake.setLedColor(Intake.LED_ORANGE);
-                        intake.intake(0.925);//0.925
+                        intake.intake(0.95,0.925);//0.925
                     }
                     else
                     {
                         intake.setLedColor(Intake.LED_OFF);
-                        intake.intake(0.925);//0.925
+                        intake.intake(0.95,0.925);//0.925
                     }
                 }
                 else

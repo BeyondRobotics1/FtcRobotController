@@ -212,7 +212,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 950) { //1250
 
                     trigger.close();
-                    intake.intake(0.925);
+                    intake.intake(0.95,0.925);
 
                     //move to the pickup 1 position
                     follower.followPath(scorePickup2, true); //grabPickup1
@@ -510,7 +510,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
             if (pathTimer.getElapsedTime() > 900)
             {
                 trigger.close();
-                intake.intake(0.925);
+                intake.intake(0.95,0.925);
 
                 pathTimer.resetTimer();
 
@@ -729,7 +729,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
             if (pathTimer.getElapsedTime() > shootingOneBallWaitTime)
             {
                 trigger.close();
-                intake.intake(0.925);
+                intake.intake(0.95,0.925);
 
                 pathTimer.resetTimer();
 
@@ -880,7 +880,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 indexer.index(0);
 
                 trigger.close();
-                intake.intake(0.925);
+                intake.intake(0.95,0.925);
 
                 pathTimer.resetTimer();
 
