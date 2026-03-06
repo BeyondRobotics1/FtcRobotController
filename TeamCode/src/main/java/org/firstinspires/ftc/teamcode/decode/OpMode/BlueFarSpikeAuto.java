@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Far Spike", group = "Decode")
-public class RedFarAutoSpike extends LinearOpMode {
+@Autonomous(name = "Blue Far Spike", group = "Decode")
+public class BlueFarSpikeAuto extends LinearOpMode {
     //Hardware
     private Shooter shooter;
     private Intake intake;
@@ -45,24 +45,23 @@ public class RedFarAutoSpike extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    /**
-     * Start Pose of our robot
-     */
-    private final Pose startPose = new Pose(55, 134, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, 90 Scoring Pose of our robot.
-
-    private final Pose pickup1Pose = new Pose(40, 132, Math.toRadians(180)); // 40, 130 Second pickup spot
-    private final Pose grab1Pose = new Pose(12.5, 134, Math.toRadians(180)); // 12.25, 134 Second pickup spot
-
-    private final Pose pickup2Pose = new Pose(40, 126, Math.toRadians(180)); //Third pickup spot
-    private final Pose grab2Pose = new Pose(12.5, 122, Math.toRadians(180)); // Second pickup spot
-
-    //Lowest (Third Set)
-    private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
-    private final Pose grab3Pose = new Pose(12.5, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
+    private final Pose startPose = new Pose(55, 7.5, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(58.39, 20.23, Math.toRadians(115)); // 55, 20.5, 90 Scoring Pose of our robot.
 
 
-    private final Pose parkPose = new Pose(38, 129 , Math.toRadians(-180)); // 55, 31.5, 90 Where we park
+    //corner
+    private final Pose pickup1Pose = new Pose(40, 10, Math.toRadians(180)); //40, 12, 180 Second pickup spot
+    private final Pose grab1Pose = new Pose(5, 8.75, Math.toRadians(180)); // Second pickup spot
+
+    private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 12Third pickup spot
+    private final Pose grab2Pose = new Pose(12.5, 24, Math.toRadians(180)); // Second pickup spot
+
+    //lower spike
+    private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
+
+
+    private final Pose parkPose = new Pose(39, 12, Math.toRadians(180)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
@@ -527,5 +526,4 @@ public class RedFarAutoSpike extends LinearOpMode {
 
         telemetry.update();
     }
-
 }

@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.List;
 
 
-@Autonomous(name = "Red Near Spamming Gate", group = "Decode")
-public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
+@Autonomous(name = "Red Near NO Indexing", group = "Decode")
+public class RedNearNoIndexingAuto extends LinearOpMode{
 
     //Hardware
     private Shooter shooter;
@@ -51,23 +51,23 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
 
     //Highest (First Set)
     private final Pose pickup1Pose = new Pose(43, 58, Math.toRadians(180)); // 48.5, 58 Highest (First Set) picking up start
-    private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58Highest (First Set)  picking up end.
-    private final Pose backout1Pose = new Pose(22, 65.5, Math.toRadians(180)); //23, 65.5
-    private final Pose openGate1Pose = new Pose(17, 66, Math.toRadians(180)); //18, 65.5 //gate position
+    private final Pose grab1Pose = new Pose(19, 58, Math.toRadians(180)); // 17.5, 58 Highest (First Set)  picking up end.
+    private final Pose backout1Pose = new Pose(23, 65.5, Math.toRadians(180)); //22, 65.5
+    private final Pose openGate1Pose = new Pose(15.5, 66, Math.toRadians(180)); //16.5, 66 //gate position
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(42.5, 82, Math.toRadians(180)); // 46, 83 Middle (Second Set) picking up start.
     private final Pose grab2Pose = new Pose(12.25, 82, Math.toRadians(180)); // 12, 82.5 Middle (Second Set) picking up end.
-    private final Pose backout2Pose = new Pose(22, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
-    private final Pose openGate2Pose = new Pose(17, 73, Math.toRadians(180)); //18, 65.5 //gate position
+    private final Pose backout2Pose = new Pose(23, 79, Math.toRadians(180)); // 23, 80 Middle (Second Set) backout.
+    private final Pose openGate2Pose = new Pose(15.5, 73, Math.toRadians(180)); //16, 73 //gate position
 
+    //Gate pickup
+    private final Pose openGateSetupPose = new Pose(24, 72, Math.toRadians(180)); // 22, 72 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(16, 76, Math.toRadians(180));//17, 76
+    private final Pose openGatePose = new Pose(13, 80, Math.toRadians(-150)); //13, 80, -150
 
-    private final Pose openGateSetupPose = new Pose(20, 76, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(17, 76, Math.toRadians(180));
-    private final Pose openGatePose = new Pose(17, 77, Math.toRadians(-160));
-
-    private final Pose openGatePickupPose = new Pose(13.5, 85, Math.toRadians(-170)); //13.5, 84, -170
-    private final Pose backout22Pose = new Pose(20, 82, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
+    private final Pose openGatePickupPose = new Pose(13.5, 84, Math.toRadians(-160)); //13.5, 84, -170
+    private final Pose backout22Pose = new Pose(20, 82, Math.toRadians(-160)); // 20, 82, 180 Middle (Second Set) backout.
     //18, 65.5 //gate position
 
 
@@ -77,7 +77,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
 //
 
     //park
-    private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
+    private final Pose parkPose = new Pose(41, 56, Math.toRadians(180)); // 41, 60, Park pose.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGate1Score;
@@ -203,7 +203,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 80) {//100
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -256,7 +256,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 16:
-                if (pathTimer.getElapsedTime() > 80) {//should be 110
+                if (pathTimer.getElapsedTime() > 70) {//should be 80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -297,7 +297,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1500) { //1500
+                if (pathTimer.getElapsedTime() > 1600) { //1500, takes longer
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -312,14 +312,14 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 26:
-                if (pathTimer.getElapsedTime() > 80) {//110, 300
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
                     setPathState(27);
                 }
                 break;
             case 27:
-                if (pathTimer.getElapsedTime() > 800) { //shoot balls 900
+                if (pathTimer.getElapsedTime() > 800) { //shoot balls 800
                     pathTimer.resetTimer();
                     trigger.close();
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -333,7 +333,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
 
 
             case 31:
-                if (pathTimer.getElapsedTime() > 2100) {//Keep gate open 250
+                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 250
                     pathTimer.resetTimer();
 
                     //setPathState(-32);
@@ -345,9 +345,9 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1500) { //1000, in take
+                if (pathTimer.getElapsedTime() > 1600) { //1000, in take
 
-                    //setPathState(33);
+                    //setPathState(-33);
 
                     follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -362,7 +362,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 34:
-                if (pathTimer.getElapsedTime() > 80) {//100
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -383,7 +383,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 break;
 
             case 42:
-                if (pathTimer.getElapsedTime() > 2100) {//Keep gate open 400
+                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 400
                     pathTimer.resetTimer();
 
                     //grab balls at gate
@@ -393,7 +393,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 43:
-                if (pathTimer.getElapsedTime() > 1500) { //1000 in take
+                if (pathTimer.getElapsedTime() > 1600) { //1000 in take
 
                     follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -408,7 +408,7 @@ public class RedNearWithoutIndexingGateSpamming extends LinearOpMode{
                 }
                 break;
             case 45:
-                if (pathTimer.getElapsedTime() > 80) {//100
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 

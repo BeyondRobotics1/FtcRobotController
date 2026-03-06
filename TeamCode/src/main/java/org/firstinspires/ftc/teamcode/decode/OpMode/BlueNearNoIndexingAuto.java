@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near Spamming Gate", group = "Decode")
-public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
+@Autonomous(name = "Blue Near NO Indexing", group = "Decode")
+public class BlueNearNoIndexingAuto extends LinearOpMode {
 
     //Hardware
     private Shooter shooter;
@@ -87,7 +87,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
 //    private final Pose grab4Pose = new Pose(12.25, 132.5, Math.toRadians(180)); //12, 132.5, 180
 
     //park
-    private final Pose parkPose = new Pose(40, 80, Math.toRadians(180));
+    private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); //40, 80
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGate1Score;
@@ -213,7 +213,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 80) {//100
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -266,7 +266,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 16:
-                if (pathTimer.getElapsedTime() > 80) {//should be 110
+                if (pathTimer.getElapsedTime() > 70) {//should be 80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -307,7 +307,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1500) { //1500
+                if (pathTimer.getElapsedTime() > 1600) { //1500, takes longer
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -322,14 +322,14 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 26:
-                if (pathTimer.getElapsedTime() > 80) {//110, 300
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
                     setPathState(27);
                 }
                 break;
             case 27:
-                if (pathTimer.getElapsedTime() > 800) { //shoot balls 900
+                if (pathTimer.getElapsedTime() > 800) { //shoot balls 800
                     pathTimer.resetTimer();
                     trigger.close();
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -343,7 +343,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
 
 
             case 31:
-                if (pathTimer.getElapsedTime() > 2100) {//Keep gate open 250
+                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 250
                     pathTimer.resetTimer();
 
                     //setPathState(-32);
@@ -355,9 +355,9 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1500) { //1000, in take
+                if (pathTimer.getElapsedTime() > 1600) { //1000, in take
 
-                    //setPathState(33);
+                    //setPathState(-33);
 
                     follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -372,7 +372,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 34:
-                if (pathTimer.getElapsedTime() > 80) {//100
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -393,7 +393,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 break;
 
             case 42:
-                if (pathTimer.getElapsedTime() > 2100) {//Keep gate open 400
+                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 400
                     pathTimer.resetTimer();
 
                     //grab balls at gate
@@ -403,7 +403,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 43:
-                if (pathTimer.getElapsedTime() > 1500) { //1000 in take
+                if (pathTimer.getElapsedTime() > 1600) { //1000 in take
 
                     follower.followPath(gatePickupScore, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -418,7 +418,7 @@ public class BlueNearWithoutIndexingGateSpamming extends LinearOpMode {
                 }
                 break;
             case 45:
-                if (pathTimer.getElapsedTime() > 80) {//100
+                if (pathTimer.getElapsedTime() > 70) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
