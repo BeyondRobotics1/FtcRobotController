@@ -51,7 +51,7 @@ public class Intake {
     int[] artifactColors; //0 - top, 1 - middle, 2 - bottom
     int[] latchCounters; //0 - top, 1 - middle, 2 - bottom
 
-    int latchLimit = 8;
+    int latchLimit = 3;
 
 
     public Intake(HardwareMap hardwareMap, LinearOpMode linearOpMode)
@@ -116,7 +116,7 @@ public class Intake {
         }
         else if (intakeMode == IntakeMode.SLOW_FEED)
         {
-            intake(0.6); //0.65
+            intake(0.65); //0.65
         }
         else if (intakeMode == IntakeMode.MEDIUM_FEED)
         {

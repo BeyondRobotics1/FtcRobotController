@@ -36,8 +36,8 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.530;//0.525
-    double targetSpeedFar = 0.455;//0.452
+    double targetSpeedOutZone = 0.535;//0.525
+    double targetSpeedFar = 0.452;//0.452
     double targetSpeedMedium = 0.42;//0.42
     double targetSpeedNear = 0.393;//0.392, 0.394
 

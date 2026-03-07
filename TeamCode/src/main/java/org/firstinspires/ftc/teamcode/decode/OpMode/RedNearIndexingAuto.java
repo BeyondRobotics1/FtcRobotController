@@ -75,7 +75,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
     private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
 
     //park
-    private final Pose parkPose = new Pose(41, 60, Math.toRadians(180)); // Park pose.
+    private final Pose parkPose = new Pose(41, 56, Math.toRadians(180)); // 41, 60Park pose.
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1Score;// grab1OpenGate, openGateScore;
@@ -138,7 +138,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Near Auto");
+            telemetry.addLine("Red Near Indexing Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
@@ -212,7 +212,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 950) { //1250
 
                     trigger.close();
-                    intake.intake(0.95,0.925);
+                    intake.intake(0.95, 0.925);
 
                     //move to the pickup 1 position
                     follower.followPath(scorePickup2, true); //grabPickup1
@@ -236,14 +236,14 @@ public class RedNearIndexingAuto extends LinearOpMode {
 
                     ////move grab1 position to open gate position
                     follower.followPath(grab2OpenGate, true);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(12);
                 }
                 break;
             case 12:
-                if (pathTimer.getElapsedTime() > 4000) { //1800, 350, 650
+                if (pathTimer.getElapsedTime() > 4500) { //4000
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     setPathState(13);
 
                     if(obelisk_id == DecodeBlackBoard.OBELISK_GPP)
@@ -367,6 +367,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
                 break;
         }
     }
+
 
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */

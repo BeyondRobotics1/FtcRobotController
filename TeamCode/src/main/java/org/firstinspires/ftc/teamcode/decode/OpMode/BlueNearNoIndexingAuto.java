@@ -51,21 +51,21 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
     //Highest (First Set)
     private final Pose pickup1Pose = new Pose(41.5, 84, Math.toRadians(180)); //43, 83 Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose grab1Pose = new Pose(17.75, 84, Math.toRadians(180)); //17.5, 83
-    private final Pose backout1Pose = new Pose(20, 78, Math.toRadians(180)); //23, 76
+    private final Pose backout1Pose = new Pose(21, 78, Math.toRadians(180)); //20, 78
     private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(41.125, 59, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
     private final Pose backout2Pose = new Pose(15, 58, Math.toRadians(180)); //16.5, 58
-    private final Pose openGate2Pose = new Pose(15.5, 70, Math.toRadians(180)); //17, 65.5 //gate position
+    private final Pose openGate2Pose = new Pose(15, 70, Math.toRadians(180)); //15.5, 70 //gate position
 
 
-    private final Pose openGateSetupPose = new Pose(22, 70, Math.toRadians(180)); //20, 68, 180 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(15.8, 68, Math.toRadians(180)); //13.5, 66, 160 //gate position
-    private final Pose openGatePose = new Pose(11.5, 63, Math.toRadians(150)); //11.5.5, 62, 150 //gate position
+    private final Pose openGateSetupPose = new Pose(23, 71, Math.toRadians(180)); //22, 70, 180 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(15.8, 69, Math.toRadians(180)); //15.8, 68, 180 //gate position
+    private final Pose openGatePose = new Pose(11.5, 63.5, Math.toRadians(150)); //11.5, 63, 150 //gate position
 
-    private final Pose openGatePickupPose = new Pose(10.5, 59, Math.toRadians(160)); //12.5, 58, 160
+    private final Pose openGatePickupPose = new Pose(11, 59, Math.toRadians(170)); //11, 59, 170
     private final Pose backout22Pose = new Pose(15, 59, Math.toRadians(180)); // 20, 82.5 Middle (Second Set) backout.
     //18, 65.5 //gate position
 
@@ -87,7 +87,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
 //    private final Pose grab4Pose = new Pose(12.25, 132.5, Math.toRadians(180)); //12, 132.5, 180
 
     //park
-    private final Pose parkPose = new Pose(40, 80, Math.toRadians(180)); //40, 80
+    private final Pose parkPose = new Pose(40, 83, Math.toRadians(180)); //40, 80
 
     private Path scorePreload;
     private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, openGate1Score;
@@ -129,6 +129,8 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
+        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
@@ -153,7 +155,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Near Auto");
+            telemetry.addLine("Red Near NO Indexing Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
@@ -189,7 +191,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
             follower.update();
             autonomousPathUpdate();
 
-            displayPose();
+            //displayPose();
 
             shooter.shoot();
         }
@@ -307,7 +309,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1600) { //1500, takes longer
+                if (pathTimer.getElapsedTime() > 1650) { //1500, takes longer
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -343,7 +345,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
 
 
             case 31:
-                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 250
+                if (pathTimer.getElapsedTime() > 2500) {//Keep gate open 2200
                     pathTimer.resetTimer();
 
                     //setPathState(-32);
@@ -355,16 +357,20 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1600) { //1000, in take
+                if (pathTimer.getElapsedTime() > 1650) { //1000, in take
 
                     //setPathState(-33);
 
                     follower.followPath(gatePickupScore, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                     setPathState(33);
                 }
                 break;
             case 33:
+                intake.detectArtifactColors();
+                if(intake.detectedArtifacts() == 3)
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
                     trigger.open();
@@ -393,7 +399,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
                 break;
 
             case 42:
-                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 400
+                if (pathTimer.getElapsedTime() > 2500) {//Keep gate open 2200
                     pathTimer.resetTimer();
 
                     //grab balls at gate
@@ -403,14 +409,18 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
                 }
                 break;
             case 43:
-                if (pathTimer.getElapsedTime() > 1600) { //1000 in take
+                if (pathTimer.getElapsedTime() > 1650) { //1000 in take
 
                     follower.followPath(gatePickupScore, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                     setPathState(44);
                 }
                 break;
             case 44:
+                intake.detectArtifactColors();
+                if(intake.detectedArtifacts() == 3)
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
                     trigger.open();

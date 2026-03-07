@@ -49,7 +49,7 @@ public class RedFarSpikeAuto extends LinearOpMode {
      * Start Pose of our robot
      */
     private final Pose startPose = new Pose(55, 134, Math.toRadians(-90)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, 90 Scoring Pose of our robot.
+    private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, -112 Scoring Pose of our robot.
 
     private final Pose pickup1Pose = new Pose(40, 132, Math.toRadians(180)); // 40, 130 Second pickup spot
     private final Pose grab1Pose = new Pose(12.5, 134, Math.toRadians(180)); // 12.25, 134 Second pickup spot
@@ -62,7 +62,7 @@ public class RedFarSpikeAuto extends LinearOpMode {
     private final Pose grab3Pose = new Pose(12.5, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
 
 
-    private final Pose parkPose = new Pose(38, 129 , Math.toRadians(-180)); // 55, 31.5, 90 Where we park
+    private final Pose parkPose = new Pose(55, 115 , Math.toRadians(-90)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
@@ -99,6 +99,8 @@ public class RedFarSpikeAuto extends LinearOpMode {
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
+        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
         telemetry.addLine("initializing pedro pathing follower");

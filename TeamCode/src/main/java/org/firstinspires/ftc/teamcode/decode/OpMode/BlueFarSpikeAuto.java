@@ -51,17 +51,17 @@ public class BlueFarSpikeAuto extends LinearOpMode {
 
     //corner
     private final Pose pickup1Pose = new Pose(40, 10, Math.toRadians(180)); //40, 12, 180 Second pickup spot
-    private final Pose grab1Pose = new Pose(5, 8.75, Math.toRadians(180)); // Second pickup spot
+    private final Pose grab1Pose = new Pose(12.5, 8.75, Math.toRadians(180)); // Second pickup spot
 
     private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 12Third pickup spot
     private final Pose grab2Pose = new Pose(12.5, 24, Math.toRadians(180)); // Second pickup spot
 
     //lower spike
     private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose grab3Pose = new Pose(9.5, 35.5, Math.toRadians(180)); //10, 35
+    private final Pose grab3Pose = new Pose(10.5, 35.5, Math.toRadians(180)); //10, 35
 
 
-    private final Pose parkPose = new Pose(39, 12, Math.toRadians(180)); // 55, 31.5, 90 Where we park
+    private final Pose parkPose = new Pose(55, 31.5, Math.toRadians(90)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
@@ -98,6 +98,8 @@ public class BlueFarSpikeAuto extends LinearOpMode {
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
+                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
+        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
         telemetry.addLine("initializing pedro pathing follower");

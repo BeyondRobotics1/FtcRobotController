@@ -165,6 +165,23 @@ public class DecodeTeleOp extends LinearOpMode {
                 isBlueTeleOp = true;
             }
 
+            if(isBlueTeleOp)
+            {
+                //no pose read
+                if(robotPose.getX(DistanceUnit.INCH) < 10.)
+                {
+                    robotPose = DecodeBlackBoard.BLUE_PARK_POSE;
+                }
+            }
+            else
+            {
+                //no pose read
+                if(robotPose.getX(DistanceUnit.INCH) < 10.)
+                {
+                    robotPose = DecodeBlackBoard.RED_PARK_POSE;
+                }
+            }
+
             telemetry.update();
         }
 
@@ -201,19 +218,19 @@ public class DecodeTeleOp extends LinearOpMode {
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
 
-
-//        turret.setIMUPoseToRobotStartPose();
-//        telemetry.addLine("Pinpoint is reset to the park position");
-
         telemetry.update();
+
+//        sleep(200);//1000
+//        turret.setIMUPoseToRobotStartPose();
+//        //telemetry.addLine("Pinpoint is reset to the park position");
 
 
         if(isStopRequested()) return;
 
-        //let the flywheel spin for 500ms so
+        //let the flywheel spin for 1000ms so
         //the PID controller won't draw too much batteries
         shooter.setPower(0.4);
-        sleep(1000);
+        sleep(1000);//1000
 
         boolean isInitialPinpointPositionSet = false;
         boolean isEndGame = false;
@@ -263,8 +280,8 @@ public class DecodeTeleOp extends LinearOpMode {
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
                 rumbleEndgame = 1;
-                gamepad1.runRumbleEffect(softRumbleEffect);
-                gamepad2.runRumbleEffect(softRumbleEffect);
+                gamepad1.runRumbleEffect(strongRumbleEffect);
+                gamepad2.runRumbleEffect(strongRumbleEffect);
             }
 
 

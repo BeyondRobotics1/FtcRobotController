@@ -64,9 +64,9 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
     //Gate pickup
     private final Pose openGateSetupPose = new Pose(24, 72, Math.toRadians(180)); // 22, 72 Middle (Second Set) backout
     private final Pose openGateStartPose = new Pose(16, 76, Math.toRadians(180));//17, 76
-    private final Pose openGatePose = new Pose(13, 80, Math.toRadians(-150)); //13, 80, -150
+    private final Pose openGatePose = new Pose(13, 79, Math.toRadians(-150)); //13, 80, -150
 
-    private final Pose openGatePickupPose = new Pose(13.5, 84, Math.toRadians(-160)); //13.5, 84, -170
+    private final Pose openGatePickupPose = new Pose(13.5, 85, Math.toRadians(-150)); //13.5, 84, -160
     private final Pose backout22Pose = new Pose(20, 82, Math.toRadians(-160)); // 20, 82, 180 Middle (Second Set) backout.
     //18, 65.5 //gate position
 
@@ -143,7 +143,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Near Auto");
+            telemetry.addLine("Red Near NO Indexing Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
@@ -179,7 +179,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
             follower.update();
             autonomousPathUpdate();
 
-            displayPose();
+            //displayPose();
 
             shooter.shoot();
         }
@@ -297,7 +297,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1600) { //1500, takes longer
+                if (pathTimer.getElapsedTime() > 1650) { //1500, takes longer
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
@@ -333,7 +333,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
 
 
             case 31:
-                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 250
+                if (pathTimer.getElapsedTime() > 2500) {//Keep gate open 2200
                     pathTimer.resetTimer();
 
                     //setPathState(-32);
@@ -345,16 +345,20 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
                 }
                 break;
             case 32:
-                if (pathTimer.getElapsedTime() > 1600) { //1000, in take
+                if (pathTimer.getElapsedTime() > 1650) { //1000, in take
 
                     //setPathState(-33);
 
                     follower.followPath(gatePickupScore, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                     setPathState(33);
                 }
                 break;
             case 33:
+                intake.detectArtifactColors();
+                if(intake.detectedArtifacts() == 3)
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
                     trigger.open();
@@ -383,7 +387,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
                 break;
 
             case 42:
-                if (pathTimer.getElapsedTime() > 2200) {//Keep gate open 400
+                if (pathTimer.getElapsedTime() > 2500) {//Keep gate open 2200
                     pathTimer.resetTimer();
 
                     //grab balls at gate
@@ -393,14 +397,18 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
                 }
                 break;
             case 43:
-                if (pathTimer.getElapsedTime() > 1600) { //1000 in take
+                if (pathTimer.getElapsedTime() > 1650) { //1000 in take
 
                     follower.followPath(gatePickupScore, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                     setPathState(44);
                 }
                 break;
             case 44:
+                intake.detectArtifactColors();
+                if(intake.detectedArtifacts() == 3)
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
                     trigger.open();
@@ -443,6 +451,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
         }
 
     }
+
 
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */

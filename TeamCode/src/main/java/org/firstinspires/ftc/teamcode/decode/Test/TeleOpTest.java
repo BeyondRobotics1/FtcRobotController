@@ -203,11 +203,9 @@ public class TeleOpTest extends LinearOpMode {
             shooter = new Shooter(hardwareMap, this, alliance);
         }
 
+
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
-
-//        turret.setIMUPoseToRobotStartPose();
-//        telemetry.addLine("Pinpoint is reset to the park position");
 
         telemetry.update();
 
@@ -223,7 +221,7 @@ public class TeleOpTest extends LinearOpMode {
 
         boolean isInitialPinpointPositionSet = false;
 
-        //isIntakeOn = true;
+        isIntakeOn = true;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -252,7 +250,7 @@ public class TeleOpTest extends LinearOpMode {
             shootOp();
 
             //operate the lift
-            if(isEndGame)
+            //if(isEndGame)
                 liftOp();
 
             ////DPAD UP to toggle field centric or robot centric driving
