@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Lift {
 
     //hardware
-    Clutch clutch;
+    Clutch clutch;;
     SlideHolder holder;
 
 //    //Use DcMotorEx to support bulk read.

@@ -74,7 +74,7 @@ public class ColorSensorTest extends LinearOpMode {
                 }
                 else if (gamepad1.y) {
                     colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color0");
-                    name = "Bottom Color Sensor";
+                    name = "Front Color Sensor";
 
                     // If possible, turn the light on in the beginning (it might already be on anyway,
                     // we just make sure it is if we can).
