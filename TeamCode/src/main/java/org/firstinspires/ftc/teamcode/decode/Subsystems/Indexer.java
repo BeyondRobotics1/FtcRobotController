@@ -12,9 +12,9 @@ public class Indexer {
 
     private int current_index = 0;
 
-    private double startingPosition = 0.02;
-    private double enqueueOnePosition = 0.395;
-    private double enqueueTwoPosition = 0.768;
+    private double startingPosition = 0.005;//
+    private double enqueueOnePosition = 0.377;
+    private double enqueueTwoPosition = 0.755;
 
     public Indexer(HardwareMap hardwareMap, LinearOpMode linearOpMode) {
         this.mode = linearOpMode;

@@ -33,9 +33,11 @@ public class Turret {
     // target x, y coordinates in INCH
     double x0, y0;
 
-    public static double servoPositionRight = 0; //90 degree
-    public static double servoPositionLeft = 0.380;//0.42; //-90 degree
-    public static double servoPositionMiddle = 0.197;//0.195;//0 degree
+    public static double servoPositionRight = 0; //0, 90 degree
+    public static double servoPositionLeft = 1;//0.380; //-90 degree
+    public static double servoPositionMiddle = 0.5;//0.197;//0 degree
+
+
     public static double servoPreviousPositionCalibration = 0.0;//0 degree
 
     public static double servoPositionObeliskDetectionRedAlliance = 0.357;
