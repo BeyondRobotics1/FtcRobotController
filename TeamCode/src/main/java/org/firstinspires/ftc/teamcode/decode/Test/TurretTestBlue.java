@@ -47,21 +47,22 @@ public class TurretTestBlue extends LinearOpMode {
             {
                 turret.calibrateTurret();
             }
-            else */if(gamepad1.right_bumper)
+            else */
+            if(gamepad1.right_bumper)
             {
                 double pivotPosition = Math.abs(gamepad1.left_trigger);
 
-                if(pivotPosition > 0.388){
-                    pivotPosition = 0.388;
+                if(pivotPosition > Turret.servoPositionLeft){//0.380
+                    pivotPosition = Turret.servoPositionLeft;
                 }
                 turret.setServoPosition(pivotPosition);
             }
             else if (gamepad1.a)
-                turret.setServoPosition(0.194);
+                turret.setServoPosition(Turret.servoPositionMiddle); //0.195
             else if (gamepad1.b)
-                turret.setServoPosition(0.388);
+                turret.setServoPosition(Turret.servoPositionLeft); //0.380
             else if (gamepad1.x)
-                turret.setServoPosition(0);
+                turret.setServoPosition(Turret.servoPositionRight); //0
             else if (gamepad1.y)
                 turret.autoAim(false);
             else

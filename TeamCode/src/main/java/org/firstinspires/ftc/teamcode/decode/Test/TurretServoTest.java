@@ -16,6 +16,8 @@ public class TurretServoTest extends LinearOpMode {
         telemetry.addData("gamepad1.a", "Red Obelisk position." );
         telemetry.addData("gamepad1.b", "Blue Obelisk position." );
         telemetry.addData("gamepad1.x", "Center position." );
+        telemetry.addData("gamepad1.dpad_left", "Left position." );
+        telemetry.addData("gamepad1.dpad_right", "Right position." );
         telemetry.addData("gamepad1.left_trigger", "rotating." );
         telemetry.update();
 
@@ -24,12 +26,15 @@ public class TurretServoTest extends LinearOpMode {
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
 
-        waitForStart();
-
-        if (isStopRequested()) return;
+//        turretLeft.setDirection(Servo.Direction.REVERSE);
+//        turretRight.setDirection(Servo.Direction.REVERSE);
 
         turretLeft.setPosition(Turret.servoPositionMiddle);
         turretRight.setPosition(Turret.servoPositionMiddle);
+
+        waitForStart();
+
+        if (isStopRequested()) return;
 
         while (!isStopRequested() && opModeIsActive()) {
 
@@ -40,6 +45,14 @@ public class TurretServoTest extends LinearOpMode {
             else if (gamepad1.b) {
                 turretLeft.setPosition(Turret.servoPositionObeliskDetectionBlueAlliance);
                 turretRight.setPosition(Turret.servoPositionObeliskDetectionBlueAlliance);
+            }
+            else if (gamepad1.dpad_left) {
+                turretLeft.setPosition(Turret.servoPositionLeft);
+                turretRight.setPosition(Turret.servoPositionLeft);
+            }
+            else if (gamepad1.dpad_right) {
+                turretLeft.setPosition(Turret.servoPositionRight);
+                turretRight.setPosition(Turret.servoPositionRight);
             }
             else if (gamepad1.x) {
                 turretLeft.setPosition(Turret.servoPositionMiddle);

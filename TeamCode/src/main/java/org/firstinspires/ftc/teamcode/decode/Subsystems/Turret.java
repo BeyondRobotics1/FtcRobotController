@@ -33,8 +33,10 @@ public class Turret {
     // target x, y coordinates in INCH
     double x0, y0;
 
-    public static double servoPositionRight = 0; //0, 90 degree
-    public static double servoPositionLeft = 1;//0.380; //-90 degree
+    public static double fullServoRangeDegrees = 288.6;
+    public static double halfServoRangeDegrees = fullServoRangeDegrees * 0.5;
+    public static double servoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
+    public static double servoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
     public static double servoPositionMiddle = 0.5;//0.197;//0 degree
 
 
@@ -92,6 +94,9 @@ public class Turret {
 
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
+
+//        turretLeft.setDirection(Servo.Direction.REVERSE);
+//        turretRight.setDirection(Servo.Direction.REVERSE);
 
         if(usePinpoint) {
             localizer = new IMULocalizer(hardwareMap, mode, robotPose, targetPose, alliance);
@@ -335,10 +340,12 @@ public class Turret {
 
             double servoPositionCalibration = calibrateTurret();
 
-            if (alliance == DecodeBlackBoard.RED)
-                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
-            else
-                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
+//            if (alliance == DecodeBlackBoard.RED)
+//                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
+//            else
+//                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
+
+            servoPosition = servoPositionLeft * (theta + halfServoRangeDegrees) / fullServoRangeDegrees;
 
             mode.telemetry.addData("IMU location based servo position:", "%.5f", servoPosition);
 

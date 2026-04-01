@@ -173,7 +173,8 @@ public class IMULocalizer {
         {
             detectRedRobotZone(x, y);
 
-            if(botHeadingDegrees > -30 && botHeadingDegrees < 120)
+            //if(botHeadingDegrees > -30 && botHeadingDegrees < 120)
+            if(botHeadingDegrees > 0 && botHeadingDegrees < 80)
                 isHeadingToGoal = false;
             else
                 isHeadingToGoal = true;
@@ -182,7 +183,8 @@ public class IMULocalizer {
         {
             detectBlueRobotZone(x, y);
 
-            if(botHeadingDegrees > -120 && botHeadingDegrees < 30)
+            //if(botHeadingDegrees > -120 && botHeadingDegrees < 30)
+            if(botHeadingDegrees > -80 && botHeadingDegrees < 0)
                 isHeadingToGoal = false;
             else
                 isHeadingToGoal = true;
@@ -297,7 +299,8 @@ public class IMULocalizer {
          *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
          *  Forward of center is a positive number, backwards is a negative number.
          */
-        pinpoint.setOffsets(106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        //106, -143.6
+        pinpoint.setOffsets(118, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

@@ -72,7 +72,7 @@ public class Constants {
 
     //pedro and gobilda pinpoint tester has X, Y offset reversed
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(106)
+            .forwardPodY(118)//106
             .strafePodX(-143.6)
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("pinpoint")

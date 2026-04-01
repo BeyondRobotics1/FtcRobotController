@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.List;
 
-//@Config
+@Config
 @TeleOp(name = "Concept: Turret Tuner April Tag", group = "Concept")
 public class TurretTunerAprilTag extends LinearOpMode {
 
@@ -28,9 +28,10 @@ public class TurretTunerAprilTag extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     PIDController controller;
 
-    public static double kP = 0.01; //0.8
+    public static double kP = 0.001; //0.8
     public static double kI = 0; //0.01
     public static double kD = 0;
+    public static double kF = 0.0095;
 
     public double targetAngleDegree = 0;//-45;
     public double allowedTargetRangeDegree = 55;
@@ -44,8 +45,6 @@ public class TurretTunerAprilTag extends LinearOpMode {
 
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         //turretRight = hardwareMap.get(Servo.class, "turretRight");
-
-        turretLeft.setDirection(Servo.Direction.REVERSE);
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -106,15 +105,15 @@ public class TurretTunerAprilTag extends LinearOpMode {
 
                     if(tagID == targetTagID) {
 
-                        pid = controller.calculate(currentAngle, 0);
-                        turretLeft.setPosition(pid + 0.5);
+                        pid = controller.calculate(currentAngle, targetAngleDegree);
+                        turretLeft.setPosition(pid + kF + 0.5);
 
                         telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
                     }
                 }
             }
-            else
-                turretLeft.setPosition(0.5);
+            //else
+            //    turretLeft.setPosition(0.5);
 
 
             telemetry.addData("Camera heading", currentAngle);

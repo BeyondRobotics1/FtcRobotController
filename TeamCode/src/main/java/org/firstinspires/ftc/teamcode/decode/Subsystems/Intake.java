@@ -62,7 +62,7 @@ public class Intake {
 
         led = hardwareMap.get(Servo.class, "led");
 
-        verticalIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        //verticalIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         horizontalIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         verticalIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

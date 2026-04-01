@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  *
  * See the sensor's product page: https://www.gobilda.com/pinpoint-odometry-computer-imu-sensor-fusion-for-2-wheel-odometry/
  */
-@TeleOp(name = "Sensor: GoBilda Pinpoint", group = "Sensor")
+@TeleOp(name = "Concept: GobildaPinpointTest", group = "Concept")
 //@Disabled
 
 
@@ -85,7 +85,7 @@ public class GobildaPinpointTest extends OpMode {
          */
         //pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         //pinpoint.setOffsets(-106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        pinpoint.setOffsets(106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(118, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
