@@ -272,7 +272,7 @@ public class ShooterTest extends LinearOpMode {
             else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE)
                 telemetry.addLine("Shooting from OUT ZONE");
             else
-            telemetry.addLine("Shooting from MEDIUM");;
+                telemetry.addLine("Shooting from MEDIUM");;
 
 
             if (isShooterOn)

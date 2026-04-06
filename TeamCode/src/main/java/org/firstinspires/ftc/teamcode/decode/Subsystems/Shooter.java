@@ -30,16 +30,16 @@ public class Shooter {
     PIDController controller;
 
     private MotorGroup flyWheel;
-    public static double kP = 0.002; //0.001
-    public static double kI = 0.25; //0.25
+    public static double kP = 0.002; //0.002
+    public static double kI = 0.15; //0.25
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.535;//0.525
-    double targetSpeedFar = 0.452;//0.452
-    double targetSpeedMedium = 0.42;//0.42
-    double targetSpeedNear = 0.393;//0.392, 0.394
+    double targetSpeedOutZone = 0.51;//0.535
+    double targetSpeedFar = 0.425;//0.39
+    double targetSpeedMedium = 0.3875;//0.39
+    double targetSpeedNear = 0.375;//0.34
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -67,13 +67,13 @@ public class Shooter {
         shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
-        if( alliance == DecodeBlackBoard.RED)
-        {
-            //targetSpeedOutZone = 0.528;//0.525
-            //targetSpeedFar = 0.455;//0.452
-            targetSpeedMedium = 0.425;//0.42
-            //targetSpeedNear = 0.392;//0.392, 0.394
-        }
+//        if( alliance == DecodeBlackBoard.RED)
+//        {
+//            //targetSpeedOutZone = 0.528;//0.525
+//            //targetSpeedFar = 0.455;//0.452
+//            targetSpeedMedium = 0.425;//0.42
+//            //targetSpeedNear = 0.392;//0.392, 0.394
+//        }
 
         targetSpeed = targetSpeedMedium;
     }

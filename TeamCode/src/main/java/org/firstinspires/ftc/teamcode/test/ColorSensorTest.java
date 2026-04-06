@@ -37,7 +37,8 @@ public class ColorSensorTest extends LinearOpMode {
 
         telemetry.addData("gamepad1.a", "Top Color Sensor." );
         telemetry.addData("gamepad1.b", "Bottom Color Sensor." );
-        telemetry.addData("gamepad1.y", "Front Color Sensor." );
+        telemetry.addData("gamepad1.x", "Front Color Sensor Left." );
+        telemetry.addData("gamepad1.y", "Front Color Sensor Right." );
         telemetry.addData("gamepad1.left_bumper", "Left Color Sensor." );
         telemetry.addData("gamepad1.right_bumper", "Right Color Sensor." );
         telemetry.update();
@@ -53,7 +54,7 @@ public class ColorSensorTest extends LinearOpMode {
             if(colorSensor == null)
             {
                 if (gamepad1.a) {
-                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color2");
+                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorTop");
                     name = "Top Color Sensor";
 
                     // If possible, turn the light on in the beginning (it might already be on anyway,
@@ -63,8 +64,18 @@ public class ColorSensorTest extends LinearOpMode {
                     }
                 }
                 else if (gamepad1.b) {
-                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color1");
-                    name = "Bottom Color Sensor";
+                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorMiddle");
+                    name = "Middle Color Sensor";
+
+                    // If possible, turn the light on in the beginning (it might already be on anyway,
+                    // we just make sure it is if we can).
+                    if (colorSensor instanceof SwitchableLight) {
+                        ((SwitchableLight)colorSensor).enableLight(true);
+                    }
+                }
+                else if (gamepad1.x) {
+                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorFrontLeft");
+                    name = "Front Color Sensor L";
 
                     // If possible, turn the light on in the beginning (it might already be on anyway,
                     // we just make sure it is if we can).
@@ -73,8 +84,8 @@ public class ColorSensorTest extends LinearOpMode {
                     }
                 }
                 else if (gamepad1.y) {
-                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color0");
-                    name = "Bottom Color Sensor";
+                    colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorFrontRight");
+                    name = "Front Color Sensor R";
 
                     // If possible, turn the light on in the beginning (it might already be on anyway,
                     // we just make sure it is if we can).
@@ -135,7 +146,7 @@ public class ColorSensorTest extends LinearOpMode {
 
                 if(!name.contains("Left") && !name.contains("Right")) {
                     if (((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 4) { //
-                        if (hsvValues[0] >= 120 && hsvValues[0] <= 200)
+                        if (hsvValues[0] >= 140 && hsvValues[0] <= 200)
                             telemetry.addData("Color", "%s", "Green");
                         else if (hsvValues[0] > 200 && hsvValues[0] < 250)
                             telemetry.addData("Color", "%s", "Purple");

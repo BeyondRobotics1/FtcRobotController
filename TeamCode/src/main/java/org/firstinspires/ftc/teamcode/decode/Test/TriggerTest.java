@@ -15,6 +15,9 @@ public class TriggerTest extends LinearOpMode {
 
         Trigger trigger = new Trigger(hardwareMap);
 
+        telemetry.addData("gamepad1.a", "Open." );
+        telemetry.addData("gamepad1.b", "Close" );
+
         waitForStart();
 
         if (isStopRequested()) return;

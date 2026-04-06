@@ -4,7 +4,6 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -38,15 +37,16 @@ public class Intake {
     public static double LED_INDIGO = 0.666;
     public static double LED_VIOLET = 0.722;
 
-    private DcMotor horizontalIntake;
-    private DcMotor verticalIntake;
+    private DcMotor intakeMotor;
+    private DcMotor transferMotor;
     private Servo led;
     private LinearOpMode mode;
 
 
     NormalizedColorSensor colorSensorTop;
     NormalizedColorSensor colorSensorMiddle;
-    NormalizedColorSensor colorSensorBottom;
+    NormalizedColorSensor colorSensorFrontLeft;
+    NormalizedColorSensor colorSensorFrontRight;
     float[] hsvValues;
     int[] artifactColors; //0 - top, 1 - middle, 2 - bottom
     int[] latchCounters; //0 - top, 1 - middle, 2 - bottom
@@ -57,23 +57,25 @@ public class Intake {
     public Intake(HardwareMap hardwareMap, LinearOpMode linearOpMode)
     {
         this.mode = linearOpMode;
-        horizontalIntake = hardwareMap.get(DcMotor.class, "horizontalIntake");
-        verticalIntake = hardwareMap.get(DcMotor.class, "verticalIntake");
+        intakeMotor = hardwareMap.get(DcMotor.class, "horizontalIntake");
+        transferMotor = hardwareMap.get(DcMotor.class, "verticalIntake");
 
         led = hardwareMap.get(Servo.class, "led");
 
         //verticalIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        horizontalIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        verticalIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        transferMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        colorSensorTop = hardwareMap.get(NormalizedColorSensor.class, "color2");
-        colorSensorMiddle = hardwareMap.get(NormalizedColorSensor.class, "color1");
-        colorSensorBottom = hardwareMap.get(NormalizedColorSensor.class, "color0");
+        colorSensorTop = hardwareMap.get(NormalizedColorSensor.class, "colorTop");
+        colorSensorMiddle = hardwareMap.get(NormalizedColorSensor.class, "colorMiddle");
+        colorSensorFrontLeft = hardwareMap.get(NormalizedColorSensor.class, "colorFrontLeft");
+        colorSensorFrontRight = hardwareMap.get(NormalizedColorSensor.class, "colorFrontRight");
 
         colorSensorTop.setGain(2.0f);
         colorSensorMiddle.setGain(2.0f);
-        colorSensorBottom.setGain(2.0f);
+        colorSensorFrontLeft.setGain(2.0f);
+        colorSensorFrontRight.setGain(2.0f);
 
         hsvValues = new float[3];
 
@@ -95,19 +97,19 @@ public class Intake {
         }
         else if(intakeMode == Intake.IntakeMode.VIN)
         {
-            horizontalIntake.setPower(0);
-            verticalIntake.setPower(-1);
+            intakeMotor.setPower(0);
+            transferMotor.setPower(-1);
         }
         if(intakeMode == Intake.IntakeMode.HIN)
         {
-            horizontalIntake.setPower(-0.9);
-            verticalIntake.setPower(0);
+            intakeMotor.setPower(-0.9);
+            transferMotor.setPower(0);
         }
         else if (intakeMode == Intake.IntakeMode.OUT) {
 
             //outtake(0.5);
-            horizontalIntake.setPower(0.5);
-            verticalIntake.setPower(0.5);
+            intakeMotor.setPower(0.5);
+            transferMotor.setPower(0.5);
         }
         else if (intakeMode == IntakeMode.FEED) {
             intake(1);
@@ -123,8 +125,8 @@ public class Intake {
             intake(0.8);
         }
         else {
-            horizontalIntake.setPower(0);
-            verticalIntake.setPower(0);
+            intakeMotor.setPower(0);
+            transferMotor.setPower(0);
         }
     }
 
@@ -133,8 +135,8 @@ public class Intake {
     {
         double localPower = -Math.abs(power);
 
-        horizontalIntake.setPower(localPower);
-        verticalIntake.setPower(localPower);
+        intakeMotor.setPower(localPower);
+        transferMotor.setPower(localPower);
 
 //        mode.telemetry.addLine()
 //                .addData("horizontal Power", "%.3f", -localPower)
@@ -144,21 +146,21 @@ public class Intake {
     public void intake(double horizontalIntakePower,
                        double verticalIntakePower)
     {
-        horizontalIntake.setPower( -Math.abs(horizontalIntakePower));
-        verticalIntake.setPower( -Math.abs(verticalIntakePower));
+        intakeMotor.setPower( -Math.abs(horizontalIntakePower));
+        transferMotor.setPower( -Math.abs(verticalIntakePower));
     }
 
     //Power should be positive
     public void outtake(double power)
     {
         double localPower = Math.abs(power);
-        horizontalIntake.setPower(localPower);
-        verticalIntake.setPower(localPower);
+        intakeMotor.setPower(localPower);
+        transferMotor.setPower(localPower);
     }
 
     public void stopVertical()
     {
-        verticalIntake.setPower(0);
+        transferMotor.setPower(0);
     }
 
 
@@ -210,7 +212,15 @@ public class Intake {
 
     public int getBottomArtifactColor()
     {
-        return detectArtifactColor(colorSensorBottom);
+        int bottomLeft = detectArtifactColor(colorSensorFrontLeft);
+        int bottomRight = detectArtifactColor(colorSensorFrontRight);
+
+        if(bottomLeft != Color.WHITE)
+            return bottomLeft;
+        else if (bottomRight != Color.WHITE)
+            return bottomRight;
+        else
+            return Color.WHITE;
     }
 
 
@@ -226,7 +236,7 @@ public class Intake {
 
         if(((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM) < 4)
         { //
-            if (hsvValues[0] >= 120 && hsvValues[0] <= 200)
+            if (hsvValues[0] >= 140 && hsvValues[0] <= 200)
                 color = Color.GREEN;
             else if (hsvValues[0] > 200 && hsvValues[0] < 250)
                 color = Color.BLUE;

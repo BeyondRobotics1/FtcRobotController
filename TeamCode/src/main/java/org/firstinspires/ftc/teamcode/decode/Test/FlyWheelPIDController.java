@@ -21,8 +21,8 @@ public class FlyWheelPIDController extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     PIDController controller;
-    public static double kP = 0.001;//0.001; //0.8
-    public static double kI = 0.25;//0.25; //0.01
+    public static double kP = 0.000;//0.002;//0.001; //0.8
+    public static double kI = 0.0;//0.15;//0.25; //0.01
     public static double kD = 0;
     public static double kF = 0.75;
 
