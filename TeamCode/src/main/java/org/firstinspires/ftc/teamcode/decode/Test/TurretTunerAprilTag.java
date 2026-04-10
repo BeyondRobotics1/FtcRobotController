@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.List;
 
 @Config
-@TeleOp(name = "Concept: Turret Tuner April Tag", group = "Concept")
+@TeleOp(name = "Turret Tuner April Tag", group = "Decode Test")
 public class TurretTunerAprilTag extends LinearOpMode {
 
     private Limelight3A limelight;
@@ -28,10 +28,10 @@ public class TurretTunerAprilTag extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     PIDController controller;
 
-    public static double kP = 0.001; //0.8
+    public static double kP = 0.000; //0.001
     public static double kI = 0; //0.01
     public static double kD = 0;
-    public static double kF = 0.0095;
+    public static double kF = 0.00;//0.0095
 
     public double targetAngleDegree = 0;//-45;
     public double allowedTargetRangeDegree = 55;
@@ -55,6 +55,8 @@ public class TurretTunerAprilTag extends LinearOpMode {
         limelight.pipelineSwitch(0);
         limelight.start();
 
+
+        turretLeft.setPosition(0.5);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : hubs) {
@@ -103,12 +105,15 @@ public class TurretTunerAprilTag extends LinearOpMode {
                     int tagID = fr.getFiducialId();
                     currentAngle = result.getTx();
 
+                    telemetry.addData("Tag ID", "%d", tagID);
+
                     if(tagID == targetTagID) {
 
                         pid = controller.calculate(currentAngle, targetAngleDegree);
                         turretLeft.setPosition(pid + kF + 0.5);
 
                         telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
+                        telemetry.addData("Servo position set", "%.5f", pid + kF + 0.5);
                     }
                 }
             }

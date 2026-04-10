@@ -58,12 +58,17 @@ public class TurretServoTest extends LinearOpMode {
                 turretLeft.setPosition(Turret.servoPositionMiddle);
                 turretRight.setPosition(Turret.servoPositionMiddle);
             }
-            else {
+            else if (gamepad1.left_trigger_pressed) {
 
                 double pivotPosition = Math.abs(gamepad1.left_trigger);
 
                 turretLeft.setPosition(pivotPosition);
                 turretRight.setPosition(pivotPosition);
+            }
+            else
+            {
+                turretLeft.setPosition(Turret.servoPositionMiddle);
+                turretRight.setPosition(Turret.servoPositionMiddle);
             }
 
             telemetry.addData("Servo position", turretLeft.getPosition());

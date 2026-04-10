@@ -16,18 +16,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(13.88)//30.6lb(13.88kg) 25.8b (11.7kg) -> 30 lb (13.6kg)
-            .forwardZeroPowerAcceleration(-27.66924866)//-27.0643
-            .lateralZeroPowerAcceleration(-62.28069348)//-57.9476
+            .mass(14)//25.8b (11.7kg) -> 30 lb (13.6kg)
+            .forwardZeroPowerAcceleration(-27.6692)//-27.0643, -31.864938
+            .lateralZeroPowerAcceleration(-62.2807)//-57.9476, -64.737043
             .translationalPIDFCoefficients(new PIDFCoefficients(
-                    0.2,
+                    0.02,
                     0,
                     0.01,
                     0.02
+            )) //(0.06, 0, 0.01, 0.03)
 
-            ))//(0.06, 0, 0.01, 0.03)
-
-//0.09, 0, 0,01, 0.03
+            //0.09, 0, 0,01, 0.03
             .headingPIDFCoefficients(new PIDFCoefficients(
                     0.8,
                     0,
@@ -65,11 +64,11 @@ public class Constants {
             .rightFrontMotorName("rightFront")
             .rightRearMotorName("rightBack")
             .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)//FORWARD
-            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)//Forward
-            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)//Reverse
-            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)//Reverse
-            .xVelocity(71.64968496)//73.48
-            .yVelocity(56.26285967);//57.73
+            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .xVelocity(73.48)//70.37
+            .yVelocity(57.73);//55.39
 
     //pedro and gobilda pinpoint tester has X, Y offset reversed
     public static PinpointConstants localizerConstants = new PinpointConstants()

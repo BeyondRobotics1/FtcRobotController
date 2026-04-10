@@ -49,8 +49,8 @@ public class Turret {
     public static double servoPositionAutoShootingBlueAlliance = 0.096;
 
     //Limelight 3A auto aiming target degree of Tx
-    public static double TARGET_ANGLE_DEGREE_RED = 0.0;
-    public static double TARGET_ANGLE_DEGREE_BLUE = 6.0;
+    public static double TARGET_ANGLE_DEGREE_RED = 0.0; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE = 6.0; //6
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;
@@ -64,10 +64,10 @@ public class Turret {
 
     //PID controller for limelight 3A auto aiming
     PIDController controller;
-    public static double kP = 0.001;//0.001; //0.8
-    public static double kI = 0.005;//0.25; //0.01
+    public static double kP = 0.001;//0.001;
+    public static double kI = 0.005;//0.25;
     public static double kD = 0;
-    public static double kF = 0.0095;
+    public static double kF = -0.0095;//0.0095;
     public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
@@ -91,12 +91,8 @@ public class Turret {
         this.mode.telemetry = new MultipleTelemetry(this.mode.telemetry, dashboard.getTelemetry());
         controller = new PIDController(kP, kI, kD);
 
-
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
-
-//        turretLeft.setDirection(Servo.Direction.REVERSE);
-//        turretRight.setDirection(Servo.Direction.REVERSE);
 
         if(usePinpoint) {
             localizer = new IMULocalizer(hardwareMap, mode, robotPose, targetPose, alliance);
@@ -154,7 +150,8 @@ public class Turret {
 
     public void setServoPosition(double position)
     {
-        turretLeft.setPosition(position);
+        if(turretLeft != null)
+            turretLeft.setPosition(position);
 
         if(turretRight != null)
             turretRight.setPosition(position);
@@ -162,7 +159,10 @@ public class Turret {
 
     public double getServoPosition()
     {
-        return turretLeft.getPosition();
+        if(turretLeft != null)
+            return turretLeft.getPosition();
+        else
+            return turretRight.getPosition();
     }
 
     public double getBotHeadingDegrees()
@@ -294,6 +294,34 @@ public class Turret {
     }
 
 
+    //get limelight heading in degree
+    public double getTx()
+    {
+        if (limelight != null) {
+            LLResult result = limelight.getLatestResult();
+
+            // Access fiducial results
+            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fr : fiducialResults) {
+
+                int tagID = fr.getFiducialId();
+                double currentAngleDegree = result.getTx();
+
+                mode.telemetry.addData("tagID:", tagID);
+                mode.telemetry.addData("targetTagID:", targetTagID);
+
+                mode.telemetry.addData("Limelight3A Tx (Degree):", "%.3f", currentAngleDegree);
+                //mode.telemetry.addData("Target Angle  (Degree):", "%.3f", targetAngleDegree);
+
+                if (targetTagID == tagID) {
+                    return currentAngleDegree;
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
     public void autoAim(boolean enabled)
     {
         if(localizer == null || !localizer.update())
@@ -330,20 +358,17 @@ public class Turret {
             double alpha = Math.toDegrees(Math.atan2(Math.abs(x - x0), Math.abs(y - y0)));
             double theta;
 
-            if (alliance == DecodeBlackBoard.RED)
+            if (alliance == DecodeBlackBoard.RED) {
                 theta = -90 - alpha + heading;
-            else
+            }
+            else {
                 theta = 90 + alpha - heading;
+            }
 
             // calculate servo position
             double servoPosition;
 
             double servoPositionCalibration = calibrateTurret();
-
-//            if (alliance == DecodeBlackBoard.RED)
-//                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
-//            else
-//                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
 
             servoPosition = servoPositionLeft * (theta + halfServoRangeDegrees) / fullServoRangeDegrees;
 
