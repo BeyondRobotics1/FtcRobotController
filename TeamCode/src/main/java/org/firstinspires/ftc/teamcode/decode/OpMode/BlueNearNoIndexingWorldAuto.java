@@ -39,26 +39,30 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     //status\
     private Timer pathTimer;
     private int pathState = 0;
+    private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
+    private int shootBallWaitTime = 500;  //550, 600 shooting three balls wait time in ms
 
     Follower follower;
 
-    /**
-     * Start Pose of our robot
-     */
-    private final Pose startPose = new Pose(30.5, 130.5, Math.toRadians(90)); //30.5, 131, 90, Start Pose of our robot.
-    private final Pose scorePose = new Pose(45, 96, Math.toRadians(133)); // 43, 96, 136// 43, 100 Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    //Start Pose of our robot
+    private final Pose startPose = new Pose(31.875, 130, Math.toRadians(90)); //30.5, 131, 90, Start Pose of our robot.
+    //score pose
+    private final Pose scorePose = new Pose(57, 72, Math.toRadians(180)); // 45, 96, 131 Pose of our robot. Facing wall & turret angle to goal.
+    //park pose
+    private final Pose parkPose = new Pose(48, 72, Math.toRadians(180)); //40, 80
 
     //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(41.5, 85, Math.toRadians(180)); //43, 84 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose pickup1Pose = new Pose(43, 81.5, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose grab1Pose = new Pose(17.25, 84, Math.toRadians(180)); //17.75, 83
+    //following two poses are not used
     private final Pose backout1Pose = new Pose(21, 78, Math.toRadians(180)); //20, 78
     private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(41.125, 59, Math.toRadians(180)); // 43, 59, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(9.5, 58, Math.toRadians(180)); //10, 59
-    private final Pose backout2Pose = new Pose(15, 58, Math.toRadians(180)); //16.5, 58
-    private final Pose openGate2Pose = new Pose(13, 70, Math.toRadians(180)); //15, 70 //gate position
+    private final Pose pickup2Pose = new Pose(43, 60.5, Math.toRadians(180)); // 41.5, 58, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(9.5, 60.5, Math.toRadians(180)); //9.5, 58
+    private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 60.5
+    private final Pose openGate2Pose = new Pose(14, 64, Math.toRadians(180)); //13, 64 //gate position
 
     private final Pose openGateSetupPose = new Pose(23, 71, Math.toRadians(180)); //22, 70, 180 Middle (Second Set) backout
     private final Pose openGateStartPose = new Pose(15.8, 69, Math.toRadians(180)); //15.8, 68, 180 //gate position
@@ -85,12 +89,11 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 //    private final Pose pickup4Pose = new Pose(24, 128, Math.toRadians(135)); //24, 128, 135
 //    private final Pose grab4Pose = new Pose(12.25, 132.5, Math.toRadians(180)); //12, 132.5, 180
 
-    //park
-    private final Pose parkPose = new Pose(40, 83, Math.toRadians(180)); //40, 80
+
 
     private Path scorePreload;
-    private PathChain scorePickup1, pickup1Grab1, grab1OpenGate, grab1Score, openGate1Score;
-    private PathChain scorePickup2, pickup2Grab2, grab2OpenGate2, openGate2Score;
+    private PathChain scorePickup1, scorePickup1Grab1, pickup1Grab1, grab1OpenGate, grab1Score, openGate1Score;
+    private PathChain scorePickup2, scorePickup2Grab2, pickup2Grab2, grab2OpenGate2, openGate2Score;
     private PathChain scoreOpenGate,openGatePickup, gatePickupScore;
     //private PathChain scorePickup3, pickup3Grab3, grab3Score;
     private PathChain scorePark;
@@ -105,7 +108,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
-        shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
+        shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -154,7 +157,8 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Red Near NO Indexing Auto");
+            telemetry.addLine("BLUE Near NO Indexing Auto");
+            telemetry.addData("Is Limelight running:", turret.isLimeLight3ARunning());
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
@@ -176,9 +180,9 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             sleep(100);
         }
 
-        turret.setServoPosition(Turret.servoPositionMiddle);
+        turret.setServoPosition(Turret.servoPositionNearAutoShootingBlueAlliance);
 
-        shooter.setPower(0.42);
+        shooter.setPower(0.41);
 
         setPathState(0);
 
@@ -214,7 +218,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 }
                 break;
             case 2:
-                if (pathTimer.getElapsedTime() > 1000) {//70
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//70
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -222,123 +226,68 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 800) { //900
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //800
 
                     trigger.close();
-                    intake.intake(0.95,0.925);
-
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup1, true); //scorePickup2
-
-                    setPathState(11);//11
-                }
-                break;
-
-            //Highest set of balls
-            case 11:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-
-                    //grab balls at position 1
-                    follower.followPath(pickup1Grab1, true); //grabPickup1
-                    setPathState(12);
-                }
-                break;
-            case 12:
-                if (!follower.isBusy()) {
-                    follower.followPath(grab1Score,  true);
-                    setPathState(15);
-                    pathTimer.resetTimer();
-                }
-                break;
-            case 13:
-                if (pathTimer.getElapsedTime() > 1400) {//1500
-                    follower.followPath(openGate1Score, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                    setPathState(15);
-                }
-                break;
-
-            case 15:
-                if (!follower.isBusy()) {//should be 110 {
-                    pathTimer.resetTimer();
-                    trigger.open();
-                    setPathState(16);
-                }
-                break;
-            case 16:
-                if (pathTimer.getElapsedTime() > 70) {//should be 80
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-
-                    setPathState(17);
-                }
-                break;
-            case 17:
-                if (pathTimer.getElapsedTime() > 800) { //shoot balls 900
-
-                    trigger.close();
-                    intake.intake(0.95,0.925);
-
-                    //move to the pickup 1 position
-                    follower.followPath(scorePickup2, true); //scorePickup2
 
                     setPathState(21);
                 }
                 break;
 
 
-            //Middle set of balls
+            //Middle set of balls & open gate
             case 21:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
+                //move to the pickup 1 position
+                follower.followPath(scorePickup2Grab2, true); //scorePickup2
 
-                    //grab balls at position 2
-                    follower.followPath(pickup2Grab2, true); //grabPickup1
-                    setPathState(22);
-                }
+                intake.intake(0.95,0.925);
+
+                setPathState(22);//11
                 break;
             case 22:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
 
-                    //move grab1 position to open gate position
+                    //move from grab2 position to open gate position
                     follower.followPath(grab2OpenGate2, true);
-                    setPathState(-23);
+
+                    //stop the transfer motor to save battery
+                    intake.intake(0.95, 0.0);
+                    setPathState(23);
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1650) { //1500, takes longer
+                if (pathTimer.getElapsedTime() > 1500) { //1650, takes longer
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+
+                    setPathState(24);
+                }
+                break;
+            case 24:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    trigger.open();
                     setPathState(25);
                 }
                 break;
             case 25:
-                if (!follower.isBusy()) {
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//80
                     pathTimer.resetTimer();
-                    trigger.open();
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
                     setPathState(26);
                 }
                 break;
             case 26:
-                if (pathTimer.getElapsedTime() > 70) {//80
-                    pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-                    setPathState(27);
-                }
-                break;
-            case 27:
-                if (pathTimer.getElapsedTime() > 800) { //shoot balls 800
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls 800
                     pathTimer.resetTimer();
                     trigger.close();
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
 
-                    //move to the 3rd spike
-                    follower.followPath(scoreOpenGate, true); //grabPickup1
+                    ////move to the 3rd spike
+                    //follower.followPath(scoreOpenGate, true); //grabPickup1
 
-                    setPathState(31);
+                    setPathState(-31);
                 }
                 break;
 
@@ -377,7 +326,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 }
                 break;
             case 34:
-                if (pathTimer.getElapsedTime() > 70) {//80
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -386,7 +335,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 break;
 
             case 35:
-                if (pathTimer.getElapsedTime() > 800) { //shoot balls
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls
                     trigger.close();
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
 
@@ -427,7 +376,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 }
                 break;
             case 45:
-                if (pathTimer.getElapsedTime() > 70) {//80
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//80
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
@@ -436,12 +385,53 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 break;
 
             case 46:
-                if (pathTimer.getElapsedTime() > 800) { //shoot balls
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls
                     trigger.close();
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
 
                     //move to the 3rd spike
                     follower.followPath(scoreOpenGate, true); //grabPickup1
+
+                    setPathState(900);
+                }
+                break;
+
+
+            //Highest set of balls
+            case 71:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+
+                    //grab balls at position 1
+                    follower.followPath(scorePickup1Grab1, true); //grabPickup1
+                    setPathState(72);
+                }
+                break;
+            case 72:
+                if (!follower.isBusy()) {
+                    follower.followPath(grab1Score,  true);
+                    setPathState(73);
+                    pathTimer.resetTimer();
+                }
+                break;
+
+            case 73:
+                if (!follower.isBusy()) {//should be 110 {
+                    pathTimer.resetTimer();
+                    trigger.open();
+                    setPathState(74);
+                }
+                break;
+            case 74:
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//should be 80
+                    pathTimer.resetTimer();
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+
+                    setPathState(75);
+                }
+                break;
+            case 75:
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls 900
 
                     setPathState(900);
                 }
@@ -480,6 +470,15 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 .addPath(new BezierLine(pickup1Pose, grab1Pose))
                 .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
                 .build();
+
+        scorePickup1Grab1 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup1Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading())
+                .addPath(new BezierLine(pickup1Pose, grab1Pose))
+                .setLinearHeadingInterpolation(pickup1Pose.getHeading(), grab1Pose.getHeading())
+                .build();
+
+
         grab1Score = follower.pathBuilder()
                 .addPath(new BezierLine(grab1Pose, scorePose))
                 .setLinearHeadingInterpolation(grab1Pose.getHeading(), scorePose.getHeading())
@@ -506,6 +505,14 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 .addPath(new BezierLine(pickup2Pose, grab2Pose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();
+
+        scorePickup2Grab2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .addPath(new BezierLine(pickup2Pose, grab2Pose))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
+                .build();
+
         grab2OpenGate2 = follower.pathBuilder()
                 .addPath(new BezierLine(grab2Pose, backout2Pose))
                 .setLinearHeadingInterpolation(grab2Pose.getHeading(), backout2Pose.getHeading())

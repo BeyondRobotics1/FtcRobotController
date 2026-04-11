@@ -169,6 +169,7 @@ public class TeleOpTest extends LinearOpMode {
             telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
             telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
             telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Is Limelight running:", turret.isLimeLight3ARunning());
 
             telemetry.update();
 

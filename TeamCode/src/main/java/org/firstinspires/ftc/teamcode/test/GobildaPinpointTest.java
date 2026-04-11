@@ -26,9 +26,13 @@ public class GobildaPinpointTest extends OpMode {
     // Create an instance of the sensor
     GoBildaPinpointDriver pinpoint;
     Boolean isInitialPinpointPositionSet = false;
-
+    //Boolean isBlue = true;
     @Override
     public void init() {
+
+//
+//        telemetry.addData("gamepad1.b", "Blue." );
+
         // Get a reference to the sensor
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
@@ -40,9 +44,11 @@ public class GobildaPinpointTest extends OpMode {
 
         //blue auto starting point
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90));
 
         //red auto starting point
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 11.25, AngleUnit.DEGREES, -90));
         pinpoint.update();
     }
 
@@ -52,10 +58,10 @@ public class GobildaPinpointTest extends OpMode {
         if(!isInitialPinpointPositionSet)
         {
             //blue
-            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90));
 
             //red
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 11.25, AngleUnit.DEGREES, -90));
             isInitialPinpointPositionSet = true;
         }
 

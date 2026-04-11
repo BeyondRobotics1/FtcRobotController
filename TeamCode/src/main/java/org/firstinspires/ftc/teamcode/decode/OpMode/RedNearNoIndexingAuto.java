@@ -144,6 +144,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
             int tag_id = turret.detectObeliskTagID();
 
             telemetry.addLine("Red Near NO Indexing Auto");
+            telemetry.addData("Is Limelight running:", turret.isLimeLight3ARunning());
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
