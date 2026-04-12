@@ -37,7 +37,7 @@ public class Shooter {
 
 
     double targetSpeedOutZone = 0.51;//0.535
-    double targetSpeedFar = 0.430;//0.425
+    double targetSpeedFar = 0.425;//0.425
     double targetSpeedMedium = 0.39;//0.39
     double targetSpeedNear = 0.375;//0.375
 

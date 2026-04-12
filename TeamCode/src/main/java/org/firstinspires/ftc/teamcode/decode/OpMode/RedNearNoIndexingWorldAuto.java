@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near NO Indexing World", group = "Decode")
-public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
+@Autonomous(name = "Red Near NO Indexing World", group = "Decode")
+public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
     //Hardware
     private Shooter shooter;
@@ -49,33 +49,33 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     Follower follower;
 
     //Start Pose of our robot
-    private final Pose startPose = new Pose(31.875, 130, Math.toRadians(90)); //30.5, 131, 90, Start Pose of our robot.
+    private final Pose startPose = new Pose(31.875, 11.5, Math.toRadians(-90)); //30.5, 131, 90, Start Pose of our robot.
     //score pose
-    private final Pose scorePose = new Pose(58, 74, Math.toRadians(180)); // 45, 96, 131 Pose of our robot. Facing wall & turret angle to goal.
+    private final Pose scorePose = new Pose(58, 67.5, Math.toRadians(-180)); // 45, 96, 131 Pose of our robot. Facing wall & turret angle to goal.
     //park pose
-    private final Pose parkPose = new Pose(48, 72, Math.toRadians(180)); //40, 80
+    private final Pose parkPose = new Pose(48, 69.5, Math.toRadians(-180)); //40, 80
 
     //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(43, 81.5, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(17.25, 84, Math.toRadians(180)); //17.75, 83
+    private final Pose pickup1Pose = new Pose(43, 60, Math.toRadians(-180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.25, 57.5, Math.toRadians(-180)); //17.75, 83
     //following two poses are not used
-    private final Pose backout1Pose = new Pose(21, 78, Math.toRadians(180)); //20, 78
-    private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
+    private final Pose backout1Pose = new Pose(21, 63.5, Math.toRadians(-180)); //20, 78
+    private final Pose openGate1Pose = new Pose(16, 65.5, Math.toRadians(-180)); //16.6, 76
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(43, 60.5, Math.toRadians(180)); // 41.5, 58, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(9.5, 60.5, Math.toRadians(180)); //9.5, 58
-    private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 60.5
-    private final Pose openGate2Pose = new Pose(14, 64, Math.toRadians(180)); //13, 64 //gate position
+    private final Pose pickup2Pose = new Pose(43, 81, Math.toRadians(-180)); // 41.5, 58, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(10, 81, Math.toRadians(-180)); //9.5, 58
+    private final Pose backout2Pose = new Pose(18, 80.5, Math.toRadians(-180)); //18, 60.5
+    private final Pose openGate2Pose = new Pose(14, 77.5, Math.toRadians(-180)); //13, 64 //gate position
 
     //open gate
-    private final Pose openGateSetupPose = new Pose(32, 59.5, Math.toRadians(160)); //22, 70, 180 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(20, 59.5, Math.toRadians(150)); //15.8, 68, 180 //gate position
-    private final Pose openGatePose = new Pose(12, 59.5, Math.toRadians(150)); //11.5, 63, 150 //gate position
+    private final Pose openGateSetupPose = new Pose(32, 82, Math.toRadians(-160)); //22, 70, 180 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(20, 82, Math.toRadians(-150)); //15.8, 68, 180 //gate position
+    private final Pose openGatePose = new Pose(12, 82, Math.toRadians(-150)); //11.5, 63, 150 //gate position
 
     //Lowest (Third Set)
-    private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
-    private final Pose grab3Pose = new Pose(12.25, 105, Math.toRadians(180)); // 12, 105 Highest (First Set) picking up end.
+    private final Pose pickup3Pose = new Pose(42.5, 36.5, Math.toRadians(-180)); //44, 105 Lowest (Third Set) picking up start.
+    private final Pose grab3Pose = new Pose(12.25, 36.5, Math.toRadians(-180)); // 12, 105 Highest (First Set) picking up end.
 
 //    //loading zone
 //    private final Pose pickup4Pose = new Pose(24, 128, Math.toRadians(135)); //24, 128, 135
@@ -114,11 +114,11 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
-                DecodeBlackBoard.BLUE_TARGET_POSE,
-                DecodeBlackBoard.BLUE,
+                DecodeBlackBoard.RED_TARGET_POSE,
+                DecodeBlackBoard.RED,
                 false,
                 true, true);
-        turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAlliance);
+        turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAlliance);
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
@@ -149,7 +149,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("BLUE Near NO Indexing Auto");
+            telemetry.addLine("RED Near NO Indexing Auto");
             telemetry.addData("Is Limelight running:", turret.isLimeLight3ARunning());
             telemetry.addData("Obelisk ID:", tag_id);
 
@@ -172,7 +172,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             sleep(100);
         }
 
-        turret.setServoPosition(Turret.servoPositionNearAutoShootingBlueAlliance);
+        turret.setServoPosition(Turret.servoPositionNearAutoShootingRedAlliance);
 
         shooter.setPower(0.41);
 
@@ -233,7 +233,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
                 intake.intake(0.95,0.925);
 
-                setPathState(22);//11
+                setPathState(22);//
                 break;
             case 22:
                 if (!follower.isBusy()) {
@@ -314,7 +314,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
 
-                    setPathState(36);
+                    setPathState(-36);
                 }
                 break;
 
@@ -480,3 +480,4 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
         telemetry.update();
     }
 }
+
