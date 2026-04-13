@@ -37,9 +37,9 @@ public class Shooter {
 
 
     double targetSpeedOutZone = 0.51;//0.535
-    double targetSpeedFar = 0.425;//0.425
-    double targetSpeedMedium = 0.39;//0.39
-    double targetSpeedNear = 0.375;//0.375
+    double targetSpeedFar = 0.44;//0.425
+    double targetSpeedMedium = 0.42;//0.39
+    double targetSpeedNear = 0.39;//0.375
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;

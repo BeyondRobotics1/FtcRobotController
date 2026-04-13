@@ -28,8 +28,8 @@ public class TurretTunerAprilTag extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     PIDController controller;
 
-    public static double kP = 0.000; //0.001
-    public static double kI = 0; //0.01
+    public static double kP = 0.000; //0.00006
+    public static double kI = 0; //0.0000015
     public static double kD = 0;
     public static double kF = 0.00;//0.0095
 
@@ -44,7 +44,7 @@ public class TurretTunerAprilTag extends LinearOpMode {
         controller = new PIDController(kP, kI, kD);
 
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
-        //turretRight = hardwareMap.get(Servo.class, "turretRight");
+        turretRight = hardwareMap.get(Servo.class, "turretRight");
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
@@ -54,7 +54,6 @@ public class TurretTunerAprilTag extends LinearOpMode {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
         limelight.start();
-
 
         turretLeft.setPosition(0.5);
 
@@ -96,8 +95,6 @@ public class TurretTunerAprilTag extends LinearOpMode {
 
                 currentAngle = result.getTx();
 
-
-
                 // Access fiducial results
                 List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
                 for (LLResultTypes.FiducialResult fr : fiducialResults) {
@@ -110,10 +107,14 @@ public class TurretTunerAprilTag extends LinearOpMode {
                     if(tagID == targetTagID) {
 
                         pid = controller.calculate(currentAngle, targetAngleDegree);
-                        turretLeft.setPosition(pid + kF + 0.5);
+
+                        double pos = turretLeft.getPosition();
+
+                        turretLeft.setPosition(pid + kF + pos);
+                        turretRight.setPosition(pid + kF + pos);
 
                         telemetry.addData("Fiducial", "ID: %d, Family: %s, X: %.2f, Y: %.2f", fr.getFiducialId(), fr.getFamily(), fr.getTargetXDegrees(), fr.getTargetYDegrees());
-                        telemetry.addData("Servo position set", "%.5f", pid + kF + 0.5);
+                        telemetry.addData("Servo position set", "%.5f", turretLeft.getPosition());
                     }
                 }
             }

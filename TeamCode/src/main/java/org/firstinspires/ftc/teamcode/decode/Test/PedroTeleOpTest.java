@@ -2,7 +2,14 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 
 import android.graphics.Color;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.drivetrains.MecanumConstants;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,11 +28,13 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-@TeleOp(name = "Decode TeleOp Test", group = "Decode Test")
-public class TeleOpTest extends LinearOpMode {
+@TeleOp(name = "Decode Pedro TeleOp Test", group = "Decode Test")
+public class PedroTeleOpTest extends LinearOpMode {
 
 
     public enum ShootAutoCompleteMode
@@ -56,6 +65,12 @@ public class TeleOpTest extends LinearOpMode {
 
     Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect strongRumbleEffect;
+
+    private Follower follower;
+    public static Pose startingPose; //See ExampleAuto to understand how to use this
+    public static Pose openGatePose; //See ExampleAuto to understand how to use this
+    private boolean automatedDrive;
+    private Supplier<PathChain> pathChain;
 
     //status
     private Timer actionTimer;
@@ -188,6 +203,16 @@ public class TeleOpTest extends LinearOpMode {
                     true,
                     true, false);
 
+            startingPose = new Pose(DecodeBlackBoard.BLUE_RESET_POSE.getX(DistanceUnit.INCH),
+                    DecodeBlackBoard.BLUE_RESET_POSE.getY(DistanceUnit.INCH),
+                    Math.toRadians(DecodeBlackBoard.BLUE_RESET_POSE.getHeading(AngleUnit.DEGREES))
+                    );
+
+            openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+                    DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+                    Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+            );
+
             telemetry.addLine("Initializing shooter");
             shooter = new Shooter(hardwareMap, this, alliance);
         }
@@ -200,6 +225,17 @@ public class TeleOpTest extends LinearOpMode {
                     true,
                     true, false);
 
+            startingPose = new Pose(DecodeBlackBoard.RED_RESET_POSE.getX(DistanceUnit.INCH),
+                    DecodeBlackBoard.RED_RESET_POSE.getY(DistanceUnit.INCH),
+                    Math.toRadians(DecodeBlackBoard.RED_RESET_POSE.getHeading(AngleUnit.DEGREES))
+            );
+
+            openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+                    DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+                    Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+            );
+
+
             telemetry.addLine("Initializing shooter");
             shooter = new Shooter(hardwareMap, this, alliance);
         }
@@ -207,21 +243,31 @@ public class TeleOpTest extends LinearOpMode {
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
 
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startingPose);
+        follower.update();
+
+        pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, openGatePose)))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGatePose.getHeading(), 0.8))
+                .build();
+
         telemetry.update();
 
         if(isStopRequested()) return;
+
+        follower.startTeleopDrive();
 
         //let the flywheel spin for 500ms so
         //the PID controller won't draw too much batteries
         shooter.setPower(0.4);
         sleep(1000);
-        //sleep(200);
 
         boolean isEndGame = false;
 
         boolean isInitialPinpointPositionSet = false;
 
-        isIntakeOn = true;
+        isIntakeOn = false;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -240,6 +286,9 @@ public class TeleOpTest extends LinearOpMode {
 
             telemetry.addLine("");
 
+            //once per loop
+            follower.update();
+
             //operate the intake
             intakeOp();
 
@@ -251,7 +300,7 @@ public class TeleOpTest extends LinearOpMode {
 
             //operate the lift
             //if(isEndGame)
-                liftOp();
+            liftOp();
 
             ////DPAD UP to toggle field centric or robot centric driving
             //if(gamepad1.dpadUpWasPressed())
@@ -261,8 +310,33 @@ public class TeleOpTest extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
-            if(liftMode == DecodeTeleOp.LiftMode.NONE && !gamepad1.dpad_down) {
-               driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            if(liftMode == DecodeTeleOp.LiftMode.NONE && !gamepad1.dpad_down && !automatedDrive) {
+                //driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+                follower.setTeleOpDrive(
+                        gamepad1.left_stick_y, //-
+                        gamepad1.left_stick_x, //-
+                        -gamepad1.right_stick_x, //-
+                        false // Robot Centric //true
+                );
+
+//                follower.setTeleOpDrive(
+//                        -gamepad1.left_stick_y, //-
+//                        -gamepad1.left_stick_x, //-
+//                        -gamepad1.right_stick_x, //-
+//                        true // Robot Centric //true
+//                );
+            }
+
+            //Automated PathFollowing
+            if (gamepad1.aWasPressed()) {
+                follower.followPath(pathChain.get());
+                automatedDrive = true;
+            }
+            //Stop automated following if the follower is done
+            if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
+                follower.startTeleopDrive();
+                automatedDrive = false;
             }
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
@@ -279,6 +353,11 @@ public class TeleOpTest extends LinearOpMode {
 
                 isEndGame = true;
             }
+
+            Pose p = follower.getPose();
+            telemetry.addData("Follower X", p.getX());
+            telemetry.addData("Follower Y", p.getY());
+            telemetry.addData("Follower Heading",  Math.toDegrees(p.getHeading()));
 
             telemetry.update();
         }
@@ -395,20 +474,20 @@ public class TeleOpTest extends LinearOpMode {
             }
         }
         else {
-            //gamepad1 a, shoot from near position
-            //gamepad1 b, shoot from medium position
-            //gamepad1 y, shoot from far position
-            //gamepad1 x, shoot from OUT_ZONE position
-            if (gamepad1.aWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-
-            } else if (gamepad1.xWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-            } else if (gamepad1.yWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-            } else if (gamepad1.bWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-            }
+//            //gamepad1 a, shoot from near position
+//            //gamepad1 b, shoot from medium position
+//            //gamepad1 y, shoot from far position
+//            //gamepad1 x, shoot from OUT_ZONE position
+//            if (gamepad1.aWasPressed()) {
+//                shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
+//
+//            } else if (gamepad1.xWasPressed()) {
+//                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+//            } else if (gamepad1.yWasPressed()) {
+//                shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
+//            } else if (gamepad1.bWasPressed()) {
+//                shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
+//            }
         }
 
         //gamepad2 a, index 2

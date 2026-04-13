@@ -157,7 +157,6 @@ public class DecodeTeleOp extends LinearOpMode {
             telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
             telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
             telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
-            telemetry.addData("Is Limelight running:", turret.isLimeLight3ARunning());
 
             if(gamepad1.a) {
                 isBlueTeleOp = false;
@@ -323,7 +322,8 @@ public class DecodeTeleOp extends LinearOpMode {
                     //intake motor running only
                     //
                     if (intake.detectedArtifacts() == 3) {
-                        intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                        //intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                        intake.intake(0.95, 0);//0
                         intake.setLedColor(Intake.LED_GREEN);
                     }
                     else if (intake.detectedArtifacts() == 2) {

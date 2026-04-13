@@ -52,7 +52,7 @@ public class Turret {
     public static double servoPositionFarAutoShootingBlueAlliance = 0.25;
 
     //Limelight 3A auto aiming target degree of Tx
-    public static double TARGET_ANGLE_DEGREE_RED = 0.0; //0
+    public static double TARGET_ANGLE_DEGREE_RED = 0; //0
     public static double TARGET_ANGLE_DEGREE_BLUE = 6.0; //6
 
     double servoPositionRedFarAuto = 0.15;
@@ -67,10 +67,10 @@ public class Turret {
 
     //PID controller for limelight 3A auto aiming
     PIDController controller;
-    public static double kP = 0.001;//0.001;
-    public static double kI = 0.005;//0.25;
+    public static double kP = 0.001;//0.001;// v1: 0.001;
+    public static double kI = 0.001;//0.005;// v1: 0.25;
     public static double kD = 0;
-    public static double kF = -0.0095;//0.0095;
+    public static double kF = 0.0;//-0.0095;//v1: 0.0095;
     public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
