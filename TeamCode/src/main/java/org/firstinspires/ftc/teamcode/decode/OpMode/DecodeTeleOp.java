@@ -170,7 +170,7 @@ public class DecodeTeleOp extends LinearOpMode {
                 //no pose read
                 if(robotPose.getX(DistanceUnit.INCH) < 10.)
                 {
-                    robotPose = DecodeBlackBoard.BLUE_PARK_POSE;
+                    robotPose = DecodeBlackBoard.BLUE_NEAR_PARK_POSE;
                 }
             }
             else
@@ -178,7 +178,7 @@ public class DecodeTeleOp extends LinearOpMode {
                 //no pose read
                 if(robotPose.getX(DistanceUnit.INCH) < 10.)
                 {
-                    robotPose = DecodeBlackBoard.RED_PARK_POSE;
+                    robotPose = DecodeBlackBoard.RED_NEAR_PARK_POSE;
                 }
             }
 

@@ -145,9 +145,9 @@ public class IMULocalizer {
     public void resetIMUPose()
     {
         if(alliance == DecodeBlackBoard.RED)
-            setIMUPose(DecodeBlackBoard.RED_RESET_POSE);
+            setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);
         else
-            setIMUPose(DecodeBlackBoard.BLUE_RESET_POSE);
+            setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
 
     }
 

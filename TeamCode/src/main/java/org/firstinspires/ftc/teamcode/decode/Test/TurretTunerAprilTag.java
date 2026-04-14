@@ -28,8 +28,8 @@ public class TurretTunerAprilTag extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     PIDController controller;
 
-    public static double kP = 0.000; //0.00006
-    public static double kI = 0; //0.0000015
+    public static double kP = 0.000; //0.00006, 0.00009
+    public static double kI = 0; //0.0000015, 0.000000001
     public static double kD = 0;
     public static double kF = 0.00;//0.0095
 
@@ -56,6 +56,7 @@ public class TurretTunerAprilTag extends LinearOpMode {
         limelight.start();
 
         turretLeft.setPosition(0.5);
+        turretRight.setPosition(0.5);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : hubs) {

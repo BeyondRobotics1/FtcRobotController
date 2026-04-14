@@ -152,13 +152,13 @@ public class TeleOpTest extends LinearOpMode {
                 telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
 
                 if(robotPose == null)
-                    robotPose = DecodeBlackBoard.BLUE_RESET_POSE;
+                    robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
             }
             else {
                 telemetry.addLine("TeleOP Selected: RED RED RED");
 
                 if (robotPose == null)
-                    robotPose = DecodeBlackBoard.RED_RESET_POSE;
+                    robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
             }
 
             telemetry.addLine("");
@@ -182,7 +182,7 @@ public class TeleOpTest extends LinearOpMode {
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
-                    DecodeBlackBoard.BLUE_RESET_POSE,
+                    DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                     DecodeBlackBoard.BLUE_TARGET_POSE,
                     alliance,
                     true,
@@ -194,7 +194,7 @@ public class TeleOpTest extends LinearOpMode {
         else {
             alliance = DecodeBlackBoard.RED;
             turret = new Turret(hardwareMap, this,
-                    DecodeBlackBoard.RED_RESET_POSE,
+                    DecodeBlackBoard.RED_FAR_RESET_POSE,
                     DecodeBlackBoard.RED_TARGET_POSE,
                     alliance,
                     true,

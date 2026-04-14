@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOp;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
@@ -124,7 +122,7 @@ public class ShooterTest extends LinearOpMode {
             if (isBlueTeleOp) {
                 alliance = DecodeBlackBoard.BLUE;
                 turret = new Turret(hardwareMap, this,
-                        DecodeBlackBoard.BLUE_RESET_POSE,
+                        DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
                         true,
@@ -136,7 +134,7 @@ public class ShooterTest extends LinearOpMode {
             } else {
                 alliance = DecodeBlackBoard.RED;
                 turret = new Turret(hardwareMap, this,
-                        DecodeBlackBoard.RED_RESET_POSE,
+                        DecodeBlackBoard.RED_FAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true,

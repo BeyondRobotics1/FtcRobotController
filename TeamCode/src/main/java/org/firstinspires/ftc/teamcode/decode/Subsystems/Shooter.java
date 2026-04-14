@@ -30,15 +30,17 @@ public class Shooter {
     PIDController controller;
 
     private MotorGroup flyWheel;
-    public static double kP = 0.002; //0.002
-    public static double kI = 0.15; //0.25
+
+    //
+    public static double kP = 0.02; //0.002
+    public static double kI = 0.35; //0.25
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.51;//0.535
+    double targetSpeedOutZone = 0.53;//0.535
     double targetSpeedFar = 0.44;//0.425
-    double targetSpeedMedium = 0.42;//0.39
+    double targetSpeedMedium = 0.41;//0.39
     double targetSpeedNear = 0.39;//0.375
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
@@ -90,12 +92,13 @@ public class Shooter {
         else
             targetSpeed = targetSpeedMedium;
 
-
         //far zone use different kI
-        if (targetSpeed > 0.5)
-            kI = 0.3;
-        else
-            kI = 0.25;
+        if (targetSpeed > 0.5) {
+            kP = 0.035;
+        }
+        else {
+            kP = 0.02;
+        }
 
         controller.setPID(kP, kI, kD);
 

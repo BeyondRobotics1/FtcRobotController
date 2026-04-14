@@ -67,10 +67,10 @@ public class Turret {
 
     //PID controller for limelight 3A auto aiming
     PIDController controller;
-    public static double kP = 0.001;//0.001;// v1: 0.001;
+    public static double kP = 0.0006;//0.001;// v1: 0.001;
     public static double kI = 0.001;//0.005;// v1: 0.25;
     public static double kD = 0;
-    public static double kF = 0.0;//-0.0095;//v1: 0.0095;
+    public static double kF = 0.0005;//0.0001;//v1: 0.0095;
     public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
@@ -371,16 +371,24 @@ public class Turret {
             // calculate servo position
             double servoPosition;
 
-            double servoPositionCalibration = calibrateTurret();
+
 
             servoPosition = servoPositionLeft * (theta + halfServoRangeDegrees) / fullServoRangeDegrees;
 
             mode.telemetry.addData("IMU location based servo position:", "%.5f", servoPosition);
 
-            servoPosition += servoPositionCalibration;
+            if (servoPosition > servoPositionLeft) {
+                servoPosition = servoPositionLeft;
+            } else if (servoPosition < servoPositionRight) {
+                servoPosition = servoPositionRight;
+            }
+
+            setServoPosition(servoPosition);
+
+            double servoPositionCalibration = calibrateTurret();
+            servoPosition = getServoPosition() + servoPositionCalibration;
 
             mode.telemetry.addData("Limelight calibrated servo position:", "%.5f", servoPosition);
-
 
             if (servoPosition > servoPositionLeft) {
                 servoPosition = servoPositionLeft;

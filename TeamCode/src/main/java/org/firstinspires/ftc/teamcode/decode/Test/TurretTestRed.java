@@ -21,7 +21,7 @@ public class TurretTestRed extends LinearOpMode {
 
         isInitialPinpointPositionSet = false;
         Turret turret = new Turret(hardwareMap, this,
-                DecodeBlackBoard.RED_RESET_POSE,//new Pose2D(DistanceUnit.INCH, 8, 111, AngleUnit.DEGREES, 0),
+                DecodeBlackBoard.RED_FAR_RESET_POSE,//new Pose2D(DistanceUnit.INCH, 8, 111, AngleUnit.DEGREES, 0),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
                 true,

@@ -21,7 +21,7 @@ public class TurretTestBlue extends LinearOpMode {
 
         isInitialPinpointPositionSet = false;
         Turret turret = new Turret(hardwareMap, this,
-                DecodeBlackBoard.BLUE_RESET_POSE,
+                DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
                 true,

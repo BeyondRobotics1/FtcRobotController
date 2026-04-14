@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 import android.graphics.Color;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
@@ -167,13 +166,13 @@ public class PedroTeleOpTest extends LinearOpMode {
                 telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
 
                 if(robotPose == null)
-                    robotPose = DecodeBlackBoard.BLUE_RESET_POSE;
+                    robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
             }
             else {
                 telemetry.addLine("TeleOP Selected: RED RED RED");
 
                 if (robotPose == null)
-                    robotPose = DecodeBlackBoard.RED_RESET_POSE;
+                    robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
             }
 
             telemetry.addLine("");
@@ -197,15 +196,15 @@ public class PedroTeleOpTest extends LinearOpMode {
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
-                    DecodeBlackBoard.BLUE_RESET_POSE,
+                    DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                     DecodeBlackBoard.BLUE_TARGET_POSE,
                     alliance,
                     true,
                     true, false);
 
-            startingPose = new Pose(DecodeBlackBoard.BLUE_RESET_POSE.getX(DistanceUnit.INCH),
-                    DecodeBlackBoard.BLUE_RESET_POSE.getY(DistanceUnit.INCH),
-                    Math.toRadians(DecodeBlackBoard.BLUE_RESET_POSE.getHeading(AngleUnit.DEGREES))
+            startingPose = new Pose(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getX(DistanceUnit.INCH),
+                    DecodeBlackBoard.BLUE_FAR_RESET_POSE.getY(DistanceUnit.INCH),
+                    Math.toRadians(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
                     );
 
             openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
@@ -219,15 +218,15 @@ public class PedroTeleOpTest extends LinearOpMode {
         else {
             alliance = DecodeBlackBoard.RED;
             turret = new Turret(hardwareMap, this,
-                    DecodeBlackBoard.RED_RESET_POSE,
+                    DecodeBlackBoard.RED_FAR_RESET_POSE,
                     DecodeBlackBoard.RED_TARGET_POSE,
                     alliance,
                     true,
                     true, false);
 
-            startingPose = new Pose(DecodeBlackBoard.RED_RESET_POSE.getX(DistanceUnit.INCH),
-                    DecodeBlackBoard.RED_RESET_POSE.getY(DistanceUnit.INCH),
-                    Math.toRadians(DecodeBlackBoard.RED_RESET_POSE.getHeading(AngleUnit.DEGREES))
+            startingPose = new Pose(DecodeBlackBoard.RED_FAR_RESET_POSE.getX(DistanceUnit.INCH),
+                    DecodeBlackBoard.RED_FAR_RESET_POSE.getY(DistanceUnit.INCH),
+                    Math.toRadians(DecodeBlackBoard.RED_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
             );
 
             openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
