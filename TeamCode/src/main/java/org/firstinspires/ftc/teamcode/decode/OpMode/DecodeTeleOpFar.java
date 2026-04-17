@@ -22,9 +22,9 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 
 import java.util.List;
 
-@TeleOp(name = "Decode TeleOp", group = "A")
+@TeleOp(name = "Decode TeleOp FAR", group = "A")
 
-public class DecodeTeleOp extends LinearOpMode {
+public class DecodeTeleOpFar extends LinearOpMode {
 
     public enum ShootAutoCompleteMode
     {
@@ -79,6 +79,7 @@ public class DecodeTeleOp extends LinearOpMode {
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
     //int rumbleReady = 0;
+    int alliance;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -145,14 +146,14 @@ public class DecodeTeleOp extends LinearOpMode {
                 robotPose = DecodeBlackBoard.robotAutoEndPose();
 
             if(isBlueTeleOp)
-                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
+                telemetry.addLine("TeleOp FAR Selected: BLUE BLUE BLUE");
             else
-                telemetry.addLine("TeleOP Selected: RED RED RED");
+                telemetry.addLine("TeleOP FAR Selected: RED RED RED");
 
             telemetry.addLine("");
-            telemetry.addLine("WARNING WARNING: Select the right TelelOp!!!");
-            telemetry.addLine("Gamepad1.A: TeleOp RED");
-            telemetry.addLine("Gamepad1.B: TeleOp BLUE");
+            telemetry.addLine("WARNING WARNING: Select the right TeleOp!!!");
+            telemetry.addLine("Gamepad1.A: TeleOp FAR RED");
+            telemetry.addLine("Gamepad1.B: TeleOp FAR BLUE");
             telemetry.addLine("-----------------------");
             telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
             telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
@@ -170,7 +171,7 @@ public class DecodeTeleOp extends LinearOpMode {
                 //no pose read
                 if(robotPose.getX(DistanceUnit.INCH) < 10.)
                 {
-                    robotPose = DecodeBlackBoard.BLUE_NEAR_PARK_POSE;
+                    robotPose = DecodeBlackBoard.BLUE_FAR_PARK_POSE;
                 }
             }
             else
@@ -178,7 +179,7 @@ public class DecodeTeleOp extends LinearOpMode {
                 //no pose read
                 if(robotPose.getX(DistanceUnit.INCH) < 10.)
                 {
-                    robotPose = DecodeBlackBoard.RED_NEAR_PARK_POSE;
+                    robotPose = DecodeBlackBoard.RED_FAR_PARK_POSE;
                 }
             }
 
@@ -188,8 +189,6 @@ public class DecodeTeleOp extends LinearOpMode {
         gameTimer.resetTimer();
         int rumbleEndgame = 0;
 
-
-        int alliance;
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
@@ -229,7 +228,7 @@ public class DecodeTeleOp extends LinearOpMode {
 
         //let the flywheel spin for 1000ms so
         //the PID controller won't draw too much batteries
-        shooter.setPower(0.4);
+        shooter.setPower(0.5);
         sleep(1000);//1000
 
         boolean isInitialPinpointPositionSet = false;
@@ -248,9 +247,9 @@ public class DecodeTeleOp extends LinearOpMode {
             hubs.forEach(LynxModule::clearBulkCache);
 
             if(isBlueTeleOp)
-                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
+                telemetry.addLine("TeleOp FAR Selected: BLUE BLUE BLUE");
             else
-                telemetry.addLine("TeleOP Selected: RED RED RED");
+                telemetry.addLine("TeleOP FAR Selected: RED RED RED");
 
             telemetry.addLine("");
 
@@ -267,14 +266,6 @@ public class DecodeTeleOp extends LinearOpMode {
             if(isEndGame)
                 liftOp();
 
-            ////DPAD UP to toggle field centric or robot centric driving
-            //if(gamepad1.dpadUpWasPressed())
-            //    fieldCentric = !fieldCentric;
-
-            //if(fieldCentric)
-            //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
-            //            Math.toRadians(180+turret.getBotHeadingDegrees()));
-            //else
             if(liftMode == LiftMode.NONE && !gamepad1.dpad_down)
                 driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
@@ -364,8 +355,12 @@ public class DecodeTeleOp extends LinearOpMode {
         robotZone = turret.getRobotZone();
 
         //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
-        if(gamepad2.left_bumper)
-            turret.resetIMUPose();
+        if(gamepad2.left_bumper) {
+            if(alliance == DecodeBlackBoard.RED)
+                turret.setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);
+            else
+                turret.setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
+        }
 
         //use gamepad2 x button to disable or enable auto aiming
         if(gamepad2.xWasPressed())
@@ -378,7 +373,6 @@ public class DecodeTeleOp extends LinearOpMode {
 
             //when auto aim is diable, reset the turret heading to center
             //and force to use zone 3 (FAR) shooting speed
-
 
             turret.resetTurretHeading();
         }
@@ -415,19 +409,7 @@ public class DecodeTeleOp extends LinearOpMode {
         }
         else
         {
-            //gamepad1 a, shoot from near position
-            //gamepad1 b, shoot from medium position
-            //gamepad1 y, shoot from far position
-            //gamepad1 x, shoot from OUT_ZONE position
-            if (gamepad1.aWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-            } else if (gamepad1.xWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-            } else if (gamepad1.yWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-            } else if (gamepad1.bWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-            }
+            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
         }
 
 
@@ -480,10 +462,10 @@ public class DecodeTeleOp extends LinearOpMode {
                 liftMode = LiftMode.PTO_ENGAGED;
                 break;
             case PTO_ENGAGED:
-               if(actionTimer.getElapsedTime() > 800)
-               {
-                   driveTrain.liftUp(1.0);
-               }
+                if(actionTimer.getElapsedTime() > 800)
+                {
+                    driveTrain.liftUp(1.0);
+                }
                 break;
             case COMPLETED:
                 driveTrain.liftUp(0.0);

@@ -45,8 +45,8 @@ public class Turret {
     public static double servoPositionObeliskDetectionRedAlliance = 0.75;
     public static double servoPositionObeliskDetectionBlueAlliance = 0.25;
 
-    public static double servoPositionNearAutoShootingRedAlliance = 0.663;
-    public static double servoPositionNearAutoShootingBlueAlliance = 0.337;//0.335
+    public static double servoPositionNearAutoShootingRedAlliance = 0.645;
+    public static double servoPositionNearAutoShootingBlueAlliance = 0.355;//0.35
 
     public static double servoPositionFarAutoShootingRedAlliance = 0.75;
     public static double servoPositionFarAutoShootingBlueAlliance = 0.25;
@@ -193,6 +193,12 @@ public class Turret {
             localizer.setIMUPoseToRobotStartPose();
     }
 
+    public void setIMUPose(Pose2D robotPose)
+    {
+        if(localizer != null)
+            localizer.setIMUPose(robotPose);
+    }
+
     //set the turret to center heading
     //could be useful when auto aiming is not
     //working as expected
@@ -201,13 +207,6 @@ public class Turret {
         setServoPosition(servoPositionMiddle);
     }
 
-    //drive robot to align with the white tap
-    //of the human player loading zone
-    public void resetIMUPose()
-    {
-        if(localizer != null)
-            localizer.resetIMUPose();
-    }
 
 
     //return the distance from robot to goal

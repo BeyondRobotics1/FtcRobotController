@@ -143,17 +143,6 @@ public class IMULocalizer {
             pinpoint.setPosition(robotPose);
     }
 
-    //drive robot to align with the white tap
-    //of the human player loading zone
-    public void resetIMUPose()
-    {
-        if(alliance == DecodeBlackBoard.RED)
-            setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);
-        else
-            setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
-
-    }
-
     public boolean update()
     {
         if(pinpoint == null)

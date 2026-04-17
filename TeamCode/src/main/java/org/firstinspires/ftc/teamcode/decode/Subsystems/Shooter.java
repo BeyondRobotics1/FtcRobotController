@@ -11,6 +11,7 @@ public class Shooter {
 
     public enum ShootingLocation
     {
+        AUTO,
         OUT_ZONE,
         FAR_FAR,
         FAR,
@@ -36,7 +37,8 @@ public class Shooter {
     double targetSpeedOutZone = 0.53;//0.535
     double targetSpeedFarFar = 0.445;//0.425
     double targetSpeedFar = 0.425;//0.425
-    double targetSpeedMedium = 0.407;//0.405
+    double targetSpeedAuto = 0.412;//0.425
+    double targetSpeedMedium = 0.405;//0.405
     double targetSpeedNear = 0.395;//0.375
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
@@ -79,6 +81,8 @@ public class Shooter {
             targetSpeed = targetSpeedFarFar;
         else if (shooterPosition == ShootingLocation.OUT_ZONE)
             targetSpeed = targetSpeedOutZone;
+        else if (shooterPosition == ShootingLocation.AUTO)
+            targetSpeed = targetSpeedAuto;
         else
             targetSpeed = targetSpeedMedium;
 

@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.List;
 
 @Disabled
-@Autonomous(name = "Blue Near NO Indexing", group = "Decode")
+@Autonomous(name = "Blue Near NO Indexing Regional", group = "Decode")
 public class BlueNearNoIndexingAuto extends LinearOpMode {
 
     //Hardware
@@ -195,7 +195,7 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
 
             //displayPose();
 
-            shooter.shoot();
+            shooter.doFlyWheelVelocityPID();
         }
 
         //in the end save current robot pose into black board

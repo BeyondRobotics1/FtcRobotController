@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.List;
 
 @Disabled
-@Autonomous(name = "Red Near NO Indexing", group = "Decode")
+@Autonomous(name = "Red Near NO Indexing Regional", group = "Decode")
 public class RedNearNoIndexingAuto extends LinearOpMode{
 
     //Hardware

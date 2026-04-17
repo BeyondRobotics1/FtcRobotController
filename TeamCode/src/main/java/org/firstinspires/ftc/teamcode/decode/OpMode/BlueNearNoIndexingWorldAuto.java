@@ -44,7 +44,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private int openGateCounter = 0; //crease 1 when gate is opened
     private int openGateWaitTimeSpike = 1800; //Open gate after taking the second spike ball
     private int openGateWaitTimeSpam = 1100;  //Open gate spam
-    private int openGateLimit = 3;        //how many times the gate should be opened
+    private int openGateLimit = 2;        //how many times the gate should be opened
 
     Follower follower;
 
@@ -59,8 +59,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             Math.toRadians(DecodeBlackBoard.BLUE_NEAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
 
     //score pose
-    private final Pose scorePreloadPose = new Pose(48, 84, Math.toRadians(180)); // 58, 74, 45, 96 Pose of our robot.
-    private final Pose scorePose = new Pose(53, 80, Math.toRadians(180)); // 53, 80, 45, 96 Pose of our robot.
+    private final Pose scorePose = new Pose(55, 86.5, Math.toRadians(180)); // 53, 80, 45, 96 Pose of our robot.
 
     //Highest (First Set)
     private final Pose pickup1Pose = new Pose(43, 81.5, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
@@ -70,15 +69,17 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(43, 60.5, Math.toRadians(180)); // 41.5, 58, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose pickup2Pose = new Pose(43, 61, Math.toRadians(180)); // 43, 60.5, Middle (Second Set) of Artifacts from the Spike Mark.
     private final Pose grab2Pose = new Pose(10, 60.5, Math.toRadians(180)); //9.5, 58
     private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 60.5
     private final Pose openGate2Pose = new Pose(14, 64, Math.toRadians(180)); //13, 64 //gate position
+    private final Pose openGateBackout2Pose = new Pose(28, 64, Math.toRadians(180)); //18, 80.5
 
     //open gate
     private final Pose openGateSetupPose = new Pose(32, 61.5, Math.toRadians(160)); //32, 59.5, 180 Middle (Second Set) backout
     private final Pose openGateStartPose = new Pose(20, 61.5, Math.toRadians(150)); //20, 59.5, 180 //gate position
     private final Pose openGatePose = new Pose(11.5, 61.5, Math.toRadians(150)); //11.5, 59.5, 150 //gate position
+    private final Pose openGateBackoutPose = new Pose(28, 64, Math.toRadians(160)); //32, 61.5
 
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
@@ -199,13 +200,24 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
         turret.setServoPosition(Turret.servoPositionNearAutoShootingBlueAlliance);
 
-        shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
+        shooter.setShootingLocation(Shooter.ShootingLocation.AUTO);
         shooter.setPower(0.9);
         sleep(150);//Flywheel need time to rotate up (0.4, 700)
-        //let the PID work for a while
-        for(int i = 0; i < 16; i++) {
-            shooter.doFlyWheelVelocityPID();
-            sleep(30);//100
+
+        if(openGateLimit == 2) {
+            //let the PID work for a while
+            for (int i = 0; i < 80; i++) {
+                shooter.doFlyWheelVelocityPID();
+                sleep(15);//100
+            }
+        }
+        else {
+
+            //let the PID work for a while
+            for (int i = 0; i < 65; i++) {
+                shooter.doFlyWheelVelocityPID();
+                sleep(15);//100
+            }
         }
 
         //
@@ -434,8 +446,8 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     public void buildPaths() {
 
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
-        scorePreload = new Path(new BezierLine(startPose, scorePreloadPose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading());
+        scorePreload = new Path(new BezierLine(startPose, scorePose));
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1Grab1 = follower.pathBuilder()
@@ -453,8 +465,8 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup2Grab2 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePreloadPose, pickup2Pose))
-                .setLinearHeadingInterpolation(scorePreloadPose.getHeading(), pickup2Pose.getHeading())
+                .addPath(new BezierLine(scorePose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
                 .addPath(new BezierLine(pickup2Pose, grab2Pose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();
@@ -467,8 +479,10 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 .build();
 
         openGate2Score = follower.pathBuilder()
-                .addPath(new BezierLine(openGate2Pose, scorePose))
-                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(openGate2Pose, openGateBackout2Pose))
+                .setLinearHeadingInterpolation(openGate2Pose.getHeading(), openGateBackout2Pose.getHeading())
+                .addPath(new BezierLine(openGateBackout2Pose, scorePose))
+                .setLinearHeadingInterpolation(openGateBackout2Pose.getHeading(), scorePose.getHeading())
                 .build();
 
 
@@ -484,8 +498,10 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
 
         openGateScore = follower.pathBuilder()
-                .addPath(new BezierLine(openGatePose, scorePose))
-                .setLinearHeadingInterpolation(openGatePose.getHeading(), scorePose.getHeading())
+                .addPath(new BezierLine(openGatePose, openGateBackoutPose))
+                .setLinearHeadingInterpolation(openGatePose.getHeading(), openGateBackoutPose.getHeading())
+                .addPath(new BezierLine(openGateBackoutPose, scorePose))
+                .setLinearHeadingInterpolation(openGateBackoutPose.getHeading(), scorePose.getHeading())
                 .build();
 
 

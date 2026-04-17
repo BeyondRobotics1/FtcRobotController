@@ -290,10 +290,6 @@ public class ShooterTest extends LinearOpMode {
             isHeadingToGoal = turret.isHeadingToGoal();
             robotZone = turret.getRobotZone();
 
-            //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
-            if(gamepad2.left_bumper)
-                turret.resetIMUPose();
-
             //use gamepad2 x button to disable or enable auto aiming
             if(gamepad2.xWasPressed())
                 enableAutoAiming = !enableAutoAiming;

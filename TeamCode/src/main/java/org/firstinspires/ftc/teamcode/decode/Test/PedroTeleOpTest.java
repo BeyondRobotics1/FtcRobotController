@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOp;
+import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOpNear;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.List;
 import java.util.function.Supplier;
 
-@TeleOp(name = "Decode Pedro TeleOp Test", group = "Decode Test")
+@TeleOp(name = "Decode Field Centric TeleOp Test", group = "Decode Test")
 public class PedroTeleOpTest extends LinearOpMode {
 
 
@@ -88,13 +88,15 @@ public class PedroTeleOpTest extends LinearOpMode {
 
     Pose2D robotPose;
 
-    DecodeTeleOp.ShootAutoCompleteMode shootAutoCompleteMode;
-    DecodeTeleOp.LiftMode liftMode;
+    DecodeTeleOpNear.ShootAutoCompleteMode shootAutoCompleteMode;
+    DecodeTeleOpNear.LiftMode liftMode;
 
     //field centric driving by default
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
     int rumbleReady = 0;
+    int alliance;
+    boolean is_near = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -119,8 +121,8 @@ public class PedroTeleOpTest extends LinearOpMode {
         actionTimer = new Timer();
         gameTimer = new Timer();
 
-        shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.COMPLETED;
-        liftMode = DecodeTeleOp.LiftMode.NONE;
+        shootAutoCompleteMode = DecodeTeleOpNear.ShootAutoCompleteMode.COMPLETED;
+        liftMode = DecodeTeleOpNear.LiftMode.NONE;
 
         telemetry.addLine("hardware initialization completed");
 
@@ -162,23 +164,46 @@ public class PedroTeleOpTest extends LinearOpMode {
                 isBlueTeleOp = true;
             }
 
-            if(isBlueTeleOp) {
-                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
+            if(gamepad1.x)
+                is_near = true;
+            if(gamepad1.y)
+                is_near = false;
 
-                if(robotPose == null)
-                    robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
+
+            if(isBlueTeleOp) {
+
+                if(is_near)
+                    telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
+                else
+                    telemetry.addLine("TeleOp FAR Selected: BLUE BLUE BLUE");
+
+                if(robotPose == null) {
+                    if(is_near)
+                        robotPose = DecodeBlackBoard.BLUE_NEAR_RESET_POSE;
+                    else
+                        robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
+                }
             }
             else {
-                telemetry.addLine("TeleOP Selected: RED RED RED");
+                if(is_near)
+                    telemetry.addLine("TeleOp NEAR Selected: RED RED RED");
+                else
+                    telemetry.addLine("TeleOp FAR Selected: RED RED RED");
 
-                if (robotPose == null)
-                    robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
+                if (robotPose == null) {
+                    if(is_near)
+                        robotPose = DecodeBlackBoard.RED_NEAR_RESET_POSE;
+                    else
+                        robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
+                }
             }
 
             telemetry.addLine("");
             telemetry.addLine("WARNING: Select the right TelelOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp RED");
             telemetry.addLine("Gamepad1.B: TeleOp BLUE");
+            telemetry.addLine("Gamepad1.X: TeleOp NEAR");
+            telemetry.addLine("Gamepad1.Y: TeleOp FAR");
             telemetry.addLine("-----------------------");
             telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
             telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
@@ -192,48 +217,90 @@ public class PedroTeleOpTest extends LinearOpMode {
         gameTimer.resetTimer();
         int rumbleEndgame = 0;
 
-        int alliance;
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
-            turret = new Turret(hardwareMap, this,
-                    DecodeBlackBoard.BLUE_FAR_RESET_POSE,
-                    DecodeBlackBoard.BLUE_TARGET_POSE,
-                    alliance,
-                    true,
-                    true, false);
 
-            startingPose = new Pose(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getX(DistanceUnit.INCH),
-                    DecodeBlackBoard.BLUE_FAR_RESET_POSE.getY(DistanceUnit.INCH),
-                    Math.toRadians(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
-                    );
+            if(is_near) {
+                turret = new Turret(hardwareMap, this,
+                        DecodeBlackBoard.BLUE_NEAR_RESET_POSE,
+                        DecodeBlackBoard.BLUE_TARGET_POSE,
+                        alliance,
+                        true,
+                        true, false);
 
-            openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
-                    DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
-                    Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
-            );
+                startingPose = new Pose(DecodeBlackBoard.BLUE_NEAR_RESET_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.BLUE_NEAR_RESET_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.BLUE_NEAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
+                );
+
+                openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+                );
+            }
+            else
+            {
+                turret = new Turret(hardwareMap, this,
+                        DecodeBlackBoard.BLUE_FAR_RESET_POSE,
+                        DecodeBlackBoard.BLUE_TARGET_POSE,
+                        alliance,
+                        true,
+                        true, false);
+
+                startingPose = new Pose(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.BLUE_FAR_RESET_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
+                );
+
+                openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+                );
+            }
 
             telemetry.addLine("Initializing shooter");
             shooter = new Shooter(hardwareMap, this, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
-            turret = new Turret(hardwareMap, this,
-                    DecodeBlackBoard.RED_FAR_RESET_POSE,
-                    DecodeBlackBoard.RED_TARGET_POSE,
-                    alliance,
-                    true,
-                    true, false);
 
-            startingPose = new Pose(DecodeBlackBoard.RED_FAR_RESET_POSE.getX(DistanceUnit.INCH),
-                    DecodeBlackBoard.RED_FAR_RESET_POSE.getY(DistanceUnit.INCH),
-                    Math.toRadians(DecodeBlackBoard.RED_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
-            );
+            if(is_near) {
+                turret = new Turret(hardwareMap, this,
+                        DecodeBlackBoard.RED_NEAR_RESET_POSE,
+                        DecodeBlackBoard.RED_TARGET_POSE,
+                        alliance,
+                        true,
+                        true, false);
 
-            openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
-                    DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
-                    Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
-            );
+                startingPose = new Pose(DecodeBlackBoard.RED_NEAR_RESET_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.RED_NEAR_RESET_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.RED_NEAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
+                );
 
+                openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+                );
+            }
+            else
+            {
+                turret = new Turret(hardwareMap, this,
+                        DecodeBlackBoard.RED_FAR_RESET_POSE,
+                        DecodeBlackBoard.RED_TARGET_POSE,
+                        alliance,
+                        true,
+                        true, false);
+
+                startingPose = new Pose(DecodeBlackBoard.RED_FAR_RESET_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.RED_FAR_RESET_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.RED_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
+                );
+
+                openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+                        DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+                        Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+                );
+            }
 
             telemetry.addLine("Initializing shooter");
             shooter = new Shooter(hardwareMap, this, alliance);
@@ -309,7 +376,7 @@ public class PedroTeleOpTest extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
-            if(liftMode == DecodeTeleOp.LiftMode.NONE && !gamepad1.dpad_down && !automatedDrive) {
+            if(liftMode == DecodeTeleOpNear.LiftMode.NONE && !gamepad1.dpad_down && !automatedDrive) {
                 //driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
                 follower.setTeleOpDrive(
@@ -377,7 +444,7 @@ public class PedroTeleOpTest extends LinearOpMode {
             if (isIntakeOn) { //intake mode
 
                 //shooting is done, intake now
-                if(shootAutoCompleteMode == DecodeTeleOp.ShootAutoCompleteMode.COMPLETED) {
+                if(shootAutoCompleteMode == DecodeTeleOpNear.ShootAutoCompleteMode.COMPLETED) {
                     //To save battery
                     //
                     //If there are three balls already, stop the intake
@@ -414,11 +481,11 @@ public class PedroTeleOpTest extends LinearOpMode {
 
         //LEFT BUMPER to start the shooting
         if (gamepad1.leftBumperWasPressed()) {
-            shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.START;
+            shootAutoCompleteMode = DecodeTeleOpNear.ShootAutoCompleteMode.START;
             trigger.open();
         }
         else if (gamepad1.leftBumperWasReleased()) {
-            shootAutoCompleteMode = DecodeTeleOp.ShootAutoCompleteMode.COMPLETED;
+            shootAutoCompleteMode = DecodeTeleOpNear.ShootAutoCompleteMode.COMPLETED;
             trigger.close();
         }
     }
@@ -429,8 +496,21 @@ public class PedroTeleOpTest extends LinearOpMode {
         robotZone = turret.getRobotZone();
 
         //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
-        if(gamepad2.left_bumper)
-            turret.resetIMUPose();
+        if(gamepad2.left_bumper) {
+
+            if(is_near) {
+                if(alliance == DecodeBlackBoard.BLUE)
+                    turret.setIMUPose(DecodeBlackBoard.BLUE_NEAR_RESET_POSE);
+                else
+                    turret.setIMUPose(DecodeBlackBoard.RED_NEAR_RESET_POSE);
+            }
+            else {
+                if(alliance == DecodeBlackBoard.BLUE)
+                    turret.setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
+                else
+                    turret.setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);
+            }
+        }
 
         //use gamepad2 x button to disable or enable auto aiming
         if(gamepad2.xWasPressed())
@@ -475,20 +555,10 @@ public class PedroTeleOpTest extends LinearOpMode {
             }
         }
         else {
-//            //gamepad1 a, shoot from near position
-//            //gamepad1 b, shoot from medium position
-//            //gamepad1 y, shoot from far position
-//            //gamepad1 x, shoot from OUT_ZONE position
-//            if (gamepad1.aWasPressed()) {
-//                shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-//
-//            } else if (gamepad1.xWasPressed()) {
-//                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
-//            } else if (gamepad1.yWasPressed()) {
-//                shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
-//            } else if (gamepad1.bWasPressed()) {
-//                shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-//            }
+            if(is_near)
+                shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
+            else
+                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
         }
 
         //gamepad2 a, index 2
@@ -518,14 +588,14 @@ public class PedroTeleOpTest extends LinearOpMode {
 
         //gamepad 1 dpad up pressed
         if (gamepad1.dpadUpWasPressed()) {
-            if(liftMode == DecodeTeleOp.LiftMode.NONE ||
-                    liftMode == DecodeTeleOp.LiftMode.COMPLETED) {
-                liftMode = DecodeTeleOp.LiftMode.START;
+            if(liftMode == DecodeTeleOpNear.LiftMode.NONE ||
+                    liftMode == DecodeTeleOpNear.LiftMode.COMPLETED) {
+                liftMode = DecodeTeleOpNear.LiftMode.START;
                 actionTimer.resetTimer();
             }
         }//gamepad 1 dpad up released
         else if (gamepad1.dpadUpWasReleased())
-            liftMode = DecodeTeleOp.LiftMode.COMPLETED;
+            liftMode = DecodeTeleOpNear.LiftMode.COMPLETED;
 
         switch (liftMode)
         {
@@ -537,7 +607,7 @@ public class PedroTeleOpTest extends LinearOpMode {
 
                 lift.releaseHolder(true);
                 lift.engageClutch(true);
-                liftMode = DecodeTeleOp.LiftMode.PTO_ENGAGED;
+                liftMode = DecodeTeleOpNear.LiftMode.PTO_ENGAGED;
                 break;
             case PTO_ENGAGED:
                 if(actionTimer.getElapsedTime() > 800)
