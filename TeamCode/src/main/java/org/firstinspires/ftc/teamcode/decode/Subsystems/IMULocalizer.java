@@ -20,17 +20,18 @@ public class IMULocalizer {
         NEAR_SHOOTING_ZONE,
         MEDIUM_SHOOTING_ZONE,
         FAR_SHOOTING_ZONE,
+        FAR_FAR_SHOOTING_ZONE,
         OUT_SHOOTING_ZONE
     }
 
     //know locations
     //red near zone
-    public static final double RED_X1 = 22;//25;//24
-    public static final double RED_Y1 = 33;//35; //30
-    public static final double RED_X2 = 70;//80;
-    public static final double RED_Y2 = 84;//90;
-    public static final double RED_X3 = 122;//131;//128
-    public static final double RED_Y3 = 32;//32; //32
+    public static final double RED_X1 = 20;//22;//24
+    public static final double RED_Y1 = 30;//33; //30
+    public static final double RED_X2 = 70;//70;
+    public static final double RED_Y2 = 84;//84;
+    public static final double RED_X3 = 121;//122;//128
+    public static final double RED_Y3 = 30;//32; //32
     //red out zone
     public static final double RED_X4 = 52;
     public static final double RED_Y4 = 110;
@@ -38,23 +39,25 @@ public class IMULocalizer {
     public static final double RED_Y5 = 110;
 
     //red near zone
-    public static final double BLUE_X1 = 23;// 14;
-    public static final double BLUE_Y1 = 107;//114;
-    public static final double BLUE_X2 = 70;//62;
-    public static final double BLUE_Y2 = 57;//66;
-    public static final double BLUE_X3 = 122;//130;
-    public static final double BLUE_Y3 = 105;//114;
+    public static final double BLUE_X1 = 20;// 23;
+    public static final double BLUE_Y1 = 111;//107;
+    public static final double BLUE_X2 = 70;//70;
+    public static final double BLUE_Y2 = 57;//57;
+    public static final double BLUE_X3 = 121;//122;
+    public static final double BLUE_Y3 = 109;//105;
     //red out zone
     public static final double BLUE_X4 = 52;
     public static final double BLUE_Y4 = 32;//39; //36
     public static final double BLUE_X5 = 84;
     public static final double BLUE_Y5 = 32;//39;
 
-    public static final double RED_FAR_ZONE_DISTANCE = 80;//86;
-    public static final double RED_MEDIUM_ZONE_DISTANCE = 60;//70;
+    public static final double RED_FAR_FAR_ZONE_DISTANCE = 83;//80;
+    public static final double RED_FAR_ZONE_DISTANCE = 66;//80;
+    public static final double RED_MEDIUM_ZONE_DISTANCE = 44;//60;
 
-    public static final double BLUE_FAR_ZONE_DISTANCE = 80;//70;
-    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 60;//50;
+    public static final double BLUE_FAR_FAR_ZONE_DISTANCE = 83;//80;
+    public static final double BLUE_FAR_ZONE_DISTANCE = 66;//80;
+    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 44;//60;
 
     //hardware
     LinearOpMode mode;
@@ -228,7 +231,9 @@ public class IMULocalizer {
             //in shooting zone
             if(inZone)
             {
-                if(robotDistanceToGoal >= BLUE_FAR_ZONE_DISTANCE)
+                if(robotDistanceToGoal >= BLUE_FAR_FAR_ZONE_DISTANCE)
+                    robotZone = RobotZone.FAR_FAR_SHOOTING_ZONE;
+                else if(robotDistanceToGoal >= BLUE_FAR_ZONE_DISTANCE)
                     robotZone = RobotZone.FAR_SHOOTING_ZONE;
                 else if (robotDistanceToGoal >= BLUE_MEDIUM_ZONE_DISTANCE)
                     robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
@@ -276,7 +281,9 @@ public class IMULocalizer {
             //in shooting zone
             if(inZone)
             {
-                if(robotDistanceToGoal >= RED_FAR_ZONE_DISTANCE)
+                if(robotDistanceToGoal >= RED_FAR_FAR_ZONE_DISTANCE)
+                    robotZone = RobotZone.FAR_FAR_SHOOTING_ZONE;
+                else if(robotDistanceToGoal >= RED_FAR_ZONE_DISTANCE)
                     robotZone = RobotZone.FAR_SHOOTING_ZONE;
                 else if (robotDistanceToGoal >= RED_MEDIUM_ZONE_DISTANCE)
                     robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;

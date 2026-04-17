@@ -309,8 +309,8 @@ public class TeleOpTest extends LinearOpMode {
                     //intake motor running only
                     //
                     if (intake.detectedArtifacts() == 3) {
-                        //intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                        intake.intake(0.95, 0);//0
+                        intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                        //intake.intake(0.95, 0);//0
                         intake.setLedColor(Intake.LED_GREEN);
                     }
                     else if (intake.detectedArtifacts() == 2) {
@@ -391,6 +391,8 @@ public class TeleOpTest extends LinearOpMode {
                         shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
                     else if (robotZone == IMULocalizer.RobotZone.FAR_SHOOTING_ZONE)
                         shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
+                    else if (robotZone == IMULocalizer.RobotZone.FAR_FAR_SHOOTING_ZONE)
+                        shooter.setShootingLocation(Shooter.ShootingLocation.FAR_FAR);
                 }
             }
         }
@@ -423,7 +425,7 @@ public class TeleOpTest extends LinearOpMode {
         }
 
         if(isShooterOn)
-            shooter.shoot();
+            shooter.doFlyWheelVelocityPID();
         else
             shooter.stop();
     }

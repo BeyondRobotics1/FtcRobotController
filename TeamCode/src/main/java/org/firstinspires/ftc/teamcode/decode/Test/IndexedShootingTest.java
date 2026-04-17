@@ -91,7 +91,7 @@ public class IndexedShootingTest extends LinearOpMode {
             hubs.forEach(LynxModule::clearBulkCache);
 
             if (isShooterOn)
-                shooter.shoot();
+                shooter.doFlyWheelVelocityPID();
             else
                 shooter.stop();
 

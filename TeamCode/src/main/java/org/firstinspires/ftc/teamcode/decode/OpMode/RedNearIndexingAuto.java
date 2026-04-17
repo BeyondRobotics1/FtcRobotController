@@ -178,7 +178,7 @@ public class RedNearIndexingAuto extends LinearOpMode {
 
             //displayPose();
 
-            shooter.shoot();
+            shooter.doFlyWheelVelocityPID();
         }
 
         //in the end save current robot pose into black board

@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near NO Indexing World", group = "Decode")
+@Autonomous(name = "Blue Near NO Indexing", group = "Decode")
 public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
     //Hardware
@@ -34,26 +34,33 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
-
     final private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
-    final private int shootBallWaitTime = 450;  //500, 550, 600 shooting three balls wait time in ms
-    final private int openGateLimit = 3;        //how many times the gate should be opened
+    final private int shootBallWaitTime = 450;  //450, 550, 600 shooting three balls wait time in ms
 
     //status
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
     private Timer pathTimer;
     private int pathState = 0;       //state machine's state
     private int openGateCounter = 0; //crease 1 when gate is opened
-
+    private int openGateWaitTimeSpike = 1800; //Open gate after taking the second spike ball
+    private int openGateWaitTimeSpam = 1100;  //Open gate spam
+    private int openGateLimit = 3;        //how many times the gate should be opened
 
     Follower follower;
 
     //Start Pose of our robot
-    private final Pose startPose = new Pose(31.875, 130, Math.toRadians(90)); //30.5, 131, 90, Start Pose of our robot.
+    private final Pose startPose = new Pose(DecodeBlackBoard.BLUE_NEAR_START_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.BLUE_NEAR_START_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.BLUE_NEAR_START_POSE.getHeading(AngleUnit.DEGREES))); //30.5, 131, 90, Start Pose of our robot.
+
+    // park pose
+    private final Pose parkPose = new Pose(DecodeBlackBoard.BLUE_NEAR_PARK_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.BLUE_NEAR_PARK_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.BLUE_NEAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
+
     //score pose
-    private final Pose scorePose = new Pose(58, 74, Math.toRadians(180)); // 45, 96, 131 Pose of our robot. Facing wall & turret angle to goal.
-    //park pose
-    private final Pose parkPose = new Pose(48, 72, Math.toRadians(180)); //40, 80
+    private final Pose scorePreloadPose = new Pose(48, 84, Math.toRadians(180)); // 58, 74, 45, 96 Pose of our robot.
+    private final Pose scorePose = new Pose(53, 80, Math.toRadians(180)); // 53, 80, 45, 96 Pose of our robot.
 
     //Highest (First Set)
     private final Pose pickup1Pose = new Pose(43, 81.5, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
@@ -64,14 +71,14 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(43, 60.5, Math.toRadians(180)); // 41.5, 58, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(9.5, 60.5, Math.toRadians(180)); //9.5, 58
+    private final Pose grab2Pose = new Pose(10, 60.5, Math.toRadians(180)); //9.5, 58
     private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 60.5
     private final Pose openGate2Pose = new Pose(14, 64, Math.toRadians(180)); //13, 64 //gate position
 
     //open gate
-    private final Pose openGateSetupPose = new Pose(32, 59.5, Math.toRadians(160)); //22, 70, 180 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(20, 59.5, Math.toRadians(150)); //15.8, 68, 180 //gate position
-    private final Pose openGatePose = new Pose(12, 59.5, Math.toRadians(150)); //11.5, 63, 150 //gate position
+    private final Pose openGateSetupPose = new Pose(32, 61.5, Math.toRadians(160)); //32, 59.5, 180 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(20, 61.5, Math.toRadians(150)); //20, 59.5, 180 //gate position
+    private final Pose openGatePose = new Pose(11.5, 61.5, Math.toRadians(150)); //11.5, 59.5, 150 //gate position
 
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
@@ -99,8 +106,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
         indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
-        shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
+        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.BLUE);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -147,9 +153,23 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
+            if(gamepad1.a) {
+                openGateLimit = 2;
+            }
+            else if (gamepad1.b) {
+                openGateLimit = 3;
+            }
+
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("BLUE Near NO Indexing Auto");
+            if(openGateLimit == 2)
+                telemetry.addLine("BLUE Near NO Indexing 15-Ball Auto");
+            else
+                telemetry.addLine("BLUE Near NO Indexing 18-Ball Auto");
+
+
+            telemetry.addLine("");
+
             telemetry.addData("Is Limelight running:", turret.isLimeLight3ARunning());
             telemetry.addData("Obelisk ID:", tag_id);
 
@@ -168,17 +188,39 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             else
                 telemetry.addLine("Obelisk: Not Detected");
 
+            telemetry.addLine("");
+
+            telemetry.addLine("Gamepad1.A: 15 Balls");
+            telemetry.addLine("Gamepad1.B: 18 Balls");
+
             telemetry.update();
             sleep(100);
         }
 
         turret.setServoPosition(Turret.servoPositionNearAutoShootingBlueAlliance);
 
-        shooter.setPower(0.41);
+        shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
+        shooter.setPower(0.9);
+        sleep(150);//Flywheel need time to rotate up (0.4, 700)
+        //let the PID work for a while
+        for(int i = 0; i < 16; i++) {
+            shooter.doFlyWheelVelocityPID();
+            sleep(30);//100
+        }
+
+        //
+        if(openGateLimit == 2)
+        {
+            openGateWaitTimeSpike = 2500; //Open gate after taking the second spike ball
+            openGateWaitTimeSpam = 1800;  //Open gate spam
+        }
+        else
+        {
+            openGateWaitTimeSpike = 1800; //Open gate after taking the second spike ball
+            openGateWaitTimeSpam = 1100;  //Open gate spam
+        }
 
         setPathState(0);
-
-        sleep(300);//100
 
         while (!isStopRequested() && opModeIsActive()) {
             hubs.forEach(LynxModule::clearBulkCache);
@@ -188,7 +230,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
             //displayPose();
 
-            shooter.shoot();
+            shooter.doFlyWheelVelocityPID();
         }
 
         //in the end save current robot pose into black board
@@ -220,6 +262,8 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 break;
             case 3:
                 if (pathTimer.getElapsedTime() > shootBallWaitTime) { //800
+
+                    //shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
                     setPathState(21);
                 }
                 break;
@@ -248,7 +292,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 }
                 break;
             case 23:
-                if (pathTimer.getElapsedTime() > 1500) { //1650, takes longer
+                if (pathTimer.getElapsedTime() > openGateWaitTimeSpike) { //
                     //move from open gate position to score position
                     follower.followPath(openGate2Score, true);
 
@@ -292,8 +336,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 break;
             case 33:
                 intake.detectArtifactColors();
-                if(//intake.detectedArtifacts() == 3 ||
-                        pathTimer.getElapsedTime() > 1000)
+                if(pathTimer.getElapsedTime() > openGateWaitTimeSpam) //1750, 1100 for 3 opens
                 {
                     intake.intake(0.95,0.0);
 
@@ -366,7 +409,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 }
                 break;
             case 75:
-                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls 900
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls
 
                     setPathState(900);
                 }
@@ -389,12 +432,10 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     }
 
     public void buildPaths() {
+
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
-        scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
-    /* Here is an example for Constant Interpolation
-    scorePreload.setConstantInterpolation(startPose.getHeading()); */
-        /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        scorePreload = new Path(new BezierLine(startPose, scorePreloadPose));
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePreloadPose.getHeading());
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup1Grab1 = follower.pathBuilder()
@@ -412,8 +453,8 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
         /* This is our grabPickup2 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         scorePickup2Grab2 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup2Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .addPath(new BezierLine(scorePreloadPose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePreloadPose.getHeading(), pickup2Pose.getHeading())
                 .addPath(new BezierLine(pickup2Pose, grab2Pose))
                 .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
                 .build();

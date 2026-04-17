@@ -1,20 +1,18 @@
 package org.firstinspires.ftc.teamcode.decode.Subsystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-
 public class Shooter {
 
     public enum ShootingLocation
     {
         OUT_ZONE,
+        FAR_FAR,
         FAR,
         MEDIUM,
         NEAR
@@ -26,10 +24,7 @@ public class Shooter {
     private DcMotorEx rightFlywheel;
     private LinearOpMode mode;
 
-
     PIDController controller;
-
-    private MotorGroup flyWheel;
 
     //
     public static double kP = 0.02; //0.002
@@ -39,9 +34,10 @@ public class Shooter {
 
 
     double targetSpeedOutZone = 0.53;//0.535
-    double targetSpeedFar = 0.44;//0.425
-    double targetSpeedMedium = 0.41;//0.39
-    double targetSpeedNear = 0.39;//0.375
+    double targetSpeedFarFar = 0.445;//0.425
+    double targetSpeedFar = 0.425;//0.425
+    double targetSpeedMedium = 0.407;//0.405
+    double targetSpeedNear = 0.395;//0.375
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -69,24 +65,18 @@ public class Shooter {
         shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
-//        if( alliance == DecodeBlackBoard.RED)
-//        {
-//            //targetSpeedOutZone = 0.528;//0.525
-//            //targetSpeedFar = 0.455;//0.452
-//            targetSpeedMedium = 0.425;//0.42
-//            //targetSpeedNear = 0.392;//0.392, 0.394
-//        }
-
         targetSpeed = targetSpeedMedium;
     }
 
     //this method should be called in the loop
     //all the time
-    public void shoot() {
+    public void doFlyWheelVelocityPID() {
         if (shooterPosition == ShootingLocation.NEAR)
             targetSpeed = targetSpeedNear;
         else if (shooterPosition == ShootingLocation.FAR)
             targetSpeed = targetSpeedFar;
+        else if (shooterPosition == ShootingLocation.FAR_FAR)
+            targetSpeed = targetSpeedFarFar;
         else if (shooterPosition == ShootingLocation.OUT_ZONE)
             targetSpeed = targetSpeedOutZone;
         else

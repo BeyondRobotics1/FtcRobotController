@@ -250,14 +250,19 @@ public class ShooterTest extends LinearOpMode {
             //gamepad1 a, shoot from close position
             //gamepad1 b, shoot from medium position
             //gamepad1 y, shoot from far position
+            //gamepad1 x, shoot from far far position
+            //gamepad1 dpad up, shoot from out position
+
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-            }
-            else if (gamepad1.bWasPressed()) {
+            }else if (gamepad1.bWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
             }else if (gamepad1.yWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
             } else if (gamepad1.xWasPressed()) {
+                shooter.setShootingLocation(Shooter.ShootingLocation.FAR_FAR);
+            }
+            else if (gamepad1.dpadUpWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
             }
 
@@ -267,6 +272,8 @@ public class ShooterTest extends LinearOpMode {
                 telemetry.addLine("Shooting from Near");
             else if (shooterPosition == Shooter.ShootingLocation.FAR)
                 telemetry.addLine("Shooting from FAR");
+            else if (shooterPosition == Shooter.ShootingLocation.FAR_FAR)
+                telemetry.addLine("Shooting from FAR FAR");
             else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE)
                 telemetry.addLine("Shooting from OUT ZONE");
             else
@@ -274,7 +281,7 @@ public class ShooterTest extends LinearOpMode {
 
 
             if (isShooterOn)
-                shooter.shoot();
+                shooter.doFlyWheelVelocityPID();
             else
                 shooter.stop();
         }

@@ -11,21 +11,40 @@ public class DecodeBlackBoard {
     public static final int BLUE = 1;
     public static final int RED = 2;
 
+    //the IMU reset pose for FAR TeleOp
+    //Robot back to the wall and align with the loading zone white tape
     public static final Pose2D RED_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
     public static final Pose2D BLUE_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 30.875, AngleUnit.DEGREES, 180); //133.5, 30
 
-    public static final Pose2D RED_NEAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
-    public static final Pose2D BLUE_NEAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 30.875, AngleUnit.DEGREES, 180); //133.5, 30
+    //The IMU reset pose for NEAR TeleOp
+    //Robot front to ramp and align with gate handle
+    public static final Pose2D RED_NEAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 18, 62.25, AngleUnit.DEGREES, -180); //
+    public static final Pose2D BLUE_NEAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 18, 79.25, AngleUnit.DEGREES, 180); //
 
-    public static final Pose2D BLUE_NEAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 48, 72, AngleUnit.DEGREES, 180); //40, 83
-    public static final Pose2D RED_NEAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 48, 69.5, AngleUnit.DEGREES, 180); //41, 56
+    //The start pose for NEAR Auto
+    public static final Pose2D RED_NEAR_START_POSE = new Pose2D(DistanceUnit.INCH, 31.875, 11.5, AngleUnit.DEGREES, -90);//DecodeBlackBoard.RED_FAR_RESET_POSE;
+    public static final Pose2D BLUE_NEAR_START_POSE = new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90); //133.5, 30
 
-    public static final Pose2D BLUE_OPEN_GATE_POSE = new Pose2D(DistanceUnit.INCH, 12, 59.5, AngleUnit.DEGREES, 150); //40, 83
+    //the parking pose for NEAR Auto
+    public static final Pose2D RED_NEAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 40, 61.5, AngleUnit.DEGREES, 180); //48, 69.5
+    public static final Pose2D BLUE_NEAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 40, 80, AngleUnit.DEGREES, 180); //40, 83
+
+    //The start pose for NEAR Auto
+    public static final Pose2D RED_FAR_START_POSE = new Pose2D(DistanceUnit.INCH, 31.875, 11.5, AngleUnit.DEGREES, -90);//DecodeBlackBoard.RED_FAR_RESET_POSE;
+    public static final Pose2D BLUE_FAR_START_POSE = new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90); //133.5, 30
+
+    //the parking pose for FAR Auto
+    public static final Pose2D RED_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 48, 69.5, AngleUnit.DEGREES, 180); //41, 56
+    public static final Pose2D BLUE_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 48, 72, AngleUnit.DEGREES, 180); //40, 83
+
+
+    //Open gate pose for NEAR TeleOp
     public static final Pose2D RED_OPEN_GATE_POSE = new Pose2D(DistanceUnit.INCH, 16, 84, AngleUnit.DEGREES, -160); //41, 56
+    public static final Pose2D BLUE_OPEN_GATE_POSE = new Pose2D(DistanceUnit.INCH, 12, 59.5, AngleUnit.DEGREES, 150); //40, 83
 
-
-    public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 139, AngleUnit.DEGREES, 0);
+    //Auto aiming target position (x, y coordinates for distance calculation)
     public static final Pose2D RED_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 5, AngleUnit.DEGREES, 0);
+    public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 136.5, AngleUnit.DEGREES, 0); //5, 139
 
     public static final String DEFAULT_X = "DefaultX";
     public static final String DEFAULT_Y = "DefaultY";
