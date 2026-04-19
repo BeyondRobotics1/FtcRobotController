@@ -35,8 +35,12 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     //status
     //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
 
+    final private int shootBallWaitTime = 450;  //450, 550, 600 shooting three balls wait time in ms
+
     private Timer pathTimer;
     //private Timer opmodeTimer;
+    private int pickupLimit = 2;
+    private int pickupCounter = 0;
 
     private int pathState = 0;
 
@@ -45,7 +49,16 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(55, 7.5, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose startPose = new Pose(DecodeBlackBoard.BLUE_FAR_START_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.BLUE_FAR_START_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.BLUE_FAR_START_POSE.getHeading(AngleUnit.DEGREES))); // Start Pose of our robot.
+
+    // park pose
+    private final Pose parkPose = new Pose(DecodeBlackBoard.BLUE_FAR_PARK_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.BLUE_FAR_PARK_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.BLUE_FAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
+
+
     private final Pose scorePose = new Pose(58.39, 20.23, Math.toRadians(115)); // 55, 20.5, 90 Scoring Pose of our robot.
 
 
@@ -60,8 +73,6 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
     private final Pose grab3Pose = new Pose(10.5, 35.5, Math.toRadians(180)); //10, 35
 
-
-    private final Pose parkPose = new Pose(55, 31.5, Math.toRadians(90)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
@@ -150,6 +161,27 @@ public class BlueFarSpikeAuto extends LinearOpMode {
 
         //turret.setServoPosition(Turret.servoPositionAutoShootingRedAlliance);
         //turret.setServoPosition(0.244);
+        //turret.setServoPosition(Turret.servoPositionFarAutoShootingBlueAlliance);
+
+        shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+        shooter.setPower(0.9);
+        sleep(200);//Flywheel need time to rotate up (0.4, 700)
+
+        if(pickupLimit == 2) {
+            //let the PID work for a while
+            for (int i = 0; i < 120; i++) {
+                shooter.doFlyWheelVelocityPID();
+                sleep(15);//100
+            }
+        }
+        else {
+
+            //let the PID work for a while
+            for (int i = 0; i < 65; i++) {
+                shooter.doFlyWheelVelocityPID();
+                sleep(15);//100
+            }
+        }
 
         shooter.setPower(0.60);
 
@@ -191,7 +223,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
 
-                    setPathState(10);
+                    setPathState(-10);
                 }
                 break;
 
@@ -236,11 +268,22 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 500) {//wait for robot to stabilize
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
-                    setPathState(60);
+                    setPathState(15);
                 }
                 break;
 
             //low spike
+            case 15:
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls
+
+                    pickupCounter++;
+
+                    if(pickupCounter >= pickupLimit)
+                        setPathState(900);
+                    else
+                        setPathState(60);
+                }
+                break;
             case 60:
                 if (pathTimer.getElapsedTime() > 1000) { //shoot preload
 
@@ -282,10 +325,9 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > 80) {//110, 300
                     pathTimer.resetTimer();
                     intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
-                    setPathState(20);
+                    setPathState(900);
                 }
                 break;
-
 
             //loading zone again
             case 20:

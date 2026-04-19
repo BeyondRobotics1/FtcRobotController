@@ -216,7 +216,8 @@ public class ShooterTest extends LinearOpMode {
                         if (artifactColors[0] != Color.WHITE &&
                                 artifactColors[1] != Color.WHITE &&
                                 artifactColors[2] != Color.WHITE)
-                            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                            //intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                            intake.intake(0.3, 0);//0
                         else if (artifactColors[0] != Color.WHITE &&
                                 artifactColors[1] != Color.WHITE)
                             intake.setIntakeMode(Intake.IntakeMode.HIN);

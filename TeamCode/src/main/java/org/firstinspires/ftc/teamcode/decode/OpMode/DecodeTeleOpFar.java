@@ -79,7 +79,7 @@ public class DecodeTeleOpFar extends LinearOpMode {
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
     //int rumbleReady = 0;
-    int alliance;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -189,6 +189,7 @@ public class DecodeTeleOpFar extends LinearOpMode {
         gameTimer.resetTimer();
         int rumbleEndgame = 0;
 
+        int alliance;
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
@@ -313,8 +314,8 @@ public class DecodeTeleOpFar extends LinearOpMode {
                     //intake motor running only
                     //
                     if (intake.detectedArtifacts() == 3) {
-                        intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                        //intake.intake(0.95, 0);//0
+                        //intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                        intake.intake(0.3, 0);//0
                         intake.setLedColor(Intake.LED_GREEN);
                     }
                     else if (intake.detectedArtifacts() == 2) {
@@ -356,10 +357,10 @@ public class DecodeTeleOpFar extends LinearOpMode {
 
         //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
         if(gamepad2.left_bumper) {
-            if(alliance == DecodeBlackBoard.RED)
-                turret.setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);
-            else
+            if(isBlueTeleOp)
                 turret.setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
+            else
+                turret.setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);
         }
 
         //use gamepad2 x button to disable or enable auto aiming

@@ -45,8 +45,8 @@ public class Turret {
     public static double servoPositionObeliskDetectionRedAlliance = 0.75;
     public static double servoPositionObeliskDetectionBlueAlliance = 0.25;
 
-    public static double servoPositionNearAutoShootingRedAlliance = 0.645;
-    public static double servoPositionNearAutoShootingBlueAlliance = 0.355;//0.35
+    public static double servoPositionNearAutoShootingRedAlliance = 0.675; //0.645
+    public static double servoPositionNearAutoShootingBlueAlliance = 0.345;//0.355
 
     public static double servoPositionFarAutoShootingRedAlliance = 0.75;
     public static double servoPositionFarAutoShootingBlueAlliance = 0.25;
@@ -68,9 +68,9 @@ public class Turret {
     //PID controller for limelight 3A auto aiming
     PIDController controller;
     public static double kP = 0.0006;//0.001;// v1: 0.001;
-    public static double kI = 0.001;//0.005;// v1: 0.25;
+    public static double kI = 0.003;//0.005;// v1: 0.25;
     public static double kD = 0;
-    public static double kF = 0.0005;//0.0001;//v1: 0.0095;
+    public static double kF = 0.000;//0.0005;//v1: 0.0095;
     public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,

@@ -95,7 +95,7 @@ public class PedroTeleOpTest extends LinearOpMode {
     //use dpad up to toggle on/off
     boolean fieldCentric = true;
     int rumbleReady = 0;
-    int alliance;
+
     boolean is_near = true;
 
     @Override
@@ -217,6 +217,7 @@ public class PedroTeleOpTest extends LinearOpMode {
         gameTimer.resetTimer();
         int rumbleEndgame = 0;
 
+        int alliance;
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
 
@@ -499,13 +500,13 @@ public class PedroTeleOpTest extends LinearOpMode {
         if(gamepad2.left_bumper) {
 
             if(is_near) {
-                if(alliance == DecodeBlackBoard.BLUE)
+                if(isBlueTeleOp)
                     turret.setIMUPose(DecodeBlackBoard.BLUE_NEAR_RESET_POSE);
                 else
                     turret.setIMUPose(DecodeBlackBoard.RED_NEAR_RESET_POSE);
             }
             else {
-                if(alliance == DecodeBlackBoard.BLUE)
+                if(isBlueTeleOp)
                     turret.setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
                 else
                     turret.setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);

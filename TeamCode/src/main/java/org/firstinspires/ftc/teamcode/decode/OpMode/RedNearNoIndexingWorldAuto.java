@@ -81,8 +81,8 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
     //open gate
     private final Pose openGateSetupPose = new Pose(32, 80, Math.toRadians(-160)); //22, 70, 180 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(20, 80, Math.toRadians(-155)); //20, 80, -150 //gate position
-    private final Pose openGatePose = new Pose(15, 82, Math.toRadians(-155)); //14, 82, -150 //gate position
+    private final Pose openGateStartPose = new Pose(20, 80, Math.toRadians(-150)); //20, 80, -150 //gate position
+    private final Pose openGatePose = new Pose(15, 82, Math.toRadians(-150)); //14, 82, -150 //gate position
     private final Pose openGateBackoutPose = new Pose(32, 80, Math.toRadians(-160)); //18, 80.5
 
     //Lowest (Third Set)

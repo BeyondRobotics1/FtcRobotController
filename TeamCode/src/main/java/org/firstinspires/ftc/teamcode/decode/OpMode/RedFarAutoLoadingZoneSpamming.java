@@ -47,7 +47,16 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
     /**
      * Start Pose of our robot
     */
-    private final Pose startPose = new Pose(55, 134, Math.toRadians(-90)); // Start Pose of our robot.
+    private final Pose startPose = new Pose(DecodeBlackBoard.RED_FAR_START_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.RED_FAR_START_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.RED_FAR_START_POSE.getHeading(AngleUnit.DEGREES))); // Start Pose of our robot.
+
+    // park pose
+    private final Pose parkPose = new Pose(DecodeBlackBoard.RED_FAR_PARK_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.RED_FAR_PARK_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.RED_FAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
+
+
     private final Pose scorePose = new Pose(58, 120, Math.toRadians(-112)); // 55, 20.5, 90 Scoring Pose of our robot.
 
     private final Pose pickup1Pose = new Pose(40, 132, Math.toRadians(180)); // 40, 130 Second pickup spot
@@ -56,7 +65,6 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
     private final Pose pickup2Pose = new Pose(40, 126, Math.toRadians(180)); //Third pickup spot
     private final Pose grab2Pose = new Pose(12.5, 122, Math.toRadians(180)); // Second pickup spot
 
-    private final Pose parkPose = new Pose(38, 129 , Math.toRadians(-180)); // 55, 31.5, 90 Where we park
 
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;

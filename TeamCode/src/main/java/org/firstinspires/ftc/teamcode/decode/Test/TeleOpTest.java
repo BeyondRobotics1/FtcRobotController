@@ -82,7 +82,6 @@ public class TeleOpTest extends LinearOpMode {
     boolean fieldCentric = true;
     int rumbleReady = 0;
 
-    int alliance;
     boolean is_near = true;
 
     @Override
@@ -202,6 +201,7 @@ public class TeleOpTest extends LinearOpMode {
         gameTimer.resetTimer();
         int rumbleEndgame = 0;
 
+        int alliance;
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
 
@@ -253,9 +253,14 @@ public class TeleOpTest extends LinearOpMode {
 
         //let the flywheel spin for 500ms so
         //the PID controller won't draw too much batteries
-        shooter.setPower(0.4);
-        sleep(1000);
+        shooter.setPower(0.5);
+        sleep(150);
         //sleep(200);
+        //let the PID work for a while
+        for (int i = 0; i < 60; i++) {
+            shooter.doFlyWheelVelocityPID();
+            sleep(15);//100
+        }
 
         boolean isEndGame = false;
 
@@ -273,12 +278,12 @@ public class TeleOpTest extends LinearOpMode {
 
             hubs.forEach(LynxModule::clearBulkCache);
 
-            if(isBlueTeleOp)
-                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
-            else
-                telemetry.addLine("TeleOP Selected: RED RED RED");
-
-            telemetry.addLine("");
+//            if(isBlueTeleOp)
+//                telemetry.addLine("TeleOp Selected: BLUE BLUE BLUE");
+//            else
+//                telemetry.addLine("TeleOP Selected: RED RED RED");
+//
+//            telemetry.addLine("");
 
             //operate the intake
             intakeOp();
@@ -349,8 +354,9 @@ public class TeleOpTest extends LinearOpMode {
                     //intake motor running only
                     //
                     if (intake.detectedArtifacts() == 3) {
-                        intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                        //intake.intake(0.95, 0);//0
+                        //intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                        //make the intake motor slower but don't stop it
+                        intake.intake(0.3, 0);//0
                         intake.setLedColor(Intake.LED_GREEN);
                     }
                     else if (intake.detectedArtifacts() == 2) {
@@ -394,13 +400,13 @@ public class TeleOpTest extends LinearOpMode {
         if(gamepad2.left_bumper) {
 
             if(is_near) {
-                if(alliance == DecodeBlackBoard.BLUE)
+                if(isBlueTeleOp)
                     turret.setIMUPose(DecodeBlackBoard.BLUE_NEAR_RESET_POSE);
                 else
                     turret.setIMUPose(DecodeBlackBoard.RED_NEAR_RESET_POSE);
             }
             else {
-                if(alliance == DecodeBlackBoard.BLUE)
+                if(isBlueTeleOp)
                     turret.setIMUPose(DecodeBlackBoard.BLUE_FAR_RESET_POSE);
                 else
                     turret.setIMUPose(DecodeBlackBoard.RED_FAR_RESET_POSE);

@@ -30,7 +30,9 @@ public class IntakeTest extends LinearOpMode {
         {
             if(gamepad1.right_bumper) {
                 if (intake.detectedArtifacts() == 3) {
-                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                    //intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                    //make the intake motor slower but don't stop it
+                    intake.intake(0.3, 0);//0
                     intake.setLedColor(Intake.LED_GREEN);
                 }
                 else if (intake.detectedArtifacts() == 2) {
