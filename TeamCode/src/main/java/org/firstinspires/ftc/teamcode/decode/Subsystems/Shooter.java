@@ -11,7 +11,8 @@ public class Shooter {
 
     public enum ShootingLocation
     {
-        AUTO,
+        AUTO_NEAR,
+        AUTO_FAR,
         OUT_ZONE,
         FAR_FAR,
         FAR,
@@ -34,12 +35,14 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.53;//0.535
-    double targetSpeedFarFar = 0.445;//0.425
-    double targetSpeedFar = 0.425;//0.425
-    double targetSpeedAuto = 0.412;//0.425
-    double targetSpeedMedium = 0.405;//0.405
-    double targetSpeedNear = 0.395;//0.375
+    double targetSpeedOutZone = 0.525;//0.535
+    double targetSpeedFarFar = 0.435;//0.445
+    double targetSpeedFar = 0.415;//0.425
+    double targetSpeedMedium = 0.40;//0.405
+    double targetSpeedNear = 0.375;//0.395
+
+    double targetSpeedAutoFar = 0.505;//Shooting speed for far auto
+    double targetSpeedAutoNear = 0.407;//Shooting power for near auto
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -77,12 +80,16 @@ public class Shooter {
             targetSpeed = targetSpeedNear;
         else if (shooterPosition == ShootingLocation.FAR)
             targetSpeed = targetSpeedFar;
+        else if (shooterPosition == ShootingLocation.MEDIUM)
+            targetSpeed = targetSpeedMedium;
         else if (shooterPosition == ShootingLocation.FAR_FAR)
             targetSpeed = targetSpeedFarFar;
         else if (shooterPosition == ShootingLocation.OUT_ZONE)
             targetSpeed = targetSpeedOutZone;
-        else if (shooterPosition == ShootingLocation.AUTO)
-            targetSpeed = targetSpeedAuto;
+        else if (shooterPosition == ShootingLocation.AUTO_NEAR)
+            targetSpeed = targetSpeedAutoNear;
+        else if (shooterPosition == ShootingLocation.AUTO_FAR)
+            targetSpeed = targetSpeedAutoFar;
         else
             targetSpeed = targetSpeedMedium;
 
@@ -121,7 +128,7 @@ public class Shooter {
         //We can't use the negative power which cause motor damage
         if (power < 0) {
             //mode.telemetry.addData("Negative PID Power", power);
-            power = 0.0;
+            power = 0.0005;//0.0
         }
 
         //mode.telemetry.addData("Power Applied", power);

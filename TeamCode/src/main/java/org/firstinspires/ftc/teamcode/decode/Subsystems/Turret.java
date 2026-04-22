@@ -33,8 +33,9 @@ public class Turret {
     // target x, y coordinates in INCH
     double x0, y0;
 
-    public static double fullServoRangeDegrees = 288.6;
-    public static double halfServoRangeDegrees = fullServoRangeDegrees * 0.5;
+
+    public static double halfServoRangeDegrees = 138;//138;//133.78;
+    public static double fullServoRangeDegrees = halfServoRangeDegrees * 2;
     public static double servoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
     public static double servoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
     public static double servoPositionMiddle = 0.5;//0.197;//0 degree
@@ -42,14 +43,18 @@ public class Turret {
 
     public static double servoPreviousPositionCalibration = 0.0;//0 degree
 
-    public static double servoPositionObeliskDetectionRedAlliance = 0.75;
-    public static double servoPositionObeliskDetectionBlueAlliance = 0.25;
+    public static double servoPositionObeliskDetectionRedAllianceNear = 0.75;
+    public static double servoPositionObeliskDetectionBlueAllianceNear = 0.25;
 
-    public static double servoPositionNearAutoShootingRedAlliance = 0.675; //0.645
-    public static double servoPositionNearAutoShootingBlueAlliance = 0.345;//0.355
+    public static double servoPositionObeliskDetectionRedAllianceFar = 0.830;
+    public static double servoPositionObeliskDetectionBlueAllianceFar = 0.170; //175
 
-    public static double servoPositionFarAutoShootingRedAlliance = 0.75;
-    public static double servoPositionFarAutoShootingBlueAlliance = 0.25;
+
+    public static double servoPositionNearAutoShootingRedAlliance = 0.65; //0.675
+    public static double servoPositionNearAutoShootingBlueAlliance = 0.355;//0.345
+
+    public static double servoPositionFarAutoShootingRedAlliance = 0.745;//725
+    public static double servoPositionFarAutoShootingBlueAlliance = 0.275;
 
     //Limelight 3A auto aiming target degree of Tx
     public static double TARGET_ANGLE_DEGREE_RED = 0; //0

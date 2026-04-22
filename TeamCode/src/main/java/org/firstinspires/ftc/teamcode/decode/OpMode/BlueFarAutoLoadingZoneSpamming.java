@@ -98,7 +98,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         turret.resetTurretHeading();
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
+        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
         telemetry.addLine("initializing pedro pathing follower");
@@ -447,7 +447,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
     {
         //pedro pos is in Radian
         Pose p = follower.getPose();
-        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+        DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
     }
 
@@ -458,7 +458,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         telemetry.addData("Y", p.getY());
         telemetry.addData("Heading",  Math.toDegrees(p.getHeading()));
 
-        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+        DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
 
         telemetry.update();

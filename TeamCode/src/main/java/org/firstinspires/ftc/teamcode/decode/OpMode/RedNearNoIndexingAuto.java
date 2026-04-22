@@ -65,7 +65,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
     //Gate pickup
     private final Pose openGateSetupPose = new Pose(24, 72, Math.toRadians(180)); // 22, 72 Middle (Second Set) backout
     private final Pose openGateStartPose = new Pose(16, 76, Math.toRadians(180));//17, 76
-    private final Pose openGatePose = new Pose(13, 79, Math.toRadians(-150)); //13, 80, -150
+    private final Pose openGatePose = new Pose(12.5, 79, Math.toRadians(-160)); //13, 80, -150
 
     private final Pose openGatePickupPose = new Pose(13.5, 85, Math.toRadians(-150)); //13.5, 84, -160
     private final Pose backout22Pose = new Pose(20, 82, Math.toRadians(-160)); // 20, 82, 180 Middle (Second Set) backout.
@@ -115,10 +115,10 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
                 DecodeBlackBoard.RED,
                 false,
                 true, true);
-        turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAlliance);
+        turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAllianceNear);
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(new Pose2D(DistanceUnit.INCH,
+        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
         telemetry.addLine("initializing pedro pathing follower");
@@ -559,7 +559,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
     {
         //pedro pos is in Radian
         Pose p = follower.getPose();
-        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+        DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
     }
 
@@ -570,7 +570,7 @@ public class RedNearNoIndexingAuto extends LinearOpMode{
         telemetry.addData("Y", p.getY());
         telemetry.addData("Heading",  Math.toDegrees(p.getHeading()));
 
-        DecodeBlackBoard.saveAutoEndPose(new Pose2D(DistanceUnit.INCH,
+        DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 p.getX(), p.getY(), AngleUnit.DEGREES, Math.toDegrees(p.getHeading())));
 
         telemetry.update();

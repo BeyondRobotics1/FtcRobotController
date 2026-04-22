@@ -138,12 +138,11 @@ public class DecodeTeleOpFar extends LinearOpMode {
         artifactColors[0] = artifactColors[1] = artifactColors[2] = Color.WHITE;
 
 
-
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
             if(robotPose == null)
-                robotPose = DecodeBlackBoard.robotAutoEndPose();
+                robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
 
             if(isBlueTeleOp)
                 telemetry.addLine("TeleOp FAR Selected: BLUE BLUE BLUE");
@@ -198,9 +197,6 @@ public class DecodeTeleOpFar extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
-
-            telemetry.addLine("Initializing shooter");
-            shooter = new Shooter(hardwareMap, this, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
@@ -210,10 +206,10 @@ public class DecodeTeleOpFar extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
-
-            telemetry.addLine("Initializing shooter");
-            shooter = new Shooter(hardwareMap, this, alliance);
         }
+
+        telemetry.addLine("Initializing shooter");
+        shooter = new Shooter(hardwareMap, this, alliance);
 
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());

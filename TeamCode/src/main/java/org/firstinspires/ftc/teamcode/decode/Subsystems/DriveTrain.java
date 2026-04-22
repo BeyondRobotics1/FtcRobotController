@@ -105,6 +105,7 @@ public class DriveTrain {
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        /*
         colorSensorLeft = hardwareMap.get(NormalizedColorSensor.class, "colorLeft");
         colorSensorRight = hardwareMap.get(NormalizedColorSensor.class, "colorRight");
 
@@ -120,6 +121,7 @@ public class DriveTrain {
 
         colorSensorLeft.setGain(2.0f);
         colorSensorRight.setGain(2.0f);
+        */
     }
 
     //robot centric
