@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near Indexing", group = "Decode")
+@Autonomous(name = "Blue Near Indexing Auto", group = "Decode")
 
 public class BlueNearIndexingAuto extends LinearOpMode {
 
@@ -112,8 +112,6 @@ public class BlueNearIndexingAuto extends LinearOpMode {
 
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
         DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
@@ -181,10 +179,12 @@ public class BlueNearIndexingAuto extends LinearOpMode {
             //displayPose();
 
             shooter.doFlyWheelVelocityPID();
+
+            saveAutoState();
         }
 
         //in the end save current robot pose into black board
-        saveAutoState();
+        //saveAutoState();
     }
 
     private void autonomousPathUpdate() {

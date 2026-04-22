@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 import java.util.List;
 
 @Disabled
-@Autonomous(name = "Blue Far Loading Zone", group = "Decode")
+@Autonomous(name = "Blue Far Loading Zone Auto", group = "Decode")
 public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
     //Hardware
@@ -98,9 +98,6 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         turret.resetTurretHeading();
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
-
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
 
@@ -165,10 +162,12 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
             displayPose();
 
             shooter.doFlyWheelVelocityPID();
+
+            saveAutoState();
         }
 
         //in the end save current robot pose into black board
-        saveAutoState();
+        //saveAutoState();
     }
 
     private void autonomousPathUpdate() {

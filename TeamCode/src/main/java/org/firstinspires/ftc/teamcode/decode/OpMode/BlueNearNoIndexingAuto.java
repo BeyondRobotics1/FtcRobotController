@@ -129,8 +129,6 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
         turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceNear);
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
         DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
@@ -196,10 +194,12 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
             //displayPose();
 
             shooter.doFlyWheelVelocityPID();
+
+            saveAutoState();
         }
 
         //in the end save current robot pose into black board
-        saveAutoState();
+        //saveAutoState();
     }
 
     private void autonomousPathUpdate() {

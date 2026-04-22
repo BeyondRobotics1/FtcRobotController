@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Near Indexing", group = "Decode")
+@Autonomous(name = "Red Near Indexing Auto", group = "Decode")
 public class RedNearIndexingAuto extends LinearOpMode {
 
     //wait time in ms
@@ -112,9 +112,6 @@ public class RedNearIndexingAuto extends LinearOpMode {
 
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
-
         telemetry.addLine("initializing pedro pathing follower");
         pathTimer = new Timer();
 
@@ -179,10 +176,12 @@ public class RedNearIndexingAuto extends LinearOpMode {
             //displayPose();
 
             shooter.doFlyWheelVelocityPID();
+
+            saveAutoState();
         }
 
         //in the end save current robot pose into black board
-        saveAutoState();
+        //saveAutoState();
     }
 
 

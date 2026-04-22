@@ -65,9 +65,9 @@ public class FlyWheelPIDController extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive())
         {
 
-
-            if(targetSpeed > 0.5)
-                kI = 0.3;
+//
+//            if(targetSpeed > 0.5)
+//                kI = 0.3;
 
            // if(gamepad1.a) {
 

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Red Far Spike", group = "Decode")
+@Autonomous(name = "Red Far Spike Auto", group = "Decode")
 public class RedFarSpikeAuto extends LinearOpMode {
     //Hardware
     private Shooter shooter;
@@ -107,8 +107,6 @@ public class RedFarSpikeAuto extends LinearOpMode {
         turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAllianceFar);
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
         DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
@@ -160,15 +158,15 @@ public class RedFarSpikeAuto extends LinearOpMode {
 
         turret.setServoPosition(Turret.servoPositionFarAutoShootingRedAlliance);
 
-//        shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
-//        shooter.setPower(0.9);
-//        sleep(150);//Flywheel need time to rotate up (0.4, 700)
-//
-//        //let the PID work for a while
-//        for (int i = 0; i < 40; i++) {
-//            shooter.doFlyWheelVelocityPID();
-//            sleep(15);//100
-//        }
+        shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
+        shooter.setPower(0.9);
+        sleep(150);//Flywheel need time to rotate up (0.4, 700)
+
+        //let the PID work for a while
+        for (int i = 0; i < 40; i++) {
+            shooter.doFlyWheelVelocityPID();
+            sleep(15);//100
+        }
 
 
         setPathState(0);
@@ -181,18 +179,20 @@ public class RedFarSpikeAuto extends LinearOpMode {
 
             //displayPose();
 
-            //shooter.doFlyWheelVelocityPID();
+            shooter.doFlyWheelVelocityPID();
+
+            saveAutoState();
         }
 
         //in the end save current robot pose into black board
-        saveAutoState();
+        //saveAutoState();
     }
 
     private void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
                 follower.followPath(scorePreload);
-                setPathState(900);
+                setPathState(1);
                 break;
             case 1:
                 if (!follower.isBusy()) {

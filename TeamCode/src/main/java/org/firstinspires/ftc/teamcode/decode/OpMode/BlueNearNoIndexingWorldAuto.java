@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "Blue Near NO Indexing", group = "Decode")
+@Autonomous(name = "Blue Near NO Indexing Auto", group = "Decode")
 public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
     //Hardware
@@ -128,8 +128,6 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
         turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceNear);
         telemetry.addLine("hardware initialization completed");
 
-        DecodeBlackBoard.saveDefaultAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
-                parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
         DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
                 parkPose.getX(), parkPose.getY(), AngleUnit.DEGREES, Math.toDegrees(parkPose.getHeading())));
 
@@ -243,10 +241,12 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             //displayPose();
 
             shooter.doFlyWheelVelocityPID();
+
+            saveAutoState();
         }
 
         //in the end save current robot pose into black board
-        saveAutoState();
+        //saveAutoState();
     }
 
 

@@ -29,19 +29,19 @@ public class Shooter {
     PIDController controller;
 
     //
-    public static double kP = 0.02; //0.002
-    public static double kI = 0.35; //0.25
+    public static double kP = 0.01; //0.02
+    public static double kI = 0.1; //0.35
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.525;//0.535
-    double targetSpeedFarFar = 0.435;//0.445
-    double targetSpeedFar = 0.415;//0.425
-    double targetSpeedMedium = 0.40;//0.405
+    double targetSpeedOutZone = 0.535;//0.525
+    double targetSpeedFarFar = 0.43;//0.435
+    double targetSpeedFar = 0.410;//0.415
+    double targetSpeedMedium = 0.395;//0.395
     double targetSpeedNear = 0.375;//0.395
 
-    double targetSpeedAutoFar = 0.505;//Shooting speed for far auto
+    double targetSpeedAutoFar = 0.525;//Shooting speed for far auto
     double targetSpeedAutoNear = 0.407;//Shooting power for near auto
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
@@ -95,10 +95,10 @@ public class Shooter {
 
         //far zone use different kI
         if (targetSpeed > 0.5) {
-            kP = 0.035;
+            kI = 0.15;
         }
         else {
-            kP = 0.02;
+            kI = 0.1;
         }
 
         controller.setPID(kP, kI, kD);

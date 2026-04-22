@@ -110,7 +110,6 @@ public class DecodeTeleOpFar extends LinearOpMode {
 
         telemetry.addLine("hardware initialization completed");
 
-
         telemetry.addLine("initializing LynxModule");
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -165,23 +164,6 @@ public class DecodeTeleOpFar extends LinearOpMode {
                 isBlueTeleOp = true;
             }
 
-            if(isBlueTeleOp)
-            {
-                //no pose read
-                if(robotPose.getX(DistanceUnit.INCH) < 10.)
-                {
-                    robotPose = DecodeBlackBoard.BLUE_FAR_PARK_POSE;
-                }
-            }
-            else
-            {
-                //no pose read
-                if(robotPose.getX(DistanceUnit.INCH) < 10.)
-                {
-                    robotPose = DecodeBlackBoard.RED_FAR_PARK_POSE;
-                }
-            }
-
             telemetry.update();
         }
 
@@ -190,6 +172,13 @@ public class DecodeTeleOpFar extends LinearOpMode {
 
         int alliance;
         if(isBlueTeleOp) {
+
+            //no pose read
+            if(robotPose == null || robotPose.getX(DistanceUnit.INCH) < 10.)
+            {
+                robotPose = DecodeBlackBoard.BLUE_FAR_PARK_POSE;
+            }
+
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
                     robotPose,
@@ -199,6 +188,12 @@ public class DecodeTeleOpFar extends LinearOpMode {
                     true, false);
         }
         else {
+            //no pose read
+            if(robotPose == null || robotPose.getX(DistanceUnit.INCH) < 10.)
+            {
+                robotPose = DecodeBlackBoard.RED_FAR_PARK_POSE;
+            }
+
             alliance = DecodeBlackBoard.RED;
             turret = new Turret(hardwareMap, this,
                     robotPose,

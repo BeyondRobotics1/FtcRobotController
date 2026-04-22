@@ -166,23 +166,6 @@ public class DecodeTeleOpNear extends LinearOpMode {
                 isBlueTeleOp = true;
             }
 
-            if(isBlueTeleOp)
-            {
-                //no pose read
-                if(robotPose.getX(DistanceUnit.INCH) < 10.)
-                {
-                    robotPose = DecodeBlackBoard.BLUE_NEAR_PARK_POSE;
-                }
-            }
-            else
-            {
-                //no pose read
-                if(robotPose.getX(DistanceUnit.INCH) < 10.)
-                {
-                    robotPose = DecodeBlackBoard.RED_NEAR_PARK_POSE;
-                }
-            }
-
             telemetry.update();
         }
 
@@ -191,6 +174,13 @@ public class DecodeTeleOpNear extends LinearOpMode {
 
         int alliance;
         if(isBlueTeleOp) {
+
+            //no pose read
+            if(robotPose == null || robotPose.getX(DistanceUnit.INCH) < 10.)
+            {
+                robotPose = DecodeBlackBoard.BLUE_NEAR_PARK_POSE;
+            }
+
             alliance = DecodeBlackBoard.BLUE;
             turret = new Turret(hardwareMap, this,
                     robotPose,
@@ -200,6 +190,12 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     true, false);
         }
         else {
+            //no pose read
+            if(robotPose == null || robotPose.getX(DistanceUnit.INCH) < 10.)
+            {
+                robotPose = DecodeBlackBoard.RED_NEAR_PARK_POSE;
+            }
+
             alliance = DecodeBlackBoard.RED;
             turret = new Turret(hardwareMap, this,
                     robotPose,

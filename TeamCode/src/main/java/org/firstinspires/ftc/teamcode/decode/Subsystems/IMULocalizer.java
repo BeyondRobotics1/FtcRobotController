@@ -51,13 +51,13 @@ public class IMULocalizer {
     public static final double BLUE_X5 = 84;
     public static final double BLUE_Y5 = 32;//39;
 
-    public static final double RED_FAR_FAR_ZONE_DISTANCE = 83;//80;
+    public static final double RED_FAR_FAR_ZONE_DISTANCE = 82;//80;
     public static final double RED_FAR_ZONE_DISTANCE = 66;//80;
-    public static final double RED_MEDIUM_ZONE_DISTANCE = 44;//60;
+    public static final double RED_MEDIUM_ZONE_DISTANCE = 52;//44;
 
-    public static final double BLUE_FAR_FAR_ZONE_DISTANCE = 83;//80;
+    public static final double BLUE_FAR_FAR_ZONE_DISTANCE = 82;//80;
     public static final double BLUE_FAR_ZONE_DISTANCE = 66;//80;
-    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 44;//60;
+    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 52;//44;
 
     //hardware
     LinearOpMode mode;
