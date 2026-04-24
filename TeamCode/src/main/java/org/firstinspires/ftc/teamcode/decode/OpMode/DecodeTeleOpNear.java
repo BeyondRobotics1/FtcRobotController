@@ -366,19 +366,17 @@ public class DecodeTeleOpNear extends LinearOpMode {
         }
 
         //use gamepad2 x button to disable or enable auto aiming
-        if(gamepad2.xWasPressed())
+        if(gamepad2.xWasPressed()) {
             enableAutoAiming = !enableAutoAiming;
+
+            if (!enableAutoAiming)
+                turret.resetTurretHeading();
+        }
 
         if(enableAutoAiming)
             turret.autoAim(true);
         else {
             turret.autoAim(false);
-
-            //when auto aim is diable, reset the turret heading to center
-            //and force to use zone 3 (FAR) shooting speed
-
-
-            turret.resetTurretHeading();
         }
     }
 
@@ -460,6 +458,11 @@ public class DecodeTeleOpNear extends LinearOpMode {
                 isShooterOn = false;
                 enableAutoAiming = false;
                 enableAutoShootingSpeed =false;
+
+                if(isBlueTeleOp)
+                    turret.setServoPosition(Turret.servoPositionLeft);
+                else
+                    turret.setServoPosition(Turret.servoPositionRight);
 
                 lift.releaseHolder(true);
                 lift.engageClutch(true);
