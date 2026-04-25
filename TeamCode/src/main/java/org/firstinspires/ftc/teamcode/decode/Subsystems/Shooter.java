@@ -29,15 +29,15 @@ public class Shooter {
     PIDController controller;
 
     //
-    public static double kP = 0.01; //0.02
-    public static double kI = 0.1; //0.35
+    public static double kP = 0.01; //0.01
+    public static double kI = 0.1; //0.1
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.535;//0.525
-    double targetSpeedFarFar = 0.43;//0.435
-    double targetSpeedFar = 0.410;//0.415
+    double targetSpeedOutZone = 0.535;//0.535
+    double targetSpeedFarFar = 0.43;//0.43
+    double targetSpeedFar = 0.41;//0.41
     double targetSpeedMedium = 0.395;//0.395
     double targetSpeedNear = 0.375;//0.395
 

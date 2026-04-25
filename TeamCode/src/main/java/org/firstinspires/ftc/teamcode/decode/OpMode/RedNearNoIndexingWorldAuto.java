@@ -124,11 +124,10 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
         telemetry.addLine("Initializing lift");
         lift = new Lift(hardwareMap);
 
-        turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
+        turret = new Turret(hardwareMap, this, null, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
-                false,
                 true, true);
         turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAllianceNear);
         telemetry.addLine("hardware initialization completed");

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
@@ -19,10 +21,13 @@ public class IMULocalizerTest extends LinearOpMode {
     private boolean isBlueTeleOp = true;
     Pose2D robotPose;
     IMULocalizer localizer;
+    private Follower follower;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
+
+        follower = Constants.createFollower(hardwareMap);
 
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
 
@@ -71,16 +76,15 @@ public class IMULocalizerTest extends LinearOpMode {
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
 
-            localizer = new IMULocalizer(hardwareMap, this, DecodeBlackBoard.BLUE_NEAR_START_POSE,
+            localizer = new IMULocalizer(hardwareMap, this, follower, DecodeBlackBoard.BLUE_NEAR_START_POSE,
                     DecodeBlackBoard.BLUE_TARGET_POSE, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
 
-            localizer = new IMULocalizer(hardwareMap, this, DecodeBlackBoard.RED_NEAR_START_POSE,
+            localizer = new IMULocalizer(hardwareMap, this, follower, DecodeBlackBoard.RED_NEAR_START_POSE,
                     DecodeBlackBoard.RED_TARGET_POSE, alliance);
         }
-
 
 
         if(isBlueTeleOp)
@@ -92,16 +96,16 @@ public class IMULocalizerTest extends LinearOpMode {
 
         if(isStopRequested()) return;
 
-        sleep(1000);
-
-        boolean isInitialPinpointPositionSet = false;
+//        sleep(1000);
+//
+//        boolean isInitialPinpointPositionSet = false;
 
         while(!isStopRequested() && opModeIsActive()) {
 
-            if (!isInitialPinpointPositionSet) {
-                localizer.setIMUPoseToRobotStartPose();
-                isInitialPinpointPositionSet = true;
-            }
+//            if (!isInitialPinpointPositionSet) {
+//                localizer.setIMUPoseToRobotStartPose();
+//                isInitialPinpointPositionSet = true;
+//            }
 
             hubs.forEach(LynxModule::clearBulkCache);
 

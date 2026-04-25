@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.decode.Subsystems;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -62,7 +64,8 @@ public class IMULocalizer {
     //hardware
     LinearOpMode mode;
 
-    GoBildaPinpointDriver pinpoint;
+    //GoBildaPinpointDriver pinpoint;
+    private Follower follower;
 
     // target x, y coordinates in INCH
     double x0, y0;
@@ -78,16 +81,18 @@ public class IMULocalizer {
     RobotZone robotZone = RobotZone.NOT_IN_SHOOTING_ZONE;
 
     public IMULocalizer(HardwareMap hardwareMap, LinearOpMode mode,
+                        Follower follower,
                         Pose2D robotPose, Pose2D targetPose,
                         int alliance)
     {
         this.alliance = alliance;
         this.mode = mode;
+        this.follower = follower;
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-
-        // Configure the sensor
-        configurePinpoint();
+//        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+//
+//        // Configure the sensor
+//        configurePinpoint();
 
         // Set the location of the robot - this should be the place you are starting the robot from
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
@@ -96,7 +101,10 @@ public class IMULocalizer {
                 robotPose.getY(DistanceUnit.INCH),
                 AngleUnit.DEGREES,
                 robotPose.getHeading(AngleUnit.DEGREES));
-        pinpoint.setPosition(robotPose);
+
+        setIMUPoseToRobotStartPose();
+
+        //pinpoint.setPosition(robotPose);
 
         //target coordinates
         x0 = targetPose.getX(DistanceUnit.INCH);
@@ -133,29 +141,35 @@ public class IMULocalizer {
 
     public void setIMUPoseToRobotStartPose()
     {
-        if(pinpoint != null)
-            pinpoint.setPosition(startPose);
+        if(follower != null) {
+            follower.setStartingPose(new Pose(startPose.getX(DistanceUnit.INCH),
+                    startPose.getY(DistanceUnit.INCH), startPose.getHeading(AngleUnit.RADIANS)));
+            follower.update();
+        }
     }
 
     public void setIMUPose(Pose2D robotPose)
     {
-        if(pinpoint != null)
-            pinpoint.setPosition(robotPose);
+        if(follower != null) {
+            follower.setPose(new Pose(robotPose.getX(DistanceUnit.INCH),
+                    robotPose.getY(DistanceUnit.INCH), robotPose.getHeading(AngleUnit.RADIANS)));
+            follower.update();
+        }
     }
 
     public boolean update()
     {
-        if(pinpoint == null)
+        if(follower == null)
             return false;
 
         // read from odometry pinpoint
-        pinpoint.update();
+        follower.update();
 
-        Pose2D pose2D = pinpoint.getPosition();
+        Pose p = follower.getPose();
 
-        x = pose2D.getX(DistanceUnit.INCH);
-        y = pose2D.getY(DistanceUnit.INCH);
-        botHeadingDegrees = pose2D.getHeading(AngleUnit.DEGREES);
+        x = p.getX();
+        y = p.getY();
+        botHeadingDegrees = Math.toDegrees(p.getHeading());
 
         //calculate distance for auto shooting speed adjustment
         robotDistanceToGoal = Math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
@@ -284,46 +298,4 @@ public class IMULocalizer {
             }
         }
     }
-
-    public void configurePinpoint(){
-        /*
-         *  Set the odometry pod positions relative to the point that you want the position to be measured from.
-         *
-         *  The X pod offset refers to how far sideways from the tracking point the X (forward) odometry pod is.
-         *  Left of the center is a positive number, right of center is a negative number.
-         *
-         *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
-         *  Forward of center is a positive number, backwards is a negative number.
-         */
-        //106, -143.6
-        pinpoint.setOffsets(118, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-
-        /*
-         * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
-         * the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.
-         * If you're using another kind of odometry pod, uncomment setEncoderResolution and input the
-         * number of ticks per unit of your odometry pod.  For example:
-         *     pinpoint.setEncoderResolution(13.26291192, DistanceUnit.MM);
-         */
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-
-        /*
-         * Set the direction that each of the two odometry pods count. The X (forward) pod should
-         * increase when you move the robot forward. And the Y (strafe) pod should increase when
-         * you move the robot to the left.
-         */
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                GoBildaPinpointDriver.EncoderDirection.REVERSED);
-
-        /*
-         * Before running the robot, recalibrate the IMU. This needs to happen when the robot is stationary
-         * The IMU will automatically calibrate when first powered on, but recalibrating before running
-         * the robot is a good idea to ensure that the calibration is "good".
-         * resetPosAndIMU will reset the position to 0,0,0 and also recalibrate the IMU.
-         * This is recommended before you run your autonomous, as a bad initial calibration can cause
-         * an incorrect starting value for x, y, and heading.
-         */
-        pinpoint.resetPosAndIMU();
-    }
-
 }

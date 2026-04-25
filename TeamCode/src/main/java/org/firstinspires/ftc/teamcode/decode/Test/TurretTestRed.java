@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @TeleOp(name = "Turret Tuner Red", group = "Decode Test")
 public class TurretTestRed extends LinearOpMode {
@@ -14,17 +16,20 @@ public class TurretTestRed extends LinearOpMode {
     boolean isInitialPinpointPositionSet;
     boolean fieldCentric = true;
 
+    Follower follower;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         //driveTrain = new DriveTrain(hardwareMap, this, false);
 
-        isInitialPinpointPositionSet = false;
-        Turret turret = new Turret(hardwareMap, this,
+        follower = Constants.createFollower(hardwareMap);
+
+
+        Turret turret = new Turret(hardwareMap, this, follower,
                 DecodeBlackBoard.RED_FAR_RESET_POSE,//new Pose2D(DistanceUnit.INCH, 8, 111, AngleUnit.DEGREES, 0),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
-                true,
                 true, false);
 
 //        double startingAngle = turret.getAnalogStartingAngle();
@@ -35,13 +40,15 @@ public class TurretTestRed extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+ //       isInitialPinpointPositionSet = false;
+
         while (!isStopRequested() && opModeIsActive()) {
 
-            if(!isInitialPinpointPositionSet)
-            {
-                turret.setIMUPoseToRobotStartPose();
-                isInitialPinpointPositionSet = true;
-            }
+//            if(!isInitialPinpointPositionSet)
+//            {
+//                turret.setIMUPoseToRobotStartPose();
+//                isInitialPinpointPositionSet = true;
+//            }
 
 //            if(gamepad1.left_bumper)
 //            {

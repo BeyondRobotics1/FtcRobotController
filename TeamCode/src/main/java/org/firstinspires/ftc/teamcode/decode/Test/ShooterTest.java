@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 
 import android.graphics.Color;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
@@ -42,6 +44,8 @@ public class ShooterTest extends LinearOpMode {
         Gamepad.RumbleEffect nearRumbleEffect;    // Use to build a custom rumble sequence
         Gamepad.RumbleEffect mediumRumbleEffect;
         Gamepad.RumbleEffect farRumbleEffect;
+
+        private Follower follower;
 
         //status
         private Timer actionTimer;
@@ -72,6 +76,8 @@ public class ShooterTest extends LinearOpMode {
             telemetry.addLine("Initializing trigger");
             trigger = new Trigger(hardwareMap);
             trigger.close();
+
+            follower = Constants.createFollower(hardwareMap);
 
             telemetry.addLine("hardware initialization completed");
 
@@ -121,11 +127,10 @@ public class ShooterTest extends LinearOpMode {
             int alliance;
             if (isBlueTeleOp) {
                 alliance = DecodeBlackBoard.BLUE;
-                turret = new Turret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
-                        true,
                         true, false);
 
                 telemetry.addLine("Initializing shooter");
@@ -133,11 +138,10 @@ public class ShooterTest extends LinearOpMode {
 
             } else {
                 alliance = DecodeBlackBoard.RED;
-                turret = new Turret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.RED_FAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
-                        true,
                         true, false);
                 telemetry.addLine("Initializing shooter");
                 shooter = new Shooter(hardwareMap, this, alliance);
@@ -224,8 +228,14 @@ public class ShooterTest extends LinearOpMode {
                         else
                             intake.intake(0.9);
                     }
-                    else
-                        intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed
+                    else {
+                        Shooter.ShootingLocation shooterPosition = shooter.getShooterPosition();
+
+                        if(shooterPosition != Shooter.ShootingLocation.OUT_ZONE)
+                            intake.setIntakeMode(Intake.IntakeMode.FEED); //shoot at full speed
+                        else
+                            intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED); //shoot at full speed
+                    }
                 }
                 else
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);

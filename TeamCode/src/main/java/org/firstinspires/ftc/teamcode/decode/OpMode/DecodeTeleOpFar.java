@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.decode.OpMode;
 
 import android.graphics.Color;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
@@ -54,6 +56,8 @@ public class DecodeTeleOpFar extends LinearOpMode {
 
     Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect strongRumbleEffect;
+
+    private Follower follower;
 
     //status
     private Timer actionTimer;
@@ -107,6 +111,8 @@ public class DecodeTeleOpFar extends LinearOpMode {
 
         shootAutoCompleteMode = ShootAutoCompleteMode.COMPLETED;
         liftMode = LiftMode.NONE;
+
+        follower = Constants.createFollower(hardwareMap);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -180,11 +186,10 @@ public class DecodeTeleOpFar extends LinearOpMode {
             }
 
             alliance = DecodeBlackBoard.BLUE;
-            turret = new Turret(hardwareMap, this,
+            turret = new Turret(hardwareMap, this, follower,
                     robotPose,
                     DecodeBlackBoard.BLUE_TARGET_POSE,
                     alliance,
-                    true,
                     true, false);
         }
         else {
@@ -195,11 +200,10 @@ public class DecodeTeleOpFar extends LinearOpMode {
             }
 
             alliance = DecodeBlackBoard.RED;
-            turret = new Turret(hardwareMap, this,
+            turret = new Turret(hardwareMap, this, follower,
                     robotPose,
                     DecodeBlackBoard.RED_TARGET_POSE,
                     alliance,
-                    true,
                     true, false);
         }
 
@@ -358,7 +362,7 @@ public class DecodeTeleOpFar extends LinearOpMode {
         if(gamepad2.xWasPressed()) {
             enableAutoAiming = !enableAutoAiming;
 
-            if (!enableAutoAiming)
+            if(!enableAutoAiming)
                 turret.resetTurretHeading();
         }
 
@@ -449,9 +453,9 @@ public class DecodeTeleOpFar extends LinearOpMode {
                 enableAutoShootingSpeed =false;
 
                 if(isBlueTeleOp)
-                    turret.setServoPosition(Turret.servoPositionLeft);
+                    turret.setServoPosition(1.0);
                 else
-                    turret.setServoPosition(Turret.servoPositionRight);
+                    turret.setServoPosition(0.0);
 
                 lift.releaseHolder(true);
                 lift.engageClutch(true);

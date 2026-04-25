@@ -28,6 +28,9 @@ public class TurretServoTest extends LinearOpMode {
         servoLeft = hardwareMap.get(Servo.class, "turretLeft");
         servoRight = hardwareMap.get(Servo.class, "turretRight");
 
+        servoLeft.setDirection(Servo.Direction.REVERSE);
+        servoRight.setDirection(Servo.Direction.REVERSE);
+
         servoLeft.setPosition(0.5);
         servoRight.setPosition(0.5);
 

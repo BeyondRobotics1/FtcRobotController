@@ -120,11 +120,10 @@ public class BlueNearNoIndexingAuto extends LinearOpMode {
         telemetry.addLine("Initializing lift");
         lift = new Lift(hardwareMap);
 
-        turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
+        turret = new Turret(hardwareMap, this, null,new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
-                false,
                 true, true);
         turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceNear);
         telemetry.addLine("hardware initialization completed");

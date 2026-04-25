@@ -2,6 +2,12 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 
 import android.graphics.Color;
 
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -21,8 +27,10 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @TeleOp(name = "Decode TeleOp Test", group = "Decode Test")
 public class TeleOpTest extends LinearOpMode {
@@ -56,6 +64,18 @@ public class TeleOpTest extends LinearOpMode {
 
     Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect strongRumbleEffect;
+
+    private Follower follower;
+    private final Pose openGateSetupPoseBlue = new Pose(24, 66, Math.toRadians(170)); //26, 60, 170
+    private final Pose openGateStartPoseBlue = new Pose(17, 63, Math.toRadians(160)); //17, 58, 160 //gate position
+    private final Pose openGatePoseBlue = new Pose(12, 63, Math.toRadians(150)); //12, 58, 150 //gate position
+
+    private final Pose openGateSetupPoseRed = new Pose(24, 83, Math.toRadians(-170)); //26, 60, 170
+    private final Pose openGateStartPoseRed = new Pose(19, 83, Math.toRadians(-160)); //17, 58, 160 //gate position
+    private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //12, 58, 150 //gate position
+
+    private boolean automatedDrive;
+    private Supplier<PathChain> pathChain;
 
     //status
     private Timer actionTimer;
@@ -109,6 +129,8 @@ public class TeleOpTest extends LinearOpMode {
 
         shootAutoCompleteMode = DecodeTeleOpNear.ShootAutoCompleteMode.COMPLETED;
         liftMode = DecodeTeleOpNear.LiftMode.NONE;
+
+        follower = Constants.createFollower(hardwareMap);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -189,13 +211,11 @@ public class TeleOpTest extends LinearOpMode {
             telemetry.addLine("Gamepad1.X: TeleOp NEAR");
             telemetry.addLine("Gamepad1.Y: TeleOp FAR");
             telemetry.addLine("-----------------------");
-            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
-            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
-
+            telemetry.addData("Start X (Inch):", robotPose.getX(DistanceUnit.INCH));
+            telemetry.addData("Start Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+            telemetry.addData("Start Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
             telemetry.update();
-
         }
 
         gameTimer.resetTimer();
@@ -206,61 +226,77 @@ public class TeleOpTest extends LinearOpMode {
             alliance = DecodeBlackBoard.BLUE;
 
             if(is_near)
-                turret = new Turret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.BLUE_NEAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
-                        true,
                         true, false);
             else
-                turret = new Turret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
-                        true,
                         true, false);
-
-            telemetry.addLine("Initializing shooter");
-            shooter = new Shooter(hardwareMap, this, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
             if(is_near)
-                turret = new Turret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.RED_NEAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
-                        true,
                         true, false);
             else
-                turret = new Turret(hardwareMap, this,
+                turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.RED_FAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
-                        true,
                         true, false);
 
-            telemetry.addLine("Initializing shooter");
-            shooter = new Shooter(hardwareMap, this, alliance);
+
         }
+
+        telemetry.addLine("Initializing shooter");
+        shooter = new Shooter(hardwareMap, this, alliance);
 
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
+
+        if(isBlueTeleOp)
+        pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseBlue)))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseBlue.getHeading(), 0.8))
+                .addPath(new Path(new BezierLine(openGateSetupPoseBlue, openGateStartPoseBlue)))
+                .setLinearHeadingInterpolation(openGateSetupPoseBlue.getHeading(), openGateStartPoseBlue.getHeading())
+                .addPath(new Path(new BezierLine(openGateStartPoseBlue, openGatePoseBlue)))
+                .setLinearHeadingInterpolation(openGateStartPoseBlue.getHeading(), openGatePoseBlue.getHeading())
+                .build();
+        else
+            pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseRed)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseRed.getHeading(), 0.8))
+                    .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
+                    .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
+                    .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
+                    .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
+                    .build();
+
+
 
         telemetry.update();
 
         if(isStopRequested()) return;
 
-        //let the flywheel spin for 500ms so
-        //the PID controller won't draw too much batteries
-        shooter.setPower(0.5);
-        sleep(150);
-        //sleep(200);
-        //let the PID work for a while
-        for (int i = 0; i < 60; i++) {
-            shooter.doFlyWheelVelocityPID();
-            sleep(15);//100
-        }
+//        //let the flywheel spin for 500ms so
+//        //the PID controller won't draw too much batteries
+//        shooter.setPower(0.5);
+//        sleep(150);
+//        //sleep(200);
+//        //let the PID work for a while
+//        for (int i = 0; i < 20; i++) { //60
+//            shooter.doFlyWheelVelocityPID();
+//            sleep(15);//100
+//        }
 
         boolean isEndGame = false;
 
@@ -268,13 +304,15 @@ public class TeleOpTest extends LinearOpMode {
 
         isIntakeOn = true;
 
+        follower.startTeleopDrive(true);
+
         while(!isStopRequested() && opModeIsActive())
         {
-            if(!isInitialPinpointPositionSet)
-            {
-                turret.setIMUPoseToRobotStartPose();
-                isInitialPinpointPositionSet = true;
-            }
+//            if(!isInitialPinpointPositionSet)
+//            {
+//                turret.setIMUPoseToRobotStartPose();
+//                isInitialPinpointPositionSet = true;
+//            }
 
             hubs.forEach(LynxModule::clearBulkCache);
 
@@ -291,8 +329,8 @@ public class TeleOpTest extends LinearOpMode {
             //
             turretOp();
 
-            //operate the shooter
-            shootOp();
+            ////operate the shooter
+            //shootOp();
 
             //operate the lift
             //if(isEndGame)
@@ -307,7 +345,27 @@ public class TeleOpTest extends LinearOpMode {
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
             if(liftMode == DecodeTeleOpNear.LiftMode.NONE && !gamepad1.dpad_down) {
-               driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+               //driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+                follower.setTeleOpDrive(
+                        -gamepad1.left_stick_y, //-
+                        -gamepad1.left_stick_x, //-
+                        -gamepad1.right_stick_x * 0.85, //-
+                        true // Robot Centric //true
+                );
+
+            }
+
+
+            if (gamepad1.aWasPressed()) {
+
+                follower.followPath(pathChain.get(), 0.9, false);
+                automatedDrive = true;
+            }
+            //Stop automated following if the follower is done
+            if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
+                follower.startTeleopDrive(true);
+                automatedDrive = false;
             }
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
@@ -509,10 +567,9 @@ public class TeleOpTest extends LinearOpMode {
                 enableAutoShootingSpeed =false;
 
                 if(isBlueTeleOp)
-                    turret.setServoPosition(Turret.servoPositionLeft);
+                    turret.setServoPosition(1.0);
                 else
-                    turret.setServoPosition(Turret.servoPositionRight);
-
+                    turret.setServoPosition(0.0);
 
                 lift.releaseHolder(true);
                 lift.engageClutch(true);

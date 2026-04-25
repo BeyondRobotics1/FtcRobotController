@@ -122,7 +122,7 @@ public class Intake {
         }
         else if (intakeMode == IntakeMode.MEDIUM_FEED)
         {
-            intake(0.8);
+            intake(0.9);
         }
         else {
             intakeMotor.setPower(0);

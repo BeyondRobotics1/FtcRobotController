@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -57,8 +58,11 @@ public class Turret {
     public static double servoPositionFarAutoShootingBlueAlliance = 0.275;
 
     //Limelight 3A auto aiming target degree of Tx
-    public static double TARGET_ANGLE_DEGREE_RED = 0; //0
-    public static double TARGET_ANGLE_DEGREE_BLUE = 6.0; //6
+    public static double TARGET_ANGLE_DEGREE_RED_NEAR = -2; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 4; //6
+
+    public static double TARGET_ANGLE_DEGREE_RED_FAR = 0; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 0; //6
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;
@@ -79,9 +83,9 @@ public class Turret {
     public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
+                  Follower follower,
                   Pose2D robotPose, Pose2D targetPose,
                   int alliance, //DecodeBlackBoard.BLUE or DecodeBlackBoard.RED
-                  boolean usePinpoint,
                   boolean useLimeLight,
                   boolean isAuto) {
 
@@ -102,8 +106,11 @@ public class Turret {
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
 
-        if(usePinpoint) {
-            localizer = new IMULocalizer(hardwareMap, mode, robotPose, targetPose, alliance);
+        turretLeft.setDirection(Servo.Direction.REVERSE);
+        turretRight.setDirection(Servo.Direction.REVERSE);
+
+        if(follower != null) {
+            localizer = new IMULocalizer(hardwareMap, mode, follower, robotPose, targetPose, alliance);
         }
 
         // target coordinates
@@ -129,14 +136,24 @@ public class Turret {
         if(!isAuto)
         {
             if(this.alliance == DecodeBlackBoard.RED) {
-                targetAngleDegree = TARGET_ANGLE_DEGREE_RED;
+                targetAngleDegree = TARGET_ANGLE_DEGREE_RED_NEAR;
             }
             else {
-                targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE;
+                targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE_NEAR;
             }
         }
 
         setServoPosition(servoPositionMiddle);
+    }
+
+    //set the turret target angle
+    //for RED near, our turret should be a little to right
+    //for BLUE near, our turret should be a little to the left
+    //for RED far, our turret should be centered
+    //for BLUE far, our turret should be centered
+    public void setTargetAngleDegree(double targetAngleDegree)
+    {
+        Turret.targetAngleDegree = targetAngleDegree;
     }
 
     public boolean isLimeLight3ARunning()
@@ -191,6 +208,8 @@ public class Turret {
     public boolean isHeadingToGoal() {
         return isHeadingToGoal;
     }
+
+
 
     public void setIMUPoseToRobotStartPose()
     {
