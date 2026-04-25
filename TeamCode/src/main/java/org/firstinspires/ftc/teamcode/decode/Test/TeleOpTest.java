@@ -74,8 +74,15 @@ public class TeleOpTest extends LinearOpMode {
     private final Pose openGateStartPoseRed = new Pose(19, 83, Math.toRadians(-160)); //17, 58, 160 //gate position
     private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //12, 58, 150 //gate position
 
+    private final Pose shootPoseBlueFar = new Pose(83, 24, Math.toRadians(15));
+    private final Pose shootPoseRedFar = new Pose(83, 118, Math.toRadians(-15));
+
+    private final Pose liftingPoseBlue = new Pose(103, 28, Math.toRadians(90));
+    private final Pose liftingPoseRed = new Pose(103, 114.5, Math.toRadians(-90));
+
     private boolean automatedDrive;
     private Supplier<PathChain> pathChain;
+    private Supplier<PathChain> pathChainParking;
 
     //status
     private Timer actionTimer;
@@ -182,26 +189,12 @@ public class TeleOpTest extends LinearOpMode {
                     telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
                 else
                     telemetry.addLine("TeleOp FAR Selected: BLUE BLUE BLUE");
-
-                if(robotPose == null) {
-                    if(is_near)
-                        robotPose = DecodeBlackBoard.BLUE_NEAR_RESET_POSE;
-                    else
-                        robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
-                }
             }
             else {
                 if(is_near)
                     telemetry.addLine("TeleOp NEAR Selected: RED RED RED");
                 else
                     telemetry.addLine("TeleOp FAR Selected: RED RED RED");
-
-                if (robotPose == null) {
-                    if(is_near)
-                        robotPose = DecodeBlackBoard.RED_NEAR_RESET_POSE;
-                    else
-                        robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
-                }
             }
 
             telemetry.addLine("");
@@ -211,9 +204,7 @@ public class TeleOpTest extends LinearOpMode {
             telemetry.addLine("Gamepad1.X: TeleOp NEAR");
             telemetry.addLine("Gamepad1.Y: TeleOp FAR");
             telemetry.addLine("-----------------------");
-            telemetry.addData("Start X (Inch):", robotPose.getX(DistanceUnit.INCH));
-            telemetry.addData("Start Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-            telemetry.addData("Start Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+
 
             telemetry.update();
         }
@@ -225,61 +216,92 @@ public class TeleOpTest extends LinearOpMode {
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
 
-            if(is_near)
+            if(is_near) {
                 turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.BLUE_NEAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
                         true, false);
-            else
+                robotPose = DecodeBlackBoard.BLUE_NEAR_RESET_POSE;
+
+                pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                        .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseBlue)))
+                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseBlue.getHeading(), 0.8))
+                        .addPath(new Path(new BezierLine(openGateSetupPoseBlue, openGateStartPoseBlue)))
+                        .setLinearHeadingInterpolation(openGateSetupPoseBlue.getHeading(), openGateStartPoseBlue.getHeading())
+                        .addPath(new Path(new BezierLine(openGateStartPoseBlue, openGatePoseBlue)))
+                        .setLinearHeadingInterpolation(openGateStartPoseBlue.getHeading(), openGatePoseBlue.getHeading())
+                        .build();
+            }
+            else {
                 turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
                         true, false);
+                robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
+
+                pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                        .addPath(new Path(new BezierLine(follower::getPose, shootPoseBlueFar)))
+                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, shootPoseBlueFar.getHeading(), 0.8))
+                        .build();
+            }
+
+            pathChainParking= () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, liftingPoseBlue)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, liftingPoseBlue.getHeading(), 0.8))
+                    .build();
         }
         else {
             alliance = DecodeBlackBoard.RED;
-            if(is_near)
+            if(is_near) {
                 turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.RED_NEAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true, false);
-            else
+
+                robotPose = DecodeBlackBoard.RED_NEAR_RESET_POSE;
+
+                pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                        .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseRed)))
+                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseRed.getHeading(), 0.8))
+                        .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
+                        .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
+                        .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
+                        .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
+                        .build();
+
+            }
+            else {
                 turret = new Turret(hardwareMap, this, follower,
                         DecodeBlackBoard.RED_FAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true, false);
+                robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
 
+                pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                        .addPath(new Path(new BezierLine(follower::getPose, shootPoseRedFar)))
+                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, shootPoseRedFar.getHeading(), 0.8))
+                        .build();
+            }
 
+            pathChainParking= () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, liftingPoseRed)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, liftingPoseRed.getHeading(), 0.8))
+                    .build();
         }
+
+        telemetry.addData("Start X (Inch):", robotPose.getX(DistanceUnit.INCH));
+        telemetry.addData("Start Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+        telemetry.addData("Start Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this, alliance);
 
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
-
-        if(isBlueTeleOp)
-        pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseBlue)))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseBlue.getHeading(), 0.8))
-                .addPath(new Path(new BezierLine(openGateSetupPoseBlue, openGateStartPoseBlue)))
-                .setLinearHeadingInterpolation(openGateSetupPoseBlue.getHeading(), openGateStartPoseBlue.getHeading())
-                .addPath(new Path(new BezierLine(openGateStartPoseBlue, openGatePoseBlue)))
-                .setLinearHeadingInterpolation(openGateStartPoseBlue.getHeading(), openGatePoseBlue.getHeading())
-                .build();
-        else
-            pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                    .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseRed)))
-                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseRed.getHeading(), 0.8))
-                    .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
-                    .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
-                    .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
-                    .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
-                    .build();
 
 
 
@@ -300,7 +322,7 @@ public class TeleOpTest extends LinearOpMode {
 
         boolean isEndGame = false;
 
-        boolean isInitialPinpointPositionSet = false;
+        //boolean isInitialPinpointPositionSet = false;
 
         isIntakeOn = true;
 
@@ -344,7 +366,8 @@ public class TeleOpTest extends LinearOpMode {
             //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
             //            Math.toRadians(180+turret.getBotHeadingDegrees()));
             //else
-            if(liftMode == DecodeTeleOpNear.LiftMode.NONE && !gamepad1.dpad_down) {
+            if(!automatedDrive &&
+                    liftMode == DecodeTeleOpNear.LiftMode.NONE && !gamepad1.dpad_down) {
                //driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
                 follower.setTeleOpDrive(
@@ -357,13 +380,26 @@ public class TeleOpTest extends LinearOpMode {
             }
 
 
+            //button A to open gate (near) or shooting pose (far)
             if (gamepad1.aWasPressed()) {
 
-                follower.followPath(pathChain.get(), 0.9, false);
+                if(is_near)
+                    follower.followPath(pathChain.get(), 0.8, false);
+                else
+                    follower.followPath(pathChain.get(), 0.9, true);
+
                 automatedDrive = true;
             }
-            //Stop automated following if the follower is done
-            if (automatedDrive && (gamepad1.bWasPressed() || !follower.isBusy())) {
+
+            //button Y to lifting position
+            if (gamepad1.yWasPressed()) {
+                follower.followPath(pathChainParking.get(), 0.8, true);
+                automatedDrive = true;
+            }
+
+
+            //Button x to stop automated following if the follower is done
+            if (automatedDrive && (gamepad1.xWasPressed() || !follower.isBusy())) {
                 follower.startTeleopDrive(true);
                 automatedDrive = false;
             }
