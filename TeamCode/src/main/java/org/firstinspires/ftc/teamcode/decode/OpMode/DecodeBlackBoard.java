@@ -15,8 +15,8 @@ public class DecodeBlackBoard {
 
     //the IMU reset pose for FAR TeleOp
     //Robot back to the wall and align with the loading zone white tape
-    public static final Pose2D RED_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
-    public static final Pose2D BLUE_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 30.875, AngleUnit.DEGREES, 180); //133.5, 30
+    public static final Pose2D RED_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 135.5, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
+    public static final Pose2D BLUE_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 135.5, 31, AngleUnit.DEGREES, 180); //133.75, 30.875, 30.875
 
     //The IMU reset pose for NEAR TeleOp
     //Robot front to ramp and align with gate handle

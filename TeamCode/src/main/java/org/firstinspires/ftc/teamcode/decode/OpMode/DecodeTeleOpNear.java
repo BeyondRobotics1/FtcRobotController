@@ -3,6 +3,11 @@ package org.firstinspires.ftc.teamcode.decode.OpMode;
 import android.graphics.Color;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.HeadingInterpolator;
+import com.pedropathing.paths.Path;
+import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -23,6 +28,7 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @TeleOp(name = "Decode TeleOp NEAR", group = "A")
 
@@ -58,6 +64,24 @@ public class DecodeTeleOpNear extends LinearOpMode {
     Gamepad.RumbleEffect strongRumbleEffect;
 
     private Follower follower;
+    private final Pose openGateSetupPoseBlue = new Pose(24, 66, Math.toRadians(170)); //24, 66, 170
+    private final Pose openGateStartPoseBlue = new Pose(19, 63, Math.toRadians(160)); //17, 63, 160 //gate position
+    private final Pose openGatePoseBlue = new Pose(12, 63, Math.toRadians(150)); //12, 63, 150 //gate position
+
+    private final Pose openGateSetupPoseRed = new Pose(24, 83, Math.toRadians(-170)); //24, 83, -170
+    private final Pose openGateStartPoseRed = new Pose(20, 83, Math.toRadians(-160)); //19, 83, -160 //gate position
+    private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //15.5, 83, -155 //gate position
+
+
+    private final Pose liftingPoseBlue = new Pose(105, 26, Math.toRadians(90));
+    private final Pose liftingPoseRed = new Pose(105, 115.5, Math.toRadians(-90));
+
+    private boolean automatedDrive;
+    private Supplier<PathChain> pathChain;
+    private Supplier<PathChain> pathChainParking;
+
+
+
     //status
     private Timer actionTimer;
     private Timer gameTimer;
@@ -147,8 +171,7 @@ public class DecodeTeleOpNear extends LinearOpMode {
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
-            if(robotPose == null)
-                robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
+            robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
 
             if(isBlueTeleOp)
                 telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
@@ -159,10 +182,13 @@ public class DecodeTeleOpNear extends LinearOpMode {
             telemetry.addLine("WARNING WARNING: Select the right TeleOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp NEAR RED");
             telemetry.addLine("Gamepad1.B: TeleOp NEAR BLUE");
-            telemetry.addLine("-----------------------");
-            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
-            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+
+            if(robotPose != null) {
+                telemetry.addLine("-----------------------");
+                telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+                telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+                telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+            }
 
             if(gamepad1.a) {
                 isBlueTeleOp = false;
@@ -192,6 +218,21 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     DecodeBlackBoard.BLUE_TARGET_POSE,
                     alliance,
                     true, false);
+
+            pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseBlue)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseBlue.getHeading(), 0.8))
+                    .addPath(new Path(new BezierLine(openGateSetupPoseBlue, openGateStartPoseBlue)))
+                    .setLinearHeadingInterpolation(openGateSetupPoseBlue.getHeading(), openGateStartPoseBlue.getHeading())
+                    .addPath(new Path(new BezierLine(openGateStartPoseBlue, openGatePoseBlue)))
+                    .setLinearHeadingInterpolation(openGateStartPoseBlue.getHeading(), openGatePoseBlue.getHeading())
+                    .build();
+
+            pathChainParking= () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, liftingPoseBlue)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, liftingPoseBlue.getHeading(), 0.8))
+                    .build();
+
         }
         else {
             //no pose read
@@ -206,6 +247,20 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     DecodeBlackBoard.RED_TARGET_POSE,
                     alliance,
                     true, false);
+
+            pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseRed)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseRed.getHeading(), 0.8))
+                    .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
+                    .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
+                    .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
+                    .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
+                    .build();
+
+            pathChainParking= () -> follower.pathBuilder() //Lazy Curve Generation
+                    .addPath(new Path(new BezierLine(follower::getPose, liftingPoseRed)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, liftingPoseRed.getHeading(), 0.8))
+                    .build();
         }
 
         telemetry.addLine("Initializing shooter");
@@ -216,39 +271,29 @@ public class DecodeTeleOpNear extends LinearOpMode {
 
         telemetry.update();
 
-//        sleep(200);//1000
-//        turret.setIMUPoseToRobotStartPose();
-//        //telemetry.addLine("Pinpoint is reset to the park position");
-
-
         if(isStopRequested()) return;
 
         //let the flywheel spin for 1000ms so
         //the PID controller won't draw too much batteries
         shooter.setPower(0.5);
-        sleep(1000);//1000
+        sleep(200);//1000
 
-        boolean isInitialPinpointPositionSet = false;
         boolean isEndGame = false;
+
+        follower.startTeleopDrive(true);
 
         //isIntakeOn = true;
 
         while(!isStopRequested() && opModeIsActive())
         {
-            if(!isInitialPinpointPositionSet)
-            {
-                turret.setIMUPoseToRobotStartPose();
-                isInitialPinpointPositionSet = true;
-            }
-
             hubs.forEach(LynxModule::clearBulkCache);
 
-            if(isBlueTeleOp)
-                telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
-            else
-                telemetry.addLine("TeleOP NEAR Selected: RED RED RED");
-
-            telemetry.addLine("");
+//            if(isBlueTeleOp)
+//                telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
+//            else
+//                telemetry.addLine("TeleOP NEAR Selected: RED RED RED");
+//
+//            telemetry.addLine("");
 
             //operate the intake
             intakeOp();
@@ -263,23 +308,42 @@ public class DecodeTeleOpNear extends LinearOpMode {
             if(isEndGame)
                 liftOp();
 
-            ////DPAD UP to toggle field centric or robot centric driving
-            //if(gamepad1.dpadUpWasPressed())
-            //    fieldCentric = !fieldCentric;
 
-            //if(fieldCentric)
-            //    driveTrain.setPower2(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x,
-            //            Math.toRadians(180+turret.getBotHeadingDegrees()));
-            //else
-            if(liftMode == LiftMode.NONE && !gamepad1.dpad_down)
-                driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            if(!automatedDrive && liftMode == DecodeTeleOpNear.LiftMode.NONE && !gamepad1.dpad_down) {
+                //driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+                follower.setTeleOpDrive(
+                        -gamepad1.left_stick_y, //-
+                        -gamepad1.left_stick_x, //-
+                        -gamepad1.right_stick_x * 0.85, //-
+                        true // Robot Centric //true
+                );
+            }
+
+            //button A to open gate (near) or shooting pose (far)
+            if (gamepad1.aWasPressed()) {
+
+                follower.followPath(pathChain.get(), 0.9, false);
+                automatedDrive = true;
+            }
+
+            //button Y to lifting position
+            if (gamepad1.yWasPressed()) {
+                follower.followPath(pathChainParking.get(), 0.8, true);
+                automatedDrive = true;
+            }
+
+            //Button x to stop automated following if the follower is done
+            if (automatedDrive && (gamepad1.xWasPressed() || !follower.isBusy())) {
+                follower.startTeleopDrive(true);
+                automatedDrive = false;
+            }
 
             if (gameTimer.getElapsedTimeSeconds() >= 80 && rumbleEndgame == 0)  {
                 rumbleEndgame = 1;
                 gamepad1.runRumbleEffect(strongRumbleEffect);
                 gamepad2.runRumbleEffect(strongRumbleEffect);
             }
-
 
             if (gameTimer.getElapsedTimeSeconds() >= 100 && rumbleEndgame == 1)  {
                 rumbleEndgame = 2;
@@ -438,10 +502,10 @@ public class DecodeTeleOpNear extends LinearOpMode {
 
     private void liftOp()
     {
-        //gamepad 1 dpad down for auto parking till
-        //the red or blue line
-        if(gamepad1.dpad_down)
-            driveTrain.driveToLine();
+//        //gamepad 1 dpad down for auto parking till
+//        //the red or blue line
+//        if(gamepad1.dpad_down)
+//            driveTrain.driveToLine();
 
 
         if (gamepad1.dpadUpWasPressed()) {

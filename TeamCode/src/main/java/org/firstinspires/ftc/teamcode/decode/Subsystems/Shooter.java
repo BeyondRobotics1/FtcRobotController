@@ -41,7 +41,7 @@ public class Shooter {
     double targetSpeedMedium = 0.395;//0.395
     double targetSpeedNear = 0.375;//0.395
 
-    double targetSpeedAutoFar = 0.525;//Shooting speed for far auto
+    double targetSpeedAutoFar = 0.510;//Shooting speed for far auto
     double targetSpeedAutoNear = 0.407;//Shooting power for near auto
 
     //COUNTS_PER_MOTOR_REV    = 28.0;

@@ -66,19 +66,19 @@ public class TeleOpTest extends LinearOpMode {
     Gamepad.RumbleEffect strongRumbleEffect;
 
     private Follower follower;
-    private final Pose openGateSetupPoseBlue = new Pose(24, 66, Math.toRadians(170)); //26, 60, 170
-    private final Pose openGateStartPoseBlue = new Pose(17, 63, Math.toRadians(160)); //17, 58, 160 //gate position
-    private final Pose openGatePoseBlue = new Pose(12, 63, Math.toRadians(150)); //12, 58, 150 //gate position
+    private final Pose openGateSetupPoseBlue = new Pose(24, 66, Math.toRadians(170)); //24, 66, 170
+    private final Pose openGateStartPoseBlue = new Pose(19, 63, Math.toRadians(160)); //17, 63, 160 //gate position
+    private final Pose openGatePoseBlue = new Pose(12, 63, Math.toRadians(150)); //12, 63, 150 //gate position
 
-    private final Pose openGateSetupPoseRed = new Pose(24, 83, Math.toRadians(-170)); //26, 60, 170
-    private final Pose openGateStartPoseRed = new Pose(19, 83, Math.toRadians(-160)); //17, 58, 160 //gate position
-    private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //12, 58, 150 //gate position
+    private final Pose openGateSetupPoseRed = new Pose(24, 83, Math.toRadians(-170)); //24, 83, -170
+    private final Pose openGateStartPoseRed = new Pose(20, 83, Math.toRadians(-160)); //19, 83, -160 //gate position
+    private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //15.5, 83, -155 //gate position
 
     private final Pose shootPoseBlueFar = new Pose(83, 24, Math.toRadians(15));
     private final Pose shootPoseRedFar = new Pose(83, 118, Math.toRadians(-15));
 
-    private final Pose liftingPoseBlue = new Pose(103, 28, Math.toRadians(90));
-    private final Pose liftingPoseRed = new Pose(103, 114.5, Math.toRadians(-90));
+    private final Pose liftingPoseBlue = new Pose(105, 26, Math.toRadians(90));
+    private final Pose liftingPoseRed = new Pose(105, 115.5, Math.toRadians(-90));
 
     private boolean automatedDrive;
     private Supplier<PathChain> pathChain;
@@ -198,7 +198,7 @@ public class TeleOpTest extends LinearOpMode {
             }
 
             telemetry.addLine("");
-            telemetry.addLine("WARNING: Select the right TelelOp!!!");
+            telemetry.addLine("WARNING: Select the right TeleOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp RED");
             telemetry.addLine("Gamepad1.B: TeleOp BLUE");
             telemetry.addLine("Gamepad1.X: TeleOp NEAR");
@@ -376,7 +376,6 @@ public class TeleOpTest extends LinearOpMode {
                         -gamepad1.right_stick_x * 0.85, //-
                         true // Robot Centric //true
                 );
-
             }
 
 
