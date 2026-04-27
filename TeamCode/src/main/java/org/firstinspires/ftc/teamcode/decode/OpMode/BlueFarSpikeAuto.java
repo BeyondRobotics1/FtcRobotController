@@ -35,8 +35,9 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     //Shooter.ShootingLocation shootingLocation = Shooter.ShootingLocation.MEDIUM;
 
     final private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
-    final private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
-    final private int turretStabilizationWaitTime = 1400; //time to wait for the turret to stabilize
+    final private int shootBallWaitTime = 600;  //450, 550, 600 shooting three balls wait time in ms
+    final private int turretStabilizationWaitTime = 1000; //time to wait for the turret to stabilize
+
 
     private Timer pathTimer;
     private int pickupLimit = 2;
@@ -63,11 +64,11 @@ public class BlueFarSpikeAuto extends LinearOpMode {
 
 
     //corner
-    private final Pose pickup1Pose = new Pose(40, 10, Math.toRadians(180)); //40, 12, 180 Second pickup spot
-    private final Pose grab1Pose = new Pose(10.5, 8.5, Math.toRadians(180)); // 12.5, 8.75 Second pickup spot
+    private final Pose pickup1Pose = new Pose(40, 10.5, Math.toRadians(180)); //40, 10, 180 Second pickup spot
+    private final Pose grab1Pose = new Pose(9.5, 9, Math.toRadians(180)); // 9.5, 8.5 Second pickup spot
 
     private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 14 Third pickup spot
-    private final Pose grab2Pose = new Pose(10.5, 24, Math.toRadians(180)); // 12, 24, Second pickup spot
+    private final Pose grab2Pose = new Pose(10.5, 24, Math.toRadians(180)); // 10.5, 24, Second pickup spot
 
     //lower spike
     private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
@@ -103,7 +104,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
                 false, true, true);
-        turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_FAR);
+
         turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceFar);
         telemetry.addLine("hardware initialization completed");
 

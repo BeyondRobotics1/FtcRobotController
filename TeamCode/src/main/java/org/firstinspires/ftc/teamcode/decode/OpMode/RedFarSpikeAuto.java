@@ -109,7 +109,6 @@ public class RedFarSpikeAuto extends LinearOpMode {
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
                 false,true, true);
-        turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_RED_FAR);
 
         turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAllianceFar);
         telemetry.addLine("hardware initialization completed");

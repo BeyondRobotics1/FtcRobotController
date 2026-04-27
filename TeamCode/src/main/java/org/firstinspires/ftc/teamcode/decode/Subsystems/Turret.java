@@ -51,7 +51,7 @@ public class Turret {
 
 
     public static double servoPositionNearAutoShootingRedAlliance = 0.665; //0.65
-    public static double servoPositionNearAutoShootingBlueAlliance = 0.365;//0.355
+    public static double servoPositionNearAutoShootingBlueAlliance = 0.345;//0.355
 
     public static double servoPositionFarAutoShootingRedAlliance = 0.745;//725
     public static double servoPositionFarAutoShootingBlueAlliance = 0.275; //260
@@ -61,7 +61,7 @@ public class Turret {
     public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 6; //6
 
     public static double TARGET_ANGLE_DEGREE_RED_FAR = 6; //0
-    public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 0; //6
+    public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 6; //6
 
     double servoPositionRedFarAuto = 0.15;
     double servoPositionBlueFarAuto = 0.25;

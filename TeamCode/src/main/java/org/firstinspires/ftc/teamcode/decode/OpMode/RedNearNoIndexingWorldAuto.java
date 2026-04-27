@@ -35,18 +35,18 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
     private Lift lift;
 
 
-    private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
-    private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
+    private int openTriggerWaitTime;// = 70; //70, open trigger wait time in ms
+    private int shootBallWaitTime;// = 500;  //450, 550, 600 shooting three balls wait time in ms
 
     //status
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
     private Timer pathTimer;
     private int pathState = 0;       //state machine's state
     private int openGateCounter = 0; //crease 1 when gate is opened
-    private int openGateWaitTimeSpike = 1800; //Open gate after taking the second spike ball
-    private int openGateWaitTimeSpam = 1100;  //Open gate spam
+    private int openGateWaitTimeSpike;// = 1800; //Open gate after taking the second spike ball
+    private int openGateWaitTimeSpam;// = 1100;  //Open gate spam
     private int openGateLimit = 2;        //how many times the gate should be opened
-
+    private Intake.IntakeMode intakeFeedMode = Intake.IntakeMode.FEED;
 
     Follower follower;
 
@@ -216,6 +216,11 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
             openGateWaitTimeSpike = 2000; //2000 Open gate after taking the second spike ball
             openGateWaitTimeSpam = 1800;  //1800 Open gate spam
+
+            openTriggerWaitTime = 70;
+            shootBallWaitTime = 550;
+
+            intakeFeedMode = Intake.IntakeMode.FEED;
         }
         else {
 
@@ -232,6 +237,8 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
             openTriggerWaitTime = 55;
             shootBallWaitTime = 405;
+
+            intakeFeedMode = Intake.IntakeMode.FEED;
         }
 
         setPathState(0);

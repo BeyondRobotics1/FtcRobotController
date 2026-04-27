@@ -37,11 +37,11 @@ public class Shooter {
 
     double targetSpeedOutZone = 0.535;//0.535
     double targetSpeedFarFar = 0.43;//0.43
-    double targetSpeedFar = 0.406;//0.41
+    double targetSpeedFar = 0.41;//0.41
     double targetSpeedMedium = 0.395;//0.395
     double targetSpeedNear = 0.375;//0.395
 
-    double targetSpeedAutoFar = 0.535;//Shooting speed for far auto
+    double targetSpeedAutoFar = 0.510;//535 Shooting speed for far auto
     double targetSpeedAutoNear = 0.415;//407 Shooting power for near auto
 
     //COUNTS_PER_MOTOR_REV    = 28.0;

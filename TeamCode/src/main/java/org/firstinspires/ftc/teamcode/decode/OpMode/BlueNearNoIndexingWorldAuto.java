@@ -34,17 +34,18 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
-    private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
-    private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
+    private int openTriggerWaitTime;// = 70; //70, open trigger wait time in ms
+    private int shootBallWaitTime;// = 500;  //450, 550, 600 shooting three balls wait time in ms
 
     //status
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
     private Timer pathTimer;
     private int pathState = 0;       //state machine's state
     private int openGateCounter = 0; //crease 1 when gate is opened
-    private int openGateWaitTimeSpike = 1800; //Open gate after taking the second spike ball
-    private int openGateWaitTimeSpam = 1100;  //Open gate spam
+    private int openGateWaitTimeSpike;// = 1800; //Open gate after taking the second spike ball
+    private int openGateWaitTimeSpam;// = 1100;  //Open gate spam
     private int openGateLimit = 2;        //how many times the gate should be opened
+    private Intake.IntakeMode intakeFeedMode = Intake.IntakeMode.FEED;
 
     Follower follower;
 
@@ -62,15 +63,15 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private final Pose scorePose = new Pose(55, 86.5, Math.toRadians(180)); // 53, 80, 45, 96 Pose of our robot.
 
     //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(43, 82.25, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(17.25, 83, Math.toRadians(180)); //17.75, 83
+    private final Pose pickup1Pose = new Pose(41.5, 84, Math.toRadians(180)); //43, 84 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.25, 84, Math.toRadians(180)); //17.75, 83
     //following two poses are not used
     private final Pose backout1Pose = new Pose(21, 78, Math.toRadians(180)); //20, 78
     private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(43, 60, Math.toRadians(180)); // 43, 61, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(10, 60, Math.toRadians(180)); //9.5, 60.5
+    private final Pose pickup2Pose = new Pose(43, 61.5, Math.toRadians(180)); // 43, 60, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(10, 61.5, Math.toRadians(180)); //9.5, 60
     private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 61
     private final Pose openGate2Pose = new Pose(14, 63, Math.toRadians(180)); //14, 63 //gate position
     private final Pose openGateBackout2Pose = new Pose(28, 64, Math.toRadians(180)); //28, 64
@@ -78,7 +79,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     //open gate cycling
     private final Pose openGateSetupPose = new Pose(32, 61.5, Math.toRadians(160)); //32, 61.5, 160 Middle (Second Set) backout
     private final Pose openGateStartPose = new Pose(20, 61.5, Math.toRadians(155)); //20, 61.5, 150 //gate position
-    private final Pose openGatePose = new Pose(11.5, 61.5, Math.toRadians(155)); //11.5, 61.5, 150 //gate position
+    private final Pose openGatePose = new Pose(11.5, 61.5, Math.toRadians(153)); //11.5, 61.5, 150 //gate position
     private final Pose openGateBackoutPose = new Pose(28, 64, Math.toRadians(160)); //28, 64, 160
 
     //Lowest (Third Set)
@@ -211,6 +212,11 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
             openGateWaitTimeSpike = 2000; //2000 Open gate after taking the second spike ball
             openGateWaitTimeSpam = 1800;  //1800 Open gate spam
+
+            openTriggerWaitTime = 70;
+            shootBallWaitTime = 550;
+
+            intakeFeedMode = Intake.IntakeMode.FEED;
         }
         else {
 
@@ -223,10 +229,12 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             }
 
             openGateWaitTimeSpike = 1100; //1650 Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 900;  //1100 Open gate spam
+            openGateWaitTimeSpam = 850;  //1100 Open gate spam
 
             openTriggerWaitTime = 55;
             shootBallWaitTime = 405;
+
+            intakeFeedMode = Intake.IntakeMode.FEED;
         }
 
         setPathState(0);
@@ -267,7 +275,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             case 2:
                 if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//70
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(intakeFeedMode);
 
                     setPathState(3);
                 }
@@ -321,7 +329,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             case 25:
                 if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//80
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(intakeFeedMode);
                     setPathState(26);
                 }
                 break;
@@ -367,7 +375,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             case 35:
                 if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//80
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(intakeFeedMode);
 
                     setPathState(36);
                 }
@@ -431,7 +439,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             case 75:
                 if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//should be 80
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(intakeFeedMode);
 
                     setPathState(76);
                 }
