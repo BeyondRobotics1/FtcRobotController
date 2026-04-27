@@ -64,13 +64,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
     Gamepad.RumbleEffect strongRumbleEffect;
 
     private Follower follower;
-    private final Pose openGateSetupPoseBlue = new Pose(24, 66, Math.toRadians(170)); //24, 66, 170
-    private final Pose openGateStartPoseBlue = new Pose(19, 63, Math.toRadians(160)); //17, 63, 160 //gate position
     private final Pose openGatePoseBlue = new Pose(12, 63, Math.toRadians(150)); //12, 63, 150 //gate position
-
-    private final Pose openGateSetupPoseRed = new Pose(24, 83, Math.toRadians(-170)); //24, 83, -170
-    private final Pose openGateStartPoseRed = new Pose(20, 83, Math.toRadians(-160)); //19, 83, -160 //gate position
-    private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //15.5, 83, -155 //gate position
+    private final Pose openGatePoseRed = new Pose(20, 80, Math.toRadians(-160)); //15.5, 83, -155 //gate position
 
 
     private final Pose liftingPoseBlue = new Pose(105, 26, Math.toRadians(90));
@@ -137,6 +132,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
         liftMode = LiftMode.NONE;
 
         follower = Constants.createFollower(hardwareMap);
+        follower.setMaxPower(1.0);
+        follower.setMaxPowerScaling(1.0);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -220,12 +217,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     true, false);
 
             pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                    .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseBlue)))
-                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseBlue.getHeading(), 0.8))
-                    .addPath(new Path(new BezierLine(openGateSetupPoseBlue, openGateStartPoseBlue)))
-                    .setLinearHeadingInterpolation(openGateSetupPoseBlue.getHeading(), openGateStartPoseBlue.getHeading())
-                    .addPath(new Path(new BezierLine(openGateStartPoseBlue, openGatePoseBlue)))
-                    .setLinearHeadingInterpolation(openGateStartPoseBlue.getHeading(), openGatePoseBlue.getHeading())
+                    .addPath(new Path(new BezierLine(follower::getPose, openGatePoseBlue)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGatePoseBlue.getHeading(), 0.8))
                     .build();
 
             pathChainParking= () -> follower.pathBuilder() //Lazy Curve Generation
@@ -249,12 +242,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     true, false);
 
             pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                    .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseRed)))
-                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseRed.getHeading(), 0.8))
-                    .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
-                    .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
-                    .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
-                    .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
+                    .addPath(new Path(new BezierLine(follower::getPose, openGatePoseRed)))
+                    .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGatePoseRed.getHeading(), 0.8))
                     .build();
 
             pathChainParking= () -> follower.pathBuilder() //Lazy Curve Generation

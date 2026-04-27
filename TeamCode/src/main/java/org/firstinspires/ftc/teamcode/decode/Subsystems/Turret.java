@@ -51,15 +51,15 @@ public class Turret {
     public static double servoPositionObeliskDetectionBlueAllianceFar = 0.170; //175
 
 
-    public static double servoPositionNearAutoShootingRedAlliance = 0.65; //0.675
-    public static double servoPositionNearAutoShootingBlueAlliance = 0.355;//0.345
+    public static double servoPositionNearAutoShootingRedAlliance = 0.665; //0.65
+    public static double servoPositionNearAutoShootingBlueAlliance = 0.365;//0.355
 
-    public static double servoPositionFarAutoShootingRedAlliance = 0.725;//725
-    public static double servoPositionFarAutoShootingBlueAlliance = 0.260;
+    public static double servoPositionFarAutoShootingRedAlliance = 0.745;//725
+    public static double servoPositionFarAutoShootingBlueAlliance = 0.275; //260
 
     //Limelight 3A auto aiming target degree of Tx
     public static double TARGET_ANGLE_DEGREE_RED_NEAR = -2; //0
-    public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 4; //6
+    public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 6; //6
 
     public static double TARGET_ANGLE_DEGREE_RED_FAR = 0; //0
     public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 0; //6

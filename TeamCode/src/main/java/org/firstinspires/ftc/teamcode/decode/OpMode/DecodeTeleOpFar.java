@@ -130,6 +130,8 @@ public class DecodeTeleOpFar extends LinearOpMode {
         liftMode = LiftMode.NONE;
 
         follower = Constants.createFollower(hardwareMap);
+        follower.setMaxPower(1.0);
+        follower.setMaxPowerScaling(1.0);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -533,4 +535,5 @@ public class DecodeTeleOpFar extends LinearOpMode {
                 break;
         }
     }
+
 }

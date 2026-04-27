@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 
 import android.graphics.Color;
 
+import com.pedropathing.control.PIDFController;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.MathFunctions;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
@@ -66,19 +68,19 @@ public class TeleOpTest extends LinearOpMode {
     Gamepad.RumbleEffect strongRumbleEffect;
 
     private Follower follower;
-    private final Pose openGateSetupPoseBlue = new Pose(24, 66, Math.toRadians(170)); //24, 66, 170
-    private final Pose openGateStartPoseBlue = new Pose(19, 63, Math.toRadians(160)); //17, 63, 160 //gate position
     private final Pose openGatePoseBlue = new Pose(12, 63, Math.toRadians(150)); //12, 63, 150 //gate position
-
-    private final Pose openGateSetupPoseRed = new Pose(24, 83, Math.toRadians(-170)); //24, 83, -170
-    private final Pose openGateStartPoseRed = new Pose(20, 83, Math.toRadians(-160)); //19, 83, -160 //gate position
-    private final Pose openGatePoseRed = new Pose(15.5, 83, Math.toRadians(-155)); //15.5, 83, -155 //gate position
+    private final Pose openGatePoseRed = new Pose(20, 80, Math.toRadians(-160)); //15.5, 83, -155 //gate position
 
     private final Pose shootPoseBlueFar = new Pose(83, 24, Math.toRadians(15));
     private final Pose shootPoseRedFar = new Pose(83, 118, Math.toRadians(-15));
 
     private final Pose liftingPoseBlue = new Pose(105, 26, Math.toRadians(90));
     private final Pose liftingPoseRed = new Pose(105, 115.5, Math.toRadians(-90));
+
+    double targetHeading = Math.toRadians(180); // Radians
+    PIDFController controller; // = new PIDFController(f.constants.coefficientsHeadingPIDF);
+    boolean headingLock = true;
+
 
     private boolean automatedDrive;
     private Supplier<PathChain> pathChain;
@@ -138,6 +140,9 @@ public class TeleOpTest extends LinearOpMode {
         liftMode = DecodeTeleOpNear.LiftMode.NONE;
 
         follower = Constants.createFollower(hardwareMap);
+//        follower.setMaxPower(1.0);
+//        follower.setMaxPowerScaling(1.0);
+        controller = new PIDFController(follower.constants.coefficientsHeadingPIDF);
 
         telemetry.addLine("hardware initialization completed");
 
@@ -225,12 +230,8 @@ public class TeleOpTest extends LinearOpMode {
                 robotPose = DecodeBlackBoard.BLUE_NEAR_RESET_POSE;
 
                 pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                        .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseBlue)))
-                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseBlue.getHeading(), 0.8))
-                        .addPath(new Path(new BezierLine(openGateSetupPoseBlue, openGateStartPoseBlue)))
-                        .setLinearHeadingInterpolation(openGateSetupPoseBlue.getHeading(), openGateStartPoseBlue.getHeading())
-                        .addPath(new Path(new BezierLine(openGateStartPoseBlue, openGatePoseBlue)))
-                        .setLinearHeadingInterpolation(openGateStartPoseBlue.getHeading(), openGatePoseBlue.getHeading())
+                        .addPath(new Path(new BezierLine(follower::getPose, openGatePoseBlue)))
+                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGatePoseBlue.getHeading(), 0.8))
                         .build();
             }
             else {
@@ -264,12 +265,8 @@ public class TeleOpTest extends LinearOpMode {
                 robotPose = DecodeBlackBoard.RED_NEAR_RESET_POSE;
 
                 pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                        .addPath(new Path(new BezierLine(follower::getPose, openGateSetupPoseRed)))
-                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGateSetupPoseRed.getHeading(), 0.8))
-                        .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
-                        .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
-                        .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
-                        .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
+                        .addPath(new Path(new BezierLine(follower::getPose, openGatePoseRed)))
+                        .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGatePoseRed.getHeading(), 0.8))
                         .build();
 
             }
@@ -373,7 +370,7 @@ public class TeleOpTest extends LinearOpMode {
                 follower.setTeleOpDrive(
                         -gamepad1.left_stick_y, //-
                         -gamepad1.left_stick_x, //-
-                        -gamepad1.right_stick_x * 0.85, //-
+                        -gamepad1.right_stick_x, //-
                         true // Robot Centric //true
                 );
             }
@@ -383,7 +380,7 @@ public class TeleOpTest extends LinearOpMode {
             if (gamepad1.aWasPressed()) {
 
                 if(is_near)
-                    follower.followPath(pathChain.get(), 0.8, false);
+                    follower.followPath(pathChain.get(), 0.9, true);
                 else
                     follower.followPath(pathChain.get(), 0.9, true);
 
@@ -621,7 +618,23 @@ public class TeleOpTest extends LinearOpMode {
                 lift.engageClutch(false);
                 break;
         }
-
-
     }
+
+    public void turnTo(double degrees) { // if you want to turn right, use negative degrees
+        Pose temp = new Pose(follower.getPose().getX(), follower.getPose().getY(), Math.toRadians(degrees));
+        follower.holdPoint(temp);
+    }
+
+    private PathChain generatePathChain()
+    {
+        return follower.pathBuilder() //Lazy Curve Generation
+                .addPath(new Path(new BezierLine(follower::getPose, openGatePoseRed)))
+                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, openGatePoseRed.getHeading(), 0.8))
+//                .addPath(new Path(new BezierLine(openGateSetupPoseRed, openGateStartPoseRed)))
+//                .setLinearHeadingInterpolation(openGateSetupPoseRed.getHeading(), openGateStartPoseRed.getHeading())
+//                .addPath(new Path(new BezierLine(openGateStartPoseRed, openGatePoseRed)))
+//                .setLinearHeadingInterpolation(openGateStartPoseRed.getHeading(), openGatePoseRed.getHeading())
+                .build();
+    }
+
 }
