@@ -188,6 +188,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
+
+            turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_NEAR);
         }
         else {
             //no pose read
@@ -203,6 +205,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     alliance,
                     true,
                     true, false);
+
+            turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_RED_NEAR);
         }
 
         telemetry.addLine("Initializing shooter");

@@ -234,10 +234,10 @@ public class PedroTeleOpTest extends LinearOpMode {
                         Math.toRadians(DecodeBlackBoard.BLUE_NEAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
                 );
 
-                openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
-                        DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
-                        Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
-                );
+//                openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+//                        DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+//                        Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+//                );
             }
             else
             {
@@ -253,10 +253,10 @@ public class PedroTeleOpTest extends LinearOpMode {
                         Math.toRadians(DecodeBlackBoard.BLUE_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
                 );
 
-                openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
-                        DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
-                        Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
-                );
+//                openGatePose = new Pose(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+//                        DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+//                        Math.toRadians(DecodeBlackBoard.BLUE_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+//                );
             }
 
             telemetry.addLine("Initializing shooter");
@@ -278,10 +278,10 @@ public class PedroTeleOpTest extends LinearOpMode {
                         Math.toRadians(DecodeBlackBoard.RED_NEAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
                 );
 
-                openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
-                        DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
-                        Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
-                );
+//                openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+//                        DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+//                        Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+//                );
             }
             else
             {
@@ -297,10 +297,10 @@ public class PedroTeleOpTest extends LinearOpMode {
                         Math.toRadians(DecodeBlackBoard.RED_FAR_RESET_POSE.getHeading(AngleUnit.DEGREES))
                 );
 
-                openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
-                        DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
-                        Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
-                );
+//                openGatePose = new Pose(DecodeBlackBoard.RED_OPEN_GATE_POSE.getX(DistanceUnit.INCH),
+//                        DecodeBlackBoard.RED_OPEN_GATE_POSE.getY(DistanceUnit.INCH),
+//                        Math.toRadians(DecodeBlackBoard.RED_OPEN_GATE_POSE.getHeading(AngleUnit.DEGREES))
+//                );
             }
 
             telemetry.addLine("Initializing shooter");

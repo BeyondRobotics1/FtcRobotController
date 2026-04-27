@@ -35,8 +35,8 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
     private Lift lift;
 
 
-    final private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
-    final private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
+    private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
+    private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
 
     //status
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
@@ -128,8 +128,7 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
-                false,
-                true, true);
+                false,true, true);
         turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAllianceNear);
         telemetry.addLine("hardware initialization completed");
 
@@ -205,34 +204,34 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_NEAR);
         shooter.setPower(0.9);
-        sleep(150);//Flywheel need time to rotate up (0.4, 700)
 
         if(openGateLimit == 2) {
+            sleep(150);//150Flywheel need time to rotate up (0.4, 700)
+
             //let the PID work for a while
-            for (int i = 0; i < 80; i++) {
+            for (int i = 0; i < 40; i++) { //40, 80
                 shooter.doFlyWheelVelocityPID();
                 sleep(15);//100
             }
+
+            openGateWaitTimeSpike = 2000; //2000 Open gate after taking the second spike ball
+            openGateWaitTimeSpam = 1800;  //1800 Open gate spam
         }
         else {
 
-            //let the PID work for a while
-            for (int i = 0; i < 65; i++) {
-                shooter.doFlyWheelVelocityPID();
-                sleep(15);//100
-            }
-        }
+            sleep(100);//150Flywheel need time to rotate up (0.4, 700)
 
-        //
-        if(openGateLimit == 2)
-        {
-            openGateWaitTimeSpike = 2000; //Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 1800;  //Open gate spam
-        }
-        else
-        {
-            openGateWaitTimeSpike = 1650; //Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 1100;  //Open gate spam
+            //let the PID work for a while
+            for (int i = 0; i < 10; i++) {//30, 65
+                shooter.doFlyWheelVelocityPID();
+                sleep(10);//100
+            }
+
+            openGateWaitTimeSpike = 1100; //1650 Open gate after taking the second spike ball
+            openGateWaitTimeSpam = 900;  //1100 Open gate spam
+
+            openTriggerWaitTime = 55;
+            shootBallWaitTime = 405;
         }
 
         setPathState(0);
@@ -399,9 +398,16 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
                 pathTimer.resetTimer();
 
                 //grab balls at position 1
-                //follower.followPath(scorePickup1Grab1, true); //grabPickup1
-                follower.followPath(scorePickup1, true); //grabPickup1
-                setPathState(72);
+                if(openGateLimit == 2) {
+
+                    follower.followPath(scorePickup1, true); //grabPickup1
+                    setPathState(72);
+                }
+                else
+                {
+                    follower.followPath(scorePickup1Grab1, true);
+                    setPathState(73);//grabPickup1
+                }
 
                 break;
             case 72:

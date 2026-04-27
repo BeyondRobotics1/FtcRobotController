@@ -15,8 +15,8 @@ public class DecodeBlackBoard {
 
     //the IMU reset pose for FAR TeleOp
     //Robot back to the wall and align with the loading zone white tape
-    public static final Pose2D RED_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
-    public static final Pose2D BLUE_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.75, 30.875, AngleUnit.DEGREES, 180); //133.5, 30
+    public static final Pose2D RED_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 135.5, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
+    public static final Pose2D BLUE_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 135.5, 31, AngleUnit.DEGREES, 180); //133.75, 30.875, 30.875
 
     //The IMU reset pose for NEAR TeleOp
     //Robot front to ramp and align with gate handle
@@ -37,16 +37,12 @@ public class DecodeBlackBoard {
 
     //the parking pose for FAR Auto
     public static final Pose2D RED_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 55, 110, AngleUnit.DEGREES, -90); //41, 56
-    public static final Pose2D BLUE_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 60, 32, AngleUnit.DEGREES, 90); //40, 83
-
-
-    //Open gate pose for NEAR TeleOp
-    public static final Pose2D RED_OPEN_GATE_POSE = new Pose2D(DistanceUnit.INCH, 16, 84, AngleUnit.DEGREES, -155); //41, 56
-    public static final Pose2D BLUE_OPEN_GATE_POSE = new Pose2D(DistanceUnit.INCH, 12, 59.5, AngleUnit.DEGREES, 150); //40, 83
+    public static final Pose2D BLUE_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 55, 32, AngleUnit.DEGREES, 90); //40, 83
 
     //Auto aiming target position (x, y coordinates for distance calculation)
     public static final Pose2D RED_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 5, AngleUnit.DEGREES, 0);
     public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 136.5, AngleUnit.DEGREES, 0); //5, 139
+
 
     public static final String X = "X";
     public static final String Y = "Y";
@@ -90,6 +86,10 @@ public class DecodeBlackBoard {
 
     public static void saveAutoEndPose(HashMap<String, Object> blackboard, Pose2D pose)
     {
+        //might be wrong pose
+        if(pose.getX(DistanceUnit.INCH) < 1. && pose.getX(DistanceUnit.INCH) < 1)
+            return;
+
         blackboard.put(X, pose.getX(DistanceUnit.INCH));
         blackboard.put(Y, pose.getY(DistanceUnit.INCH));
         blackboard.put(HEADING, pose.getHeading(AngleUnit.DEGREES));

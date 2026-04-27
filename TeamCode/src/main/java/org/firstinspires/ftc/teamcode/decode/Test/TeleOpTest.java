@@ -205,14 +205,17 @@ public class TeleOpTest extends LinearOpMode {
         if(isBlueTeleOp) {
             alliance = DecodeBlackBoard.BLUE;
 
-            if(is_near)
+            if(is_near) {
                 turret = new Turret(hardwareMap, this,
                         DecodeBlackBoard.BLUE_NEAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
                         true,
                         true, false);
-            else
+                turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_NEAR);
+
+            }
+            else {
                 turret = new Turret(hardwareMap, this,
                         DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
@@ -220,25 +223,34 @@ public class TeleOpTest extends LinearOpMode {
                         true,
                         true, false);
 
+                turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_FAR);
+            }
+
             telemetry.addLine("Initializing shooter");
             shooter = new Shooter(hardwareMap, this, alliance);
         }
         else {
             alliance = DecodeBlackBoard.RED;
-            if(is_near)
+            if(is_near) {
                 turret = new Turret(hardwareMap, this,
                         DecodeBlackBoard.RED_NEAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true,
                         true, false);
-            else
+
+                turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_RED_NEAR);
+            }
+            else {
                 turret = new Turret(hardwareMap, this,
                         DecodeBlackBoard.RED_FAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true,
                         true, false);
+
+                turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_RED_FAR);
+            }
 
             telemetry.addLine("Initializing shooter");
             shooter = new Shooter(hardwareMap, this, alliance);

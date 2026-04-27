@@ -34,8 +34,8 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private Indexer indexer;
     private Lift lift;
 
-    final private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
-    final private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
+    private int openTriggerWaitTime = 70; //70, open trigger wait time in ms
+    private int shootBallWaitTime = 500;  //450, 550, 600 shooting three balls wait time in ms
 
     //status
     private int obelisk_id = DecodeBlackBoard.OBELISK_PGP;
@@ -62,24 +62,24 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
     private final Pose scorePose = new Pose(55, 86.5, Math.toRadians(180)); // 53, 80, 45, 96 Pose of our robot.
 
     //Highest (First Set)
-    private final Pose pickup1Pose = new Pose(43, 83.25, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose grab1Pose = new Pose(17.25, 84, Math.toRadians(180)); //17.75, 83
+    private final Pose pickup1Pose = new Pose(43, 82.25, Math.toRadians(180)); //41.5, 83.25 Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose grab1Pose = new Pose(17.25, 83, Math.toRadians(180)); //17.75, 83
     //following two poses are not used
     private final Pose backout1Pose = new Pose(21, 78, Math.toRadians(180)); //20, 78
     private final Pose openGate1Pose = new Pose(16, 76, Math.toRadians(180)); //16.6, 76
 
     //Middle (Second Set)
-    private final Pose pickup2Pose = new Pose(43, 61, Math.toRadians(180)); // 43, 60.5, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(10, 60.5, Math.toRadians(180)); //9.5, 58
-    private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 60.5
-    private final Pose openGate2Pose = new Pose(14, 63, Math.toRadians(180)); //14, 64 //gate position
-    private final Pose openGateBackout2Pose = new Pose(28, 64, Math.toRadians(180)); //18, 80.5
+    private final Pose pickup2Pose = new Pose(43, 60, Math.toRadians(180)); // 43, 61, Middle (Second Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(10, 60, Math.toRadians(180)); //9.5, 60.5
+    private final Pose backout2Pose = new Pose(18, 61, Math.toRadians(180)); //18, 61
+    private final Pose openGate2Pose = new Pose(14, 63, Math.toRadians(180)); //14, 63 //gate position
+    private final Pose openGateBackout2Pose = new Pose(28, 64, Math.toRadians(180)); //28, 64
 
     //open gate cycling
-    private final Pose openGateSetupPose = new Pose(32, 61.5, Math.toRadians(160)); //32, 59.5, 180 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(20, 61.5, Math.toRadians(150)); //20, 59.5, 180 //gate position
-    private final Pose openGatePose = new Pose(11.5, 61.5, Math.toRadians(150)); //11.5, 59.5, 150 //gate position
-    private final Pose openGateBackoutPose = new Pose(28, 64, Math.toRadians(160)); //28, 64
+    private final Pose openGateSetupPose = new Pose(32, 61.5, Math.toRadians(160)); //32, 61.5, 160 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(20, 61.5, Math.toRadians(155)); //20, 61.5, 150 //gate position
+    private final Pose openGatePose = new Pose(11.5, 61.5, Math.toRadians(155)); //11.5, 61.5, 150 //gate position
+    private final Pose openGateBackoutPose = new Pose(28, 64, Math.toRadians(160)); //28, 64, 160
 
     //Lowest (Third Set)
     private final Pose pickup3Pose = new Pose(42.5, 105, Math.toRadians(180)); //44, 105 Lowest (Third Set) picking up start.
@@ -119,12 +119,11 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
         telemetry.addLine("Initializing lift");
         lift = new Lift(hardwareMap);
 
-        turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
+        turret = new Turret(hardwareMap, this,new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
-                false,
-                true, true);
+                false,true, true);
         turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceNear);
         telemetry.addLine("hardware initialization completed");
 
@@ -200,34 +199,34 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_NEAR);
         shooter.setPower(0.9);
-        sleep(150);//Flywheel need time to rotate up (0.4, 700)
 
         if(openGateLimit == 2) {
+            sleep(150);//150Flywheel need time to rotate up (0.4, 700)
+
             //let the PID work for a while
-            for (int i = 0; i < 80; i++) {
+            for (int i = 0; i < 40; i++) { //40, 80
                 shooter.doFlyWheelVelocityPID();
                 sleep(15);//100
             }
+
+            openGateWaitTimeSpike = 2000; //2000 Open gate after taking the second spike ball
+            openGateWaitTimeSpam = 1800;  //1800 Open gate spam
         }
         else {
 
-            //let the PID work for a while
-            for (int i = 0; i < 65; i++) {
-                shooter.doFlyWheelVelocityPID();
-                sleep(15);//100
-            }
-        }
+            sleep(100);//150Flywheel need time to rotate up (0.4, 700)
 
-        //
-        if(openGateLimit == 2)
-        {
-            openGateWaitTimeSpike = 2000; //Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 1800;  //Open gate spam
-        }
-        else
-        {
-            openGateWaitTimeSpike = 1650; //Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 1100;  //Open gate spam
+            //let the PID work for a while
+            for (int i = 0; i < 10; i++) {//30, 65
+                shooter.doFlyWheelVelocityPID();
+                sleep(10);//100
+            }
+
+            openGateWaitTimeSpike = 1100; //1650 Open gate after taking the second spike ball
+            openGateWaitTimeSpam = 900;  //1100 Open gate spam
+
+            openTriggerWaitTime = 55;
+            shootBallWaitTime = 405;
         }
 
         setPathState(0);
@@ -394,9 +393,16 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
                 pathTimer.resetTimer();
 
                 //grab balls at position 1
-                //follower.followPath(scorePickup1Grab1, true); //grabPickup1
-                follower.followPath(scorePickup1, true); //grabPickup1
-                setPathState(72);
+                if(openGateLimit == 2) {
+
+                    follower.followPath(scorePickup1, true); //grabPickup1
+                    setPathState(72);
+                }
+                else
+                {
+                    follower.followPath(scorePickup1Grab1, true);
+                    setPathState(73);//grabPickup1
+                }
 
                 break;
             case 72:

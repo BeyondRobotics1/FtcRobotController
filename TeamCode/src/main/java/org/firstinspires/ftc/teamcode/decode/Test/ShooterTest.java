@@ -139,6 +139,9 @@ public class ShooterTest extends LinearOpMode {
                         alliance,
                         true,
                         true, false);
+
+                turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_RED_FAR);
+
                 telemetry.addLine("Initializing shooter");
                 shooter = new Shooter(hardwareMap, this, alliance);
             }
@@ -177,7 +180,7 @@ public class ShooterTest extends LinearOpMode {
                 intakeOp();
 
                 //
-                //turretOp();
+                turretOp();
 
                 //operate the shooter
                 shootOp();

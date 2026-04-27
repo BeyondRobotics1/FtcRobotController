@@ -27,7 +27,6 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     //Hardware
     private Shooter shooter;
     private Intake intake;
-    //private DriveTrain driveTrain;
     private Trigger trigger;
     private Turret turret;
     private Indexer indexer;
@@ -40,7 +39,6 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     final private int turretStabilizationWaitTime = 1400; //time to wait for the turret to stabilize
 
     private Timer pathTimer;
-    //private Timer opmodeTimer;
     private int pickupLimit = 2;
     private int pickupCounter = 0;
 
@@ -61,7 +59,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
             Math.toRadians(DecodeBlackBoard.BLUE_FAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
 
 
-    private final Pose scorePose = new Pose(58, 20, Math.toRadians(180)); // 55, 20.5, 115 Scoring Pose of our robot.
+    private final Pose scorePose = new Pose(56, 20, Math.toRadians(180)); // 55, 20.5, 115 Scoring Pose of our robot.
 
 
     //corner
@@ -79,6 +77,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
     private Path scorePreload;
     private PathChain scorePickup1Grab1, grab1Score;
     private PathChain scorePickup3, pickup3Grab3, grab3Score;
+    private PathChain scorePickup2, pickup2Grab2, grab2Score;
     private PathChain scorePark;
 
 
@@ -103,9 +102,8 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
                 DecodeBlackBoard.BLUE_TARGET_POSE,
                 DecodeBlackBoard.BLUE,
-                false,
-                true, true);
-        //turret.resetTurretHeading();
+                false, true, true);
+        turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_FAR);
         turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceFar);
         telemetry.addLine("hardware initialization completed");
 
@@ -165,11 +163,10 @@ public class BlueFarSpikeAuto extends LinearOpMode {
         sleep(150);//Flywheel need time to rotate up (0.4, 700)
 
         //let the PID work for a while
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 20; i++) {
             shooter.doFlyWheelVelocityPID();
             sleep(15);//100
         }
-
 
         setPathState(0);
 
@@ -177,6 +174,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
             hubs.forEach(LynxModule::clearBulkCache);
 
             follower.update();
+
             autonomousPathUpdate();
 
             //displayPose();
@@ -214,7 +212,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
             case 3:
                 if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//110
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
 
                     setPathState(4);
                 }
@@ -227,26 +225,34 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 }
                 break;
 
-            //loading zone
+
+            //low spike
             case 10:
+
                 trigger.close();
                 intake.intake(0.95, 0.925);
 
                 //move to the pickup 1 position
-                follower.followPath(scorePickup1Grab1, true); //grabPickup1
+                follower.followPath(scorePickup3, true); //grabPickup1
 
                 setPathState(11);
+
                 break;
             case 11:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
+
+                    //grab balls at position 2
+                    follower.followPath(pickup3Grab3, true); //grabPickup1
                     setPathState(12);
                 }
                 break;
             case 12:
-                //intake for 1.5 seconds to make sure all 3 balls are in
-                if (pathTimer.getElapsedTime() > 1200) {
-                    follower.followPath(grab1Score, true);
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+
+                    //move grab1 position to open gate position
+                    follower.followPath(grab3Score, true);
                     intake.intake(0.95, 0.0);
                     setPathState(13);
                 }
@@ -258,60 +264,48 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 }
                 break;
             case 14:
-                if (pathTimer.getElapsedTime() > 500) { //wait for robot to stabilize
+                if (pathTimer.getElapsedTime() > 500) { //for robot to stabilize
                     pathTimer.resetTimer();
                     trigger.open();
                     setPathState(15);
                 }
                 break;
             case 15:
-                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//110, 300
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+
                     setPathState(16);
                 }
                 break;
             case 16:
-                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls
-
-                    pickupCounter++;
-
-                    if(pickupCounter >= pickupLimit)
-                        setPathState(900);
-                    else if (pickupCounter == 1)
-                        setPathState(20);
-                    else
-                        setPathState(10);
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) {//110, 300
+                    pathTimer.resetTimer();
+                    setPathState(20);
                 }
                 break;
 
-            //low spike
-            case 20:
 
+            //loading zone
+            case 20:
                 trigger.close();
                 intake.intake(0.95, 0.925);
 
                 //move to the pickup 1 position
-                follower.followPath(scorePickup3, true); //grabPickup1
+                follower.followPath(scorePickup1Grab1, true); //grabPickup1
 
                 setPathState(21);
-
                 break;
             case 21:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
-
-                    //grab balls at position 2
-                    follower.followPath(pickup3Grab3, true); //grabPickup1
                     setPathState(22);
                 }
                 break;
             case 22:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-
-                    //move grab1 position to open gate position
-                    follower.followPath(grab3Score, true);
+                //intake for 1.5 seconds to make sure all 3 balls are in
+                if (pathTimer.getElapsedTime() > 1500) {
+                    follower.followPath(grab1Score, true);
                     intake.intake(0.95, 0.0);
                     setPathState(23);
                 }
@@ -323,24 +317,89 @@ public class BlueFarSpikeAuto extends LinearOpMode {
                 }
                 break;
             case 24:
-                if (pathTimer.getElapsedTime() > 500) { //for robot to stabilize
+                if (pathTimer.getElapsedTime() > 500) { //wait for robot to stabilize
                     pathTimer.resetTimer();
                     trigger.open();
                     setPathState(25);
                 }
                 break;
             case 25:
-                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//110, 300
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {
                     pathTimer.resetTimer();
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
                     setPathState(26);
                 }
                 break;
             case 26:
+                if (pathTimer.getElapsedTime() > shootBallWaitTime) { //shoot balls
+
+                    pickupCounter++;
+
+                    if(pickupCounter >= pickupLimit)
+                        setPathState(900);
+//                    else if (pickupCounter == 1 || pickupCounter == 2)
+//                        setPathState(20);
+                    else
+                        setPathState(30);
+                }
+                break;
+
+            //low spike
+            case 30:
+
+                trigger.close();
+                intake.intake(0.95, 0.925);
+
+                //move to the pickup 1 position
+                follower.followPath(scorePickup2, true); //grabPickup1
+
+                setPathState(31);
+
+                break;
+            case 31:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+
+                    //grab balls at position 2
+                    follower.followPath(pickup2Grab2, true); //grabPickup1
+                    setPathState(32);
+                }
+                break;
+            case 32:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+
+                    //move grab1 position to open gate position
+                    follower.followPath(grab2Score, true);
+                    intake.intake(0.95, 0.0);
+                    setPathState(33);
+                }
+                break;
+            case 33:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    setPathState(34);
+                }
+                break;
+            case 34:
+                if (pathTimer.getElapsedTime() > 500) { //for robot to stabilize
+                    pathTimer.resetTimer();
+                    trigger.open();
+                    setPathState(35);
+                }
+                break;
+            case 35:
+                if (pathTimer.getElapsedTime() > openTriggerWaitTime) {//110, 300
+                    pathTimer.resetTimer();
+                    intake.setIntakeMode(Intake.IntakeMode.MEDIUM_FEED);
+
+                    setPathState(36);
+                }
+                break;
+            case 36:
                 if (pathTimer.getElapsedTime() > shootBallWaitTime) {//110, 300
                     pathTimer.resetTimer();
-                    setPathState(10);
+                    setPathState(20);
                 }
                 break;
 
@@ -358,7 +417,6 @@ public class BlueFarSpikeAuto extends LinearOpMode {
         }
 
     }
-
 
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
@@ -396,6 +454,20 @@ public class BlueFarSpikeAuto extends LinearOpMode {
         grab3Score = follower.pathBuilder()
                 .addPath(new BezierLine(grab3Pose, scorePose))
                 .setLinearHeadingInterpolation(grab3Pose.getHeading(), scorePose.getHeading())
+                .build();
+
+        /* This is our scorePickup3 PathChain. We are using a single path with a BezierLine, which is a straight line. */
+        scorePickup2 = follower.pathBuilder()
+                .addPath(new BezierLine(scorePose, pickup2Pose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup2Pose.getHeading())
+                .build();
+        pickup2Grab2 = follower.pathBuilder()
+                .addPath(new BezierLine(pickup2Pose, grab2Pose))
+                .setLinearHeadingInterpolation(pickup2Pose.getHeading(), grab2Pose.getHeading())
+                .build();
+        grab2Score = follower.pathBuilder()
+                .addPath(new BezierLine(grab2Pose, scorePose))
+                .setLinearHeadingInterpolation(grab2Pose.getHeading(), scorePose.getHeading())
                 .build();
 
 
