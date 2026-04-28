@@ -142,8 +142,7 @@ public class DecodeTeleOpNear extends LinearOpMode {
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
-            if(robotPose == null)
-                robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
+            robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
 
             if(isBlueTeleOp)
                 telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
@@ -154,10 +153,14 @@ public class DecodeTeleOpNear extends LinearOpMode {
             telemetry.addLine("WARNING WARNING: Select the right TeleOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp NEAR RED");
             telemetry.addLine("Gamepad1.B: TeleOp NEAR BLUE");
-            telemetry.addLine("-----------------------");
-            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
-            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+
+            if(robotPose != null) {
+                telemetry.addLine("-----------------------");
+                telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+                telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+                telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+            }
+
 
             if(gamepad1.a) {
                 isBlueTeleOp = false;
@@ -168,6 +171,9 @@ public class DecodeTeleOpNear extends LinearOpMode {
 
             telemetry.update();
         }
+
+        if(robotPose == null)
+            robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
 
         gameTimer.resetTimer();
         int rumbleEndgame = 0;

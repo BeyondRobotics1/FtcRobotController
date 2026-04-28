@@ -62,7 +62,7 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
 
     //score pose
-    private final Pose scorePose = new Pose(57, 57, Math.toRadians(-180)); // 45, 96, 131 Pose of our robot. Facing wall & turret angle to goal.
+    private final Pose scorePose = new Pose(55, 55, Math.toRadians(-180)); // 57, 57, -180 Pose of our robot. Facing wall & turret angle to goal.
 
 
     //Highest (First Set)
@@ -74,15 +74,15 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
 
     //Middle (Second Set)
     private final Pose pickup2Pose = new Pose(43, 79, Math.toRadians(-180)); // 43, 79, Middle (Second Set) of Artifacts from the Spike Mark.
-    private final Pose grab2Pose = new Pose(12.5, 81.5, Math.toRadians(-180)); //12.25, 81.5
+    private final Pose grab2Pose = new Pose(12.25, 81.5, Math.toRadians(-180)); //12.25, 81.5
     private final Pose backout2Pose = new Pose(22, 81, Math.toRadians(-180)); //18, 80.5
-    private final Pose openGate2Pose = new Pose(17.75, 79, Math.toRadians(-180)); //16, 76 //gate position
+    private final Pose openGate2Pose = new Pose(17.75, 79.5, Math.toRadians(-180)); //17.75, 79 //gate position
     private final Pose openGateBackout2Pose = new Pose(36, 76, Math.toRadians(-180)); //18, 80.5
 
     //open gate cycling
-    private final Pose openGateSetupPose = new Pose(32, 81, Math.toRadians(-160)); //32, 82, 180 Middle (Second Set) backout
-    private final Pose openGateStartPose = new Pose(20, 81, Math.toRadians(-155)); //20, 82, -150 //gate position
-    private final Pose openGatePose = new Pose(14, 81, Math.toRadians(-155)); //14, 82, -150 //gate position
+    private final Pose openGateSetupPose = new Pose(32, 80, Math.toRadians(-160)); //32, 81, 180 Middle (Second Set) backout
+    private final Pose openGateStartPose = new Pose(20, 81, Math.toRadians(-153)); //20, 81, -155 //gate position
+    private final Pose openGatePose = new Pose(14, 81, Math.toRadians(-153)); //14, 81, -155 //gate position
     private final Pose openGateBackoutPose = new Pose(32, 80, Math.toRadians(-160)); //32, 80, -160
 
     //Lowest (Third Set)
@@ -200,7 +200,7 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
             sleep(100);
         }
 
-        turret.setServoPosition(Turret.servoPositionNearAutoShootingRedAlliance);
+        turret.setServoPosition(Turret.servoPositionRedNearAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_NEAR);
         shooter.setPower(0.9);
@@ -233,10 +233,10 @@ public class RedNearNoIndexingWorldAuto extends LinearOpMode {
             }
 
             openGateWaitTimeSpike = 1100; //1650 Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 900;  //1100 Open gate spam
+            openGateWaitTimeSpam = 860;  //1100 Open gate spam
 
             openTriggerWaitTime = 55;
-            shootBallWaitTime = 405;
+            shootBallWaitTime = 410;
 
             intakeFeedMode = Intake.IntakeMode.FEED;
         }

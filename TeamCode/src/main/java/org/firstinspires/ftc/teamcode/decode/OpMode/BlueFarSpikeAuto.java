@@ -157,7 +157,7 @@ public class BlueFarSpikeAuto extends LinearOpMode {
         }
 
 
-        turret.setServoPosition(Turret.servoPositionFarAutoShootingBlueAlliance);
+        turret.setServoPosition(Turret.servoPositionBlueFarAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
         shooter.setPower(0.9);

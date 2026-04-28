@@ -27,8 +27,6 @@ public class TurretTestRed extends LinearOpMode {
                 true,
                 true, false);
 
-        turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_RED_FAR);
-
 //        double startingAngle = turret.getAnalogStartingAngle();
 //        telemetry.addData("Analog start degree", startingAngle);
 //        telemetry.update();

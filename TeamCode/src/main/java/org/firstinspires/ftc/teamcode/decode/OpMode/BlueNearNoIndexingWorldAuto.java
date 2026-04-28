@@ -196,7 +196,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             sleep(100);
         }
 
-        turret.setServoPosition(Turret.servoPositionNearAutoShootingBlueAlliance);
+        turret.setServoPosition(Turret.servoPositionBlueNearAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_NEAR);
         shooter.setPower(0.9);
@@ -229,10 +229,10 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             }
 
             openGateWaitTimeSpike = 1100; //1650 Open gate after taking the second spike ball
-            openGateWaitTimeSpam = 850;  //1100 Open gate spam
+            openGateWaitTimeSpam = 820;  //1100 Open gate spam
 
             openTriggerWaitTime = 55;
-            shootBallWaitTime = 405;
+            shootBallWaitTime = 410;
 
             intakeFeedMode = Intake.IntakeMode.FEED;
         }

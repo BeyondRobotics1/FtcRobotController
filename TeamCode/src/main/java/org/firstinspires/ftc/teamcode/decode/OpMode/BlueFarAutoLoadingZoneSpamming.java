@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
-
+@Disabled
 @Autonomous(name = "Blue Far Loading Zone Auto", group = "Decode")
 public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
@@ -159,7 +159,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         }
 
 
-        turret.setServoPosition(Turret.servoPositionFarAutoShootingBlueAlliance);
+        turret.setServoPosition(Turret.servoPositionBlueFarAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
         shooter.setPower(0.9);

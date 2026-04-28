@@ -34,8 +34,21 @@ public class Turret {
     double x0, y0;
 
 
-    public static double halfServoRangeDegrees = 138;//138;//133.78;
-    public static double fullServoRangeDegrees = halfServoRangeDegrees * 2;
+    //Limelight 3A auto aiming target degree of Tx
+    public static double TARGET_ANGLE_DEGREE_RED_NEAR = 0; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 0; //6
+
+    public static double TARGET_ANGLE_DEGREE_RED_FAR = 0; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 0; //6
+
+
+
+    //control how robot pose to servo position
+    public static double FULL_SERVO_RANGE_DEGREES_RED =  281.2; //
+    public static double FULL_SERVO_RANGE_DEGREES_BLUE =  285; //to offset the targeting angle
+    public static double halfServoRangeDegrees = 140.6;//138;//133.78;
+    public static double fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_RED; //for red, 186 for blue
+
     public static double servoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
     public static double servoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
     public static double servoPositionMiddle = 0.5;//0.197;//0 degree
@@ -50,21 +63,14 @@ public class Turret {
     public static double servoPositionObeliskDetectionBlueAllianceFar = 0.170; //175
 
 
-    public static double servoPositionNearAutoShootingRedAlliance = 0.665; //0.65
-    public static double servoPositionNearAutoShootingBlueAlliance = 0.345;//0.355
+    public static double servoPositionRedNearAuto = 0.665; //0.65
+    public static double servoPositionBlueNearAuto = 0.347;//0.345
 
-    public static double servoPositionFarAutoShootingRedAlliance = 0.745;//725
-    public static double servoPositionFarAutoShootingBlueAlliance = 0.275; //260
+    public static double servoPositionRedFarAuto = 0.745;//725
+    public static double servoPositionBlueFarAuto = 0.275; //260
 
-    //Limelight 3A auto aiming target degree of Tx
-    public static double TARGET_ANGLE_DEGREE_RED_NEAR = -1; //0
-    public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 6; //6
 
-    public static double TARGET_ANGLE_DEGREE_RED_FAR = 6; //0
-    public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 6; //6
 
-    double servoPositionRedFarAuto = 0.15;
-    double servoPositionBlueFarAuto = 0.25;
 
     int alliance = DecodeBlackBoard.BLUE;
     int targetTagID; //derived from alliance
@@ -92,10 +98,15 @@ public class Turret {
 
         this.alliance = alliance;
 
-        if(alliance == DecodeBlackBoard.BLUE)
+        if(alliance == DecodeBlackBoard.BLUE) {
             targetTagID = 20;
-        else
+
+            fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_BLUE;
+        }
+        else {
+            fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_RED;
             targetTagID = 24;
+        }
 
         this.mode = mode;
 

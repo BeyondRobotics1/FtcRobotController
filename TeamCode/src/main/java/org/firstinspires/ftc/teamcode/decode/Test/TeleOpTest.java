@@ -161,12 +161,10 @@ public class TeleOpTest extends LinearOpMode {
                 else
                     telemetry.addLine("TeleOp FAR Selected: BLUE BLUE BLUE");
 
-                if(robotPose == null) {
-                    if(is_near)
-                        robotPose = DecodeBlackBoard.BLUE_NEAR_RESET_POSE;
-                    else
-                        robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
-                }
+                if(is_near)
+                    robotPose = DecodeBlackBoard.BLUE_NEAR_RESET_POSE;
+                else
+                    robotPose = DecodeBlackBoard.BLUE_FAR_RESET_POSE;
             }
             else {
                 if(is_near)
@@ -174,12 +172,10 @@ public class TeleOpTest extends LinearOpMode {
                 else
                     telemetry.addLine("TeleOp FAR Selected: RED RED RED");
 
-                if (robotPose == null) {
-                    if(is_near)
-                        robotPose = DecodeBlackBoard.RED_NEAR_RESET_POSE;
-                    else
-                        robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
-                }
+                if(is_near)
+                    robotPose = DecodeBlackBoard.RED_NEAR_RESET_POSE;
+                else
+                    robotPose = DecodeBlackBoard.RED_FAR_RESET_POSE;
             }
 
             telemetry.addLine("");
@@ -274,6 +270,7 @@ public class TeleOpTest extends LinearOpMode {
             sleep(15);//100
         }
 
+
         boolean isEndGame = false;
 
         boolean isInitialPinpointPositionSet = false;
@@ -303,7 +300,7 @@ public class TeleOpTest extends LinearOpMode {
             //
             turretOp();
 
-            //operate the shooter
+            ////operate the shooter
             shootOp();
 
             //operate the lift
