@@ -142,7 +142,8 @@ public class DecodeTeleOpNear extends LinearOpMode {
         //waitForStart();
         while (!isStarted() && !isStopRequested()) {
 
-            robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
+            if(robotPose == null)
+                robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
 
             if(isBlueTeleOp)
                 telemetry.addLine("TeleOp NEAR Selected: BLUE BLUE BLUE");
@@ -153,14 +154,10 @@ public class DecodeTeleOpNear extends LinearOpMode {
             telemetry.addLine("WARNING WARNING: Select the right TeleOp!!!");
             telemetry.addLine("Gamepad1.A: TeleOp NEAR RED");
             telemetry.addLine("Gamepad1.B: TeleOp NEAR BLUE");
-
-            if(robotPose != null) {
-                telemetry.addLine("-----------------------");
-                telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
-                telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
-                telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
-            }
-
+            telemetry.addLine("-----------------------");
+            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
 
             if(gamepad1.a) {
                 isBlueTeleOp = false;
@@ -171,9 +168,6 @@ public class DecodeTeleOpNear extends LinearOpMode {
 
             telemetry.update();
         }
-
-        if(robotPose == null)
-            robotPose = DecodeBlackBoard.robotAutoEndPose(blackboard);
 
         gameTimer.resetTimer();
         int rumbleEndgame = 0;
@@ -232,13 +226,19 @@ public class DecodeTeleOpNear extends LinearOpMode {
 
         //let the flywheel spin for 1000ms so
         //the PID controller won't draw too much batteries
-        shooter.setPower(0.5);
-        sleep(1000);//1000
+        shooter.setPower(0.9);
+        sleep(150);//1000
+
+        ///let the PID work for a while
+        for (int i = 0; i < 30; i++) {
+            shooter.doFlyWheelVelocityPID();
+            sleep(10);//100
+        }
 
         boolean isInitialPinpointPositionSet = false;
         boolean isEndGame = false;
 
-        //isIntakeOn = true;
+        isIntakeOn = true;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -406,8 +406,12 @@ public class DecodeTeleOpNear extends LinearOpMode {
             if (intake.detectedArtifacts() > 0) {
                 if (isHeadingToGoal)
                 {
-                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE)
-                        shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE) {
+                        if(isBlueTeleOp)
+                            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+                        else
+                            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
+                    }
                     else if (robotZone == IMULocalizer.RobotZone.NEAR_SHOOTING_ZONE)
                         shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
                     else if (robotZone == IMULocalizer.RobotZone.MEDIUM_SHOOTING_ZONE)

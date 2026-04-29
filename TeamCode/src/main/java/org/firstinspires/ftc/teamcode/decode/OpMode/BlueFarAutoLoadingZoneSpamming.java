@@ -67,7 +67,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
     //corner
     private final Pose pickup1Pose = new Pose(40, 10.5, Math.toRadians(180)); //40, 10, 180 Second pickup spot
-    private final Pose grab1Pose = new Pose(9.5, 9, Math.toRadians(180)); // 9.5, 8.5 Second pickup spot
+    private final Pose grab1Pose = new Pose(9.5, 9.25, Math.toRadians(180)); // 9.5, 8.5 Second pickup spot
 
     private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 14 Third pickup spot
     private final Pose grab2Pose = new Pose(10.5, 24, Math.toRadians(180)); // 12, 24, Second pickup spot
@@ -159,7 +159,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         }
 
 
-        turret.setServoPosition(Turret.servoPositionBlueFarAuto);
+        turret.setServoPosition(Turret.servoShootingPositionBlueFarAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
         shooter.setPower(0.9);

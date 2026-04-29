@@ -45,7 +45,8 @@ public class Turret {
 
     //control how robot pose to servo position
     public static double FULL_SERVO_RANGE_DEGREES_RED =  281.2; //
-    public static double FULL_SERVO_RANGE_DEGREES_BLUE =  285; //to offset the targeting angle
+    public static double FULL_SERVO_RANGE_DEGREES_BLUE_NEAR = 280; //285 near to offset the targeting angle to positive
+    public static double FULL_SERVO_RANGE_DEGREES_BLUE_FAR = 285; //285 far to offset the targeting angle to 0
     public static double halfServoRangeDegrees = 140.6;//138;//133.78;
     public static double fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_RED; //for red, 186 for blue
 
@@ -63,11 +64,11 @@ public class Turret {
     public static double servoPositionObeliskDetectionBlueAllianceFar = 0.170; //175
 
 
-    public static double servoPositionRedNearAuto = 0.665; //0.65
-    public static double servoPositionBlueNearAuto = 0.347;//0.345
+    public static double servoShootingPositionRedNearAuto = 0.655; //0.665, 0.65
+    public static double servoShootingPositionBlueNearAuto = 0.347;//0.345
 
-    public static double servoPositionRedFarAuto = 0.745;//725
-    public static double servoPositionBlueFarAuto = 0.275; //260
+    public static double servoShootingPositionRedFarAuto = 0.735;//745
+    public static double servoShootingPositionBlueFarAuto = 0.265; //260
 
 
 
@@ -101,7 +102,7 @@ public class Turret {
         if(alliance == DecodeBlackBoard.BLUE) {
             targetTagID = 20;
 
-            fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_BLUE;
+            fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_BLUE_NEAR;
         }
         else {
             fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_RED;
@@ -156,6 +157,11 @@ public class Turret {
         setServoPosition(servoPositionMiddle);
     }
 
+    public void setFullServoRangeDegreesBlue()
+    {
+        Turret.fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_BLUE_FAR;
+    }
+
     public void setTargetAngleDegree(double targetAngleDegree)
     {
         Turret.targetAngleDegree = targetAngleDegree;
@@ -173,9 +179,9 @@ public class Turret {
     public void setOutZoneAutoServoPosition(int alliance)
     {
         if(alliance == DecodeBlackBoard.BLUE)
-            setServoPosition(servoPositionBlueFarAuto);
+            setServoPosition(servoShootingPositionBlueFarAuto);
         else
-            setServoPosition(servoPositionRedFarAuto);
+            setServoPosition(servoShootingPositionRedFarAuto);
     }
 
     public void setServoPosition(double position)

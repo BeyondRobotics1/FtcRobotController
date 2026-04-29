@@ -196,7 +196,7 @@ public class BlueNearNoIndexingWorldAuto extends LinearOpMode {
             sleep(100);
         }
 
-        turret.setServoPosition(Turret.servoPositionBlueNearAuto);
+        turret.setServoPosition(Turret.servoShootingPositionBlueNearAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_NEAR);
         shooter.setPower(0.9);

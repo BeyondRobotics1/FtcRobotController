@@ -264,7 +264,10 @@ public class ShooterTest extends LinearOpMode {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR_FAR);
             }
             else if (gamepad1.dpadUpWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+                if(isBlueTeleOp)
+                    shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+                else
+                    shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
             }
 
             Shooter.ShootingLocation shooterPosition = shooter.getShooterPosition();
@@ -275,7 +278,8 @@ public class ShooterTest extends LinearOpMode {
                 telemetry.addLine("Shooting from FAR");
             else if (shooterPosition == Shooter.ShootingLocation.FAR_FAR)
                 telemetry.addLine("Shooting from FAR FAR");
-            else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE)
+            else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE_RED ||
+                    shooterPosition == Shooter.ShootingLocation.OUT_ZONE_BLUE)
                 telemetry.addLine("Shooting from OUT ZONE");
             else
                 telemetry.addLine("Shooting from MEDIUM");;

@@ -13,7 +13,8 @@ public class Shooter {
     {
         AUTO_NEAR,
         AUTO_FAR,
-        OUT_ZONE,
+        OUT_ZONE_BLUE,
+        OUT_ZONE_RED,
         FAR_FAR,
         FAR,
         MEDIUM,
@@ -35,7 +36,8 @@ public class Shooter {
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.535;//0.535
+    double targetSpeedOutZoneRed = 0.535;//0.535
+    double targetSpeedOutZoneBlue = 0.535;//0.535
     double targetSpeedFarFar = 0.43;//0.43
     double targetSpeedFar = 0.41;//0.41
     double targetSpeedMedium = 0.395;//0.395
@@ -84,8 +86,10 @@ public class Shooter {
             targetSpeed = targetSpeedMedium;
         else if (shooterPosition == ShootingLocation.FAR_FAR)
             targetSpeed = targetSpeedFarFar;
-        else if (shooterPosition == ShootingLocation.OUT_ZONE)
-            targetSpeed = targetSpeedOutZone;
+        else if (shooterPosition == ShootingLocation.OUT_ZONE_BLUE)
+            targetSpeed = targetSpeedOutZoneBlue;
+        else if (shooterPosition == ShootingLocation.OUT_ZONE_RED)
+            targetSpeed = targetSpeedOutZoneRed;
         else if (shooterPosition == ShootingLocation.AUTO_NEAR)
             targetSpeed = targetSpeedAutoNear;
         else if (shooterPosition == ShootingLocation.AUTO_FAR)

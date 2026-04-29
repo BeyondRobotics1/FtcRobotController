@@ -191,6 +191,7 @@ public class DecodeTeleOpFar extends LinearOpMode {
                     true, false);
 
             turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_FAR);
+            turret.setFullServoRangeDegreesBlue();
         }
         else {
             //no pose read
@@ -213,6 +214,11 @@ public class DecodeTeleOpFar extends LinearOpMode {
         telemetry.addLine("Initializing shooter");
         shooter = new Shooter(hardwareMap, this, alliance);
 
+        if( alliance == DecodeBlackBoard.RED)
+            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
+        else
+            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+
         telemetry.addData("Turret initialized, camera is running:",
                 turret.isLimeLight3ARunning());
 
@@ -225,15 +231,25 @@ public class DecodeTeleOpFar extends LinearOpMode {
 
         if(isStopRequested()) return;
 
+
+
         //let the flywheel spin for 1000ms so
         //the PID controller won't draw too much batteries
-        shooter.setPower(0.5);
-        sleep(1000);//1000
+        shooter.setPower(0.9);
+        sleep(150);//1000
+
+        ///let the PID work for a while
+        for (int i = 0; i < 30; i++) {
+            shooter.doFlyWheelVelocityPID();
+            sleep(10);//100
+        }
+
+
 
         boolean isInitialPinpointPositionSet = false;
         boolean isEndGame = false;
 
-        //isIntakeOn = true;
+        isIntakeOn = true;
 
         while(!isStopRequested() && opModeIsActive())
         {
@@ -392,8 +408,12 @@ public class DecodeTeleOpFar extends LinearOpMode {
             if (intake.detectedArtifacts() > 0) {
                 if (isHeadingToGoal)
                 {
-                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE)
-                        shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE) {
+                        if(isBlueTeleOp)
+                            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+                        else
+                            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
+                    }
                     else if (robotZone == IMULocalizer.RobotZone.NEAR_SHOOTING_ZONE)
                         shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
                     else if (robotZone == IMULocalizer.RobotZone.MEDIUM_SHOOTING_ZONE)
@@ -407,7 +427,10 @@ public class DecodeTeleOpFar extends LinearOpMode {
         }
         else
         {
-            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+            if(isBlueTeleOp)
+                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+            else
+                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
         }
 
 

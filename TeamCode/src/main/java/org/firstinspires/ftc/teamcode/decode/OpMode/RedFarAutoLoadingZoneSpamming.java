@@ -163,7 +163,7 @@ public class RedFarAutoLoadingZoneSpamming extends LinearOpMode {
         }
 
 
-        turret.setServoPosition(Turret.servoPositionRedFarAuto);
+        turret.setServoPosition(Turret.servoShootingPositionRedFarAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
         shooter.setPower(0.9);

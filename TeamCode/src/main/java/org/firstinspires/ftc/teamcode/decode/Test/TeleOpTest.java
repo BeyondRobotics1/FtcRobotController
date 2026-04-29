@@ -265,9 +265,9 @@ public class TeleOpTest extends LinearOpMode {
         sleep(150);
         //sleep(200);
         //let the PID work for a while
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 30; i++) {
             shooter.doFlyWheelVelocityPID();
-            sleep(15);//100
+            sleep(10);//100
         }
 
 
@@ -453,8 +453,12 @@ public class TeleOpTest extends LinearOpMode {
             if (intake.detectedArtifacts() > 0) {
                 if (isHeadingToGoal)
                 {
-                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE)
-                        shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE) {
+                        if(isBlueTeleOp)
+                            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+                        else
+                            shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
+                    }
                     else if (robotZone == IMULocalizer.RobotZone.NEAR_SHOOTING_ZONE)
                         shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
                     else if (robotZone == IMULocalizer.RobotZone.MEDIUM_SHOOTING_ZONE)
@@ -469,8 +473,12 @@ public class TeleOpTest extends LinearOpMode {
         else {
             if(is_near)
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
-            else
-                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+            else {
+                if (isBlueTeleOp)
+                    shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+                else
+                    shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
+            }
         }
 
         //gamepad2 a, index 2
