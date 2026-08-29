@@ -39,8 +39,8 @@ public class Shooter {
     double targetSpeedOutZoneRed = 0.535;//0.535
     double targetSpeedOutZoneBlue = 0.535;//0.535
     double targetSpeedFarFar = 0.43;//0.43
-    double targetSpeedFar = 0.41;//0.41
-    double targetSpeedMedium = 0.395;//0.395
+    double targetSpeedFar = 0.405;//0.41
+    double targetSpeedMedium = 0.39;//, 0.395
     double targetSpeedNear = 0.375;//0.395
 
     double targetSpeedAutoFar = 0.510;//535 Shooting speed for far auto

@@ -326,7 +326,7 @@ public class DecodeTeleOpNear extends LinearOpMode {
                     //
                     if (intake.detectedArtifacts() == 3) {
                         //intake.setIntakeMode(Intake.IntakeMode.IDLE);
-                        intake.intake(0.3, 0);//0
+                        intake.intake(0.5, 0);//0
                         intake.setLedColor(Intake.LED_GREEN);
                     }
                     else if (intake.detectedArtifacts() == 2) {

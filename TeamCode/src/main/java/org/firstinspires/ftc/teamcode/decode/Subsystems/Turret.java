@@ -64,6 +64,7 @@ public class Turret {
     public static double servoPositionObeliskDetectionBlueAllianceFar = 0.170; //175
 
 
+
     public static double servoShootingPositionRedNearAuto = 0.655; //0.665, 0.65
     public static double servoShootingPositionBlueNearAuto = 0.347;//0.345
 
