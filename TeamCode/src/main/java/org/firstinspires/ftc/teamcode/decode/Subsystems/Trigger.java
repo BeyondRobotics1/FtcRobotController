@@ -21,11 +21,7 @@ public class Trigger {
      */
     public Trigger (HardwareMap hardwareMap){
         trigger = hardwareMap.get(Servo.class, "trigger");
-        //trigger.setDirection(Servo.Direction.REVERSE);
-
         close();
-
-//        trigger.setDirection(Servo.Direction.REVERSE);
     }
 
     /**
@@ -33,7 +29,7 @@ public class Trigger {
      * in the storage
      */
     public void open(){
-        setPosition(0.00);//0.03
+        setPosition(0.03);//0.03
     }
 
     /**
@@ -41,11 +37,12 @@ public class Trigger {
      * to the turret shooter
      */
     public void close(){
-        setPosition(0.24);
+
+        setPosition(0.27); //0.24
     }
 
     public void setPosition(double position)
     {
-        trigger.setPosition(position);//0.5
+        trigger.setPosition(position);
     }
 }

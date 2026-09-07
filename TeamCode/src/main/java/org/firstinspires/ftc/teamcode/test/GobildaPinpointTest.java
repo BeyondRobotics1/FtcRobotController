@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
  *
  * See the sensor's product page: https://www.gobilda.com/pinpoint-odometry-computer-imu-sensor-fusion-for-2-wheel-odometry/
  */
-@TeleOp(name = "Sensor: GoBilda Pinpoint", group = "Sensor")
+@TeleOp(name = "Concept: GobildaPinpointTest", group = "Concept")
 //@Disabled
 
 
@@ -26,9 +26,13 @@ public class GobildaPinpointTest extends OpMode {
     // Create an instance of the sensor
     GoBildaPinpointDriver pinpoint;
     Boolean isInitialPinpointPositionSet = false;
-
+    //Boolean isBlue = true;
     @Override
     public void init() {
+
+//
+//        telemetry.addData("gamepad1.b", "Blue." );
+
         // Get a reference to the sensor
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
@@ -40,9 +44,11 @@ public class GobildaPinpointTest extends OpMode {
 
         //blue auto starting point
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90));
 
         //red auto starting point
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+        //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 11.25, AngleUnit.DEGREES, -90));
         pinpoint.update();
     }
 
@@ -52,10 +58,10 @@ public class GobildaPinpointTest extends OpMode {
         if(!isInitialPinpointPositionSet)
         {
             //blue
-            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 130.5, AngleUnit.DEGREES, 90));
+            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90));
 
             //red
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
+            //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 11.25, AngleUnit.DEGREES, -90));
             isInitialPinpointPositionSet = true;
         }
 
@@ -85,7 +91,7 @@ public class GobildaPinpointTest extends OpMode {
          */
         //pinpoint.setOffsets(-84.0, -168.0, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
         //pinpoint.setOffsets(-106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
-        pinpoint.setOffsets(106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        pinpoint.setOffsets(118, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

@@ -16,17 +16,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(13.6)//25.8b (11.7kg) -> 30 lb (13.6kg)
-            .forwardZeroPowerAcceleration(-27.0643)//-31.864938
-            .lateralZeroPowerAcceleration(-57.9476)//-64.737043
+            .mass(14)//25.8b (11.7kg) -> 30 lb (13.6kg)
+            .forwardZeroPowerAcceleration(-27.6692)//-27.0643, -31.864938
+            .lateralZeroPowerAcceleration(-62.2807)//-57.9476, -64.737043
             .translationalPIDFCoefficients(new PIDFCoefficients(
-                    0.06,
+                    0.02,
                     0,
                     0.01,
-                    0.03
-            ))
+                    0.02
+            )) //(0.06, 0, 0.01, 0.03)
 
-//0.09, 0, 0,01, 0.03
+            //0.09, 0, 0,01, 0.03
             .headingPIDFCoefficients(new PIDFCoefficients(
                     0.8,
                     0,
@@ -67,12 +67,13 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .useBrakeModeInTeleOp(true)
             .xVelocity(73.48)//70.37
             .yVelocity(57.73);//55.39
 
     //pedro and gobilda pinpoint tester has X, Y offset reversed
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(106)
+            .forwardPodY(118)//106
             .strafePodX(-143.6)
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("pinpoint")

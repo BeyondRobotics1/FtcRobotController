@@ -1,26 +1,48 @@
 package org.firstinspires.ftc.teamcode.decode.OpMode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
+import java.util.HashMap;
 
 public class DecodeBlackBoard {
 
     public static final int BLUE = 1;
     public static final int RED = 2;
 
-    public static final Pose2D RED_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.5, 111, AngleUnit.DEGREES, 180);
-    public static final Pose2D BLUE_RESET_POSE = new Pose2D(DistanceUnit.INCH, 133.5, 30, AngleUnit.DEGREES, 180);
+    //the IMU reset pose for FAR TeleOp
+    //Robot back to the wall and align with the loading zone white tape
+    public static final Pose2D RED_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 135.5, 110.5, AngleUnit.DEGREES, 180); //133.5, 111
+    public static final Pose2D BLUE_FAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 134.5, 31, AngleUnit.DEGREES, 180); //135.5, 31, 30.875
 
+    //The IMU reset pose for NEAR TeleOp
+    //Robot front to ramp and align with gate handle
+    public static final Pose2D RED_NEAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 18, 62.25, AngleUnit.DEGREES, -180); //
+    public static final Pose2D BLUE_NEAR_RESET_POSE = new Pose2D(DistanceUnit.INCH, 18.115, 80.501, AngleUnit.DEGREES, 180); //18, 79.25
 
-    public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 139, AngleUnit.DEGREES, 0);
+    //The start pose for NEAR Auto
+    public static final Pose2D RED_NEAR_START_POSE = new Pose2D(DistanceUnit.INCH, 31.875, 11.5, AngleUnit.DEGREES, -90);//DecodeBlackBoard.RED_FAR_RESET_POSE;
+    public static final Pose2D BLUE_NEAR_START_POSE = new Pose2D(DistanceUnit.INCH, 31.875, 130, AngleUnit.DEGREES, 90); //133.5, 30
+
+    //the parking pose for NEAR Auto
+    public static final Pose2D RED_NEAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 42, 61.5, AngleUnit.DEGREES, -180); //40, 61.5
+    public static final Pose2D BLUE_NEAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 42, 80, AngleUnit.DEGREES, 180); //40, 80
+
+    //The start pose for NEAR Auto
+    public static final Pose2D RED_FAR_START_POSE = new Pose2D(DistanceUnit.INCH, 61.75, 134, AngleUnit.DEGREES, -180);//DecodeBlackBoard.RED_FAR_RESET_POSE;
+    public static final Pose2D BLUE_FAR_START_POSE = new Pose2D(DistanceUnit.INCH, 61.75, 8.13, AngleUnit.DEGREES, 180); //55, 7.5, 180, 133.5, 30
+
+    //the parking pose for FAR Auto
+    public static final Pose2D RED_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 55, 110, AngleUnit.DEGREES, -90); //41, 56
+    public static final Pose2D BLUE_FAR_PARK_POSE = new Pose2D(DistanceUnit.INCH, 55, 32, AngleUnit.DEGREES, 90); //40, 83
+
+    //Auto aiming target position (x, y coordinates for distance calculation)
     public static final Pose2D RED_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 5, AngleUnit.DEGREES, 0);
+    public static final Pose2D BLUE_TARGET_POSE = new Pose2D(DistanceUnit.INCH, 5, 136.5, AngleUnit.DEGREES, 0); //5, 139
 
-    public static final String DEFAULT_X = "DefaultX";
-    public static final String DEFAULT_Y = "DefaultY";
-    public static final String DEFAULT_HEADING = "DefaultHeading";
 
     public static final String X = "X";
     public static final String Y = "Y";
@@ -37,19 +59,19 @@ public class DecodeBlackBoard {
 //        this.mode = mode;
 //    }
 
-    public static void saveObelisk(int obelisk)
+    public static void saveObelisk(HashMap<String, Object> blackboard, int obelisk)
     {
         if(obelisk < OBELISK_GPP || obelisk > OBELISK_PPG)
-            LinearOpMode.blackboard.put(Obelisk, OBELISK_GPP);
+            blackboard.put(Obelisk, OBELISK_GPP);
         else
-            LinearOpMode.blackboard.put(Obelisk, obelisk);
+            blackboard.put(Obelisk, obelisk);
     }
 
-    public static int getObelisk()
+    public static int getObelisk(HashMap<String, Object> blackboard)
     {
         int result = OBELISK_GPP;
 
-        Object ob = LinearOpMode.blackboard.getOrDefault(Obelisk, OBELISK_GPP);
+        Object ob = blackboard.getOrDefault(Obelisk, OBELISK_GPP);
 
         try {
             if(ob != null)
@@ -62,62 +84,27 @@ public class DecodeBlackBoard {
         return result;
     }
 
-    public static void saveDefaultAutoEndPose(Pose2D defaultPos)
+    public static void saveAutoEndPose(HashMap<String, Object> blackboard, Pose2D pose)
     {
-        LinearOpMode.blackboard.put(DEFAULT_X, defaultPos.getX(DistanceUnit.INCH));
-        LinearOpMode.blackboard.put(DEFAULT_Y, defaultPos.getY(DistanceUnit.INCH));
-        LinearOpMode.blackboard.put(DEFAULT_HEADING, defaultPos.getHeading(AngleUnit.DEGREES));
-    }
+        //might be wrong pose
+        if(pose.getX(DistanceUnit.INCH) < 1. && pose.getX(DistanceUnit.INCH) < 1)
+            return;
 
-    public static void saveAutoEndPose(Pose2D pose)
-    {
-        LinearOpMode.blackboard.put(X, pose.getX(DistanceUnit.INCH));
-        LinearOpMode.blackboard.put(Y, pose.getY(DistanceUnit.INCH));
-        LinearOpMode.blackboard.put(HEADING, pose.getHeading(AngleUnit.DEGREES));
+        blackboard.put(X, pose.getX(DistanceUnit.INCH));
+        blackboard.put(Y, pose.getY(DistanceUnit.INCH));
+        blackboard.put(HEADING, pose.getHeading(AngleUnit.DEGREES));
     }
 
 
-    public static Pose2D robotAutoEndPose()
+    public static Pose2D robotAutoEndPose(HashMap<String, Object> blackboard)
     {
         double x = 0;
         double y = 0;
         double heading = 0;
 
-        Object defaultX = LinearOpMode.blackboard.getOrDefault(DEFAULT_X, 0);
-        Object defaultY = LinearOpMode.blackboard.getOrDefault(DEFAULT_Y, 0);
-        Object defaultHeading = LinearOpMode.blackboard.getOrDefault(DEFAULT_HEADING, 0);
-
-        double dX = 0;
-        double dY = 0;
-        double dHeading = 0;
-
-        try {
-            if(defaultX != null)
-                dX = (double) defaultX;
-        }
-        catch(Exception ignored)
-        {
-        }
-
-        try {
-            if(defaultY != null)
-                dX = (double) defaultY;
-        }
-        catch(Exception ignored)
-        {
-        }
-
-        try {
-            if(defaultHeading != null)
-                dHeading = (double) defaultHeading;
-        }
-        catch(Exception ignored)
-        {
-        }
-
-        Object OX = LinearOpMode.blackboard.getOrDefault(X, dX);
-        Object OY = LinearOpMode.blackboard.getOrDefault(Y, dY);
-        Object OHeading = LinearOpMode.blackboard.getOrDefault(HEADING, dHeading);
+        Object OX = blackboard.getOrDefault(X, 0.0);
+        Object OY = blackboard.getOrDefault(Y, 0.0);
+        Object OHeading = blackboard.getOrDefault(HEADING, 0.0);
 
         try {
             if(OX != null)

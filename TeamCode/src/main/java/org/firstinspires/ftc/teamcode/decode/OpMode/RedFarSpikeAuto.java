@@ -8,24 +8,22 @@ import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
+import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
-@Disabled
-@Autonomous(name = "Blue Far Loading Zone Auto", group = "Decode")
-public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
+@Autonomous(name = "Red Far Spike Auto", group = "Decode")
+public class RedFarSpikeAuto extends LinearOpMode {
     //Hardware
     private Shooter shooter;
     private Intake intake;
@@ -40,9 +38,9 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
     final private int shootBallWaitTime = 600;  //450, 550, 600 shooting three balls wait time in ms
     final private int turretStabilizationWaitTime = 1000; //time to wait for the turret to stabilize
 
-
     private Timer pathTimer;
-    private int pickupLimit = 3;
+    //private Timer opmodeTimer;
+    private int pickupLimit = 2;
     private int pickupCounter = 0;
 
     private int pathState = 0;
@@ -52,29 +50,31 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
     /**
      * Start Pose of our robot
      */
-    private final Pose startPose = new Pose(DecodeBlackBoard.BLUE_FAR_START_POSE.getX(DistanceUnit.INCH),
-            DecodeBlackBoard.BLUE_FAR_START_POSE.getY(DistanceUnit.INCH),
-            Math.toRadians(DecodeBlackBoard.BLUE_FAR_START_POSE.getHeading(AngleUnit.DEGREES))); // Start Pose of our robot.
+    private final Pose startPose = new Pose(DecodeBlackBoard.RED_FAR_START_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.RED_FAR_START_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.RED_FAR_START_POSE.getHeading(AngleUnit.DEGREES))); // Start Pose of our robot.
 
     // park pose
-    private final Pose parkPose = new Pose(DecodeBlackBoard.BLUE_FAR_PARK_POSE.getX(DistanceUnit.INCH),
-            DecodeBlackBoard.BLUE_FAR_PARK_POSE.getY(DistanceUnit.INCH),
-            Math.toRadians(DecodeBlackBoard.BLUE_FAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
+    private final Pose parkPose = new Pose(DecodeBlackBoard.RED_FAR_PARK_POSE.getX(DistanceUnit.INCH),
+            DecodeBlackBoard.RED_FAR_PARK_POSE.getY(DistanceUnit.INCH),
+            Math.toRadians(DecodeBlackBoard.RED_FAR_PARK_POSE.getHeading(AngleUnit.DEGREES))); //40, 80
 
 
-    private final Pose scorePose = new Pose(56, 20, Math.toRadians(180)); // 55, 20.5, 115 Scoring Pose of our robot.
+    private final Pose scorePose = new Pose(56, 121.5, Math.toRadians(-180)); // 55, 20.5, 115 Scoring Pose of our robot.
 
 
     //corner
-    private final Pose pickup1Pose = new Pose(40, 10.5, Math.toRadians(180)); //40, 10, 180 Second pickup spot
-    private final Pose grab1Pose = new Pose(9.5, 9.25, Math.toRadians(180)); // 9.5, 8.5 Second pickup spot
+    private final Pose pickup1Pose = new Pose(40, 131.5, Math.toRadians(-180)); //40, 131.5, -180 S
+    private final Pose grab1Pose = new Pose(10.5, 132.5, Math.toRadians(-180)); // 10.5, 134, -180
 
-    private final Pose pickup2Pose = new Pose(40, 14, Math.toRadians(180)); //40, 14 Third pickup spot
-    private final Pose grab2Pose = new Pose(10.5, 24, Math.toRadians(180)); // 12, 24, Second pickup spot
 
     //lower spike
-    private final Pose pickup3Pose = new Pose(41.125, 35.5, Math.toRadians(180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
-    private final Pose grab3Pose = new Pose(10.5, 35.5, Math.toRadians(180)); //10, 35
+    private final Pose pickup3Pose = new Pose(41.125, 106, Math.toRadians(-180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose grab3Pose = new Pose(10, 107, Math.toRadians(-180)); //10, 35
+
+    //lower spike
+    private final Pose pickup2Pose = new Pose(41.125, 123, Math.toRadians(-180)); // Lowest (Third Set) of Artifacts from the Spike Mark.
+    private final Pose grab2Pose = new Pose(10, 123, Math.toRadians(-180)); //10, 35
 
 
     private Path scorePreload;
@@ -92,7 +92,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         indexer = new Indexer(hardwareMap, this);
 
         telemetry.addLine("Initializing shooter");
-        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.BLUE);
+        shooter = new Shooter(hardwareMap, this, DecodeBlackBoard.RED);
 
         telemetry.addLine("Initializing intake");
         intake = new Intake(hardwareMap, this);
@@ -101,13 +101,16 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         trigger = new Trigger(hardwareMap);
         trigger.close();
 
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startPose);
+
         turret = new Turret(hardwareMap, this, new Pose2D(DistanceUnit.INCH,
                 startPose.getX(), startPose.getY(), AngleUnit.DEGREES, startPose.getHeading()),
-                DecodeBlackBoard.BLUE_TARGET_POSE,
-                DecodeBlackBoard.BLUE,
-                false, true, true);
+                DecodeBlackBoard.RED_TARGET_POSE,
+                DecodeBlackBoard.RED,
+                false,true, true);
 
-        turret.setServoPosition(Turret.servoPositionObeliskDetectionBlueAllianceFar);
+        turret.setServoPosition(Turret.servoPositionObeliskDetectionRedAllianceFar);
         telemetry.addLine("hardware initialization completed");
 
         DecodeBlackBoard.saveAutoEndPose(blackboard, new Pose2D(DistanceUnit.INCH,
@@ -117,9 +120,8 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         pathTimer = new Timer();
 
 
-        follower = Constants.createFollower(hardwareMap);
         buildPaths();
-        follower.setStartingPose(startPose);
+
         telemetry.addLine("initializing pedro pathing follower completed");
 
 
@@ -136,7 +138,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
             int tag_id = turret.detectObeliskTagID();
 
-            telemetry.addLine("Blue Far Auto");
+            telemetry.addLine("Red Far Auto");
             telemetry.addData("Obelisk ID:", tag_id);
 
             if (tag_id == DecodeBlackBoard.OBELISK_GPP) {
@@ -159,7 +161,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
         }
 
 
-        turret.setServoPosition(Turret.servoShootingPositionBlueFarAuto);
+        turret.setServoPosition(Turret.servoShootingPositionRedFarAuto);
 
         shooter.setShootingLocation(Shooter.ShootingLocation.AUTO_FAR);
         shooter.setPower(0.9);
@@ -224,7 +226,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
                 if (pathTimer.getElapsedTime() > shootBallWaitTime)
                 {
                     pathTimer.resetTimer();
-                    setPathState(20);
+                    setPathState(10);
                 }
                 break;
 
@@ -307,7 +309,7 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
                 break;
             case 22:
                 //intake for 1.5 seconds to make sure all 3 balls are in
-                if (pathTimer.getElapsedTime() > 1200) {
+                if (pathTimer.getElapsedTime() > 1500) {
                     follower.followPath(grab1Score, true);
                     intake.intake(0.95, 0.0);
                     setPathState(23);
@@ -340,10 +342,10 @@ public class BlueFarAutoLoadingZoneSpamming extends LinearOpMode {
 
                     if(pickupCounter >= pickupLimit)
                         setPathState(900);
-                    else if (pickupCounter == 1)
-                        setPathState(30);
+//                    else if (pickupCounter == 1 || pickupCounter == 2)
+//                        setPathState(20);
                     else
-                        setPathState(20);
+                        setPathState(30);
                 }
                 break;
 

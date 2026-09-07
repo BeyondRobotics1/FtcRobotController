@@ -1,20 +1,21 @@
 package org.firstinspires.ftc.teamcode.decode.Subsystems;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-
 public class Shooter {
 
     public enum ShootingLocation
     {
-        OUT_ZONE,
+        AUTO_NEAR,
+        AUTO_FAR,
+        OUT_ZONE_BLUE,
+        OUT_ZONE_RED,
+        FAR_FAR,
         FAR,
         MEDIUM,
         NEAR
@@ -26,20 +27,24 @@ public class Shooter {
     private DcMotorEx rightFlywheel;
     private LinearOpMode mode;
 
-
     PIDController controller;
 
-    private MotorGroup flyWheel;
-    public static double kP = 0.002; //0.001
-    public static double kI = 0.25; //0.25
+    //
+    public static double kP = 0.01; //0.01
+    public static double kI = 0.1; //0.1
     public static double kD = 0;
     public static double kF = 0.75;
 
 
-    double targetSpeedOutZone = 0.525;//0.52
-    double targetSpeedFar = 0.452;//0.44
-    double targetSpeedMedium = 0.42;//0.42
-    double targetSpeedNear = 0.392;//0.394
+    double targetSpeedOutZoneRed = 0.535;//0.535
+    double targetSpeedOutZoneBlue = 0.535;//0.535
+    double targetSpeedFarFar = 0.43;//0.43
+    double targetSpeedFar = 0.405;//0.41
+    double targetSpeedMedium = 0.39;//, 0.395
+    double targetSpeedNear = 0.375;//0.395
+
+    double targetSpeedAutoFar = 0.510;//535 Shooting speed for far auto
+    double targetSpeedAutoNear = 0.405;//415, 0.407 Shooting power for near auto
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
     //MOTOR MAX RMP = 6000;
@@ -67,35 +72,38 @@ public class Shooter {
         shooterPosition = ShootingLocation.MEDIUM;
         isFlyWheelReady = false;
 
-//        if( alliance == DecodeBlackBoard.BLUE)
-//        {
-//            targetSpeedOutZone = 0.522; //0.526
-//            targetSpeedFar = 0.441; //0.444
-//            targetSpeedMedium = 0.42; //0.425
-//            targetSpeedNear = 0.394;//0.395
-//        }
-
         targetSpeed = targetSpeedMedium;
     }
 
     //this method should be called in the loop
     //all the time
-    public void shoot() {
+    public void doFlyWheelVelocityPID() {
         if (shooterPosition == ShootingLocation.NEAR)
             targetSpeed = targetSpeedNear;
         else if (shooterPosition == ShootingLocation.FAR)
             targetSpeed = targetSpeedFar;
-        else if (shooterPosition == ShootingLocation.OUT_ZONE)
-            targetSpeed = targetSpeedOutZone;
+        else if (shooterPosition == ShootingLocation.MEDIUM)
+            targetSpeed = targetSpeedMedium;
+        else if (shooterPosition == ShootingLocation.FAR_FAR)
+            targetSpeed = targetSpeedFarFar;
+        else if (shooterPosition == ShootingLocation.OUT_ZONE_BLUE)
+            targetSpeed = targetSpeedOutZoneBlue;
+        else if (shooterPosition == ShootingLocation.OUT_ZONE_RED)
+            targetSpeed = targetSpeedOutZoneRed;
+        else if (shooterPosition == ShootingLocation.AUTO_NEAR)
+            targetSpeed = targetSpeedAutoNear;
+        else if (shooterPosition == ShootingLocation.AUTO_FAR)
+            targetSpeed = targetSpeedAutoFar;
         else
             targetSpeed = targetSpeedMedium;
 
-
         //far zone use different kI
-        if (targetSpeed > 0.5)
-            kI = 0.3;
-        else
-            kI = 0.25;
+        if (targetSpeed > 0.5) {
+            kI = 0.15;
+        }
+        else {
+            kI = 0.1;
+        }
 
         controller.setPID(kP, kI, kD);
 
@@ -124,7 +132,7 @@ public class Shooter {
         //We can't use the negative power which cause motor damage
         if (power < 0) {
             //mode.telemetry.addData("Negative PID Power", power);
-            power = 0.0;
+            power = 0.0005;//0.0
         }
 
         //mode.telemetry.addData("Power Applied", power);

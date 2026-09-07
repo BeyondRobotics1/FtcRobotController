@@ -20,17 +20,18 @@ public class IMULocalizer {
         NEAR_SHOOTING_ZONE,
         MEDIUM_SHOOTING_ZONE,
         FAR_SHOOTING_ZONE,
+        FAR_FAR_SHOOTING_ZONE,
         OUT_SHOOTING_ZONE
     }
 
     //know locations
     //red near zone
-    public static final double RED_X1 = 22;//25;//24
-    public static final double RED_Y1 = 33;//35; //30
-    public static final double RED_X2 = 70;//80;
-    public static final double RED_Y2 = 84;//90;
-    public static final double RED_X3 = 122;//131;//128
-    public static final double RED_Y3 = 32;//32; //32
+    public static final double RED_X1 = 20;//22;//24
+    public static final double RED_Y1 = 30;//33; //30
+    public static final double RED_X2 = 70;//70;
+    public static final double RED_Y2 = 84;//84;
+    public static final double RED_X3 = 121;//122;//128
+    public static final double RED_Y3 = 30;//32; //32
     //red out zone
     public static final double RED_X4 = 52;
     public static final double RED_Y4 = 110;
@@ -38,23 +39,25 @@ public class IMULocalizer {
     public static final double RED_Y5 = 110;
 
     //red near zone
-    public static final double BLUE_X1 = 23;// 14;
-    public static final double BLUE_Y1 = 107;//114;
-    public static final double BLUE_X2 = 70;//62;
-    public static final double BLUE_Y2 = 57;//66;
-    public static final double BLUE_X3 = 122;//130;
-    public static final double BLUE_Y3 = 105;//114;
+    public static final double BLUE_X1 = 20;// 23;
+    public static final double BLUE_Y1 = 111;//107;
+    public static final double BLUE_X2 = 70;//70;
+    public static final double BLUE_Y2 = 57;//57;
+    public static final double BLUE_X3 = 121;//122;
+    public static final double BLUE_Y3 = 109;//105;
     //red out zone
     public static final double BLUE_X4 = 52;
     public static final double BLUE_Y4 = 32;//39; //36
     public static final double BLUE_X5 = 84;
     public static final double BLUE_Y5 = 32;//39;
 
-    public static final double RED_FAR_ZONE_DISTANCE = 80;//86;
-    public static final double RED_MEDIUM_ZONE_DISTANCE = 60;//70;
+    public static final double RED_FAR_FAR_ZONE_DISTANCE = 82;//80;
+    public static final double RED_FAR_ZONE_DISTANCE = 66;//80;
+    public static final double RED_MEDIUM_ZONE_DISTANCE = 52;//44;
 
-    public static final double BLUE_FAR_ZONE_DISTANCE = 80;//70;
-    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 60;//50;
+    public static final double BLUE_FAR_FAR_ZONE_DISTANCE = 82;//80;
+    public static final double BLUE_FAR_ZONE_DISTANCE = 66;//80;
+    public static final double BLUE_MEDIUM_ZONE_DISTANCE = 52;//44;
 
     //hardware
     LinearOpMode mode;
@@ -140,17 +143,6 @@ public class IMULocalizer {
             pinpoint.setPosition(robotPose);
     }
 
-    //drive robot to align with the white tap
-    //of the human player loading zone
-    public void resetIMUPose()
-    {
-        if(alliance == DecodeBlackBoard.RED)
-            setIMUPose(DecodeBlackBoard.RED_RESET_POSE);
-        else
-            setIMUPose(DecodeBlackBoard.BLUE_RESET_POSE);
-
-    }
-
     public boolean update()
     {
         if(pinpoint == null)
@@ -173,7 +165,8 @@ public class IMULocalizer {
         {
             detectRedRobotZone(x, y);
 
-            if(botHeadingDegrees > -30 && botHeadingDegrees < 120)
+            //if(botHeadingDegrees > -30 && botHeadingDegrees < 120)
+            if(botHeadingDegrees > 0 && botHeadingDegrees < 80)
                 isHeadingToGoal = false;
             else
                 isHeadingToGoal = true;
@@ -182,7 +175,8 @@ public class IMULocalizer {
         {
             detectBlueRobotZone(x, y);
 
-            if(botHeadingDegrees > -120 && botHeadingDegrees < 30)
+            //if(botHeadingDegrees > -120 && botHeadingDegrees < 30)
+            if(botHeadingDegrees > -80 && botHeadingDegrees < 0)
                 isHeadingToGoal = false;
             else
                 isHeadingToGoal = true;
@@ -226,7 +220,9 @@ public class IMULocalizer {
             //in shooting zone
             if(inZone)
             {
-                if(robotDistanceToGoal >= BLUE_FAR_ZONE_DISTANCE)
+                if(robotDistanceToGoal >= BLUE_FAR_FAR_ZONE_DISTANCE)
+                    robotZone = RobotZone.FAR_FAR_SHOOTING_ZONE;
+                else if(robotDistanceToGoal >= BLUE_FAR_ZONE_DISTANCE)
                     robotZone = RobotZone.FAR_SHOOTING_ZONE;
                 else if (robotDistanceToGoal >= BLUE_MEDIUM_ZONE_DISTANCE)
                     robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
@@ -274,7 +270,9 @@ public class IMULocalizer {
             //in shooting zone
             if(inZone)
             {
-                if(robotDistanceToGoal >= RED_FAR_ZONE_DISTANCE)
+                if(robotDistanceToGoal >= RED_FAR_FAR_ZONE_DISTANCE)
+                    robotZone = RobotZone.FAR_FAR_SHOOTING_ZONE;
+                else if(robotDistanceToGoal >= RED_FAR_ZONE_DISTANCE)
                     robotZone = RobotZone.FAR_SHOOTING_ZONE;
                 else if (robotDistanceToGoal >= RED_MEDIUM_ZONE_DISTANCE)
                     robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
@@ -297,7 +295,8 @@ public class IMULocalizer {
          *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
          *  Forward of center is a positive number, backwards is a negative number.
          */
-        pinpoint.setOffsets(106, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        //106, -143.6
+        pinpoint.setOffsets(118, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

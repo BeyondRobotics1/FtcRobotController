@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeTeleOp;
-import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
@@ -124,7 +122,7 @@ public class ShooterTest extends LinearOpMode {
             if (isBlueTeleOp) {
                 alliance = DecodeBlackBoard.BLUE;
                 turret = new Turret(hardwareMap, this,
-                        DecodeBlackBoard.BLUE_RESET_POSE,
+                        DecodeBlackBoard.BLUE_FAR_RESET_POSE,
                         DecodeBlackBoard.BLUE_TARGET_POSE,
                         alliance,
                         true,
@@ -136,7 +134,7 @@ public class ShooterTest extends LinearOpMode {
             } else {
                 alliance = DecodeBlackBoard.RED;
                 turret = new Turret(hardwareMap, this,
-                        DecodeBlackBoard.RED_RESET_POSE,
+                        DecodeBlackBoard.RED_FAR_RESET_POSE,
                         DecodeBlackBoard.RED_TARGET_POSE,
                         alliance,
                         true,
@@ -218,7 +216,8 @@ public class ShooterTest extends LinearOpMode {
                         if (artifactColors[0] != Color.WHITE &&
                                 artifactColors[1] != Color.WHITE &&
                                 artifactColors[2] != Color.WHITE)
-                            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                            //intake.setIntakeMode(Intake.IntakeMode.IDLE);
+                            intake.intake(0.5, 0);//0
                         else if (artifactColors[0] != Color.WHITE &&
                                 artifactColors[1] != Color.WHITE)
                             intake.setIntakeMode(Intake.IntakeMode.HIN);
@@ -252,15 +251,23 @@ public class ShooterTest extends LinearOpMode {
             //gamepad1 a, shoot from close position
             //gamepad1 b, shoot from medium position
             //gamepad1 y, shoot from far position
+            //gamepad1 x, shoot from far far position
+            //gamepad1 dpad up, shoot from out position
+
             if (gamepad1.aWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.NEAR);
-            }
-            else if (gamepad1.bWasPressed()) {
+            }else if (gamepad1.bWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
             }else if (gamepad1.yWasPressed()) {
                 shooter.setShootingLocation(Shooter.ShootingLocation.FAR);
             } else if (gamepad1.xWasPressed()) {
-                shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE);
+                shooter.setShootingLocation(Shooter.ShootingLocation.FAR_FAR);
+            }
+            else if (gamepad1.dpadUpWasPressed()) {
+                if(isBlueTeleOp)
+                    shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);
+                else
+                    shooter.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_RED);
             }
 
             Shooter.ShootingLocation shooterPosition = shooter.getShooterPosition();
@@ -269,14 +276,17 @@ public class ShooterTest extends LinearOpMode {
                 telemetry.addLine("Shooting from Near");
             else if (shooterPosition == Shooter.ShootingLocation.FAR)
                 telemetry.addLine("Shooting from FAR");
-            else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE)
+            else if (shooterPosition == Shooter.ShootingLocation.FAR_FAR)
+                telemetry.addLine("Shooting from FAR FAR");
+            else if (shooterPosition == Shooter.ShootingLocation.OUT_ZONE_RED ||
+                    shooterPosition == Shooter.ShootingLocation.OUT_ZONE_BLUE)
                 telemetry.addLine("Shooting from OUT ZONE");
             else
-            telemetry.addLine("Shooting from MEDIUM");;
+                telemetry.addLine("Shooting from MEDIUM");;
 
 
             if (isShooterOn)
-                shooter.shoot();
+                shooter.doFlyWheelVelocityPID();
             else
                 shooter.stop();
         }
@@ -284,10 +294,6 @@ public class ShooterTest extends LinearOpMode {
         private void turretOp() {
             isHeadingToGoal = turret.isHeadingToGoal();
             robotZone = turret.getRobotZone();
-
-            //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
-            if(gamepad2.left_bumper)
-                turret.resetIMUPose();
 
             //use gamepad2 x button to disable or enable auto aiming
             if(gamepad2.xWasPressed())

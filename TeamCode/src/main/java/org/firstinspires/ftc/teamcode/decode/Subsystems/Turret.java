@@ -33,23 +33,46 @@ public class Turret {
     // target x, y coordinates in INCH
     double x0, y0;
 
-    public static double servoPositionRight = 0; //90 degree
-    public static double servoPositionLeft = 0.380;//0.42; //-90 degree
-    public static double servoPositionMiddle = 0.197;//0.195;//0 degree
-    public static double servoPreviousPositionCalibration = 0.0;//0 degree
-
-    public static double servoPositionObeliskDetectionRedAlliance = 0.357;
-    public static double servoPositionObeliskDetectionBlueAlliance = 0.042;
-
-    public static double servoPositionAutoShootingRedAlliance = 0.296;
-    public static double servoPositionAutoShootingBlueAlliance = 0.096;
 
     //Limelight 3A auto aiming target degree of Tx
-    public static double TARGET_ANGLE_DEGREE_RED = 0.0;
-    public static double TARGET_ANGLE_DEGREE_BLUE = 6.0;
+    public static double TARGET_ANGLE_DEGREE_RED_NEAR = 0; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE_NEAR = 0; //6
 
-    double servoPositionRedFarAuto = 0.15;
-    double servoPositionBlueFarAuto = 0.25;
+    public static double TARGET_ANGLE_DEGREE_RED_FAR = 0; //0
+    public static double TARGET_ANGLE_DEGREE_BLUE_FAR = 0; //6
+
+
+
+    //control how robot pose to servo position
+    public static double FULL_SERVO_RANGE_DEGREES_RED =  281.2; //
+    public static double FULL_SERVO_RANGE_DEGREES_BLUE_NEAR = 280; //285 near to offset the targeting angle to positive
+    public static double FULL_SERVO_RANGE_DEGREES_BLUE_FAR = 285; //285 far to offset the targeting angle to 0
+    public static double halfServoRangeDegrees = 140.6;//138;//133.78;
+    public static double fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_RED; //for red, 186 for blue
+
+    public static double servoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
+    public static double servoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
+    public static double servoPositionMiddle = 0.5;//0.197;//0 degree
+
+
+    public static double servoPreviousPositionCalibration = 0.0;//0 degree
+
+    public static double servoPositionObeliskDetectionRedAllianceNear = 0.75;
+    public static double servoPositionObeliskDetectionBlueAllianceNear = 0.25;
+
+    public static double servoPositionObeliskDetectionRedAllianceFar = 0.830;
+    public static double servoPositionObeliskDetectionBlueAllianceFar = 0.170; //175
+
+
+
+    public static double servoShootingPositionRedNearAuto = 0.655; //0.665, 0.65
+    public static double servoShootingPositionBlueNearAuto = 0.347;//0.345
+
+    public static double servoShootingPositionRedFarAuto = 0.735;//745
+    public static double servoShootingPositionBlueFarAuto = 0.265; //260
+
+
+
 
     int alliance = DecodeBlackBoard.BLUE;
     int targetTagID; //derived from alliance
@@ -60,10 +83,10 @@ public class Turret {
 
     //PID controller for limelight 3A auto aiming
     PIDController controller;
-    public static double kP = 0.001;//0.001; //0.8
-    public static double kI = 0.005;//0.25; //0.01
+    public static double kP = 0.0006;//0.001;// v1: 0.001;
+    public static double kI = 0.003;//0.005;// v1: 0.25;
     public static double kD = 0;
-    public static double kF = 0.0095;
+    public static double kF = 0.000;//0.0005;//v1: 0.0095;
     public static double targetAngleDegree = 0;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
@@ -77,19 +100,26 @@ public class Turret {
 
         this.alliance = alliance;
 
-        if(alliance == DecodeBlackBoard.BLUE)
+        if(alliance == DecodeBlackBoard.BLUE) {
             targetTagID = 20;
-        else
+
+            fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_BLUE_NEAR;
+        }
+        else {
+            fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_RED;
             targetTagID = 24;
+        }
 
         this.mode = mode;
 
         this.mode.telemetry = new MultipleTelemetry(this.mode.telemetry, dashboard.getTelemetry());
         controller = new PIDController(kP, kI, kD);
 
-
         turretLeft = hardwareMap.get(Servo.class, "turretLeft");
         turretRight = hardwareMap.get(Servo.class, "turretRight");
+
+        turretLeft.setDirection(Servo.Direction.REVERSE);
+        turretRight.setDirection(Servo.Direction.REVERSE);
 
         if(usePinpoint) {
             localizer = new IMULocalizer(hardwareMap, mode, robotPose, targetPose, alliance);
@@ -118,14 +148,24 @@ public class Turret {
         if(!isAuto)
         {
             if(this.alliance == DecodeBlackBoard.RED) {
-                targetAngleDegree = TARGET_ANGLE_DEGREE_RED;
+                targetAngleDegree = TARGET_ANGLE_DEGREE_RED_NEAR;
             }
             else {
-                targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE;
+                targetAngleDegree = TARGET_ANGLE_DEGREE_BLUE_NEAR;
             }
         }
 
         setServoPosition(servoPositionMiddle);
+    }
+
+    public void setFullServoRangeDegreesBlue()
+    {
+        Turret.fullServoRangeDegrees = FULL_SERVO_RANGE_DEGREES_BLUE_FAR;
+    }
+
+    public void setTargetAngleDegree(double targetAngleDegree)
+    {
+        Turret.targetAngleDegree = targetAngleDegree;
     }
 
     public boolean isLimeLight3ARunning()
@@ -140,14 +180,15 @@ public class Turret {
     public void setOutZoneAutoServoPosition(int alliance)
     {
         if(alliance == DecodeBlackBoard.BLUE)
-            setServoPosition(servoPositionBlueFarAuto);
+            setServoPosition(servoShootingPositionBlueFarAuto);
         else
-            setServoPosition(servoPositionRedFarAuto);
+            setServoPosition(servoShootingPositionRedFarAuto);
     }
 
     public void setServoPosition(double position)
     {
-        turretLeft.setPosition(position);
+        if(turretLeft != null)
+            turretLeft.setPosition(position);
 
         if(turretRight != null)
             turretRight.setPosition(position);
@@ -155,7 +196,10 @@ public class Turret {
 
     public double getServoPosition()
     {
-        return turretLeft.getPosition();
+        if(turretLeft != null)
+            return turretLeft.getPosition();
+        else
+            return turretRight.getPosition();
     }
 
     public double getBotHeadingDegrees()
@@ -183,6 +227,12 @@ public class Turret {
             localizer.setIMUPoseToRobotStartPose();
     }
 
+    public void setIMUPose(Pose2D robotPose)
+    {
+        if(localizer != null)
+            localizer.setIMUPose(robotPose);
+    }
+
     //set the turret to center heading
     //could be useful when auto aiming is not
     //working as expected
@@ -191,13 +241,6 @@ public class Turret {
         setServoPosition(servoPositionMiddle);
     }
 
-    //drive robot to align with the white tap
-    //of the human player loading zone
-    public void resetIMUPose()
-    {
-        if(localizer != null)
-            localizer.resetIMUPose();
-    }
 
 
     //return the distance from robot to goal
@@ -287,6 +330,34 @@ public class Turret {
     }
 
 
+    //get limelight heading in degree
+    public double getTx()
+    {
+        if (limelight != null) {
+            LLResult result = limelight.getLatestResult();
+
+            // Access fiducial results
+            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
+            for (LLResultTypes.FiducialResult fr : fiducialResults) {
+
+                int tagID = fr.getFiducialId();
+                double currentAngleDegree = result.getTx();
+
+                mode.telemetry.addData("tagID:", tagID);
+                mode.telemetry.addData("targetTagID:", targetTagID);
+
+                mode.telemetry.addData("Limelight3A Tx (Degree):", "%.3f", currentAngleDegree);
+                //mode.telemetry.addData("Target Angle  (Degree):", "%.3f", targetAngleDegree);
+
+                if (targetTagID == tagID) {
+                    return currentAngleDegree;
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
     public void autoAim(boolean enabled)
     {
         if(localizer == null || !localizer.update())
@@ -323,27 +394,34 @@ public class Turret {
             double alpha = Math.toDegrees(Math.atan2(Math.abs(x - x0), Math.abs(y - y0)));
             double theta;
 
-            if (alliance == DecodeBlackBoard.RED)
+            if (alliance == DecodeBlackBoard.RED) {
                 theta = -90 - alpha + heading;
-            else
+            }
+            else {
                 theta = 90 + alpha - heading;
+            }
 
             // calculate servo position
             double servoPosition;
 
-            double servoPositionCalibration = calibrateTurret();
 
-            if (alliance == DecodeBlackBoard.RED)
-                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
-            else
-                servoPosition = servoPositionLeft * (theta + 90.0) / 180;
+
+            servoPosition = servoPositionLeft * (theta + halfServoRangeDegrees) / fullServoRangeDegrees;
 
             mode.telemetry.addData("IMU location based servo position:", "%.5f", servoPosition);
 
-            servoPosition += servoPositionCalibration;
+            if (servoPosition > servoPositionLeft) {
+                servoPosition = servoPositionLeft;
+            } else if (servoPosition < servoPositionRight) {
+                servoPosition = servoPositionRight;
+            }
+
+            setServoPosition(servoPosition);
+
+            double servoPositionCalibration = calibrateTurret();
+            servoPosition = getServoPosition() + servoPositionCalibration;
 
             mode.telemetry.addData("Limelight calibrated servo position:", "%.5f", servoPosition);
-
 
             if (servoPosition > servoPositionLeft) {
                 servoPosition = servoPositionLeft;

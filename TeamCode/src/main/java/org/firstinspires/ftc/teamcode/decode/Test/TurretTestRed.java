@@ -21,7 +21,7 @@ public class TurretTestRed extends LinearOpMode {
 
         isInitialPinpointPositionSet = false;
         Turret turret = new Turret(hardwareMap, this,
-                DecodeBlackBoard.RED_RESET_POSE,//new Pose2D(DistanceUnit.INCH, 8, 111, AngleUnit.DEGREES, 0),
+                DecodeBlackBoard.RED_FAR_RESET_POSE,//new Pose2D(DistanceUnit.INCH, 8, 111, AngleUnit.DEGREES, 0),
                 DecodeBlackBoard.RED_TARGET_POSE,
                 DecodeBlackBoard.RED,
                 true,
@@ -52,17 +52,17 @@ public class TurretTestRed extends LinearOpMode {
             {
                 double pivotPosition = Math.abs(gamepad1.left_trigger);
 
-                if(pivotPosition > 0.380){
-                    pivotPosition = 0.380;
+                if(pivotPosition > Turret.servoPositionLeft){//0.380
+                    pivotPosition = Turret.servoPositionLeft;
                 }
                 turret.setServoPosition(pivotPosition);
             }
             else if (gamepad1.a)
-                turret.setServoPosition(0.195);
+                turret.setServoPosition(Turret.servoPositionMiddle); //0.195
             else if (gamepad1.b)
-                turret.setServoPosition(0.380);
+                turret.setServoPosition(Turret.servoPositionLeft); //0.380
             else if (gamepad1.x)
-                turret.setServoPosition(0);
+                turret.setServoPosition(Turret.servoPositionRight); //0
             else if (gamepad1.y)
                 turret.autoAim(false);
             else
