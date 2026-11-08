@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public class TeleOpAudience extends LinearOpMode {
 
     private DriveTrain driveTrain;
+    private Intake intake;
+
 
     Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect strongRumbleEffect;

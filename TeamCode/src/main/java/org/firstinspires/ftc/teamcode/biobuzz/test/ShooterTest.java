@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.biobuzz.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PollenShooter;
 
 //@Disabled
@@ -12,7 +10,7 @@ import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PollenShooter;
 
 @TeleOp(name = "Pollen Shooter Test", group = "BioBuzz Test")
 
-public class PollenShooterTest  extends LinearOpMode {
+public class ShooterTest extends LinearOpMode {
 
 
 

@@ -30,8 +30,8 @@ public class Intake {
     public static double LED_INDIGO = 0.666;
     public static double LED_VIOLET = 0.722;
 
-    private DcMotor intakeMotor;
-    private DcMotor transferMotor;
+    final private DcMotor intakeMotor;
+    final private DcMotor transferMotor;
     private Servo led;
     private LinearOpMode mode;
 

@@ -6,32 +6,37 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.decode.Subsystems.Shooter;
-
 public class PollenShooter {
+
+    final public int kACHIEVABLE_MAX_TICKS_PER_SECOND = 2800; //
 
     private DcMotorEx flywheel;
     private LinearOpMode mode;
 
-    PIDController controller;
+    private PIDController controller;
 
-    //
-    public static double kP = 0.01; //0.01
-    public static double kI = 0.1; //0.1
-    public static double kD = 0;
-    public static double kF = 0.9;
+    //PID parameters
+    private double kP = 0.035; //0.01
+    private double kI = 0.1; //0.1
+    private double kD = 0;
+    private double kF = 0.9;
 
-    double targetSpeedFarFar = 0.43;//0.43
-    double targetSpeedFar = 0.405;//0.41
-    double targetSpeedMedium = 0.39;//, 0.395
-    double targetSpeedNear = 0.375;//0.395
+    private double targetSpeedFarFar = 0.55;//0.43
+    private double targetSpeedFar = 0.52;//0.41
+    private double targetSpeedMedium = 0.48;//, 0.395
+    private double targetSpeedNear = 0.45;//0.395
 
 
     private boolean isFlyWheelReady;
-    public static double targetVelocity;
-    public static double targetSpeed;
+    public double targetVelocity;
+    public double targetSpeed;
 
-    public PollenShooter(HardwareMap hardwareMap, LinearOpMode linearOpMode, int alliance) {
+    //used for PID control
+    double velocity, pid, ff, power;
+
+    public PollenShooter(HardwareMap hardwareMap,
+                         LinearOpMode linearOpMode,
+                         int alliance) {
         this.mode = linearOpMode;
 
         flywheel = hardwareMap.get(DcMotorEx.class, "pollenFlywheel");
@@ -49,18 +54,18 @@ public class PollenShooter {
     {
         controller.setPID(kP, kI, kD);
 
-        targetVelocity = targetSpeed * 2800;
+        targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
 
         //motor could give us negative velocity
-        double velocity = Math.abs(flywheel.getVelocity());
+        velocity = Math.abs(flywheel.getVelocity());
         if (velocity < 5)
             return;
 
-        double pid = controller.calculate(velocity, targetVelocity);
+        pid = controller.calculate(velocity, targetVelocity);
 
-        double ff = kF * targetSpeed;
+        ff = kF * targetSpeed;
 
-        double power = pid + ff;
+        power = pid + ff;
 
         //calculated power could be negative
         //We can't use the negative power which cause motor damage
@@ -77,6 +82,11 @@ public class PollenShooter {
             isFlyWheelReady = true;
         else
             isFlyWheelReady = false;
+    }
+
+    public boolean getIsFryWheelReady()
+    {
+        return isFlyWheelReady;
     }
 
     //shoot power is negative
