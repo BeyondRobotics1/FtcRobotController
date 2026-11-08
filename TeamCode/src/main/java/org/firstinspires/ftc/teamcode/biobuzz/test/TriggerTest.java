@@ -4,8 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.NectarTrigger;
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PollenTrigger;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Trigger;
 
 //@Disabled
 
@@ -15,8 +14,8 @@ public class TriggerTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        PollenTrigger pollenTrigger = null;
-        NectarTrigger nectarTrigger = null;
+        Trigger pollenTrigger = null;
+        Trigger nectarTrigger = null;
 
 
         telemetry.addData("gamepad1.x", "Pollen Trigger" );
@@ -33,12 +32,12 @@ public class TriggerTest extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
 
             if (gamepad1.x && pollenTrigger == null) {
-                pollenTrigger = new PollenTrigger(hardwareMap);
+                pollenTrigger = new Trigger(hardwareMap, "pollenTrigger", 0.03, 0.27);
 
                 nectarTrigger = null;
             }
             else if (gamepad1.y && nectarTrigger == null) {
-                nectarTrigger = new NectarTrigger(hardwareMap);
+                nectarTrigger = new Trigger(hardwareMap, "nectarTrigger", 0.0, 0.21);
 
                 pollenTrigger = null;
             }
@@ -53,7 +52,7 @@ public class TriggerTest extends LinearOpMode {
                     double pivotPosition = Math.abs(gamepad1.left_trigger);
 
                     telemetry.addData("Pollen Trigger position", pivotPosition);
-                    pollenTrigger.setPosition(pivotPosition);
+                    pollenTrigger.setServoPosition(pivotPosition);
                 }
             }
             else if(nectarTrigger != null) {
@@ -66,7 +65,7 @@ public class TriggerTest extends LinearOpMode {
                     double pivotPosition = Math.abs(gamepad1.left_trigger);
 
                     telemetry.addData("Nectar Trigger position", pivotPosition);
-                    nectarTrigger.setPosition(pivotPosition);
+                    nectarTrigger.setServoPosition(pivotPosition);
                 }
             }
 

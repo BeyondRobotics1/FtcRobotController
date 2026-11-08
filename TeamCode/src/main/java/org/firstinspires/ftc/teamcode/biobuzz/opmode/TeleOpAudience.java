@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.ShooterGroup;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class TeleOpAudience extends LinearOpMode {
 
     private DriveTrain driveTrain;
     private Intake intake;
+    private ShooterGroup shooters;
 
 
     Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
@@ -38,6 +40,14 @@ public class TeleOpAudience extends LinearOpMode {
         telemetry.addLine("Initializing drive train");
         telemetry.update();
         driveTrain = new DriveTrain(hardwareMap, this, false);
+
+        telemetry.addLine("Initializing shooters");
+        telemetry.update();
+        shooters = new ShooterGroup(hardwareMap, this);
+
+        telemetry.addLine("Initializing intake");
+        telemetry.update();
+        intake = new Intake(hardwareMap, this);
 
 
 

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.biobuzz.test;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PollenShooter;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
 
 //@Disabled
 
@@ -13,10 +13,19 @@ import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PollenShooter;
 public class ShooterTest extends LinearOpMode {
 
 
-
     @Override
     public void runOpMode() throws InterruptedException {
-        PollenShooter shooter = new PollenShooter(hardwareMap, this, 1);
+        Shooter pollenShooter = new Shooter(hardwareMap,
+                this,
+                "pollenShooter",
+                0.035,
+                0.1,
+                0,
+                0.9,
+                0.55,
+                0.52,
+                0.48,
+                0.45);
 
 
         telemetry.update();
