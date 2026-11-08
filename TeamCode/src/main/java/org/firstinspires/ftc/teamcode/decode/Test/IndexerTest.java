@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Indexer;
-
+@Disabled
 @TeleOp(name = "Indexer Test", group = "Decode Test")
 
 public class IndexerTest extends LinearOpMode {

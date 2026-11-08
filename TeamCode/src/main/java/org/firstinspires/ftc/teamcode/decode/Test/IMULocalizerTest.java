@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.IMULocalizer;
 
 import java.util.List;
-
+@Disabled
 @TeleOp(name = "IMULocalizer Test", group = "Decode Test")
 public class IMULocalizerTest extends LinearOpMode {
 

@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
 
 import java.util.List;
-
+@Disabled
 @TeleOp(name = "Decode TeleOp Test", group = "Decode Test")
 public class TeleOpTest extends LinearOpMode {
 

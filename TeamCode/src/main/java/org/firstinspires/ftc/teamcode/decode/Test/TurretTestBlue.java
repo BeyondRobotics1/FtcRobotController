@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.decode.Test;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Turret;
-
+@Disabled
 @TeleOp(name = "Turret Tuner Blue", group = "Decode Test")
 public class TurretTestBlue extends LinearOpMode {
 

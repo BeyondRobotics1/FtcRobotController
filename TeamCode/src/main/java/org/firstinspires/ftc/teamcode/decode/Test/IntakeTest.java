@@ -2,11 +2,12 @@ package org.firstinspires.ftc.teamcode.decode.Test;
 
 import android.graphics.Color;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.decode.Subsystems.Intake;
-
+@Disabled
 @TeleOp(name = "Intake Test", group = "Decode Test")
 public class IntakeTest extends LinearOpMode {
     @Override

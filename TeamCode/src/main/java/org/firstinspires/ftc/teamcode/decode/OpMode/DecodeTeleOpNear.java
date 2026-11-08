@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -23,7 +24,7 @@ import org.firstinspires.ftc.teamcode.decode.Subsystems.Trigger;
 import java.util.List;
 
 @TeleOp(name = "Decode TeleOp NEAR", group = "A")
-
+@Disabled
 public class DecodeTeleOpNear extends LinearOpMode {
 
     public enum ShootAutoCompleteMode
