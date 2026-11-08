@@ -9,6 +9,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Shooter {
     final public int kACHIEVABLE_MAX_TICKS_PER_SECOND = 2800;
 
+    public enum ShootingLocation
+    {
+        AUTO,
+        FAR_FAR,
+        FAR,
+        MEDIUM,
+        NEAR
+    }
+
     private DcMotorEx flywheel;
     private LinearOpMode mode;
 
@@ -49,6 +58,7 @@ public class Shooter {
     private double targetVelocity;
     private double targetSpeed;
 
+    ShootingLocation shootingLocation = ShootingLocation.MEDIUM;
     //used for PID control
     private double velocity, pid, ff, power;
 
@@ -99,6 +109,18 @@ public class Shooter {
     }
 
     public void doFlyWheelPID(){
+
+        if (shootingLocation == ShootingLocation.NEAR)
+            targetSpeed = targetSpeedNear;
+        else if (shootingLocation == ShootingLocation.FAR)
+            targetSpeed = targetSpeedFar;
+        else if (shootingLocation == ShootingLocation.MEDIUM)
+            targetSpeed = targetSpeedMedium;
+        else if (shootingLocation == ShootingLocation.FAR_FAR)
+            targetSpeed = targetSpeedFarFar;
+        else
+            targetSpeed = targetSpeedMedium;
+
         controller.setPID(kP, kI, kD);
 
         targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
@@ -132,5 +154,15 @@ public class Shooter {
 
     public void stop(){
         flywheel.setPower(0);
+    }
+
+    public void setShootingLocation(Shooter.ShootingLocation position)
+    {
+        shootingLocation = position;
+    }
+
+    public ShootingLocation getShooterPosition()
+    {
+        return shootingLocation;
     }
 }

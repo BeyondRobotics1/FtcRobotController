@@ -31,14 +31,29 @@ public class ShooterGroup {
                 0.48,
                 0.45);
     }
+
     public void doFlyWheelPID(){
         pollenShooter.doFlyWheelPID();
         nectarShooter.doFlyWheelPID();
     }
+
     public void stop(){
         pollenShooter.stop();
         nectarShooter.stop();
     }
+
+    public void setPower(double power)
+    {
+        pollenShooter.setPower(power);
+        nectarShooter.setPower(power);
+    }
+
+    public void setShootingLocation(Shooter.ShootingLocation position)
+    {
+        pollenShooter.setShootingLocation(position);
+        nectarShooter.setShootingLocation(position);
+    }
+
     public boolean isPollenFlyWheelReady(){
         return pollenShooter.getIsFlyWheelReady();
     }

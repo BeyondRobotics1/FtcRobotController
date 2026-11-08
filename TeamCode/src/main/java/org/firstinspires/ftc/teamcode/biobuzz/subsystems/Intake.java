@@ -124,4 +124,18 @@ public class Intake {
         intakeMotor.setPower(localPower);
         transferMotor.setPower(-localPower);
     }
+
+    //TBD
+    public int detectedArtifacts()
+    {
+        return 1;
+    }
+
+
+    public void setLedColor(double colorPosition)
+    {
+        if(led != null) {
+            led.setPosition(colorPosition);
+        }
+    }
 }

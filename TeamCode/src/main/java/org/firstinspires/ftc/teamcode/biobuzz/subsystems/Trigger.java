@@ -3,9 +3,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Trigger {
-    Servo trigger;
-    double openPosition;
-    double closePosition;
+
     /*for nectar
     nectar open position: 0.0
     nectar close position: 0.21
@@ -13,6 +11,17 @@ public class Trigger {
     pollen open position: 0.03
     pollen close position: 0.27
     */
+    public final static double kNectarTriggerOpenPosition = 0;
+    public final static double kNectarTriggerClosePosition = 0.21;
+
+    public final static double kPollenTriggerOpenPosition = 0.03;
+    public final static double kPollenTriggerClosePosition = 0.27;
+
+
+    Servo trigger;
+    double openPosition;
+    double closePosition;
+
     /**
      *
      * @param hardwareMap
