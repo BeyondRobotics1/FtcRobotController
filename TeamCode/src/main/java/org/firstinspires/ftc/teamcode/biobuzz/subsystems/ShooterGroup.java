@@ -10,48 +10,48 @@ public class ShooterGroup {
     public ShooterGroup(HardwareMap hardwareMap, LinearOpMode linearOpMode){
         pollenShooter = new Shooter(hardwareMap,
                 linearOpMode,
-                "pollenShooter",
+                "pollenFlywheel",
                 0.035,
                 0.1,
                 0,
                 0.9,
                 0.55,
                 0.52,
-                0.48,
-                0.45);
-        nectarShooter = new Shooter(hardwareMap,
-                linearOpMode,
-                "nectarShooter",
-                0.035,
-                0.1,
-                0,
-                0.9,
-                0.55,
-                0.52,
-                0.48,
-                0.45);
+                0.50,
+                0.48);
+//        nectarShooter = new Shooter(hardwareMap,
+//                linearOpMode,
+//                "nectarFlywheel",
+//                0.035,
+//                0.1,
+//                0,
+//                0.9,
+//                0.55,
+//                0.52,
+//                0.50,
+//                0.48);
     }
 
     public void doFlyWheelPID(){
         pollenShooter.doFlyWheelPID();
-        nectarShooter.doFlyWheelPID();
+        //nectarShooter.doFlyWheelPID();
     }
 
     public void stop(){
         pollenShooter.stop();
-        nectarShooter.stop();
+        //nectarShooter.stop();
     }
 
     public void setPower(double power)
     {
         pollenShooter.setPower(power);
-        nectarShooter.setPower(power);
+        //nectarShooter.setPower(power);
     }
 
     public void setShootingLocation(Shooter.ShootingLocation position)
     {
         pollenShooter.setShootingLocation(position);
-        nectarShooter.setShootingLocation(position);
+       // nectarShooter.setShootingLocation(position);
     }
 
     public boolean isPollenFlyWheelReady(){

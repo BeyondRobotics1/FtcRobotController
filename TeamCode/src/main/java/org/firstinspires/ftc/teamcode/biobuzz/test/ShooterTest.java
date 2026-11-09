@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.biobuzz.test;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
+
+import java.util.List;
 
 //@Disabled
 
@@ -17,27 +20,45 @@ public class ShooterTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Shooter pollenShooter = new Shooter(hardwareMap,
                 this,
-                "pollenShooter",
+                "pollenFlywheel",
                 0.035,
                 0.1,
                 0,
                 0.9,
                 0.55,
                 0.52,
-                0.48,
-                0.45);
+                0.50,
+                0.48);
 
 
         telemetry.update();
+
+        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : hubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
 
         waitForStart();
 
         if (isStopRequested()) return;
 
-        while (!isStopRequested() && opModeIsActive()) {
-            if (gamepad1.right_bumper) {
+        pollenShooter.setPower(0.95);
+        sleep(200);//1000
 
-            }
+        ///let the PID work for a while
+        for (int i = 0; i < 30; i++) {
+            pollenShooter.doFlyWheelPID();
+            sleep(20);
+        }
+
+        while (!isStopRequested() && opModeIsActive()) {
+
+            hubs.forEach(LynxModule::clearBulkCache);
+
+            pollenShooter.doFlyWheelPID();
+
+            telemetry.update();
         }
     }
 }

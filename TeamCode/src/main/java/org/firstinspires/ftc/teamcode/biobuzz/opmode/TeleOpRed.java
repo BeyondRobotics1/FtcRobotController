@@ -6,25 +6,28 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.DriveTrain;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.IMULocalizer;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.ShooterGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.TriggerGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Turret;
 
 import java.util.List;
 
-@TeleOp(name = "BioBuzz TeleOp Audience", group = "A")
+@TeleOp(name = "BioBuzz TeleOp RED", group = "A")
 
-public class TeleOpAudience extends LinearOpMode {
+public class TeleOpRed extends LinearOpMode {
 
     private DriveTrain driveTrain;
     private Intake intake;
     private ShooterGroup shooters;
-
     private TriggerGroup triggers;
-
-
+    private Turret  turret;
 
     Gamepad.RumbleEffect softRumbleEffect;    // Use to build a custom rumble sequence
     Gamepad.RumbleEffect strongRumbleEffect;
@@ -34,7 +37,6 @@ public class TeleOpAudience extends LinearOpMode {
     private Timer gameTimer;
 
     //update in real-time
-    private boolean isBlueTeleOp = true;
     private boolean isIntakeOn;
     private boolean isShooterOn;
     private boolean enableAutoAiming = true;
@@ -43,6 +45,8 @@ public class TeleOpAudience extends LinearOpMode {
 
     private int rumbleEndgame = 0;
 
+    Pose2D robotPose; //robot start pose
+    IMULocalizer.RobotZone robotZone = IMULocalizer.RobotZone.NOT_IN_SHOOTING_ZONE;
     ShootAutoCompleteState shootAutoCompleteMode = ShootAutoCompleteState.COMPLETED;
 
     @Override
@@ -52,7 +56,6 @@ public class TeleOpAudience extends LinearOpMode {
 
         telemetry.addLine("initializing LynxModule");
         List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
-
         for (LynxModule hub : hubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
@@ -63,44 +66,80 @@ public class TeleOpAudience extends LinearOpMode {
         isShooterOn = true;
 
         //select BLUE or RED
+        boolean isAudienceSideTeleOp = true;
         while (!isStarted() && !isStopRequested()) {
 
-            if(isBlueTeleOp)
-                telemetry.addLine("TeleOp AUDIENCE Selected: BLUE BLUE BLUE");
+            if(robotPose == null)
+                robotPose = BioBuzzDashboard.robotAutoEndPose(blackboard);
+
+            if(isAudienceSideTeleOp)
+                telemetry.addLine("TeleOp RED AUDIENCE selected");
             else
-                telemetry.addLine("TeleOP AUDIENCE Selected: RED RED RED");
+                telemetry.addLine("TeleOP RED SCORE selected");
 
             telemetry.addLine("");
             telemetry.addLine("WARNING WARNING: Select the right TeleOp!!!");
-            telemetry.addLine("Gamepad1.A: TeleOp AUDIENCE RED");
-            telemetry.addLine("Gamepad1.B: TeleOp AUDIENCE BLUE");
+            telemetry.addLine("Gamepad1.A: TeleOp RED AUDIENCE");
+            telemetry.addLine("Gamepad1.B: TeleOp RED SCORE");
             telemetry.addLine("-----------------------");
 
+            telemetry.addLine("");
+            telemetry.addLine("WARNING WARNING: Select the right TeleOp!!!");
+            telemetry.addLine("Gamepad1.A: TeleOp ARED AUDIENCE");
+            telemetry.addLine("Gamepad1.B: TeleOp RED SCORE");
+            telemetry.addLine("-----------------------");
+            telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
+            telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
+            telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));
+
             if(gamepad1.a) {
-                isBlueTeleOp = false;
+                isAudienceSideTeleOp = true;
             }
             else if (gamepad1.b) {
-                isBlueTeleOp = true;
+                isAudienceSideTeleOp = false;
             }
 
             telemetry.update();
         }
 
-
         gameTimer.resetTimer();
+
+        int alliance = BioBuzzDashboard.kAllianceRed;
+        if(isAudienceSideTeleOp) {
+            //no pose read
+            if(robotPose == null || robotPose.getX(DistanceUnit.INCH) < 10.)
+                robotPose = BioBuzzDashboard.kRedAutoParkPoseAudience;
+
+            turret = new Turret(hardwareMap, this, robotPose, alliance, false,false);
+
+            //for LimeLight target angle
+            //turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_NEAR);
+        }
+        else
+        {
+            //no pose read
+            if(robotPose == null || robotPose.getX(DistanceUnit.INCH) < 10.)
+                robotPose = BioBuzzDashboard.kRedAutoParkPoseScore;
+
+            turret = new Turret(hardwareMap, this, robotPose, alliance, false,false);
+
+            //for LimeLight target angle
+            //turret.setTargetAngleDegree(Turret.TARGET_ANGLE_DEGREE_BLUE_NEAR);
+        }
+
 
         if(isStopRequested()) return;
 
 
         //let the flywheel spin for 1000ms so
-        //the PID controller won't draw too much batteries
-        shooters.setPower(0.7);
+        //the PID controller won't draw too much battery
+        shooters.setPower(0.9);
         sleep(150);//1000
 
         ///let the PID work for a while
         for (int i = 0; i < 30; i++) {
             shooters.doFlyWheelPID();
-            sleep(20);
+            sleep(10);
         }
 
         boolean isInitialPinpointPositionSet = false;
@@ -117,14 +156,24 @@ public class TeleOpAudience extends LinearOpMode {
 
             hubs.forEach(LynxModule::clearBulkCache);
 
-            if(isBlueTeleOp)
-                telemetry.addLine("TeleOp AUDIENCE Selected: BLUE BLUE BLUE");
+            if(isAudienceSideTeleOp)
+                telemetry.addLine("TeleOp RED AUDIENCE selected");
             else
-                telemetry.addLine("TeleOP AUDIENCE Selected: RED RED RED");
+                telemetry.addLine("TeleOp RED SCORE selected");
 
             telemetry.addLine("");
 
             driveTrain.setPower(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+            //operate the intake
+            intakeOp();
+
+            //
+            turretOp();
+
+            //operate the shooter
+            shootOp();
+
 
             doRumble();
 
@@ -195,7 +244,22 @@ public class TeleOpAudience extends LinearOpMode {
 
     private void turretOp()
     {
+        isHeadingToGoal = turret.isHeadingToGoal();
+        robotZone = turret.getRobotZone();
 
+        //Keep gamepad2 left_bumper button down to give a new known position to the pinpoint
+        if(gamepad2.left_bumper)
+            turret.setIMUPose(BioBuzzDashboard.kRedIMUResetPoseAudience);
+
+        //use gamepad2 x button to disable or enable auto aiming
+        if(gamepad2.xWasPressed()) {
+            enableAutoAiming = !enableAutoAiming;
+
+            if (!enableAutoAiming)
+                turret.resetTurretHeading();
+        }
+
+        //turret.autoAim(enableAutoAiming);
     }
 
     private void shootOp()
@@ -214,6 +278,8 @@ public class TeleOpAudience extends LinearOpMode {
             if (intake.detectedArtifacts() > 0) {
                 if (isHeadingToGoal)
                 {
+                    shooters.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
+
 //                    if (robotZone == IMULocalizer.RobotZone.OUT_SHOOTING_ZONE) {
 //                        if(isBlueTeleOp)
 //                            shooters.setShootingLocation(Shooter.ShootingLocation.OUT_ZONE_BLUE);

@@ -36,6 +36,8 @@ public class Turret {
 
     // target x, y coordinates in INCH
     private double x0, y0;
+    //robot current pos
+    private double x, y, heading;
 
     private boolean isHeadingToGoal = false;
 
@@ -49,9 +51,8 @@ public class Turret {
     public static double servoPositionMiddle = 0.51;//
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
-                  Pose2D robotPose, Pose2D targetPose,
-                  int alliance, //DecodeBlackBoard.BLUE or DecodeBlackBoard.RED
-                  boolean usePinpoint,
+                  Pose2D robotPose,
+                  int alliance,
                   boolean useLimeLight,
                   boolean isAuto) {
 
@@ -61,22 +62,17 @@ public class Turret {
 
         this.mode = mode;
 
-        this.mode.telemetry = new MultipleTelemetry(this.mode.telemetry, dashboard.getTelemetry());
+        //this.mode.telemetry = new MultipleTelemetry(this.mode.telemetry, dashboard.getTelemetry());
         controller = new PIDController(kP, kI, kD);
 
-        turretPollen = hardwareMap.get(Servo.class, "turretPollen");
-        turretNectar = hardwareMap.get(Servo.class, "turretNectar");
+        turretPollen = hardwareMap.get(Servo.class, "pollenTurret");
+        turretNectar = hardwareMap.get(Servo.class, "nectarTurret");
 
-        turretPollen.setDirection(Servo.Direction.REVERSE);
-        turretNectar.setDirection(Servo.Direction.REVERSE);
+        //turretPollen.setDirection(Servo.Direction.REVERSE);
+        //turretNectar.setDirection(Servo.Direction.REVERSE);
 
-        if(usePinpoint) {
-            localizer = new IMULocalizer(hardwareMap, mode, robotPose, targetPose, alliance);
-        }
+        localizer = new IMULocalizer(hardwareMap, mode, robotPose, alliance);
 
-        // target coordinates
-        x0 = targetPose.getX(DistanceUnit.INCH);
-        y0 = targetPose.getY(DistanceUnit.INCH);
 
         setServoPosition(servoPositionMiddle);
     }
@@ -86,9 +82,12 @@ public class Turret {
         if(localizer == null || !localizer.update())
             return;
 
-        double x = localizer.getX();
-        double y = localizer.getY();
-        double heading = localizer.getHeading();
+        x0 = localizer.getX0();
+        y0 = localizer.getY0();
+
+        x = localizer.getX();
+        y = localizer.getY();
+        heading = localizer.getHeading();
 
         mode.telemetry.addData("IMU Heading", "%.3f",  heading);
         mode.telemetry.addData("IMU x", "%.3f", x);
@@ -179,6 +178,10 @@ public class Turret {
             return localizer.getHeading();
         else
             return 0;
+    }
+
+    public boolean isHeadingToGoal() {
+        return isHeadingToGoal;
     }
 
     public IMULocalizer.RobotZone getRobotZone() {

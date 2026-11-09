@@ -32,14 +32,14 @@ public class TriggerTest extends LinearOpMode {
             if (gamepad1.x && pollenTrigger == null) {
                 pollenTrigger = new Trigger(hardwareMap, "pollenTrigger",
                         Trigger.kPollenTriggerOpenPosition,
-                        Trigger.kPollenTriggerClosePosition);
+                        Trigger.kPollenTriggerClosePosition, false);
 
                 nectarTrigger = null;
             }
             else if (gamepad1.y && nectarTrigger == null) {
                 nectarTrigger = new Trigger(hardwareMap, "nectarTrigger",
                         Trigger.kNectarTriggerOpenPosition,
-                        Trigger.kNectarTriggerClosePosition);
+                        Trigger.kNectarTriggerClosePosition, true);
 
                 pollenTrigger = null;
             }

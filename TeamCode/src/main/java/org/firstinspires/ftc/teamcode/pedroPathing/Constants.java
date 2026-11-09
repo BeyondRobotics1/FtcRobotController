@@ -58,7 +58,7 @@ public class Constants {
 
     //maxPower 0.95
     public static MecanumConstants driveConstants = new MecanumConstants()
-            .maxPower(0.998)
+            .maxPower(0.95)
             .leftFrontMotorName("leftFront")
             .leftRearMotorName("leftBack")
             .rightFrontMotorName("rightFront")
@@ -73,8 +73,8 @@ public class Constants {
 
     //pedro and gobilda pinpoint tester has X, Y offset reversed
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(118)//106
-            .strafePodX(-143.6)
+            .forwardPodY(96)//118
+            .strafePodX(-143.72)//-143.6
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)

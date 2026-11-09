@@ -14,11 +14,13 @@ public class TriggerGroup {
     {
         pollenTrigger = new Trigger(hardwareMap, "pollenTrigger",
                 Trigger.kPollenTriggerOpenPosition,
-                Trigger.kPollenTriggerClosePosition);
+                Trigger.kPollenTriggerClosePosition, false);
 
         nectarTrigger = new Trigger(hardwareMap, "nectarTrigger",
                 Trigger.kNectarTriggerOpenPosition,
-                Trigger.kNectarTriggerClosePosition);
+                Trigger.kNectarTriggerClosePosition, true);
+
+        close();
     }
 
     public void open()

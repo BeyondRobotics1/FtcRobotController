@@ -40,6 +40,7 @@ public class IMULocalizer {
     double x0, y0;
 
     Pose2D startPose;
+    Pose2D targetPose;
 
     double robotDistanceToGoal = 0.;
     int alliance = BioBuzzDashboard.kAllianceBlue;
@@ -51,7 +52,7 @@ public class IMULocalizer {
     IMULocalizer.RobotZone robotZone = IMULocalizer.RobotZone.NOT_IN_SHOOTING_ZONE;
 
     public IMULocalizer(HardwareMap hardwareMap, LinearOpMode mode,
-                        Pose2D robotPose, Pose2D targetPose,
+                        Pose2D robotPose,
                         int alliance)
     {
         this.alliance = alliance;
@@ -71,9 +72,7 @@ public class IMULocalizer {
                 robotPose.getHeading(AngleUnit.DEGREES));
         pinpoint.setPosition(robotPose);
 
-        //target coordinates
-        x0 = targetPose.getX(DistanceUnit.INCH);
-        y0 = targetPose.getY(DistanceUnit.INCH);
+        updateTargetPose(robotPose.getY(DistanceUnit.INCH));
     }
 
     public double getHeading()
@@ -81,6 +80,7 @@ public class IMULocalizer {
         return botHeadingDegrees;
     }
 
+    //return robot's current X, Y position
     public double getX()
     {
         return x;
@@ -89,6 +89,18 @@ public class IMULocalizer {
     public double getY()
     {
         return y;
+    }
+
+    //return the hiv target X, Y position
+    //the target position changes according to robot's position
+    public double getX0()
+    {
+        return targetPose.getX(DistanceUnit.INCH);
+    }
+
+    public double getY0()
+    {
+        return targetPose.getY(DistanceUnit.INCH);
     }
 
     public double getRobotDistanceToGoal()
@@ -136,6 +148,10 @@ public class IMULocalizer {
         y = pose2D.getY(DistanceUnit.INCH);
         botHeadingDegrees = pose2D.getHeading(AngleUnit.DEGREES);
 
+        updateTargetPose(y);
+        x0 = targetPose.getX(DistanceUnit.INCH);
+        y0 = targetPose.getY(DistanceUnit.INCH);
+
         //calculate distance for auto shooting speed adjustment
         robotDistanceToGoal = Math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
 
@@ -157,6 +173,23 @@ public class IMULocalizer {
         return true;
     }
 
+    private void updateTargetPose(double y)
+    {
+        if(alliance == BioBuzzDashboard.kAllianceRed)
+        {
+            //audience side target
+            if(y <= 70.75)
+                targetPose = BioBuzzDashboard.kRedTargetPoseAudience;
+            else //score side target
+                targetPose = BioBuzzDashboard.kRedTargetPoseScore;
+        }
+        else {
+            if(y <= 70.5)
+                targetPose = BioBuzzDashboard.kBlueTargetPoseScore;
+            else
+                targetPose = BioBuzzDashboard.kBlueTargetPoseAudience;
+        }
+    }
 
     private void detectRobotZone(double x, double y, double distanceToHive)
     {
@@ -201,8 +234,8 @@ public class IMULocalizer {
          *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
          *  Forward of center is a positive number, backwards is a negative number.
          */
-        //106, -143.6
-        pinpoint.setOffsets(118, -143.6, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
+        //118, -143.6
+        pinpoint.setOffsets(96, -143.72, DistanceUnit.MM); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
          * Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

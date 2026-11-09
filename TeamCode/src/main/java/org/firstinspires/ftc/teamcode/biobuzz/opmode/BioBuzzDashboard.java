@@ -17,18 +17,18 @@ public class BioBuzzDashboard {
 
 
     //auto start poses
-    public static final Pose2D kRedAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
-    public static final Pose2D kRedAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 56, kFieldSize - 60, AngleUnit.DEGREES, 0);
+    public static final Pose2D kRedAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 54.25, 7.25, AngleUnit.DEGREES, 90);
+    public static final Pose2D kRedAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 57.5, kFieldSize - 7.25, AngleUnit.DEGREES, -90);
 
-    public static final Pose2D kBlueAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 56, kFieldSize - 60, AngleUnit.DEGREES, 0);
-    public static final Pose2D kBlueAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 57.5, kFieldSize - 7.25, AngleUnit.DEGREES, -90);
+    public static final Pose2D kBlueAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 54.25, 7.25, AngleUnit.DEGREES, 90);
 
     //auto park poses
-    public static final Pose2D kRedAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
-    public static final Pose2D kRedAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 56, kFieldSize - 60, AngleUnit.DEGREES, 0);
+    public static final Pose2D kRedAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 13, 90, AngleUnit.DEGREES, 90);
+    public static final Pose2D kRedAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 15, kFieldSize - 22, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D kBlueAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 56, kFieldSize - 60, AngleUnit.DEGREES, 0);
-    public static final Pose2D kBlueAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 13, 90, AngleUnit.DEGREES, 90);
+    public static final Pose2D kBlueAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 15, kFieldSize - 22, AngleUnit.DEGREES, 0);
 
     //shooting target poses
     public static final Pose2D kRedTargetPoseAudience = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
@@ -39,12 +39,8 @@ public class BioBuzzDashboard {
 
 
     //The IMU reset pose for TeleOp
-    public static final Pose2D kRedIMUResetPoseAudience = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
-    public static final Pose2D kRedIMUResetPoseScore = new Pose2D(DistanceUnit.INCH, 56, kFieldSize - 60, AngleUnit.DEGREES, 0);
-
-    public static final Pose2D kBlueIMUResetAudience = new Pose2D(DistanceUnit.INCH, 56, kFieldSize - 60, AngleUnit.DEGREES, 0);
-    public static final Pose2D kBlueIMUResetPoseScore = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);
-
+    public static final Pose2D kRedIMUResetPoseAudience = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueIMUResetPoseAudience = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
 
 
     //use the dashboard to save and read auto end

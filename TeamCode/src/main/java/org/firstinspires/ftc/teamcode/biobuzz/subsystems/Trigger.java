@@ -11,11 +11,11 @@ public class Trigger {
     pollen open position: 0.03
     pollen close position: 0.27
     */
-    public final static double kNectarTriggerOpenPosition = 0;
-    public final static double kNectarTriggerClosePosition = 0.21;
+    public final static double kNectarTriggerOpenPosition = 0.23;
+    public final static double kNectarTriggerClosePosition = 0;
 
-    public final static double kPollenTriggerOpenPosition = 0.03;
-    public final static double kPollenTriggerClosePosition = 0.27;
+    public final static double kPollenTriggerOpenPosition = 0.27;
+    public final static double kPollenTriggerClosePosition = 0.03;
 
 
     Servo trigger;
@@ -32,8 +32,13 @@ public class Trigger {
     public Trigger(HardwareMap hardwareMap,
                    String servoName,
                    double initOpenPosition,
-                   double initClosePositon){
+                   double initClosePositon,
+                   boolean reverseDirection){
         trigger = hardwareMap.get(Servo.class, servoName);
+
+        if(reverseDirection)
+            trigger.setDirection(Servo.Direction.REVERSE);
+
         openPosition = initOpenPosition;
         closePosition = initClosePositon;
     }

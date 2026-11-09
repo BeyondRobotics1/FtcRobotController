@@ -89,7 +89,7 @@ public class Shooter {
 
         controller = new PIDController(kP, kI, kD);
 
-        targetSpeed = targetSpeedNear;
+        targetSpeed = initTargetSpeedMedium;
 
         isFlyWheelReady = false;
     }
@@ -100,16 +100,14 @@ public class Shooter {
         kD = newKD;
         kF = newKF;
     }
-    public void setPower(double newPower){
-        double localPower = -power;//
-        flywheel.setPower(localPower);
-    }
+
     public boolean getIsFlyWheelReady(){
         return isFlyWheelReady;
     }
 
     public void doFlyWheelPID(){
 
+        /*
         if (shootingLocation == ShootingLocation.NEAR)
             targetSpeed = targetSpeedNear;
         else if (shootingLocation == ShootingLocation.FAR)
@@ -120,29 +118,35 @@ public class Shooter {
             targetSpeed = targetSpeedFarFar;
         else
             targetSpeed = targetSpeedMedium;
+        */
 
         controller.setPID(kP, kI, kD);
 
         targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
 
         velocity = Math.abs(flywheel.getVelocity());
-        if (velocity < 5)
-            return;
+        //if (velocity < 5)
+        //    return;
 
         pid = controller.calculate(velocity, targetVelocity);
-
         ff = kF * targetSpeed;
-
         power = pid + ff;
+
+        mode.telemetry.addData("PID targetVelocity", targetVelocity);
+        mode.telemetry.addData("PID velocity", velocity);
+        mode.telemetry.addData("PID pid", pid);
+        mode.telemetry.addData("PID ff", ff);
+        mode.telemetry.addData("PID power", power);
 
         //calculated power could be negative
         //We can't use the negative power which cause motor damage
         if (power < 0) {
             //mode.telemetry.addData("Negative PID Power", power);
-            power = 0.0005;//0.0
+            power = 0.4;//0.0
         }
 
-        //mode.telemetry.addData("Power Applied", power);
+        mode.telemetry.addData("Power Applied", power);
+        mode.telemetry.update();
 
         setPower(power);
 
@@ -150,6 +154,11 @@ public class Shooter {
             isFlyWheelReady = true;
         else
             isFlyWheelReady = false;
+    }
+
+    public void setPower(double newPower){
+        double localPower = -power;//
+        flywheel.setPower(localPower);
     }
 
     public void stop(){
