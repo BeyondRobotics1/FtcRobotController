@@ -82,7 +82,7 @@ public class Intake {
 
             //outtake(0.5);
             intakeMotor.setPower(0.5);
-            transferMotor.setPower(-0.5);
+            //transferMotor.setPower(-0.5);
         }
         else if (intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.FEED) {
             intake(1);

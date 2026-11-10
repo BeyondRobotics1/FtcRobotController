@@ -17,10 +17,12 @@ public class BioBuzzDashboard {
 
 
     //auto start poses
-    public static final Pose2D kRedAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 54.25, 7.25, AngleUnit.DEGREES, 90);
+    public static final Pose2D kRedAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 40, 7, AngleUnit.DEGREES, 180); //54.25, 7.25, 90
+    public static final Pose2D kRedAutoGardenPose = new Pose2D(DistanceUnit.INCH, 11, 7.5, AngleUnit.DEGREES, 180);
     public static final Pose2D kRedAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 57.5, kFieldSize - 7.25, AngleUnit.DEGREES, -90);
 
     public static final Pose2D kBlueAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 57.5, kFieldSize - 7.25, AngleUnit.DEGREES, -90);
+    public static final Pose2D kBlueAutoGardenPose = new Pose2D(DistanceUnit.INCH, 11, 7, AngleUnit.DEGREES, 180);
     public static final Pose2D kBlueAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 54.25, 7.25, AngleUnit.DEGREES, 90);
 
     //auto park poses

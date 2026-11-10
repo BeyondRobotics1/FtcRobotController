@@ -30,7 +30,7 @@ public class FlyWheelPIDController  extends LinearOpMode {
 
     //public static double targetSpeed = 0.59;
     //public static double targetSpeed = 0.49;
-    public static double targetSpeed = 0.48;
+    public static double targetSpeed = 0.52;
     public static double targetVelocity;
 
     //COUNTS_PER_MOTOR_REV    = 28.0;

@@ -17,8 +17,8 @@ public class ShooterGroup {
                 0.9,
                 0.55,
                 0.52,
-                0.50,
-                0.48);
+                0.52,
+                0.52);
 //        nectarShooter = new Shooter(hardwareMap,
 //                linearOpMode,
 //                "nectarFlywheel",

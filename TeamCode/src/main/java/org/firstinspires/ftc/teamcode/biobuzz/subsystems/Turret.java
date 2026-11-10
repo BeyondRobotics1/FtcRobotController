@@ -1,17 +1,13 @@
 package org.firstinspires.ftc.teamcode.biobuzz.subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.opmode.BioBuzzDashboard;
-
-import java.util.List;
 
 public class Turret {
 
@@ -43,12 +39,19 @@ public class Turret {
 
 
     //
-    public static double fullServoRangeDegrees = 367.34;
-    public static double halfServoRangeDegrees = fullServoRangeDegrees * 0.5;//138;//133.78;
+    public static final double kFullServoRangeDegrees = 367.34;
+    public static final double kHalfServoRangeDegrees = kFullServoRangeDegrees * 0.5;//138;//133.78;
 
-    public static double servoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
-    public static double servoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
-    public static double servoPositionMiddle = 0.51;//
+    public static final double kServoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
+    public static final double kServoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
+    public static final double kServoPositionCenter = 0.51;//
+
+    //servo positions for auto
+    public static final double kServoPositionAutoRedAudience = 0.233;//0.48
+    public static final double kServoPositionAutoRedScore = 0.51;
+    public static final double kServoPositionAutoBlueAudience = 0.48;
+    public static final double kServoPositionAutoBlueScore = 0.78;
+
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
                   Pose2D robotPose,
@@ -74,7 +77,7 @@ public class Turret {
         localizer = new IMULocalizer(hardwareMap, mode, robotPose, alliance);
 
 
-        setServoPosition(servoPositionMiddle);
+        setServoPosition(kServoPositionCenter);
     }
 
     public void autoAim(boolean enabled)
@@ -126,14 +129,14 @@ public class Turret {
             // calculate servo position
             double servoPosition;
 
-            servoPosition = servoPositionLeft * (theta + halfServoRangeDegrees) / fullServoRangeDegrees;
+            servoPosition = kServoPositionLeft * (theta + kHalfServoRangeDegrees) / kFullServoRangeDegrees;
 
             mode.telemetry.addData("IMU location based servo position:", "%.5f", servoPosition);
 
-            if (servoPosition > servoPositionLeft) {
-                servoPosition = servoPositionLeft;
-            } else if (servoPosition < servoPositionRight) {
-                servoPosition = servoPositionRight;
+            if (servoPosition > kServoPositionLeft) {
+                servoPosition = kServoPositionLeft;
+            } else if (servoPosition < kServoPositionRight) {
+                servoPosition = kServoPositionRight;
             }
 
             setServoPosition(servoPosition);
@@ -143,10 +146,10 @@ public class Turret {
 
             mode.telemetry.addData("Limelight calibrated servo position:", "%.5f", servoPosition);
 
-            if (servoPosition > servoPositionLeft) {
-                servoPosition = servoPositionLeft;
-            } else if (servoPosition < servoPositionRight) {
-                servoPosition = servoPositionRight;
+            if (servoPosition > kServoPositionLeft) {
+                servoPosition = kServoPositionLeft;
+            } else if (servoPosition < kServoPositionRight) {
+                servoPosition = kServoPositionRight;
             }
 
             setServoPosition(servoPosition);
@@ -208,7 +211,7 @@ public class Turret {
     //working as expected
     public void resetTurretHeading()
     {
-        setServoPosition(servoPositionMiddle);
+        setServoPosition(kServoPositionCenter);
     }
 
 
