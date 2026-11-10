@@ -39,8 +39,8 @@ public class BioBuzzDashboard {
 
 
     //The IMU reset pose for TeleOp
-    public static final Pose2D kRedIMUResetPoseAudience = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
-    public static final Pose2D kBlueIMUResetPoseAudience = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
+    public static final Pose2D kRedIMUResetPose = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueIMUResetPose = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
 
 
     //use the dashboard to save and read auto end

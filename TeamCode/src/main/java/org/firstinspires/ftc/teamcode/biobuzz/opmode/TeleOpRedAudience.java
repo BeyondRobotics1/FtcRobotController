@@ -1,0 +1,11 @@
+package org.firstinspires.ftc.teamcode.biobuzz.opmode;
+
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+@TeleOp(name = "BioBuzz TeleOp RED AUDIENCE", group = "A")
+public class TeleOpRedAudience extends TeleOpRed {
+    @Override
+    protected StartingSide fixedStartingSide() {
+        return StartingSide.AUDIENCE;
+    }
+}
