@@ -31,6 +31,7 @@ public class AutoRedAudience extends LinearOpMode {
     Follower follower;
 
     //status
+    boolean shooterStopped = false;
     private Timer pathTimer;
     private int pathState = 0;
 
@@ -41,13 +42,14 @@ public class AutoRedAudience extends LinearOpMode {
             BioBuzzDashboard.kRedAutoGardenPose.getY(DistanceUnit.INCH),
             BioBuzzDashboard.kRedAutoGardenPose.getHeading(AngleUnit.RADIANS));
 
+    private final Pose scorePose = new Pose(52, 7, Math.toRadians(180));
     private final Pose controlScoreToParkPose = new Pose(36, 30, Math.toRadians(90));
 
     private final Pose parkPose = new Pose(BioBuzzDashboard.kRedAutoParkPoseAudience.getX(DistanceUnit.INCH),
             BioBuzzDashboard.kRedAutoParkPoseAudience.getY(DistanceUnit.INCH),
             BioBuzzDashboard.kRedAutoParkPoseAudience.getHeading(AngleUnit.RADIANS));
 
-    private PathChain scoreGarden, gardenScore, scorePark;
+    private PathChain startScore, scoreGarden, gardenScore, scorePark;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,10 +66,12 @@ public class AutoRedAudience extends LinearOpMode {
 
             follower.update();
             telemetry.addLine("Auto RED AUDIENCE selected");
+            telemetry.addLine("Auto RED AUDIENCE selected");
             displayPose();
         }
 
         warmUpShooter();
+
 
         pathTimer.resetTimer();
         setPathState(0);
@@ -79,7 +83,8 @@ public class AutoRedAudience extends LinearOpMode {
 
             autonomousPathUpdate();
 
-            shooters.doFlyWheelPID();
+            if(!shooterStopped)
+                shooters.doFlyWheelPID();
 
             saveAutoState();
 
@@ -91,52 +96,63 @@ public class AutoRedAudience extends LinearOpMode {
     private void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                if (pathTimer.getElapsedTime() > 3000) { //wait 1 second to shoot
+                follower.followPath(startScore, true); //grab garden
+                setPathState(1);
+                break;
+            case 1:
+                if (!follower.isBusy()) {
+                    pathTimer.resetTimer();
+                    setPathState(2);
+                }
+                break;
+            case 2:
+                if (pathTimer.getElapsedTime() > 2000) { //wait 2 second to shoot
 
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
                     triggers.open();
                     pathTimer.resetTimer();
 
-                    setPathState(1);
+                    setPathState(3);
                 }
                 break;
-            case 1:
-                if (pathTimer.getElapsedTime() > 2000) //wait for 2 second to complete shooting
+            case 3:
+                if (pathTimer.getElapsedTime() > 1000) //wait for 2 second to complete shooting
                 {
                     intake.setIntakeMode(Intake.IntakeMode.IN);
                     triggers.close();
 
                     follower.followPath(scoreGarden, true); //grab garden
 
-                    setPathState(2);
-                }
-                break;
-            case 2:
-                if (!follower.isBusy()) {
-                    pathTimer.resetTimer();
-                    setPathState(3);
-                }
-                break;
-            case 3:
-                if (pathTimer.getElapsedTime() > 2000) {
-                    follower.followPath(gardenScore, true); //grab garden
                     setPathState(4);
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
-                    intake.setIntakeMode(Intake.IntakeMode.FEED);
-                    triggers.open();
                     pathTimer.resetTimer();
                     setPathState(5);
                 }
                 break;
             case 5:
-                if (pathTimer.getElapsedTime() > 2000)
+                if (pathTimer.getElapsedTime() > 2000) {
+                    follower.followPath(gardenScore, true); //grab garden
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if (!follower.isBusy()) {
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    triggers.open();
+                    pathTimer.resetTimer();
+                    setPathState(7);
+                }
+                break;
+            case 7:
+                if (pathTimer.getElapsedTime() > 1000)
                 {
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     triggers.close();
                     shooters.stop();
+                    shooterStopped = true;
 
                     follower.followPath(scorePark, true); //grab garden
 
@@ -153,19 +169,24 @@ public class AutoRedAudience extends LinearOpMode {
     }
 
     public void buildPaths() {
+        startScore = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, scorePose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
+                .build();
+
         scoreGarden = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, gardenPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), gardenPose.getHeading())
+                .addPath(new BezierLine(scorePose, gardenPose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), gardenPose.getHeading())
                 .build();
 
         gardenScore = follower.pathBuilder()
-                .addPath(new BezierLine(gardenPose, startPose))
-                .setLinearHeadingInterpolation(gardenPose.getHeading(), startPose.getHeading())
+                .addPath(new BezierLine(gardenPose, scorePose))
+                .setLinearHeadingInterpolation(gardenPose.getHeading(), scorePose.getHeading())
                 .build();
 
         scorePark = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, controlScoreToParkPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), controlScoreToParkPose.getHeading())
+                .addPath(new BezierLine(scorePose, controlScoreToParkPose))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), controlScoreToParkPose.getHeading())
                 .addPath(new BezierLine(controlScoreToParkPose, parkPose))
                 .setLinearHeadingInterpolation(controlScoreToParkPose.getHeading(), parkPose.getHeading())
                 .build();

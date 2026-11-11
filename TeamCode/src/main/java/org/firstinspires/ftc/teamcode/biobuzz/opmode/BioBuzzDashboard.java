@@ -19,11 +19,11 @@ public class BioBuzzDashboard {
     //auto start poses
     public static final Pose2D kRedAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 40, 7, AngleUnit.DEGREES, 180); //54.25, 7.25, 90
     public static final Pose2D kRedAutoGardenPose = new Pose2D(DistanceUnit.INCH, 11, 7.5, AngleUnit.DEGREES, 180);
-    public static final Pose2D kRedAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 57.5, kFieldSize - 7.25, AngleUnit.DEGREES, -90);
+    public static final Pose2D kRedAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 57, kFieldSize - 7, AngleUnit.DEGREES, -90);
 
-    public static final Pose2D kBlueAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 57.5, kFieldSize - 7.25, AngleUnit.DEGREES, -90);
-    public static final Pose2D kBlueAutoGardenPose = new Pose2D(DistanceUnit.INCH, 11, 7, AngleUnit.DEGREES, 180);
-    public static final Pose2D kBlueAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 54.25, 7.25, AngleUnit.DEGREES, 90);
+    public static final Pose2D kBlueAutoStartPoseAudience = new Pose2D(DistanceUnit.INCH, 57, kFieldSize - 7, AngleUnit.DEGREES, -90);
+    public static final Pose2D kBlueAutoGardenPose = new Pose2D(DistanceUnit.INCH, 11, 7.5, AngleUnit.DEGREES, 180);
+    public static final Pose2D kBlueAutoStartPoseScore = new Pose2D(DistanceUnit.INCH, 40, 7, AngleUnit.DEGREES, 180);
 
     //auto park poses
     public static final Pose2D kRedAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 13, 90, AngleUnit.DEGREES, 90);
@@ -41,8 +41,8 @@ public class BioBuzzDashboard {
 
 
     //The IMU reset pose for TeleOp
-    public static final Pose2D kRedIMUResetPose = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
-    public static final Pose2D kBlueIMUResetPose = new Pose2D(DistanceUnit.INCH, 35.7, 63.5, AngleUnit.DEGREES, 0);
+    public static final Pose2D kRedIMUResetPose = new Pose2D(DistanceUnit.INCH, 36, 63.67, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueIMUResetPose = new Pose2D(DistanceUnit.INCH, 36, 63.67, AngleUnit.DEGREES, 0);
 
 
     //use the dashboard to save and read auto end

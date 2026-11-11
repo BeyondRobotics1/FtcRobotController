@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 public class Shooter {
     final public int kACHIEVABLE_MAX_TICKS_PER_SECOND = 2800;
@@ -23,16 +24,31 @@ public class Shooter {
 
     private PIDController controller;
 
-    //Parameters for PID
-    /*
-    Pollen shooter:
-        kP = 0.035;
-        kI = 0.1;
-        kD = 0;
-        kF = 0.9;
-    Nectar shooter:
-        TBD
-     */
+    //Parameters for Pollen PID
+    public static double kPPollen = 4.5;//0.35;
+    public static double kIPollen = 0.21;//0.1;
+    public static double kDPollen = 0;
+    public static double kFPollen = 0.9;
+
+    //Parameters for Nectar PID
+    public static double kPNectar = 0.35;
+    public static double kINectar = 0.1;
+    public static double kDNectar = 0;
+    public static double kFNectar = 0.9;
+
+    //shooting speed for Pollen
+    public static double kTargetSpeedFarFarPollen = 0.55;
+    public static double kTargetSpeedFarPollen = 0.55;
+    public static double kTargetSpeedMediumPollen = 0.55;
+    public static double kTargetSpeedNearPollen = 0.55;
+
+    //shooting speed for Nectar
+    public static double kTargetSpeedFarFarNectar = 0.6;
+    public static double kTargetSpeedFarNectar = 0.6;
+    public static double kTargetSpeedMediumNectar = 0.6;
+    public static double kTargetSpeedNearNectar = 0.6;
+
+
     private double kP;
     private double kI;
     private double kD;
@@ -99,6 +115,8 @@ public class Shooter {
         kI = newKI;
         kD = newKD;
         kF = newKF;
+
+        controller.setPID(kP, kI, kD);
     }
 
     public boolean getIsFlyWheelReady(){
@@ -106,31 +124,32 @@ public class Shooter {
     }
 
     public void doFlyWheelPID(){
-
-        /*
-        if (shootingLocation == ShootingLocation.NEAR)
-            targetSpeed = targetSpeedNear;
-        else if (shootingLocation == ShootingLocation.FAR)
-            targetSpeed = targetSpeedFar;
-        else if (shootingLocation == ShootingLocation.MEDIUM)
-            targetSpeed = targetSpeedMedium;
-        else if (shootingLocation == ShootingLocation.FAR_FAR)
-            targetSpeed = targetSpeedFarFar;
-        else
-            targetSpeed = targetSpeedMedium;
-        */
-
-        controller.setPID(kP, kI, kD);
+        switch (shootingLocation) {
+            case NEAR:
+                targetSpeed = targetSpeedNear;
+                break;
+            case FAR:
+                targetSpeed = targetSpeedFar;
+                break;
+            case FAR_FAR:
+                targetSpeed = targetSpeedFarFar;
+                break;
+            case AUTO:
+            case MEDIUM:
+            default:
+                targetSpeed = targetSpeedMedium;
+                break;
+        }
 
         targetVelocity = targetSpeed * kACHIEVABLE_MAX_TICKS_PER_SECOND;
 
         velocity = Math.abs(flywheel.getVelocity());
-        //if (velocity < 5)
-        //    return;
 
-        pid = controller.calculate(velocity, targetVelocity);
+        // Work in normalized motor speed so the gains do not depend on encoder CPR.
+        double normalizedVelocity = velocity / kACHIEVABLE_MAX_TICKS_PER_SECOND;
+        pid = controller.calculate(normalizedVelocity, targetSpeed);
         ff = kF * targetSpeed;
-        power = pid + ff;
+        power = Range.clip(pid + ff, 0.0, 1.0);
 
         mode.telemetry.addData("PID targetVelocity", targetVelocity);
         mode.telemetry.addData("PID velocity", velocity);
@@ -138,31 +157,21 @@ public class Shooter {
         mode.telemetry.addData("PID ff", ff);
         mode.telemetry.addData("PID power", power);
 
-        //calculated power could be negative
-        //We can't use the negative power which cause motor damage
-        if (power < 0) {
-            //mode.telemetry.addData("Negative PID Power", power);
-            power = 0.4;//0.0
-        }
-
         mode.telemetry.addData("Power Applied", power);
-        mode.telemetry.update();
 
         setPower(power);
 
-        if(Math.abs(Math.abs(velocity) - targetVelocity) <= 100)
-            isFlyWheelReady = true;
-        else
-            isFlyWheelReady = false;
+        isFlyWheelReady = Math.abs(velocity - targetVelocity) <= 100;
     }
 
     public void setPower(double newPower){
-        double localPower = -power;//
+        double localPower = -Range.clip(newPower, 0.0, 1.0);
         flywheel.setPower(localPower);
     }
 
     public void stop(){
         flywheel.setPower(0);
+        isFlyWheelReady = false;
     }
 
     public void setShootingLocation(Shooter.ShootingLocation position)

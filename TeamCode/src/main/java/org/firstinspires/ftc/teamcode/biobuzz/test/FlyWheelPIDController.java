@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.Range;
 
 import java.util.List;
 
@@ -23,14 +24,12 @@ public class FlyWheelPIDController  extends LinearOpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     PIDController controller;
-    public static double kP = 0.035;//0.002;//0.001; //0.8
-    public static double kI = 0.1;//0.15;//0.25; //0.01
+    public static double kP = 4;//
+    public static double kI = 0.21;//0.15;//0.25; //0.01
     public static double kD = 0;
     public static double kF = 0.9;
 
-    //public static double targetSpeed = 0.59;
-    //public static double targetSpeed = 0.49;
-    public static double targetSpeed = 0.52;
+    public static double targetSpeed = 0.53;
     public static double targetVelocity;
 
     //COUNTS_PER_MOTOR_REV    = 28.0;
@@ -87,15 +86,16 @@ public class FlyWheelPIDController  extends LinearOpMode {
                 controller.setPID(kP, kI, kD);
 
                 double velocity = Math.abs(flywheel.getVelocity());
+                double normalizedVelocity = velocity / kACHIEVABLE_MAX_TICKS_PER_SECOND;
 
-                double pid = controller.calculate(velocity, targetVelocity);
+                double pid = controller.calculate(normalizedVelocity, targetSpeed);
                 double ff = kF * targetSpeed;
-                double power = pid + ff;
+                double power = Range.clip(pid + ff, 0.0, 1.0);
 
                 setPower(power);
 
-                telemetry.addData("Flywheel Velocity (RPM)", "%.1f", velocity);
-                telemetry.addData("Target Velocity (RPM)", "%.1f", targetVelocity);
+                telemetry.addData("Flywheel Velocity (ticks/s)", "%.1f", velocity);
+                telemetry.addData("Target Velocity (ticks/s)", "%.1f", targetVelocity);
 
                 telemetry.addData("PID", "%.5f", pid);
                 telemetry.addData("Feedforward", "%.5f", ff);

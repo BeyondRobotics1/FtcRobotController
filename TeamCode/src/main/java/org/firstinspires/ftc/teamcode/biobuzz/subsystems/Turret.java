@@ -47,10 +47,10 @@ public class Turret {
     public static final double kServoPositionCenter = 0.51;//
 
     //servo positions for auto
-    public static final double kServoPositionAutoRedAudience = 0.233;//0.48
-    public static final double kServoPositionAutoRedScore = 0.51;
-    public static final double kServoPositionAutoBlueAudience = 0.48;
-    public static final double kServoPositionAutoBlueScore = 0.78;
+    public static final double kServoPositionAutoRedAudience = 0.25;//0.233
+    public static final double kServoPositionAutoRedScore = 0.5;
+    public static final double kServoPositionAutoBlueAudience = 0.5;
+    public static final double kServoPositionAutoBlueScore = 0.75;
 
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,

@@ -11,25 +11,26 @@ public class ShooterGroup {
         pollenShooter = new Shooter(hardwareMap,
                 linearOpMode,
                 "pollenFlywheel",
-                0.035,
-                0.1,
-                0,
-                0.9,
-                0.55,
-                0.52,
-                0.52,
-                0.52);
+                Shooter.kPPollen,
+                Shooter.kIPollen,
+                Shooter.kDPollen,
+                Shooter.kFPollen,
+                Shooter.kTargetSpeedFarFarPollen,
+                Shooter.kTargetSpeedFarPollen,
+                Shooter.kTargetSpeedMediumPollen,
+                Shooter.kTargetSpeedNearPollen);
+
 //        nectarShooter = new Shooter(hardwareMap,
 //                linearOpMode,
 //                "nectarFlywheel",
-//                0.035,
-//                0.1,
-//                0,
-//                0.9,
-//                0.55,
-//                0.52,
-//                0.50,
-//                0.48);
+//                Shooter.kPNectar,
+//                Shooter.kINectar,
+//                Shooter.kDNectar,
+//                Shooter.kFNectar,
+//                Shooter.kTargetSpeedFarFarNectar,
+//                Shooter.kTargetSpeedFarNectar,
+//                Shooter.kTargetSpeedMediumNectar,
+//                Shooter.kTargetSpeedNearNectar);
     }
 
     public void doFlyWheelPID(){

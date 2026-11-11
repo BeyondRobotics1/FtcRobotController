@@ -82,6 +82,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
 
         robotPose = validAutoEndPoseOrDefault();
         turret = new Turret(hardwareMap, this, robotPose, alliance(), false, false);
+        turret.resetTurretHeading();
 
         gameTimer.resetTimer();
         warmUpShooter();
@@ -141,12 +142,6 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
     private void selectStartingSide() {
         while (!isStarted() && !isStopRequested()) {
             robotPose = BioBuzzDashboard.robotAutoEndPose(blackboard);
-
-            if (gamepad1.a) {
-                isAudienceSideTeleOp = true;
-            } else if (gamepad1.b) {
-                isAudienceSideTeleOp = false;
-            }
 
             telemetry.addLine(selectedModeLabel());
             telemetry.addLine(selectedModeLabel());
@@ -215,11 +210,13 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
     private void turretOp() {
         isHeadingToGoal = turret.isHeadingToGoal();
 
+        //reset IMU using gamepad2.left_bumper
         if (gamepad2.left_bumper) {
             turret.setIMUPose(imuResetPose());
         }
 
-        if (gamepad2.xWasPressed()) {
+        //toggle auto aiming gamepad2.right_bumper
+        if (gamepad2.rightBumperWasPressed()) {
             enableAutoAiming = !enableAutoAiming;
             if (!enableAutoAiming) {
                 turret.resetTurretHeading();
