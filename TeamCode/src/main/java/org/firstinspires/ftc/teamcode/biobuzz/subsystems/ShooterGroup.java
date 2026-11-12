@@ -55,6 +55,14 @@ public class ShooterGroup {
        // nectarShooter.setShootingLocation(position);
     }
 
+    public double getTotalCurrentAmps() {
+        double totalCurrent = pollenShooter.getCurrentAmps();
+        if (nectarShooter != null) {
+            totalCurrent += nectarShooter.getCurrentAmps();
+        }
+        return totalCurrent;
+    }
+
     public boolean isPollenFlyWheelReady(){
         return pollenShooter.getIsFlyWheelReady();
     }

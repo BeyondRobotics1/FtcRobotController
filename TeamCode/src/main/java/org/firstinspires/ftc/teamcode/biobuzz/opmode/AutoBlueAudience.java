@@ -41,7 +41,7 @@ public class AutoBlueAudience extends LinearOpMode {
             BioBuzzDashboard.BLUE_AUDIENCE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
     private final Pose controlScoreToParkPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getX(DistanceUnit.INCH),
-            119, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
+            112, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
     private final Pose parkPose = new Pose(BioBuzzDashboard.BLUE_AUDIENCE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
             BioBuzzDashboard.BLUE_AUDIENCE_AUTO_PARK_POSE.getY(DistanceUnit.INCH),

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.common.Helper;
@@ -45,10 +46,12 @@ public class DriveTrain {
     double motorBackRightMaxCurrent = 0;
     double motorTotalMaxCurrent = 0;
 
+    private double powerScale = 1.0;
+
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private final double y_power_scale = 0.9; //forward/backward power adjustment
-    private final double x_power_scale = 0.9; //left/right power adjustment, make it slower
+    private final double y_power_scale = 1; //forward/backward power adjustment
+    private final double x_power_scale = 1; //left/right power adjustment, make it slower
     private final double rx_power_scale = 0.5;//rotation power adjustment, make it slower
 
 
@@ -164,65 +167,31 @@ public class DriveTrain {
     public void setMotorPower(double frontLeft, double frontRight,
                               double backLeft, double backRight)
     {
-        motorFrontLeft.setPower(frontLeft);
-        motorFrontRight.setPower(frontRight);
-        motorBackLeft.setPower(backLeft);
-        motorBackRight.setPower(backRight);
+        motorFrontLeft.setPower(scalePower(frontLeft));
+        motorFrontRight.setPower(scalePower(frontRight));
+        motorBackLeft.setPower(scalePower(backLeft));
+        motorBackRight.setPower(scalePower(backRight));
     }
 
-    //drive to Red/Blue lines on the field and stop
-    public void driveToLine()
-    {
-        if(colorSensorLeft == null)
-            mode.telemetry.addLine("colorSensorLeft is null");
-        if(colorSensorRight == null)
-            mode.telemetry.addLine("colorSensorRight is null");
-
-
-        if(colorSensorLeft != null &&
-                colorSensorRight != null) {
-            NormalizedRGBA colorsLeft = colorSensorLeft.getNormalizedColors();
-            NormalizedRGBA colorsRight = colorSensorRight.getNormalizedColors();
-
-            Color.colorToHSV(colorsLeft.toColor(), hsvValuesLeft);
-            Color.colorToHSV(colorsRight.toColor(), hsvValuesRight);
-
-            mode.telemetry.addData("colorSensorLeft hue", "%f.2", hsvValuesLeft[0]);
-            mode.telemetry.addData("colorSensorRight hue", "%f.2", hsvValuesRight[0]);
-
-            //red/blue line detected, set power to 0
-            if (hsvValuesLeft[0] <= 31 || hsvValuesLeft[0] > 200) {
-                motorFrontLeft.setPower(0);
-                motorBackLeft.setPower(0);
-            } else {
-                motorFrontLeft.setPower(APPROACH_SPEED);
-                motorBackLeft.setPower(APPROACH_SPEED);
-            }
-
-            //red/blue line detected, set power to 0
-            if (hsvValuesRight[0] <= 31 || hsvValuesRight[0] > 200) {
-                motorFrontRight.setPower(0);
-                motorBackRight.setPower(0);
-            } else {
-                motorFrontRight.setPower(APPROACH_SPEED);
-                motorBackRight.setPower(APPROACH_SPEED);
-            }
-        }
+    public void setPowerScale(double powerScale) {
+        this.powerScale = Range.clip(powerScale, 0.0, 1.0);
     }
 
-    //lift it up the robot through PTO
-    public void liftUp(double power)
-    {
-
-        //front motors move forward
-        motorFrontLeft.setPower(Math.abs(power));
-        motorFrontRight.setPower(Math.abs(power));
-
-        //back motors move back to cancel out
-        //front motors's moving forward
-        motorBackLeft.setPower(-Math.abs(power));
-        motorBackRight.setPower(-Math.abs(power));
+    public double getPowerScale() {
+        return powerScale;
     }
+
+    public double getTotalCurrentAmps() {
+        return motorFrontLeft.getCurrent(CurrentUnit.AMPS)
+                + motorBackLeft.getCurrent(CurrentUnit.AMPS)
+                + motorFrontRight.getCurrent(CurrentUnit.AMPS)
+                + motorBackRight.getCurrent(CurrentUnit.AMPS);
+    }
+
+    private double scalePower(double power) {
+        return Range.clip(power * powerScale, -1.0, 1.0);
+    }
+
 
     public void printMotorCurrents()
     {

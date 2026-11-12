@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 public class Shooter {
     final public int kACHIEVABLE_MAX_TICKS_PER_SECOND = 2800;
 
@@ -151,13 +153,13 @@ public class Shooter {
         ff = kF * targetSpeed;
         power = Range.clip(pid + ff, 0.0, 1.0);
 
-        mode.telemetry.addData("PID targetVelocity", targetVelocity);
-        mode.telemetry.addData("PID velocity", velocity);
-        mode.telemetry.addData("PID pid", pid);
-        mode.telemetry.addData("PID ff", ff);
-        mode.telemetry.addData("PID power", power);
-
-        mode.telemetry.addData("Power Applied", power);
+//        mode.telemetry.addData("PID targetVelocity", targetVelocity);
+//        mode.telemetry.addData("PID velocity", velocity);
+//        mode.telemetry.addData("PID pid", pid);
+//        mode.telemetry.addData("PID ff", ff);
+//        mode.telemetry.addData("PID power", power);
+//
+//        mode.telemetry.addData("Power Applied", power);
 
         setPower(power);
 
@@ -172,6 +174,14 @@ public class Shooter {
     public void stop(){
         flywheel.setPower(0);
         isFlyWheelReady = false;
+    }
+
+    public double getCurrentAmps() {
+        return flywheel.getCurrent(CurrentUnit.AMPS);
+    }
+
+    public double getAppliedPower() {
+        return Math.abs(flywheel.getPower());
     }
 
     public void setShootingLocation(Shooter.ShootingLocation position)

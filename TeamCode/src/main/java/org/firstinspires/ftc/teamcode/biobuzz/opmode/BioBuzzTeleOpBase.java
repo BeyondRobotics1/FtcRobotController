@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PowerManager;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.ShooterGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.TriggerGroup;
@@ -34,6 +35,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
     private ShooterGroup shooters;
     private TriggerGroup triggers;
     private Turret turret;
+    private PowerManager powerManager;
 
     private Timer gameTimer;
     private Gamepad.RumbleEffect strongRumbleEffect;
@@ -80,7 +82,6 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
             return;
         }
 
-        robotPose = validAutoEndPoseOrDefault();
         turret = new Turret(hardwareMap, this, robotPose, alliance(), false, false);
         turret.resetTurretHeading();
 
@@ -90,6 +91,8 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
 
         while (opModeIsActive() && !isStopRequested()) {
             hubs.forEach(LynxModule::clearBulkCache);
+
+            updatePowerManagement();
 
             telemetry.addLine(selectedModeLabel());
             telemetry.addLine("");
@@ -103,6 +106,8 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
             turretOp();
             shootOp();
             doRumble();
+
+            powerManager.addTelemetry(telemetry);
 
             telemetry.update();
         }
@@ -134,6 +139,9 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         while (!isStarted() && !isStopRequested()) {
             robotPose = BioBuzzDashboard.robotAutoEndPose(blackboard);
             telemetry.addLine(selectedModeLabel());
+
+            robotPose = validAutoEndPoseOrDefault();
+
             addAutoEndPoseTelemetry();
             telemetry.update();
         }
@@ -161,7 +169,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
     }
 
     private Pose2D validAutoEndPoseOrDefault() {
-        if (robotPose != null && robotPose.getX(DistanceUnit.INCH) >= 10.0) {
+        if (robotPose != null && robotPose.getX(DistanceUnit.INCH) >= 5.0) {
             return robotPose;
         }
         return isAudienceSideTeleOp ? audienceParkPose() : scoreParkPose();
@@ -174,8 +182,12 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
     }
 
     private void warmUpShooter() throws InterruptedException {
-        shooters.setPower(0.9);
-        sleep(150);
+        final int warmupSteps = 8;
+        final double warmupPower = 0.65;
+        for (int step = 1; step <= warmupSteps && !isStopRequested(); step++) {
+            shooters.setPower(warmupPower * step / warmupSteps);
+            sleep(25);
+        }
 
         for (int i = 0; i < 30 && !isStopRequested(); i++) {
             shooters.doFlyWheelPID();
@@ -263,6 +275,13 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         }
     }
 
+    private void updatePowerManagement() {
+        powerManager.update(
+                driveTrain.getTotalCurrentAmps(),
+                shooters.getTotalCurrentAmps());
+        driveTrain.setPowerScale(powerManager.getDrivePowerScale());
+    }
+
     private void initSubsystems() {
         telemetry.addLine("Initializing drive train");
         telemetry.update();
@@ -279,6 +298,8 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         telemetry.addLine("Initializing triggers");
         telemetry.update();
         triggers = new TriggerGroup(hardwareMap);
+
+        powerManager = new PowerManager(hardwareMap);
 
         gameTimer = new Timer();
         strongRumbleEffect = new Gamepad.RumbleEffect.Builder()

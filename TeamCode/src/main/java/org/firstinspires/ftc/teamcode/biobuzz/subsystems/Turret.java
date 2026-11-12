@@ -158,11 +158,11 @@ public class Turret {
             //mode.telemetry.addData("Distance to goal", "%.3f", localizer.getRobotDistanceToGoal());
             //mode.telemetry.addData("Robot Zone", localizer.getRobotZone().ordinal());
 
-            mode.telemetry.addLine(" ");
-            mode.telemetry.addData("Delta x:", Math.abs(x - x0));
-            mode.telemetry.addData("Delta y:", Math.abs(y - y0));
-            mode.telemetry.addData("targetBearingDegrees:", targetBearingDegrees);
-            mode.telemetry.addData("turretAngleDegrees:", turretAngleDegrees);
+//            mode.telemetry.addLine(" ");
+//            mode.telemetry.addData("Delta x:", Math.abs(x - x0));
+//            mode.telemetry.addData("Delta y:", Math.abs(y - y0));
+//            mode.telemetry.addData("targetBearingDegrees:", targetBearingDegrees);
+//            mode.telemetry.addData("turretAngleDegrees:", turretAngleDegrees);
         }
     }
 
