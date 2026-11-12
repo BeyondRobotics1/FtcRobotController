@@ -33,8 +33,8 @@ public class PinpointTest extends OpMode {
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
 
         //blue auto starting point
-        pinpoint.setPosition(BioBuzzDashboard.kRedAutoStartPoseAudience);
-        //pinpoint.setPosition(BioBuzzDashboard.kRedAutoStartPoseScore);
+        pinpoint.setPosition(BioBuzzDashboard.RED_AUDIENCE_AUTO_START_POSE);
+        //pinpoint.setPosition(BioBuzzDashboard.RED_SCORE_AUTO_START_POSE);
 
         //red auto starting point
         //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 30.5, 11, AngleUnit.DEGREES, -90));
@@ -48,7 +48,7 @@ public class PinpointTest extends OpMode {
         if(!isInitialPinpointPositionSet)
         {
             //blue
-            pinpoint.setPosition(BioBuzzDashboard.kRedAutoStartPoseAudience);
+            pinpoint.setPosition(BioBuzzDashboard.RED_AUDIENCE_AUTO_START_POSE);
 
             //red
             //pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 31.875, 11.25, AngleUnit.DEGREES, -90));

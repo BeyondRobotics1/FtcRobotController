@@ -20,16 +20,16 @@ public class IMULocalizer {
         FAR_FAR_SHOOTING_ZONE,
     }
 
-    public static final double kRedYLimitRight = 32;//
-    public static final double kRedYLimitLeft = BioBuzzDashboard.kFieldSize - kRedYLimitRight;
+    public static final double RED_RIGHT_Y_LIMIT_INCHES = 32;//
+    public static final double RED_LEFT_Y_LIMIT_INCHES = BioBuzzDashboard.FIELD_SIZE_INCHES - RED_RIGHT_Y_LIMIT_INCHES;
 
-    public static final double kBlueYLimitRight = kRedYLimitLeft;//
-    public static final double kBlueYLimitLeft = kRedYLimitRight;//
+    public static final double BLUE_RIGHT_Y_LIMIT_INCHES = RED_LEFT_Y_LIMIT_INCHES;//
+    public static final double BLUE_LEFT_Y_LIMIT_INCHES = RED_RIGHT_Y_LIMIT_INCHES;//
 
 
-    public static final double kFAR_FAR_ZONE_DISTANCE = 82;//80;
-    public static final double kFAR_ZONE_DISTANCE = 66;//80;
-    public static final double kMEDIUM_ZONE_DISTANCE = 52;//44;
+    public static final double FAR_FAR_ZONE_DISTANCE_INCHES = 82;//80;
+    public static final double FAR_ZONE_DISTANCE_INCHES = 66;//80;
+    public static final double MEDIUM_ZONE_DISTANCE_INCHES = 52;//44;
 
 
     LinearOpMode mode;
@@ -42,7 +42,7 @@ public class IMULocalizer {
     Pose2D targetPose;
 
     double robotDistanceToGoal = 0.;
-    int alliance = BioBuzzDashboard.kAllianceBlue;
+    int alliance = BioBuzzDashboard.ALLIANCE_BLUE;
 
     double botHeadingDegrees;
     double x, y; //coordinates in INCH
@@ -155,7 +155,7 @@ public class IMULocalizer {
         robotDistanceToGoal = Math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
 
         //find if bot is heading to the goal or not
-        if (alliance == BioBuzzDashboard.kAllianceRed)
+        if (alliance == BioBuzzDashboard.ALLIANCE_RED)
         {
             detectRobotZone(x, y, robotDistanceToGoal);
 
@@ -174,32 +174,32 @@ public class IMULocalizer {
 
     private void updateTargetPose(double y)
     {
-        if(alliance == BioBuzzDashboard.kAllianceRed)
+        if(alliance == BioBuzzDashboard.ALLIANCE_RED)
         {
             //audience side target
             if(y <= 70.75)
-                targetPose = BioBuzzDashboard.kRedTargetPoseAudience;
+                targetPose = BioBuzzDashboard.RED_AUDIENCE_TARGET_POSE;
             else //score side target
-                targetPose = BioBuzzDashboard.kRedTargetPoseScore;
+                targetPose = BioBuzzDashboard.RED_SCORE_TARGET_POSE;
         }
         else {
             if(y <= 70.5)
-                targetPose = BioBuzzDashboard.kBlueTargetPoseScore;
+                targetPose = BioBuzzDashboard.BLUE_SCORE_TARGET_POSE;
             else
-                targetPose = BioBuzzDashboard.kBlueTargetPoseAudience;
+                targetPose = BioBuzzDashboard.BLUE_AUDIENCE_TARGET_POSE;
         }
     }
 
     private void detectRobotZone(double x, double y, double distanceToHive)
     {
         //TBD
-        if(alliance == BioBuzzDashboard.kAllianceRed)
+        if(alliance == BioBuzzDashboard.ALLIANCE_RED)
         {
-            if(y <= kRedYLimitLeft) {
+            if(y <= RED_LEFT_Y_LIMIT_INCHES) {
                 isAudienceSide = true;
                 robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
             }
-            else if(y >= kRedYLimitRight) {
+            else if(y >= RED_RIGHT_Y_LIMIT_INCHES) {
                 isAudienceSide = false;
                 robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
             }
@@ -208,11 +208,11 @@ public class IMULocalizer {
         }
         else
         {
-            if(y <= kRedYLimitLeft) {
+            if(y <= RED_LEFT_Y_LIMIT_INCHES) {
                 isAudienceSide = false;
                 robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
             }
-            else if(y >= kRedYLimitRight) {
+            else if(y >= RED_RIGHT_Y_LIMIT_INCHES) {
                 isAudienceSide = true;
                 robotZone = RobotZone.MEDIUM_SHOOTING_ZONE;
             }

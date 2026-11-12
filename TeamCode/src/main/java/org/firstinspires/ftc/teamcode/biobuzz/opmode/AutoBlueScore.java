@@ -34,19 +34,19 @@ public class AutoBlueScore extends LinearOpMode {
     private Timer pathTimer;
     private int pathState = 0;
 
-    private final Pose startPose = new Pose(BioBuzzDashboard.kBlueAutoStartPoseScore.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoStartPoseScore.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoStartPoseScore.getHeading(AngleUnit.RADIANS));
-    private final Pose gardenPose = new Pose(BioBuzzDashboard.kBlueAutoGardenPose.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoGardenPose.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoGardenPose.getHeading(AngleUnit.RADIANS));
+    private final Pose startPose = new Pose(BioBuzzDashboard.BLUE_SCORE_AUTO_START_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_SCORE_AUTO_START_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
+    private final Pose gardenPose = new Pose(BioBuzzDashboard.BLUE_GARDEN_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_GARDEN_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_GARDEN_POSE.getHeading(AngleUnit.RADIANS));
 
     private final Pose scorePose = new Pose(52, 7, Math.toRadians(180));
     private final Pose controlScoreToParkPose = new Pose(36, 30, Math.toRadians(90));
 
-    private final Pose parkPose = new Pose(BioBuzzDashboard.kBlueAutoParkPoseScore.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoParkPoseScore.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoParkPoseScore.getHeading(AngleUnit.RADIANS));
+    private final Pose parkPose = new Pose(BioBuzzDashboard.BLUE_SCORE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_SCORE_AUTO_PARK_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_SCORE_AUTO_PARK_POSE.getHeading(AngleUnit.RADIANS));
 
     private PathChain startScore, scoreGarden, gardenScore, scorePark;
 
@@ -248,8 +248,8 @@ public class AutoBlueScore extends LinearOpMode {
 
         telemetry.addLine("Initializing turret");
         telemetry.update();
-        turret = new Turret(hardwareMap, this, BioBuzzDashboard.kBlueAutoStartPoseScore, BioBuzzDashboard.kAllianceBlue, false, false);
-        turret.setServoPosition(Turret.kServoPositionAutoBlueScore);
+        turret = new Turret(hardwareMap, this, BioBuzzDashboard.BLUE_SCORE_AUTO_START_POSE, BioBuzzDashboard.ALLIANCE_BLUE, false, false);
+        turret.setServoPosition(Turret.BLUE_SCORE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {

@@ -36,16 +36,16 @@ public class AutoBlueAudience extends LinearOpMode {
     private Timer pathTimer;
     private int pathState = 0;
 
-    private final Pose startPose = new Pose(BioBuzzDashboard.kBlueAutoStartPoseAudience.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoStartPoseAudience.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoStartPoseAudience.getHeading(AngleUnit.RADIANS));
+    private final Pose startPose = new Pose(BioBuzzDashboard.BLUE_AUDIENCE_AUTO_START_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_AUDIENCE_AUTO_START_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_AUDIENCE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
-    private final Pose controlScoreToParkPose = new Pose(BioBuzzDashboard.kRedAutoStartPoseScore.getX(DistanceUnit.INCH),
-            119, BioBuzzDashboard.kRedAutoStartPoseScore.getHeading(AngleUnit.RADIANS));
+    private final Pose controlScoreToParkPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getX(DistanceUnit.INCH),
+            119, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
-    private final Pose parkPose = new Pose(BioBuzzDashboard.kBlueAutoParkPoseAudience.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoParkPoseAudience.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kBlueAutoParkPoseAudience.getHeading(AngleUnit.RADIANS));
+    private final Pose parkPose = new Pose(BioBuzzDashboard.BLUE_AUDIENCE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_AUDIENCE_AUTO_PARK_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.BLUE_AUDIENCE_AUTO_PARK_POSE.getHeading(AngleUnit.RADIANS));
 
     private PathChain startPark;
 
@@ -200,9 +200,9 @@ public class AutoBlueAudience extends LinearOpMode {
 
         telemetry.addLine("Initializing turret");
         telemetry.update();
-        turret = new Turret(hardwareMap, this, BioBuzzDashboard.kBlueAutoStartPoseAudience,
-                BioBuzzDashboard.kAllianceBlue, false, false);
-        turret.setServoPosition(Turret.kServoPositionAutoBlueAudience);
+        turret = new Turret(hardwareMap, this, BioBuzzDashboard.BLUE_AUDIENCE_AUTO_START_POSE,
+                BioBuzzDashboard.ALLIANCE_BLUE, false, false);
+        turret.setServoPosition(Turret.BLUE_AUDIENCE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {

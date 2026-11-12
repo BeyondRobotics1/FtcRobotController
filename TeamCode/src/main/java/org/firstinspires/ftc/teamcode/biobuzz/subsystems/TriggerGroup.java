@@ -13,12 +13,12 @@ public class TriggerGroup {
     public TriggerGroup(HardwareMap hardwareMap)
     {
         pollenTrigger = new Trigger(hardwareMap, "pollenTrigger",
-                Trigger.kPollenTriggerOpenPosition,
-                Trigger.kPollenTriggerClosePosition, true);
+                Trigger.POLLEN_TRIGGER_OPEN_POSITION,
+                Trigger.POLLEN_TRIGGER_CLOSED_POSITION, true);
 
         nectarTrigger = new Trigger(hardwareMap, "nectarTrigger",
-                Trigger.kNectarTriggerOpenPosition,
-                Trigger.kNectarTriggerClosePosition, true);
+                Trigger.NECTAR_TRIGGER_OPEN_POSITION,
+                Trigger.NECTAR_TRIGGER_CLOSED_POSITION, true);
 
         close();
     }

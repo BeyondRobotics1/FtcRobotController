@@ -11,11 +11,11 @@ public class Trigger {
     pollen open position: 0.03
     pollen close position: 0.27
     */
-    public final static double kNectarTriggerOpenPosition = 0.23;
-    public final static double kNectarTriggerClosePosition = 0;
+    public static final double NECTAR_TRIGGER_OPEN_POSITION = 0.23;
+    public static final double NECTAR_TRIGGER_CLOSED_POSITION = 0;
 
-    public final static double kPollenTriggerOpenPosition = 0.2;
-    public final static double kPollenTriggerClosePosition = 0.;
+    public static final double POLLEN_TRIGGER_OPEN_POSITION = 0.2;
+    public static final double POLLEN_TRIGGER_CLOSED_POSITION = 0.;
 
 
     Servo trigger;

@@ -27,7 +27,7 @@ public class Turret {
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    private int alliance = BioBuzzDashboard.kAllianceRed;
+    private int alliance = BioBuzzDashboard.ALLIANCE_RED;
 
     private boolean isAuto = true;
 
@@ -40,26 +40,24 @@ public class Turret {
 
 
     //
-    public static final double kFullServoRangeDegrees = 367.34;
-    public static final double kHalfServoRangeDegrees = kFullServoRangeDegrees * 0.5;//138;//133.78;
+    public static final double FULL_SERVO_RANGE_DEGREES = 367.34;
+    public static final double HALF_SERVO_RANGE_DEGREES = FULL_SERVO_RANGE_DEGREES * 0.5;//138;//133.78;
 
-    public static final double kServoPositionRight = 0; //halfServoRangeDegrees, 0, 90 degree
-    public static final double kServoPositionLeft = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
-    public static final double kServoPositionCenter = 0.51;//
+    public static final double RIGHT_SERVO_POSITION = 0; //halfServoRangeDegrees, 0, 90 degree
+    public static final double LEFT_SERVO_POSITION = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
+    public static final double CENTER_SERVO_POSITION = 0.51;//
 
     //servo positions for auto
-    public static final double kServoPositionAutoRedAudience = 0.25;//0.233
-    public static final double kServoPositionAutoRedScore = 0.5;
-    public static final double kServoPositionAutoBlueAudience = 0.5;
-    public static final double kServoPositionAutoBlueScore = 0.25;
+    public static final double RED_AUDIENCE_AUTO_SERVO_POSITION = 0.25;//0.233
+    public static final double RED_SCORE_AUTO_SERVO_POSITION = 0.5;
+    public static final double BLUE_AUDIENCE_AUTO_SERVO_POSITION = 0.5;
+    public static final double BLUE_SCORE_AUTO_SERVO_POSITION = 0.25;
 
     //
-    public static final double kTurretCenterOffsetDegrees = 0;
+    public static final double TURRET_CENTER_OFFSET_DEGREES = 0;
 
-    public static final double kServoDirection = 1;
-    //public static final double kServoDirectionRed = 1;
+    public static final double SERVO_DIRECTION = 1;
 
-    //double servoDirection;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
                   Pose2D robotPose,
@@ -85,7 +83,7 @@ public class Turret {
         localizer = new IMULocalizer(hardwareMap, mode, robotPose, alliance);
 
 
-        setServoPosition(kServoPositionCenter);
+        setServoPosition(CENTER_SERVO_POSITION);
     }
 
     public void autoAim(boolean enabled)
@@ -127,19 +125,17 @@ public class Turret {
             double turretAngleDegrees = normalizeDegrees(
                     targetBearingDegrees
                             - heading
-                            - kTurretCenterOffsetDegrees
+                            - TURRET_CENTER_OFFSET_DEGREES
             );
 
             double servoPosition = Range.clip(
-                    kServoPositionCenter
-                            + kServoDirection * turretAngleDegrees / kFullServoRangeDegrees,
+                    CENTER_SERVO_POSITION
+                            + SERVO_DIRECTION * turretAngleDegrees / FULL_SERVO_RANGE_DEGREES,
                     0.0,
                     1.0
             );
 
             setServoPosition(servoPosition);
-
-            //setServoPosition(servoPosition);
 
             /*
             double servoPositionCalibration = calibrateTurret();
@@ -147,11 +143,10 @@ public class Turret {
 
             mode.telemetry.addData("Limelight calibrated servo position:", "%.5f", servoPosition);
 
-            if (servoPosition > kServoPositionLeft) {
-                servoPosition = kServoPositionLeft;
-            } else if (servoPosition < kServoPositionRight) {
-                servoPosition = kServoPositionRight;
-            }
+                servoPosition = Range.clip(
+                    servoPosition,
+                    0.0,
+                    1.0
 
             setServoPosition(servoPosition);
              */
@@ -168,9 +163,6 @@ public class Turret {
             mode.telemetry.addData("Delta y:", Math.abs(y - y0));
             mode.telemetry.addData("targetBearingDegrees:", targetBearingDegrees);
             mode.telemetry.addData("turretAngleDegrees:", turretAngleDegrees);
-
-
-
         }
     }
 
@@ -218,7 +210,7 @@ public class Turret {
     //working as expected
     public void resetTurretHeading()
     {
-        setServoPosition(kServoPositionCenter);
+        setServoPosition(CENTER_SERVO_POSITION);
     }
 
 

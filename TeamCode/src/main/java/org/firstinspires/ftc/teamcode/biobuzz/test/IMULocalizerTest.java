@@ -44,14 +44,14 @@ public class IMULocalizerTest extends LinearOpMode {
 
                 //Blue near auto starting pos, keep the same as blue near auto
                 if(robotPose == null)
-                    robotPose = BioBuzzDashboard.kBlueIMUResetPose;
+                    robotPose = BioBuzzDashboard.BLUE_IMU_RESET_POSE;
             }
             else {
                 telemetry.addLine("Localizer Selected: RED RED RED");
 
                 //Red near auto starting pos, keep the same as red near auto
                 if (robotPose == null)
-                    robotPose = BioBuzzDashboard.kRedIMUResetPose;
+                    robotPose = BioBuzzDashboard.RED_IMU_RESET_POSE;
             }
 
             telemetry.addLine("");
@@ -68,12 +68,12 @@ public class IMULocalizerTest extends LinearOpMode {
 
         int alliance;
         if(isBlueTeleOp) {
-            alliance = BioBuzzDashboard.kAllianceBlue;
+            alliance = BioBuzzDashboard.ALLIANCE_BLUE;
 
             localizer = new IMULocalizer(hardwareMap, this, robotPose, alliance);
         }
         else {
-            alliance = BioBuzzDashboard.kAllianceRed;
+            alliance = BioBuzzDashboard.ALLIANCE_RED;
 
             localizer = new IMULocalizer(hardwareMap, this, robotPose, alliance);
         }

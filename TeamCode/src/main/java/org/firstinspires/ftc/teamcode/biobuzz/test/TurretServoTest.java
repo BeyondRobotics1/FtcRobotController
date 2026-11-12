@@ -41,13 +41,13 @@ public class TurretServoTest extends LinearOpMode {
             if (gamepad1.x && servo == null)
             {
                 servo = hardwareMap.get(Servo.class, "pollenTurret");
-                servo.setPosition(Turret.kServoPositionCenter);
+                servo.setPosition(Turret.CENTER_SERVO_POSITION);
                 telemetry.addData("Servo Position", "%5.2f", position);
                 telemetry.update();
             }
             else if (gamepad1.y  && servo == null) {
                 servo = hardwareMap.get(Servo.class, "nectarTurret");
-                servo.setPosition(Turret.kServoPositionCenter);
+                servo.setPosition(Turret.CENTER_SERVO_POSITION);
 
                 telemetry.addData("Servo Position", "%5.2f", position);
                 telemetry.update();

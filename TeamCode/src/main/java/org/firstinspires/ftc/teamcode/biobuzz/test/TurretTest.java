@@ -41,14 +41,14 @@ public class TurretTest  extends LinearOpMode {
 
                 //Blue near auto starting pos, keep the same as blue near auto
                 if(robotPose == null)
-                    robotPose = BioBuzzDashboard.kBlueIMUResetPose;
+                    robotPose = BioBuzzDashboard.BLUE_IMU_RESET_POSE;
             }
             else {
                 telemetry.addLine("Alliance Selected: RED RED RED");
 
                 //Red near auto starting pos, keep the same as red near auto
                 if (robotPose == null)
-                    robotPose = BioBuzzDashboard.kRedIMUResetPose;
+                    robotPose = BioBuzzDashboard.RED_IMU_RESET_POSE;
             }
 
             telemetry.addLine("");
@@ -66,13 +66,13 @@ public class TurretTest  extends LinearOpMode {
         int alliance;
 
         if(isBlueTeleOp)
-            alliance = BioBuzzDashboard.kAllianceBlue;
+            alliance = BioBuzzDashboard.ALLIANCE_BLUE;
         else
-            alliance = BioBuzzDashboard.kAllianceRed;
+            alliance = BioBuzzDashboard.ALLIANCE_RED;
 
         Turret turret = new Turret(hardwareMap, this, robotPose,
                 alliance, false, false);
-        turret.setServoPosition(Turret.kServoPositionCenter);
+        turret.setServoPosition(Turret.CENTER_SERVO_POSITION);
 
         if(isBlueTeleOp)
             telemetry.addLine("Alliance Selected: BLUE BLUE BLUE");

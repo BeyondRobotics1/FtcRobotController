@@ -36,16 +36,16 @@ public class AutoRedScore extends LinearOpMode {
     private Timer pathTimer;
     private int pathState = 0;
 
-    private final Pose startPose = new Pose(BioBuzzDashboard.kRedAutoStartPoseScore.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoStartPoseScore.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoStartPoseScore.getHeading(AngleUnit.RADIANS));
+    private final Pose startPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
-    private final Pose controlScoreToParkPose = new Pose(BioBuzzDashboard.kRedAutoStartPoseScore.getX(DistanceUnit.INCH),
-            119, BioBuzzDashboard.kRedAutoStartPoseScore.getHeading(AngleUnit.RADIANS));
+    private final Pose controlScoreToParkPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getX(DistanceUnit.INCH),
+            119, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
-    private final Pose parkPose = new Pose(BioBuzzDashboard.kRedAutoParkPoseScore.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoParkPoseScore.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoParkPoseScore.getHeading(AngleUnit.RADIANS));
+    private final Pose parkPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_SCORE_AUTO_PARK_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_SCORE_AUTO_PARK_POSE.getHeading(AngleUnit.RADIANS));
 
     private PathChain startPark;
 
@@ -200,9 +200,9 @@ public class AutoRedScore extends LinearOpMode {
 
         telemetry.addLine("Initializing turret");
         telemetry.update();
-        turret = new Turret(hardwareMap, this, BioBuzzDashboard.kRedAutoStartPoseScore,
-                BioBuzzDashboard.kAllianceRed, false, false);
-        turret.setServoPosition(Turret.kServoPositionAutoRedScore);
+        turret = new Turret(hardwareMap, this, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE,
+                BioBuzzDashboard.ALLIANCE_RED, false, false);
+        turret.setServoPosition(Turret.RED_SCORE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {

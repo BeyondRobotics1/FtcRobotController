@@ -224,7 +224,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         }
 
         // Enable when turret auto-aiming is ready for driver use.
-        // turret.autoAim(enableAutoAiming);
+        turret.autoAim(enableAutoAiming);
     }
 
     private void shootOp() {

@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public abstract class TeleOpRed extends BioBuzzTeleOpBase {
     @Override
     protected int alliance() {
-        return BioBuzzDashboard.kAllianceRed;
+        return BioBuzzDashboard.ALLIANCE_RED;
     }
 
     @Override
@@ -16,16 +16,16 @@ public abstract class TeleOpRed extends BioBuzzTeleOpBase {
 
     @Override
     protected Pose2D audienceParkPose() {
-        return BioBuzzDashboard.kRedAutoParkPoseAudience;
+        return BioBuzzDashboard.RED_AUDIENCE_AUTO_PARK_POSE;
     }
 
     @Override
     protected Pose2D scoreParkPose() {
-        return BioBuzzDashboard.kRedAutoParkPoseScore;
+        return BioBuzzDashboard.RED_SCORE_AUTO_PARK_POSE;
     }
 
     @Override
     protected Pose2D imuResetPose() {
-        return BioBuzzDashboard.kRedIMUResetPose;
+        return BioBuzzDashboard.RED_IMU_RESET_POSE;
     }
 }

@@ -35,19 +35,19 @@ public class AutoRedAudience extends LinearOpMode {
     private Timer pathTimer;
     private int pathState = 0;
 
-    private final Pose startPose = new Pose(BioBuzzDashboard.kRedAutoStartPoseAudience.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoStartPoseAudience.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoStartPoseAudience.getHeading(AngleUnit.RADIANS));
-    private final Pose gardenPose = new Pose(BioBuzzDashboard.kRedAutoGardenPose.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoGardenPose.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoGardenPose.getHeading(AngleUnit.RADIANS));
+    private final Pose startPose = new Pose(BioBuzzDashboard.RED_AUDIENCE_AUTO_START_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_AUDIENCE_AUTO_START_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_AUDIENCE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
+    private final Pose gardenPose = new Pose(BioBuzzDashboard.RED_GARDEN_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_GARDEN_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_GARDEN_POSE.getHeading(AngleUnit.RADIANS));
 
     private final Pose scorePose = new Pose(52, 7, Math.toRadians(180));
     private final Pose controlScoreToParkPose = new Pose(36, 30, Math.toRadians(90));
 
-    private final Pose parkPose = new Pose(BioBuzzDashboard.kRedAutoParkPoseAudience.getX(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoParkPoseAudience.getY(DistanceUnit.INCH),
-            BioBuzzDashboard.kRedAutoParkPoseAudience.getHeading(AngleUnit.RADIANS));
+    private final Pose parkPose = new Pose(BioBuzzDashboard.RED_AUDIENCE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_AUDIENCE_AUTO_PARK_POSE.getY(DistanceUnit.INCH),
+            BioBuzzDashboard.RED_AUDIENCE_AUTO_PARK_POSE.getHeading(AngleUnit.RADIANS));
 
     private PathChain startScore, scoreGarden, gardenScore, scorePark;
 
@@ -251,8 +251,8 @@ public class AutoRedAudience extends LinearOpMode {
 
         telemetry.addLine("Initializing turret");
         telemetry.update();
-        turret = new Turret(hardwareMap, this, BioBuzzDashboard.kRedAutoStartPoseAudience, BioBuzzDashboard.kAllianceRed, false, false);
-        turret.setServoPosition(Turret.kServoPositionAutoRedAudience);
+        turret = new Turret(hardwareMap, this, BioBuzzDashboard.RED_AUDIENCE_AUTO_START_POSE, BioBuzzDashboard.ALLIANCE_RED, false, false);
+        turret.setServoPosition(Turret.RED_AUDIENCE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {
