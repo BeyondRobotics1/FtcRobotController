@@ -29,8 +29,8 @@ public class BioBuzzDashboard {
     public static final Pose2D kRedAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 13, 90, AngleUnit.DEGREES, 90);
     public static final Pose2D kRedAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 15, kFieldSize - 22, AngleUnit.DEGREES, 0);
 
-    public static final Pose2D kBlueAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 13, 90, AngleUnit.DEGREES, 90);
-    public static final Pose2D kBlueAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 15, kFieldSize - 22, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueAutoParkPoseAudience = new Pose2D(DistanceUnit.INCH, 13, kFieldSize - 22, AngleUnit.DEGREES, 0);
+    public static final Pose2D kBlueAutoParkPoseScore = new Pose2D(DistanceUnit.INCH, 15, 90, AngleUnit.DEGREES, 90);
 
     //shooting target poses
     public static final Pose2D kRedTargetPoseAudience = new Pose2D(DistanceUnit.INCH, 56, 60, AngleUnit.DEGREES, 0);

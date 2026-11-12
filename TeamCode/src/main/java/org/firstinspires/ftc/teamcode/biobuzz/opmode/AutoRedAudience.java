@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "BioBuzz Auto RED AUDIENCE", group = "Decode")
+@Autonomous(name = "BioBuzz Auto RED AUDIENCE", group = "BioBuzz")
 public class AutoRedAudience extends LinearOpMode {
     private Intake intake;
     private ShooterGroup shooters;
@@ -118,35 +118,57 @@ public class AutoRedAudience extends LinearOpMode {
             case 3:
                 if (pathTimer.getElapsedTime() > 1000) //wait for 2 second to complete shooting
                 {
-                    intake.setIntakeMode(Intake.IntakeMode.IN);
+                    intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     triggers.close();
 
-                    follower.followPath(scoreGarden, true); //grab garden
+                    pathTimer.resetTimer();
 
                     setPathState(4);
                 }
                 break;
             case 4:
+                if (pathTimer.getElapsedTime() > 500) { //try shoot if stuck
+                    intake.setIntakeMode(Intake.IntakeMode.FEED);
+                    triggers.open();
+
+                    pathTimer.resetTimer();
+
+                    setPathState(10);
+                }
+                break;
+
+            case 10:
+                if (pathTimer.getElapsedTime() > 1000) //wait for 1 second to complete shooting
+                {
+                    intake.setIntakeMode(Intake.IntakeMode.IN);
+                    triggers.close();
+
+                    follower.followPath(scoreGarden, true); //grab garden
+
+                    setPathState(11);
+                }
+                break;
+            case 11:
                 if (!follower.isBusy()) {
                     pathTimer.resetTimer();
-                    setPathState(5);
+                    setPathState(12);
                 }
                 break;
-            case 5:
+            case 12:
                 if (pathTimer.getElapsedTime() > 2000) {
                     follower.followPath(gardenScore, true); //grab garden
-                    setPathState(6);
+                    setPathState(13);
                 }
                 break;
-            case 6:
+            case 13:
                 if (!follower.isBusy()) {
                     intake.setIntakeMode(Intake.IntakeMode.FEED);
                     triggers.open();
                     pathTimer.resetTimer();
-                    setPathState(7);
+                    setPathState(14);
                 }
                 break;
-            case 7:
+            case 14:
                 if (pathTimer.getElapsedTime() > 1000)
                 {
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);

@@ -8,7 +8,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.opmode.BioBuzzDashboard;
-import org.firstinspires.ftc.teamcode.decode.OpMode.DecodeBlackBoard;
 
 public class IMULocalizer {
 
@@ -47,7 +46,7 @@ public class IMULocalizer {
 
     double botHeadingDegrees;
     double x, y; //coordinates in INCH
-    boolean isHeadingToGoal = false; //is robot heading to the hiv
+    boolean isHeadingToGoal = true; //is robot heading to the hiv
     boolean isAudienceSide = true; //is robot is audience side
     IMULocalizer.RobotZone robotZone = IMULocalizer.RobotZone.NOT_IN_SHOOTING_ZONE;
 
@@ -156,7 +155,7 @@ public class IMULocalizer {
         robotDistanceToGoal = Math.sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
 
         //find if bot is heading to the goal or not
-        if (alliance == DecodeBlackBoard.RED)
+        if (alliance == BioBuzzDashboard.kAllianceRed)
         {
             detectRobotZone(x, y, robotDistanceToGoal);
 

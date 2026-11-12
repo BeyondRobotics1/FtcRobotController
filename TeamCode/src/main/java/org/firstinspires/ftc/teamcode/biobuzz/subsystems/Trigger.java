@@ -14,8 +14,8 @@ public class Trigger {
     public final static double kNectarTriggerOpenPosition = 0.23;
     public final static double kNectarTriggerClosePosition = 0;
 
-    public final static double kPollenTriggerOpenPosition = 0.27;
-    public final static double kPollenTriggerClosePosition = 0.03;
+    public final static double kPollenTriggerOpenPosition = 0.2;
+    public final static double kPollenTriggerClosePosition = 0.;
 
 
     Servo trigger;

@@ -47,9 +47,9 @@ public class DriveTrain {
 
     //for teleop
     //adjust forward/backward, left/right, and rotation power
-    private final double y_power_scale = 1; //forward/backward power adjustment
-    private final double x_power_scale = 1; //left/right power adjustment, make it slower
-    private final double rx_power_scale = 0.6;//rotation power adjustment, make it slower
+    private final double y_power_scale = 0.9; //forward/backward power adjustment
+    private final double x_power_scale = 0.9; //left/right power adjustment, make it slower
+    private final double rx_power_scale = 0.5;//rotation power adjustment, make it slower
 
 
     // Calculate the COUNTS_PER_INCH for your specific drive train.
@@ -94,24 +94,6 @@ public class DriveTrain {
         motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        /*
-        colorSensorLeft = hardwareMap.get(NormalizedColorSensor.class, "colorLeft");
-        colorSensorRight = hardwareMap.get(NormalizedColorSensor.class, "colorRight");
-
-        // If possible, turn the light on in the beginning (it might already be on anyway,
-        // we just make sure it is if we can).
-        if (colorSensorLeft instanceof SwitchableLight) {
-            ((SwitchableLight) colorSensorLeft).enableLight(true);
-        }
-
-        if (colorSensorRight instanceof SwitchableLight) {
-            ((SwitchableLight) colorSensorRight).enableLight(true);
-        }
-
-        colorSensorLeft.setGain(2.0f);
-        colorSensorRight.setGain(2.0f);
-        */
     }
 
     //robot centric

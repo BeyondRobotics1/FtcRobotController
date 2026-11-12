@@ -110,11 +110,21 @@ public class IMULocalizerTest extends LinearOpMode {
             double heading = localizer.getHeading();
             double distanceToGoal = localizer.getRobotDistanceToGoal();
 
+            double x0 = localizer.getX0();
+            double y0 = localizer.getY0();
+
             localizer.update();
 
             telemetry.addData("IMU Heading", "%.3f",  heading);
             telemetry.addData("IMU x", "%.3f", x);
             telemetry.addData("IMU y", "%.3f", y);
+
+            telemetry.addLine(" ");
+
+            telemetry.addData("Hive x", "%.3f", x0);
+            telemetry.addData("Hive y", "%.3f", y0);
+
+            telemetry.addLine(" ");
 
             if(isHeadingToGoal)
                 telemetry.addLine("Heading to goal: Yes");

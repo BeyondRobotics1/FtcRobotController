@@ -14,7 +14,7 @@ public class TriggerGroup {
     {
         pollenTrigger = new Trigger(hardwareMap, "pollenTrigger",
                 Trigger.kPollenTriggerOpenPosition,
-                Trigger.kPollenTriggerClosePosition, false);
+                Trigger.kPollenTriggerClosePosition, true);
 
         nectarTrigger = new Trigger(hardwareMap, "nectarTrigger",
                 Trigger.kNectarTriggerOpenPosition,

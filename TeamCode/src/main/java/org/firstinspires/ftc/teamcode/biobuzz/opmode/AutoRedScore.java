@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
 
-@Autonomous(name = "BioBuzz Auto RED SCORE", group = "Decode")
+@Autonomous(name = "BioBuzz Auto RED SCORE", group = "BioBuzz")
 public class AutoRedScore extends LinearOpMode {
 
     private Intake intake;

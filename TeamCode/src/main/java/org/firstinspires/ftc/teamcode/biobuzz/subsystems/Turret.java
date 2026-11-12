@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.opmode.BioBuzzDashboard;
@@ -50,8 +51,15 @@ public class Turret {
     public static final double kServoPositionAutoRedAudience = 0.25;//0.233
     public static final double kServoPositionAutoRedScore = 0.5;
     public static final double kServoPositionAutoBlueAudience = 0.5;
-    public static final double kServoPositionAutoBlueScore = 0.75;
+    public static final double kServoPositionAutoBlueScore = 0.25;
 
+    //
+    public static final double kTurretCenterOffsetDegrees = 0;
+
+    public static final double kServoDirection = 1;
+    //public static final double kServoDirectionRed = 1;
+
+    //double servoDirection;
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
                   Pose2D robotPose,
@@ -95,53 +103,46 @@ public class Turret {
         mode.telemetry.addData("IMU Heading", "%.3f",  heading);
         mode.telemetry.addData("IMU x", "%.3f", x);
         mode.telemetry.addData("IMU y", "%.3f", y);
+        mode.telemetry.addData("Hive x", "%.3f", x0);
+        mode.telemetry.addData("Hive y", "%.3f", y0);
 
-        isHeadingToGoal = localizer.isHeadingToGoal();
+        //isHeadingToGoal = localizer.isHeadingToGoal();
 
         if(enabled) {
 
-            if(!isHeadingToGoal)
-            {
-                mode.telemetry.addData("Bot Heading:", heading);
-                mode.telemetry.addLine("Bot is not heading to goal, auto aiming skipped");
+//            if(!isHeadingToGoal)
+//            {
+//                mode.telemetry.addData("Bot Heading:", heading);
+//                mode.telemetry.addLine("Bot is not heading to goal, auto aiming skipped");
+//
+//                return;
+//            }
 
-                return;
-            }
+            double dx = x0 - x;
+            double dy = y0 - y;
 
-            if (alliance == BioBuzzDashboard.kAllianceRed)
-                heading = -heading;
+            // Assumes Pinpoint heading 0° points along field +X.
+            double targetBearingDegrees = Math.toDegrees(Math.atan2(dy, dx));
 
-            //unwrap into [0 360]
-            if (heading < 0)
-                heading += 360;
+            double turretAngleDegrees = normalizeDegrees(
+                    targetBearingDegrees
+                            - heading
+                            - kTurretCenterOffsetDegrees
+            );
 
-            // calculate alpha
-            double alpha = Math.toDegrees(Math.atan2(Math.abs(x - x0), Math.abs(y - y0)));
-            double theta;
-
-            if (alliance == BioBuzzDashboard.kAllianceRed) {
-                theta = -90 - alpha + heading;
-            }
-            else {
-                theta = 90 + alpha - heading;
-            }
-
-            // calculate servo position
-            double servoPosition;
-
-            servoPosition = kServoPositionLeft * (theta + kHalfServoRangeDegrees) / kFullServoRangeDegrees;
-
-            mode.telemetry.addData("IMU location based servo position:", "%.5f", servoPosition);
-
-            if (servoPosition > kServoPositionLeft) {
-                servoPosition = kServoPositionLeft;
-            } else if (servoPosition < kServoPositionRight) {
-                servoPosition = kServoPositionRight;
-            }
+            double servoPosition = Range.clip(
+                    kServoPositionCenter
+                            + kServoDirection * turretAngleDegrees / kFullServoRangeDegrees,
+                    0.0,
+                    1.0
+            );
 
             setServoPosition(servoPosition);
 
-            double servoPositionCalibration = 0;// calibrateTurret();
+            //setServoPosition(servoPosition);
+
+            /*
+            double servoPositionCalibration = calibrateTurret();
             servoPosition = getServoPosition() + servoPositionCalibration;
 
             mode.telemetry.addData("Limelight calibrated servo position:", "%.5f", servoPosition);
@@ -153,17 +154,23 @@ public class Turret {
             }
 
             setServoPosition(servoPosition);
+             */
+
+            mode.telemetry.addLine(" ");
 
             mode.telemetry.addData("Servo position set", "%.5f", servoPosition);
 
+            //mode.telemetry.addData("Distance to goal", "%.3f", localizer.getRobotDistanceToGoal());
+            //mode.telemetry.addData("Robot Zone", localizer.getRobotZone().ordinal());
 
-            mode.telemetry.addData("Distance to goal", "%.3f", localizer.getRobotDistanceToGoal());
-            mode.telemetry.addData("Robot Zone", localizer.getRobotZone().ordinal());
+            mode.telemetry.addLine(" ");
+            mode.telemetry.addData("Delta x:", Math.abs(x - x0));
+            mode.telemetry.addData("Delta y:", Math.abs(y - y0));
+            mode.telemetry.addData("targetBearingDegrees:", targetBearingDegrees);
+            mode.telemetry.addData("turretAngleDegrees:", turretAngleDegrees);
 
-//            mode.telemetry.addData("Delta x:", Math.abs(x - x0));
-//            mode.telemetry.addData("Delta y:", Math.abs(y - y0));
-//            mode.telemetry.addData("alpha:", alpha);
-//            mode.telemetry.addData("theta:", theta);
+
+
         }
     }
 
@@ -229,5 +236,13 @@ public class Turret {
 
         if(turretNectar != null)
             turretNectar.setPosition(position);
+    }
+
+    private static double normalizeDegrees(double angle) {
+        angle = (angle + 180.0) % 360.0;
+        if (angle < 0.0) {
+            angle += 360.0;
+        }
+        return angle - 180.0;
     }
 }
