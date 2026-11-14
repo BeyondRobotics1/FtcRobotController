@@ -13,9 +13,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.ShooterGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.TriggerGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.VelocityPIDFShooterGroup;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 @Autonomous(name = "BioBuzz Auto BLUE SCORE", group = "BioBuzz")
 public class AutoBlueScore extends LinearOpMode {
     private Intake intake;
-    private ShooterGroup shooters;
+    private VelocityPIDFShooterGroup shooters;
     private TriggerGroup triggers;
     private Turret turret;
 
@@ -41,7 +41,7 @@ public class AutoBlueScore extends LinearOpMode {
             BioBuzzDashboard.BLUE_GARDEN_POSE.getY(DistanceUnit.INCH),
             BioBuzzDashboard.BLUE_GARDEN_POSE.getHeading(AngleUnit.RADIANS));
 
-    private final Pose scorePose = new Pose(52, 7, Math.toRadians(180));
+    private final Pose scorePose = new Pose(56, 7, Math.toRadians(180));
     private final Pose controlScoreToParkPose = new Pose(36, 30, Math.toRadians(90));
 
     private final Pose parkPose = new Pose(BioBuzzDashboard.BLUE_SCORE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
@@ -113,7 +113,7 @@ public class AutoBlueScore extends LinearOpMode {
                 }
                 break;
             case 3:
-                if (pathTimer.getElapsedTime() > 1000) //wait for 2 second to complete shooting
+                if (pathTimer.getElapsedTime() > 2000) //wait for 2 second to complete shooting
                 {
                     intake.setIntakeMode(Intake.IntakeMode.IDLE);
                     triggers.close();
@@ -235,7 +235,7 @@ public class AutoBlueScore extends LinearOpMode {
     private void initSubsystems() {
         telemetry.addLine("Initializing shooters");
         telemetry.update();
-        shooters = new ShooterGroup(hardwareMap, this);
+        shooters = new VelocityPIDFShooterGroup(hardwareMap, this);
 
         telemetry.addLine("Initializing intake");
         telemetry.update();

@@ -108,11 +108,11 @@ public class Turret {
         y = localizer.getY();
         heading = localizer.getHeading();
 
-//        mode.telemetry.addData("IMU Heading", "%.3f",  heading);
-//        mode.telemetry.addData("IMU x", "%.3f", x);
-//        mode.telemetry.addData("IMU y", "%.3f", y);
-//        mode.telemetry.addData("Hive x", "%.3f", x0);
-//        mode.telemetry.addData("Hive y", "%.3f", y0);
+        mode.telemetry.addData("IMU Heading", "%.3f",  heading);
+        mode.telemetry.addData("IMU x", "%.3f", x);
+        mode.telemetry.addData("IMU y", "%.3f", y);
+        mode.telemetry.addData("Hive x", "%.3f", x0);
+        mode.telemetry.addData("Hive y", "%.3f", y0);
 
         //isHeadingToGoal = localizer.isHeadingToGoal();
 
@@ -137,11 +137,11 @@ public class Turret {
 
 //            mode.telemetry.addLine(" ");
 //
-//            mode.telemetry.addData("Pollen turret x", "%.3f", pollenAim.turretX);
-//            mode.telemetry.addData("Pollen turret y", "%.3f", pollenAim.turretY);
-//            mode.telemetry.addData("Pollen turret angle", "%.3f", pollenAim.turretAngleDegrees);
-//            mode.telemetry.addData("Pollen servo position", "%.5f", pollenAim.servoPosition);
-//
+            mode.telemetry.addData("Pollen turret x", "%.3f", pollenAim.turretX);
+            mode.telemetry.addData("Pollen turret y", "%.3f", pollenAim.turretY);
+            mode.telemetry.addData("Pollen turret angle", "%.3f", pollenAim.turretAngleDegrees);
+            mode.telemetry.addData("Pollen servo position", "%.5f", pollenAim.servoPosition);
+
 //            mode.telemetry.addData("Nectar turret x", "%.3f", nectarAim.turretX);
 //            mode.telemetry.addData("Nectar turret y", "%.3f", nectarAim.turretY);
 //            mode.telemetry.addData("Nectar turret angle", "%.3f", nectarAim.turretAngleDegrees);

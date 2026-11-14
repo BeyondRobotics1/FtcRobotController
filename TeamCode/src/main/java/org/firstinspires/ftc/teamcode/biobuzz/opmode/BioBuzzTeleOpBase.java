@@ -11,10 +11,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.DriveTrain;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.PowerManager;
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.ShooterGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.TriggerGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.VelocityPIDFShooter;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.VelocityPIDFShooterGroup;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
 
     private DriveTrain driveTrain;
     private Intake intake;
-    private ShooterGroup shooters;
+    private VelocityPIDFShooterGroup shooters;
     private TriggerGroup triggers;
     private Turret turret;
     private PowerManager powerManager;
@@ -89,7 +89,16 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         warmUpShooter();
         isIntakeOn = true;
 
+        boolean isInitialPinpointPositionSet = false;
+
         while (opModeIsActive() && !isStopRequested()) {
+
+            if(!isInitialPinpointPositionSet)
+            {
+                turret.setIMUPoseToRobotStartPose();
+                isInitialPinpointPositionSet = true;
+            }
+
             hubs.forEach(LynxModule::clearBulkCache);
 
             //updatePowerManagement();
@@ -107,7 +116,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
             shootOp();
             doRumble();
 
-            powerManager.addTelemetry(telemetry);
+            //powerManager.addTelemetry(telemetry);
 
             telemetry.update();
         }
@@ -251,7 +260,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         // this decision here gives both alliances identical shooter behavior.
         if (!enableAutoShootingSpeed
                 || (intake.detectedArtifacts() > 0 && isHeadingToGoal)) {
-            shooters.setShootingLocation(Shooter.ShootingLocation.MEDIUM);
+            shooters.setShootingLocation(VelocityPIDFShooter.ShootingLocation.MEDIUM);
         }
 
         if (isShooterOn) {
@@ -289,7 +298,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
 
         telemetry.addLine("Initializing shooters");
         telemetry.update();
-        shooters = new ShooterGroup(hardwareMap, this);
+        shooters = new VelocityPIDFShooterGroup(hardwareMap, this);
 
         telemetry.addLine("Initializing intake");
         telemetry.update();

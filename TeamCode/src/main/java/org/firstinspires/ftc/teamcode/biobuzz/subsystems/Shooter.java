@@ -39,10 +39,10 @@ public class Shooter {
     public static double kFNectar = 0.9;
 
     //shooting speed for Pollen
-    public static double kTargetSpeedFarFarPollen = 0.54;
-    public static double kTargetSpeedFarPollen = 0.54;
-    public static double kTargetSpeedMediumPollen = 0.54;
-    public static double kTargetSpeedNearPollen = 0.54;
+    public static double kTargetSpeedFarFarPollen = 0.53;
+    public static double kTargetSpeedFarPollen = 0.53;
+    public static double kTargetSpeedMediumPollen = 0.53;
+    public static double kTargetSpeedNearPollen = 0.53;
 
     //shooting speed for Nectar
     public static double kTargetSpeedFarFarNectar = 0.6;

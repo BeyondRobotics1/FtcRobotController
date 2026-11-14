@@ -14,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.biobuzz.subsystems.ShooterGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.TriggerGroup;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Turret;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.VelocityPIDFShooterGroup;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
 public class AutoRedScore extends LinearOpMode {
 
     private Intake intake;
-    private ShooterGroup shooters;
+    private VelocityPIDFShooterGroup shooters;
     private TriggerGroup triggers;
     private Turret turret;
 
@@ -41,7 +41,7 @@ public class AutoRedScore extends LinearOpMode {
             BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
     private final Pose controlScoreToParkPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getX(DistanceUnit.INCH),
-            112, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
+            119, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE.getHeading(AngleUnit.RADIANS));
 
     private final Pose parkPose = new Pose(BioBuzzDashboard.RED_SCORE_AUTO_PARK_POSE.getX(DistanceUnit.INCH),
             BioBuzzDashboard.RED_SCORE_AUTO_PARK_POSE.getY(DistanceUnit.INCH),
@@ -187,7 +187,7 @@ public class AutoRedScore extends LinearOpMode {
     private void initSubsystems() {
         telemetry.addLine("Initializing shooters");
         telemetry.update();
-        shooters = new ShooterGroup(hardwareMap, this);
+        shooters = new VelocityPIDFShooterGroup(hardwareMap, this);
 
         telemetry.addLine("Initializing intake");
         telemetry.update();
