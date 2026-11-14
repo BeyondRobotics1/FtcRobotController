@@ -45,7 +45,7 @@ public class Turret {
 
     public static final double RIGHT_SERVO_POSITION = 0; //halfServoRangeDegrees, 0, 90 degree
     public static final double LEFT_SERVO_POSITION = 1;//-halfServoRangeDegrees; //0.380; //-90 degree
-    public static final double CENTER_SERVO_POSITION = 0.51;//
+    public static final double CENTER_SERVO_POSITION = 0.5;//
 
     //servo positions for auto
     public static final double RED_AUDIENCE_AUTO_SERVO_POSITION = 0.25;//0.233

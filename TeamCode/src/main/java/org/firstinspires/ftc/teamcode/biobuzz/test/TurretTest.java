@@ -56,6 +56,7 @@ public class TurretTest  extends LinearOpMode {
             telemetry.addLine("Gamepad1.A: Alliance RED");
             telemetry.addLine("Gamepad1.B: Alliance BLUE");
             telemetry.addLine("-----------------------");
+            telemetry.addLine("Put Robot at IMU reset pose");
             telemetry.addData("Auto end X (Inch):", robotPose.getX(DistanceUnit.INCH));
             telemetry.addData("Auto end Y (Inch):", robotPose.getY(DistanceUnit.INCH));
             telemetry.addData("Auto end Heading (Degree) :", robotPose.getHeading(AngleUnit.DEGREES));

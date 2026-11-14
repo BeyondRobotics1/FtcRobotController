@@ -17,13 +17,13 @@ public class BioBuzzDashboard {
 
 
     //auto start poses
-    public static final Pose2D RED_AUDIENCE_AUTO_START_POSE = new Pose2D(DistanceUnit.INCH, 40, 7, AngleUnit.DEGREES, 180); //54.25, 7.25, 90
+    public static final Pose2D RED_AUDIENCE_AUTO_START_POSE = new Pose2D(DistanceUnit.INCH, 40.25, 7, AngleUnit.DEGREES, 180); //54.25, 7.25, 90
     public static final Pose2D RED_GARDEN_POSE = new Pose2D(DistanceUnit.INCH, 11, 7.5, AngleUnit.DEGREES, 180);
     public static final Pose2D RED_SCORE_AUTO_START_POSE = new Pose2D(DistanceUnit.INCH, 57, FIELD_SIZE_INCHES - 7, AngleUnit.DEGREES, -90);
 
     public static final Pose2D BLUE_AUDIENCE_AUTO_START_POSE = new Pose2D(DistanceUnit.INCH, 57, FIELD_SIZE_INCHES - 7, AngleUnit.DEGREES, -90);
     public static final Pose2D BLUE_GARDEN_POSE = new Pose2D(DistanceUnit.INCH, 11, 7.5, AngleUnit.DEGREES, 180);
-    public static final Pose2D BLUE_SCORE_AUTO_START_POSE = new Pose2D(DistanceUnit.INCH, 40, 7, AngleUnit.DEGREES, 180);
+    public static final Pose2D BLUE_SCORE_AUTO_START_POSE = new Pose2D(DistanceUnit.INCH, 40.25, 7, AngleUnit.DEGREES, 180);
 
     //auto park poses
     public static final Pose2D RED_AUDIENCE_AUTO_PARK_POSE = new Pose2D(DistanceUnit.INCH, 13, 90, AngleUnit.DEGREES, 90);

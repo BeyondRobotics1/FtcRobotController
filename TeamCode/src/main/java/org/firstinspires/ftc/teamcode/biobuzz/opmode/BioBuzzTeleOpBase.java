@@ -92,7 +92,7 @@ public abstract class BioBuzzTeleOpBase extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()) {
             hubs.forEach(LynxModule::clearBulkCache);
 
-            updatePowerManagement();
+            //updatePowerManagement();
 
             telemetry.addLine(selectedModeLabel());
             telemetry.addLine("");

@@ -4,7 +4,10 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.biobuzz.opmode.ShootAutoCompleteState;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.biobuzz.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.biobuzz.subsystems.TriggerGroup;
 
 import java.util.List;
 
@@ -15,21 +18,35 @@ import java.util.List;
 
 public class ShooterTest extends LinearOpMode {
 
+    private Intake intake;
+    Shooter shooter;
+    TriggerGroup triggers;
+
+    boolean isIntakeOn = false;
+    ShootAutoCompleteState shootAutoCompleteMode = ShootAutoCompleteState.COMPLETED;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Shooter pollenShooter = new Shooter(hardwareMap,
+
+        shooter = new Shooter(hardwareMap,
                 this,
                 "pollenFlywheel",
-                0.035,
-                0.1,
-                0,
-                0.9,
-                0.55,
-                0.52,
-                0.50,
-                0.48);
+                Shooter.kPPollen,
+                Shooter.kIPollen,
+                Shooter.kDPollen,
+                Shooter.kFPollen,
+                Shooter.kTargetSpeedFarFarPollen,
+                Shooter.kTargetSpeedFarPollen,
+                Shooter.kTargetSpeedMediumPollen,
+                Shooter.kTargetSpeedNearPollen);
 
+        telemetry.addLine("Initializing intake");
+        telemetry.update();
+        intake = new Intake(hardwareMap, this);
+
+        telemetry.addLine("Initializing triggers");
+        telemetry.update();
+        triggers = new TriggerGroup(hardwareMap);
 
         telemetry.update();
 
@@ -43,22 +60,54 @@ public class ShooterTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        pollenShooter.setPower(0.95);
-        sleep(200);//1000
-
-        ///let the PID work for a while
-        for (int i = 0; i < 30; i++) {
-            pollenShooter.doFlyWheelPID();
-            sleep(20);
-        }
+        warmUpShooter();
 
         while (!isStopRequested() && opModeIsActive()) {
 
             hubs.forEach(LynxModule::clearBulkCache);
 
-            pollenShooter.doFlyWheelPID();
+            intakeOp();
+            shooter.doFlyWheelPID();
 
             telemetry.update();
+        }
+    }
+
+    private void intakeOp() {
+        if (gamepad1.rightBumperWasPressed()) {
+            isIntakeOn = !isIntakeOn;
+        }
+
+        if (Math.abs(gamepad1.right_trigger) > 0.5) {
+            intake.setIntakeMode(Intake.IntakeMode.OUT);
+        } else if (!isIntakeOn) {
+            intake.setIntakeMode(Intake.IntakeMode.IDLE);
+        } else if (shootAutoCompleteMode == ShootAutoCompleteState.COMPLETED) {
+            intake.setIntakeMode(Intake.IntakeMode.IN);
+        } else {
+            intake.setIntakeMode(Intake.IntakeMode.FEED);
+        }
+
+        if (gamepad1.leftBumperWasPressed()) {
+            shootAutoCompleteMode = ShootAutoCompleteState.START;
+            triggers.open();
+        } else if (gamepad1.leftBumperWasReleased()) {
+            shootAutoCompleteMode = ShootAutoCompleteState.COMPLETED;
+            triggers.close();
+        }
+    }
+
+    private void warmUpShooter() throws InterruptedException {
+        final int warmupSteps = 8;
+        final double warmupPower = 0.65;
+        for (int step = 1; step <= warmupSteps && !isStopRequested(); step++) {
+            shooter.setPower(warmupPower * step / warmupSteps);
+            sleep(25);
+        }
+
+        for (int i = 0; i < 30 && !isStopRequested(); i++) {
+            shooter.doFlyWheelPID();
+            sleep(10);
         }
     }
 }
