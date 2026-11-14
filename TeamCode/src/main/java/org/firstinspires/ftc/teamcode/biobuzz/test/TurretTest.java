@@ -73,7 +73,7 @@ public class TurretTest  extends LinearOpMode {
 
         Turret turret = new Turret(hardwareMap, this, robotPose,
                 alliance, false, false);
-        turret.setServoPosition(Turret.CENTER_SERVO_POSITION);
+        turret.setServoPosition(Turret.CENTER_SERVO_POSITION, Turret.CENTER_SERVO_POSITION);
 
         if(isBlueTeleOp)
             telemetry.addLine("Alliance Selected: BLUE BLUE BLUE");

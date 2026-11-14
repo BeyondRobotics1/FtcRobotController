@@ -58,6 +58,16 @@ public class Turret {
 
     public static final double SERVO_DIRECTION = 1;
 
+    /*
+     * Turret pivot locations relative to the Pinpoint tracking center.
+     * Positive forward is toward the robot's front. Positive left is toward
+     * the robot's left. Use a negative forward value for a rear-mounted turret.
+     */
+    public static final double POLLEN_TURRET_FORWARD_OFFSET_INCHES = -4.5;
+    public static final double POLLEN_TURRET_LEFT_OFFSET_INCHES = 0.0;
+    public static final double NECTAR_TURRET_FORWARD_OFFSET_INCHES = 5.166;
+    public static final double NECTAR_TURRET_LEFT_OFFSET_INCHES = 0.0;
+
 
     public Turret(HardwareMap hardwareMap, LinearOpMode mode,
                   Pose2D robotPose,
@@ -83,7 +93,7 @@ public class Turret {
         localizer = new IMULocalizer(hardwareMap, mode, robotPose, alliance);
 
 
-        setServoPosition(CENTER_SERVO_POSITION);
+        setServoPosition(CENTER_SERVO_POSITION, CENTER_SERVO_POSITION);
     }
 
     public void autoAim(boolean enabled)
@@ -98,11 +108,11 @@ public class Turret {
         y = localizer.getY();
         heading = localizer.getHeading();
 
-        mode.telemetry.addData("IMU Heading", "%.3f",  heading);
-        mode.telemetry.addData("IMU x", "%.3f", x);
-        mode.telemetry.addData("IMU y", "%.3f", y);
-        mode.telemetry.addData("Hive x", "%.3f", x0);
-        mode.telemetry.addData("Hive y", "%.3f", y0);
+//        mode.telemetry.addData("IMU Heading", "%.3f",  heading);
+//        mode.telemetry.addData("IMU x", "%.3f", x);
+//        mode.telemetry.addData("IMU y", "%.3f", y);
+//        mode.telemetry.addData("Hive x", "%.3f", x0);
+//        mode.telemetry.addData("Hive y", "%.3f", y0);
 
         //isHeadingToGoal = localizer.isHeadingToGoal();
 
@@ -116,62 +126,41 @@ public class Turret {
 //                return;
 //            }
 
-            double dx = x0 - x;
-            double dy = y0 - y;
+            AimSolution pollenAim = calculateAimSolution(
+                    POLLEN_TURRET_FORWARD_OFFSET_INCHES,
+                    POLLEN_TURRET_LEFT_OFFSET_INCHES);
+            AimSolution nectarAim = calculateAimSolution(
+                    NECTAR_TURRET_FORWARD_OFFSET_INCHES,
+                    NECTAR_TURRET_LEFT_OFFSET_INCHES);
 
-            // Assumes Pinpoint heading 0° points along field +X.
-            double targetBearingDegrees = Math.toDegrees(Math.atan2(dy, dx));
+            setServoPosition(pollenAim.servoPosition, nectarAim.servoPosition);
 
-            double turretAngleDegrees = normalizeDegrees(
-                    targetBearingDegrees
-                            - heading
-                            - TURRET_CENTER_OFFSET_DEGREES
-            );
-
-            double servoPosition = Range.clip(
-                    CENTER_SERVO_POSITION
-                            + SERVO_DIRECTION * turretAngleDegrees / FULL_SERVO_RANGE_DEGREES,
-                    0.0,
-                    1.0
-            );
-
-            setServoPosition(servoPosition);
-
-            /*
-            double servoPositionCalibration = calibrateTurret();
-            servoPosition = getServoPosition() + servoPositionCalibration;
-
-            mode.telemetry.addData("Limelight calibrated servo position:", "%.5f", servoPosition);
-
-                servoPosition = Range.clip(
-                    servoPosition,
-                    0.0,
-                    1.0
-
-            setServoPosition(servoPosition);
-             */
-
-            mode.telemetry.addLine(" ");
-
-            mode.telemetry.addData("Servo position set", "%.5f", servoPosition);
+//            mode.telemetry.addLine(" ");
+//
+//            mode.telemetry.addData("Pollen turret x", "%.3f", pollenAim.turretX);
+//            mode.telemetry.addData("Pollen turret y", "%.3f", pollenAim.turretY);
+//            mode.telemetry.addData("Pollen turret angle", "%.3f", pollenAim.turretAngleDegrees);
+//            mode.telemetry.addData("Pollen servo position", "%.5f", pollenAim.servoPosition);
+//
+//            mode.telemetry.addData("Nectar turret x", "%.3f", nectarAim.turretX);
+//            mode.telemetry.addData("Nectar turret y", "%.3f", nectarAim.turretY);
+//            mode.telemetry.addData("Nectar turret angle", "%.3f", nectarAim.turretAngleDegrees);
+//            mode.telemetry.addData("Nectar servo position", "%.5f", nectarAim.servoPosition);
 
             //mode.telemetry.addData("Distance to goal", "%.3f", localizer.getRobotDistanceToGoal());
             //mode.telemetry.addData("Robot Zone", localizer.getRobotZone().ordinal());
-
-//            mode.telemetry.addLine(" ");
-//            mode.telemetry.addData("Delta x:", Math.abs(x - x0));
-//            mode.telemetry.addData("Delta y:", Math.abs(y - y0));
-//            mode.telemetry.addData("targetBearingDegrees:", targetBearingDegrees);
-//            mode.telemetry.addData("turretAngleDegrees:", turretAngleDegrees);
         }
     }
 
-    public double getServoPosition()
+    public double getServoPosition(boolean isPollen)
     {
-        if(turretNectar != null)
+        if(!isPollen && turretNectar != null)
             return turretNectar.getPosition();
-        else
+
+        if(isPollen && turretPollen != null )
             return turretPollen.getPosition();
+
+        return CENTER_SERVO_POSITION;
     }
 
     public double getBotHeadingDegrees()
@@ -210,7 +199,7 @@ public class Turret {
     //working as expected
     public void resetTurretHeading()
     {
-        setServoPosition(CENTER_SERVO_POSITION);
+        setServoPosition(CENTER_SERVO_POSITION, CENTER_SERVO_POSITION);
     }
 
 
@@ -221,13 +210,63 @@ public class Turret {
         return localizer.getRobotDistanceToGoal();
     }
 
-    public void setServoPosition(double position)
+    public void setServoPosition(double pollenServoPosition,
+                                 double nectarServoPosition)
     {
         if(turretPollen != null)
-            turretPollen.setPosition(position);
+            turretPollen.setPosition(pollenServoPosition);
 
         if(turretNectar != null)
-            turretNectar.setPosition(position);
+            turretNectar.setPosition(nectarServoPosition);
+    }
+
+    /**
+     * Converts a turret pivot offset from robot coordinates into field
+     * coordinates, then calculates the shortest turret rotation to the target.
+     * This assumes heading 0 degrees points along field +X and positive heading
+     * rotates counter-clockwise.
+     */
+    private AimSolution calculateAimSolution(double forwardOffset, double leftOffset) {
+        double headingRadians = Math.toRadians(heading);
+        double cosHeading = Math.cos(headingRadians);
+        double sinHeading = Math.sin(headingRadians);
+
+        double turretX = x
+                + forwardOffset * cosHeading
+                - leftOffset * sinHeading;
+        double turretY = y
+                + forwardOffset * sinHeading
+                + leftOffset * cosHeading;
+
+        double targetBearingDegrees = Math.toDegrees(
+                Math.atan2(y0 - turretY, x0 - turretX));
+        double turretAngleDegrees = normalizeDegrees(
+                targetBearingDegrees - heading - TURRET_CENTER_OFFSET_DEGREES);
+        double servoPosition = Range.clip(
+                CENTER_SERVO_POSITION
+                        + SERVO_DIRECTION * turretAngleDegrees / FULL_SERVO_RANGE_DEGREES,
+                RIGHT_SERVO_POSITION,
+                LEFT_SERVO_POSITION);
+
+        return new AimSolution(turretX, turretY, turretAngleDegrees, servoPosition);
+    }
+
+    private static final class AimSolution {
+        final double turretX;
+        final double turretY;
+        final double turretAngleDegrees;
+        final double servoPosition;
+
+        AimSolution(
+                double turretX,
+                double turretY,
+                double turretAngleDegrees,
+                double servoPosition) {
+            this.turretX = turretX;
+            this.turretY = turretY;
+            this.turretAngleDegrees = turretAngleDegrees;
+            this.servoPosition = servoPosition;
+        }
     }
 
     private static double normalizeDegrees(double angle) {

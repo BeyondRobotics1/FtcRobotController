@@ -202,7 +202,8 @@ public class AutoBlueAudience extends LinearOpMode {
         telemetry.update();
         turret = new Turret(hardwareMap, this, BioBuzzDashboard.BLUE_AUDIENCE_AUTO_START_POSE,
                 BioBuzzDashboard.ALLIANCE_BLUE, false, false);
-        turret.setServoPosition(Turret.BLUE_AUDIENCE_AUTO_SERVO_POSITION);
+        turret.setServoPosition(Turret.BLUE_AUDIENCE_AUTO_SERVO_POSITION,
+                Turret.BLUE_AUDIENCE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {

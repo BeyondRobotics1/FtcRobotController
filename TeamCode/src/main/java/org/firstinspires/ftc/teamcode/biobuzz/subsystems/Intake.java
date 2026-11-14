@@ -66,26 +66,26 @@ public class Intake {
     {
         if(intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.IN)
         {
-            intake(0.925);
+            intake(0.9);//0.925
         }
         else if(intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.TRANSFER_ONLY)
         {
             intakeMotor.setPower(0);
-            transferMotor.setPower(-1);
+            transferMotor.setPower(-9);//
         }
         else if(intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.INTAKE_ONLY)
         {
-            intakeMotor.setPower(-0.925);
+            intakeMotor.setPower(-0.9);
             transferMotor.setPower(0);
         }
         else if (intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.OUT) {
 
             //outtake(0.5);
-            intakeMotor.setPower(0.3);
-            transferMotor.setPower(-0.3);
+            intakeMotor.setPower(0.4);
+            transferMotor.setPower(-0.4);
         }
         else if (intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.FEED) {
-            intake(1);
+            intake(0.7);//1
         }
         else if (intakeMode == org.firstinspires.ftc.teamcode.biobuzz.subsystems.Intake.IntakeMode.SLOW_FEED)
         {

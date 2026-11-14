@@ -202,7 +202,8 @@ public class AutoRedScore extends LinearOpMode {
         telemetry.update();
         turret = new Turret(hardwareMap, this, BioBuzzDashboard.RED_SCORE_AUTO_START_POSE,
                 BioBuzzDashboard.ALLIANCE_RED, false, false);
-        turret.setServoPosition(Turret.RED_SCORE_AUTO_SERVO_POSITION);
+        turret.setServoPosition(Turret.RED_SCORE_AUTO_SERVO_POSITION,
+                Turret.RED_SCORE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {

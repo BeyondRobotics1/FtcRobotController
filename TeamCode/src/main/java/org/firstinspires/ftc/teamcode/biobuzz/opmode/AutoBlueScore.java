@@ -249,7 +249,8 @@ public class AutoBlueScore extends LinearOpMode {
         telemetry.addLine("Initializing turret");
         telemetry.update();
         turret = new Turret(hardwareMap, this, BioBuzzDashboard.BLUE_SCORE_AUTO_START_POSE, BioBuzzDashboard.ALLIANCE_BLUE, false, false);
-        turret.setServoPosition(Turret.BLUE_SCORE_AUTO_SERVO_POSITION);
+        turret.setServoPosition(Turret.BLUE_SCORE_AUTO_SERVO_POSITION,
+                Turret.BLUE_SCORE_AUTO_SERVO_POSITION);
     }
 
     void setPathState(int newPathState) {
